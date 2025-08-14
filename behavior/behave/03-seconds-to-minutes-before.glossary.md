@@ -1,0 +1,26 @@
+- **Amygdala** — A brain region involved in processing emotions such as fear and threat, rapidly activated by sensory stimuli including subliminal cues.
+- **Anterior cingulate cortex** — A brain area involved in executive control and moral judgment, modulating emotional responses.
+- **Behaviorism** — A psychological approach focusing on universal stimulus-response behaviors shaped through rewards and punishments (operant conditioning).
+- **Cognitive dlPFC** — The dorsolateral prefrontal cortex, a brain region involved in executive functions and inhibiting impulsive emotional reactions.
+- **Electroencephalography (EEG)** — A method for recording electrical activity of the brain, used to assess event-related potentials.
+- **Event-related potentials (ERPs)** — Brain responses measured by EEG that are triggered by specific sensory stimuli.
+- **Ethology** — The study of animal behavior in natural environments, emphasizing species-specific adaptations and behavioral variety.
+- **Facial recognition fusiform area** — A cortical region specialized in recognizing faces, which shows less activation for other-race faces in some individuals.
+- **Frontal cortex** — Brain regions including vmPFC and dlPFC involved in decision making, social cognition, and regulation of emotions.
+- **Implicit bias** — Unconscious attitudes or stereotypes that affect one’s understanding, actions, and decisions, such as racial bias.
+- **Interoceptive information** — Sensory input about the internal state of the body, influencing emotions and behavior.
+- **James-Lange theory** — A theory that emotions are the brain’s interpretation of bodily responses to stimuli.
+- **Limbic system** — A set of brain structures, including the amygdala, involved in emotion and memory.
+- **Medial orbitofrontal cortex** — A brain region assessing both beauty and moral goodness, linking perceptions of physical and moral traits.
+- **Medial prefrontal cortex (mPFC)** — A brain area involved in processing social emotions and empathy, showing race-related activation differences.
+- **Neuroimaging** — Techniques that visualize brain activity, such as fMRI, used to study responses to social and sensory stimuli.
+- **Operant conditioning** — A learning process where behaviors become more or less likely based on rewards or punishments.
+- **Other-race effect** — The phenomenon where people have reduced facial recognition and empathy for faces of races different from their own.
+- **Pheromones** — Chemical signals emitted by animals that convey information about reproductive status, identity, and emotional states.
+- **Prosopagnosia** — A neurological condition characterized by an inability to recognize faces.
+- **Subliminal cuing** — Sensory stimuli presented below conscious awareness that nonetheless influence behavior and brain activity.
+- **Temporoparietal junction (TPJ)** — (Not explicitly named but related to social cognition and perspective-taking, implicit in discussions of social brain areas.)
+- **Temporal discounting** — The tendency to devalue rewards or outcomes that occur in the future compared to immediate ones.
+- **Threat conditioning** — A learning process by which neutral stimuli come to elicit fear responses through association with aversive events.
+- **Unconscious priming** — The influence of stimuli or words presented outside conscious awareness on thoughts, feelings, and behaviors.
+- **Visual cortex** — Brain areas responsible for processing visual information before relaying it to higher processing and emotional centers.

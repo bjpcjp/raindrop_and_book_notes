@@ -1,0 +1,1 @@
+This glossary provides definitions for a wide range of abbreviations related to neuroscience, psychology, genetics, and social sciences, including terms for brain regions, hormones, disorders, and experimental methodologies. It serves as a reference to clarify specialized terminology used within these interdisciplinary fields.

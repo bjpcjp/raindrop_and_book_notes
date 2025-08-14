@@ -1,0 +1,31 @@
+- **Action potentials** — Electrical impulses used by neurons to communicate.  
+- **Anterior cingulate** — A frontal cortex area involved in empathy and emotion regulation.  
+- **Amygdala** — A limbic brain structure central to fear, anxiety, and aggression processing.  
+- **Basolateral amygdala (BLA)** — A subregion of the amygdala involved in learned fear and emotional processing.  
+- **Bed nucleus of the stria terminalis (BNST)** — A limbic-related structure receiving input from the amygdala and influencing stress responses.  
+- **Cognitive load** — The mental effort required to process information or perform tasks that rely on the frontal cortex.  
+- **Cortex** — The neocortex, the brain’s most recently evolved layer responsible for cognition, memory, and executive function.  
+- **Dorsolateral prefrontal cortex (dlPFC)** — Part of the PFC involved in rational, executive decisions and cognitive control.  
+- **Dopamine** — A neurotransmitter central to reward anticipation, motivation, and goal-directed behavior.  
+- **Frontal cortex** — The brain’s most recently evolved region, involved in working memory, executive function, and behavior regulation.  
+- **Functional magnetic resonance imaging (fMRI)** — Neuroimaging technique used to measure brain activity based on blood flow (implied).  
+- **Habenula** — Limbic structure involved in emotional processing and reward regulation.  
+- **Hypothalamus** — A limbic structure linking emotion and autonomic regulation, controlling hormone release and bodily states.  
+- **Insular cortex (insula)** — A cortical region involved in processing disgust, including moral disgust, and linked to amygdala activation.  
+- **Limbic system** — A set of interconnected brain regions (e.g., amygdala, hippocampus) involved in emotion and motivation.  
+- **Mesolimbic dopamine pathway** — Dopamine projections from the ventral tegmental area to limbic structures like the nucleus accumbens.  
+- **Mesocortical dopamine pathway** — Dopamine projections from the ventral tegmental area to the prefrontal cortex.  
+- **Motor cortex** — The cortical region controlling voluntary muscle movements.  
+- **Nucleus accumbens (accumbens)** — A brain region involved in reward, motivation, and dopamine signaling.  
+- **Olfactory bulbs** — Structures processing smell, strongly connected to the limbic system especially in rodents.  
+- **Parasympathetic nervous system (PNS)** — Part of the autonomic nervous system regulating calm, vegetative bodily functions.  
+- **Periaqueductal gray (PAG)** — An ancient brain region involved in pain processing and defensive behaviors.  
+- **Prefrontal cortex (PFC)** — The front part of the frontal cortex, crucial for executive function and decision-making.  
+- **Purkinje cells** — Not mentioned (excluded).  
+- **Serotonin** — A neurotransmitter implicated in regulating aggression and mood.  
+- **Sympathetic nervous system (SNS)** — Part of the autonomic nervous system responsible for arousal and “fight or flight” responses.  
+- **Temporal lobe** — Brain region containing the amygdala and involved in emotion and sensory processing.  
+- **Triune brain model** — Paul MacLean’s conceptual model dividing the brain into three layers: reptilian (layer 1), limbic (layer 2), and neocortex (layer 3).  
+- **Ventral medial prefrontal cortex (vmPFC)** — Part of the PFC involved in emotional decision-making and integrating limbic inputs.  
+- **Ventral tegmental area (VTA)** — Brain stem region producing dopamine, projecting to limbic and frontal structures.  
+- **Von Economo neurons (spindle neurons)** — Specialized neurons found in the frontal cortex and insula, linked to social complexity and empathy.

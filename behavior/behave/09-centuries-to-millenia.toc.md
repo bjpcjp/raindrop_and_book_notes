@@ -1,0 +1,47 @@
+```markdown
+# Table of Contents
+
+- Nine Centuries to Millennia Before
+- Definitions, Similarities, and Differences
+  - Culture: Definitions and Examples
+  - Human Universals
+  - Cultural Differences in Life Experience
+- Collectivist versus Individualist Cultures
+  - Characteristics and Psychological Differences
+  - Biological Correlates
+  - Ecological Roots: Rice and Wheat Farming
+  - Genetic Correlates: DRD4 Variants
+- Pastoralists and Southerners
+  - Characteristics of Pastoralist Cultures
+  - Monotheism and Desert Environments
+  - Cultures of Honor and Violence
+  - Southern US Culture of Honor
+  - Honor Killings
+- Stratified versus Egalitarian Cultures
+  - Origins and Consequences of Inequality
+  - Social Capital and Income Inequality
+  - SES/Health Gradient
+  - Inequality and Crime/Violence
+- Population Size, Density, and Heterogeneity
+  - Urbanization and Brain Reactivity
+  - Norm Enforcement and Moralizing Gods
+  - Cultural Tightness and Historical Correlates
+  - Effects of Population Density
+  - Impacts of Population Heterogeneity
+- The Residues of Cultural Crises
+  - Responses to Acute vs. Chronic Crisis
+  - Environmental and Ecological Impacts on Culture
+  - Disease and Behavioral Immunity
+  - Weather, Climate, and Conflict
+  - Global Warming and Violence
+- Oh, Why Not: Religion
+  - Origins and Functions of Religion
+  - Variation in Religious Beliefs and Practices
+  - Religion’s Relationship with Ecology and Culture
+- Hobbes or Rousseau
+  - Archaeological Evidence of Early Warfare
+  - Debates and Critiques of War in Prehistory
+  - Contemporary Nonstate Tribal Societies and War
+  - Yanomamö Case Study and Controversies
+  - Violence and Reproductive Success Debates
+```

@@ -1,0 +1,13 @@
+- **Acknowledgments** — A section in a book where the author expresses gratitude to those who helped in the creation of the work.  
+- **Board games** — Recreational games played on a flat surface, mentioned here as an interruption during the author's writing process.  
+- **Brilliant enemies** — Term used by Edward O. Wilson to describe his opponents who challenged and improved his work.  
+- **Brilliant friends** — Supportive colleagues who helped review and improve the book by offering feedback and corrections.  
+- **Collegial kindness** — The supportive and constructive attitude of professional peers in assisting the author.  
+- **Final stretch** — The last phase of the book-writing process, involving intensive editing and preparation.  
+- **Gestation of the book** — The long and difficult development period during which the book was written.  
+- **Library assistants** — Individuals, often students, who assist with research and content gathering for the book.  
+- **Publishing agents** — Professionals who represent authors in dealings with publishers and manage speaking engagements.  
+- **Readers/reviewers** — People who help identify errors and provide feedback on the manuscript.  
+- **University affiliations** — Institutions associated with the individuals who contributed to the book (e.g., Stanford University, Harvard University).  
+- **Vetting chapters** — The process of reviewing and critiquing sections of the book to ensure accuracy and clarity.  
+- **Writing process** — The series of stages through which the author develops and finalizes the book content.

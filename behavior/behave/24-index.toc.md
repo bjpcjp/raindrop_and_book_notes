@@ -1,0 +1,53 @@
+```markdown
+- Abortion, 190–91, 592  
+- Adolescence, 59, 154–73  
+  - Criminal justice system and, 170–71, 589–90, 592–93  
+  - Culture and, 155–56  
+  - Dopamine reward system and, 162–64  
+  - Empathy, sympathy, and moral reasoning in, 167–69  
+  - Frontal cortical maturation in, 154–60, 171–73  
+  - Novelty craving in, 161–62, 168  
+  - Peers, social acceptance, and exclusion, 164–67  
+  - Puberty in, 158–59  
+  - Risk taking in, 160–64  
+  - Violence in, 170–71  
+- Aggression, 2–3, 11, 15–17, 19, 43  
+- Alcohol and aggression, 134, 136  
+- Amygdala, 30–44  
+- Animals and behavior, 10–11  
+- Anterior cingulate cortex (ACC), 46, 59, 516–19  
+- Brain and nervous system, 6–8, 21–80  
+  - Frontal cortex, 45–64  
+  - Limbic system, 24–30  
+  - Neurons and neurotransmitters, 680–706  
+- Childhood, 174–222  
+  - Adversity, 194–201  
+  - Culture and class, 202–10  
+  - Empathy and compassion in, 527–28  
+  - Play and peers, 204–5  
+- Cognition and executive function, 45–50, 159  
+- Cooperation and altruism, 3–4, 15–16, 324, 342–54  
+- Culture(s), 7, 11, 266–327  
+  - Collectivist vs. individualist, 97, 156, 206–7, 273–82  
+  - Cultures of honor, 207, 283–91  
+  - Hunter-gatherer, 291, 315–25  
+  - Religion and culture, 283–4, 304  
+- Decision making and moral reasoning, 38–39, 46–47, 478–520  
+- Dopamine system, 30, 64–77  
+- Empathy and emotional contagion, 521–52  
+- Evolution and genetics, 7, 21, 223–65, 328–86  
+- Free will and criminal justice, 583–613  
+- Hormones and behavior, 6–8, 99–136, 211–20  
+- Language and metaphorical thinking, 175, 553–79  
+- Morality and moral decisions, 478–520  
+- Neurobiology and brain function, 21–80, 679–706  
+- Obedience and conformity, 449–75  
+- Parenting and family, 188–94, 202–9  
+- Prejudice and Us/Them dichotomies, 387–424  
+- Punishment and justice, 609–14  
+- Religion and violence, 621–26  
+- Stress and its effects, 124–34, 274–75  
+- Testosterone and aggression, 99–107, 259–60  
+- War and peace, 614–70  
+- Violence and societal factors, 2–4, 170–71, 272–88, 306–21  
+```

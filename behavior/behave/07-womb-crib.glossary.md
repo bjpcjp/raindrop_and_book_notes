@@ -1,0 +1,30 @@
+- **2D:4D ratio** — The length ratio between the second and fourth fingers, used as a proxy measure of prenatal testosterone exposure, with males typically having a lower ratio than females.  
+- **Anterior cingulate cortex** — Brain region activated in adults when witnessing others’ pain, involved in empathy and emotional processing.  
+- **Attachment theory** — John Bowlby’s theory emphasizing the importance of a warm, responsive mother-infant bond for healthy emotional development.  
+- **Autism** — A neurodevelopmental disorder characterized by deficits in social interaction and communication, with some relation to prenatal androgen exposure.  
+- **Basal glucocorticoid levels** — The resting concentration of stress hormones in the body, elevated in individuals exposed to childhood adversity.  
+- **Behavioral plasticity** — The brain’s capacity to change based on experience, especially pronounced during childhood development.  
+- **Brain-derived neurotrophic factor (BDNF)** — A growth factor important for brain development and plasticity, often decreased by glucocorticoid exposure.  
+- **Childhood adversity** — A broad category that includes abuse, neglect, poverty, witnessing violence, and other stressors impacting child development and adult outcomes.  
+- **Collectivist cultures** — Societies emphasizing interdependence, group harmony, and shared responsibilities, often valuing cooperation over individual assertiveness.  
+- **Conventional moral reasoning** — Kohlberg’s middle stage of moral development in which adherence to social rules and concern about others’ opinions predominates.  
+- **Epigenetics** — The study of how environmental factors can turn genes on or off permanently without altering the DNA sequence, affecting brain development and behavior.  
+- **Formal operational stage** — Piaget’s stage starting in adolescence marked by abstract thinking, metacognition, and reasoning at adult levels.  
+- **Frontocortical maturation** — Development of the frontal cortex associated with improved impulse control, decision-making, and emotion regulation.  
+- **Glucocorticoids** — Stress hormones that, when elevated chronically or prenatally, impair brain development, particularly of the hippocampus and frontal cortex.  
+- **HPA axis (hypothalamic-pituitary-adrenal axis)** — The biological system regulating stress hormone secretion, often dysregulated by early life stress.  
+- **Hypothalamus** — Brain region regulating hormonal secretions, including reproductive hormones and stress responses, with sex differences developing prenatally.  
+- **Imaginary play** — Characteristic of Piaget’s preoperational stage; children use symbols and imagination without logical reasoning.  
+- **In-group bias** — The tendency to favor members of one’s own group, present even in preschoolers’ sense of justice.  
+- **Marshmallow test** — A psychological test measuring delayed gratification and self-control in young children, linked to later outcomes like academic success.  
+- **Maternal separation** — Experimental or real-life removal of offspring from mother leading to elevated stress hormones and later cognitive and emotional difficulties.  
+- **Medial prefrontal cortex (mPFC)** — Brain region involved in Theory of Mind, moral reasoning, and emotional regulation.  
+- **Permissive parenting** — Parenting style characterized by low demands and high responsiveness, often leading to poor impulse control in children.  
+- **Piaget’s stages of cognitive development** — Four universal stages describing cognitive maturation: sensorimotor, preoperational, concrete operational, and formal operational.  
+- **Postconventional moral reasoning** — Kohlberg’s highest moral development stage where rules are evaluated flexibly based on abstract ethical principles.  
+- **Preconventional moral reasoning** — Kohlberg’s earliest moral stage focused on self-interest, rewards, and punishments.  
+- **Prenatal testosterone exposure** — Hormonal influence during fetal development that organizes brain structure and behavior, contributing to sex differences in aggression and play.  
+- **Stress hyporesponsive period (SHRP)** — A developmental phase in newborn rodents during which stress hormone secretion is suppressed to protect brain development.  
+- **Theory of Mind (ToM)** — The understanding that others have different thoughts, beliefs, and knowledge than oneself; crucial for empathy and social cognition.  
+- **Toxic stress** — Excessive or chronic stress during sensitive developmental periods that disrupts brain maturation and function.  
+- **White matter (myelination)** — Brain tissue composed of myelinated axons that enhance communication speed between distant brain regions, developing well into young adulthood.

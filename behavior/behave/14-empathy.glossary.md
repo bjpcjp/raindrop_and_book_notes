@@ -1,0 +1,25 @@
+- **Affective components** — Emotional parts of empathy involving feeling the emotions of others.  
+- **Anterior cingulate cortex (ACC)** — Brain region involved in processing pain, empathy, conflict monitoring, and linking personal and observed pain.  
+- **As-if perspective** — Experiencing another’s pain as if it were happening to oneself, often leading to self-oriented distress.  
+- **Compassion** — Empathic resonance that leads to active help or alleviation of someone else’s distress.  
+- **Cognitive components** — Mental processes involved in understanding others’ perspectives, intentions, and causes of their pain.  
+- **Cognitive load** — The mental effort required to override habitual responses, affecting ability to empathize or act compassionately.  
+- **Consolation behavior** — Affiliative actions directed preferentially toward victims of aggression by third parties in some species.  
+- **Detachment** — Emotional distancing that allows one to act compassionately without becoming overwhelmed by empathic distress.  
+- **Emotional contagion** — Automatic transfer of emotional states from one individual to another, e.g., one baby crying because another is crying.  
+- **Empathy** — The capacity to feel, understand, and sometimes share another’s emotional or physical pain, involving both affective and cognitive components.  
+- **Empathic state** — The overall condition encompassing various forms of emotional resonance with another’s distress (including empathy, sympathy, compassion).  
+- **Fear conditioning by observation** — Learning to fear through observing another’s fearful experience, often enhanced by social bonds.  
+- **Mirror neurons** — Neurons that activate both when an individual performs an action and when they observe the same action performed by others; implicated but controversially linked to empathy.  
+- **Other-oriented perspective** — Experiencing another’s pain from their point of view rather than projecting one’s own feelings onto them.  
+- **Pathological altruism** — Compassionate acts that end up harming the recipient, often motivated by excessive empathic distress or codependency.  
+- **Perspective taking** — The cognitive ability to imagine the viewpoint or feelings of another person distinct from one’s own.  
+- **Reputational benefits** — Social rewards or recognition that can motivate compassionate or charitable behaviors.  
+- **Sensorimotor contagion** — Activation of sensory or motor areas in an observer when perceiving another’s sensations or movements.  
+- **Self-interest in empathy** — The phenomenon where empathic acts are often motivated partly by benefits to oneself, such as emotional reward or social approval.  
+- **Sympathy** — Feeling pity or sorrow for another’s misfortune without necessarily understanding their experience.  
+- **Theory of Mind (ToM)** — The cognitive capacity to attribute mental states, intentions, and beliefs to others, important for nuanced empathy.  
+- **Us versus Them effect** — A tendency to feel greater empathy and prosociality toward those perceived as part of one’s group than strangers or out-groups.  
+- **Vicarious state** — Feeling another’s emotions or pain through indirect experience or imagination rather than direct sensation.  
+- **Warm glow of doing good** — The internal positive feeling or reward gained from performing charitable or compassionate acts.  
+- **Wealth and empathy** — The observed inverse relationship between socioeconomic status and empathic concern or prosocial behavior.

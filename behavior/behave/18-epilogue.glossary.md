@@ -1,0 +1,28 @@
+- **Adolescence** — a developmental stage where brain plasticity is shaped minimally by genes and maximally by experience.
+- **Amygdala** — brain region involved in processing fear and aggression, activated variably by social stimuli.
+- **Biological plasticity** — the brain’s ability to change and adapt structurally and functionally.
+- **Coevolution** — simultaneous evolution of brains and cultures influencing each other.
+- **Context** — the environmental, social, and internal factors that influence gene expression and behavior.
+- **Distraction** — a strategy to avoid temptation by redirecting attention.
+- **Emotions (Cognition and Affect)** — interacting mental processes where cognition involves thought and affect involves feeling.
+- **Environment** — external conditions that interact with genes to shape traits and behaviors.
+- **Evolution** — change in gene regulation and function over time, emphasizing gene/environment interaction.
+- **Gene/environment interaction** — dynamic influence where genes and environment modulate outcomes jointly.
+- **Genes** — biological units of heredity that provide potentials and vulnerabilities, not fixed determinants.
+- **Hierarchy (Socioeconomic status)** — human-invented social structures markedly more extreme than primate hierarchies.
+- **Homunculus** — the false idea of a small inner controller or “little person” in the brain.
+- **Indifference** — the true opposite of both intense love and intense hate.
+- **Individual differences** — variations between organisms that affect biological and behavioral outcomes.
+- **Intentionality (Doing the right thing)** — morality and ethical behavior dependent on context and circumstances.
+- **Malleability** — the human capacity to change behavior and social structures under varying conditions.
+- **Morality** — complex behavior rooted in biology and culture, influenced by values and empathy but not guaranteed action.
+- **Neuroplasticity** — see Biological plasticity; the brain’s adaptability.
+- **Plasticity** — the capacity of biological systems to change in response to experience.
+- **Proximate causation** — immediate factors modulating behavior rather than fixed biological causes.
+- **Prosociality** — behaviors promoting cooperation within groups (“me” vs. “us”) and challenges extending between groups (“us” vs. “them”).
+- **Reappraisal** — cognitive strategy to reduce temptation or negative affect by changing interpretation.
+- **Sacred values** — symbolic beliefs that motivate people to extreme sacrifices, influencing conflict and peace.
+- **Social systems** — human-constructed structures enabling interaction among strangers and anonymous individuals.
+- **Temptation** — immediate urges or desires that may conflict with long-term goals or morality.
+- **Variation** — natural differences in biological and behavioral responses within populations.
+- **Willpower** — conscious effort to control behavior, often less effective than automatic habits or distraction.

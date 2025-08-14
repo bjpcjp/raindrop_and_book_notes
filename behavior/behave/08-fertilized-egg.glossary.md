@@ -1,0 +1,17 @@
+- **Behavior genetics** — The study of genetic influences on behavior by observing trait similarities among relatives.
+- **Candidate gene** — A gene already suspected to influence a certain behavior or trait, studied for associations with that trait.
+- **Chorionic status** — Whether twins share a placenta (monochorionic) or have separate placentas (dichorionic), affecting prenatal environment similarity.
+- **Dizygotic (DZ) twins** — Fraternal twins sharing about 50% of their genes, like regular siblings.
+- **Epigenetics** — Environmental influences causing chemical modifications to DNA or surrounding proteins that affect gene regulation without changing the DNA sequence.
+- **Exon** — A coding segment of a gene that remains in the final mRNA after splicing.
+- **Gene/environment interaction** — The phenomenon where the effect of a gene on a trait depends on the environment and vice versa.
+- **Genomewide association studies (GWAS)** — Large-scale studies examining thousands or millions of genetic variants across genomes to find associations with traits.
+- **Heritability** — The proportion of variation in a trait among individuals in a population that is attributable to genetic differences.
+- **Introns** — Noncoding segments within a gene that are spliced out during mRNA processing.
+- **Monozygotic (MZ) twins** — Identical twins sharing 100% of their genes.
+- **Promoter** — A DNA sequence upstream of a gene acting as an on/off switch controlling transcription of the gene.
+- **Single-nucleotide polymorphisms (SNPs)** — Variations at a single nucleotide position in DNA among individuals.
+- **Transcription factor (TF)** — A protein that binds to specific DNA sequences (promoters) to regulate gene transcription.
+- **Transposable genetic elements (transposons)** — DNA sequences that can copy and insert themselves into new locations in the genome, creating genetic mosaicism.
+- **Twin studies** — Research comparing similarity of traits between identical and fraternal twins to estimate genetic influence.
+- **Variation** — Differences in traits or genes among individuals within a population.

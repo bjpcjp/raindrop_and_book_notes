@@ -1,0 +1,62 @@
+```markdown
+# Table of Contents
+
+- Ten: The Evolution of Behavior
+  - Evolution 101
+    - Common Misconceptions about Evolution
+    - Evidence Supporting Evolution
+  - Evolutionary Selection
+    - Sexual Selection vs. Natural Selection
+    - Frequency-Dependent and Balanced Selection
+  - Behavior Can Be Shaped by Evolution
+    - Sociobiology and Evolutionary Psychology
+  - The Demise of Group Selection
+    - The Myth of Group Selection
+    - Evidence Against Group Selection
+  - Individual Selection
+    - Competitive Infanticide in Animals
+    - Examples in Primates and Other Species
+  - Kin Selection
+    - Genetic Relatedness and Hamilton’s Rule
+    - Allomothering and Cooperative Breeding
+    - Kin Recognition Mechanisms
+    - Green-Beard Effect and Human Parochialism
+  - Reciprocal Altruism
+    - Game Theory and the Prisoner’s Dilemma
+    - Tit for Tat Strategy and Its Variants
+    - Animal Examples of Reciprocity
+    - Challenges Starting Cooperation
+  - Standing on Three Legs: Foundations of Behavioral Evolution
+    - Individual Selection
+    - Kin Selection
+    - Reciprocal Altruism
+  - Pair-Bonding Versus Tournament Species
+    - Characteristics of Pair-Bonded Species
+    - Characteristics of Tournament Species
+  - Parent-Offspring Conflict
+    - Weaning Conflict
+    - Mother-Fetus Conflict
+  - Intersexual Genetic Conflict
+    - Genomic Imprinting and Parental Conflict
+  - Multilevel Selection
+    - Genotype vs. Phenotype Debate
+    - Resurrection of Group Selection (Neo-Group Selection)
+    - Human Group Competition and Cooperation
+  - Humans and Evolution of Behavior
+    - Misconceptions about Human Ancestry
+    - Are Humans Pair-Bonded or Tournament?
+    - Individual Selection in Humans
+    - Kin Selection and Human Social Relations
+    - Pseudokinship and Human Irrationality
+  - Reciprocal Altruism and Neo-Group Selection in Humans
+    - Hunter-Gatherer Cooperation
+    - Cultural and Social Implications
+  - Challenges and Criticism of Sociobiology
+    - The Gene Question
+    - Is Evolution Gradual or Punctuated?
+  - Punctuated Equilibrium
+    - Theory and Implications
+    - Gradualist Rebuttals
+    - Molecular Evidence for Rapid Change
+    - Examples of Rapid Evolution
+```

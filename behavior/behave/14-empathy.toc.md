@@ -1,0 +1,61 @@
+```markdown
+# Table of Contents
+
+- Feeling Someone’s Pain, Understanding Someone’s Pain, Alleviating Someone’s Pain
+- “For” Versus “As If” and Other Distinctions
+  - Sensorimotor Contagion and Mimicry
+  - Emotional Contagion and Sympathy
+  - Empathy and Compassion
+  - Inward Motivation and Brain Activation Profiles
+- Emotionally Contagious, Compassionate Animals
+  - Mimicry and Emotional Contagion in Animals
+  - Vicarious Fear Learning in Mice
+  - Shared Pain Sensitivity in Mice
+  - Reconciliative and Consolation Behavior
+  - Prosocial Actions in Rats
+  - Us/Them Effects in Animal Empathy
+- Emotionally Contagious, Compassionate Children
+  - Developmental Progression of Empathic States
+  - Theory of Mind and Perspective Taking
+  - Neurobiology of Empathy in Children
+- Affect and/or Cognition?
+  - The Affective Side: Anterior Cingulate Cortex (ACC)
+    - ACC Functions: Interoception and Conflict Monitoring
+    - ACC Role in Physical and Social Pain
+    - Oxytocin and ACC in Consolation
+  - The Cognitive Side: Prefrontal Cortex and Theory of Mind
+    - Intentionality, Attribution, and Moral Judgments
+    - Empathy Across Us versus Them Boundaries
+    - Socioeconomic Influences on Empathy
+    - Cognitive Load and Empathy Fatigue
+- A Mythic Leap Forward: Mirror Neurons
+  - Discovery of Mirror Neurons in Rhesus Monkeys
+  - Mirror Neurons’ Role in Motor Learning and Imitation
+  - Mirror Neurons and Understanding Intentions
+  - Criticisms and Limitations of Mirror Neuron Theories
+  - Mirror Neurons and Autism
+  - Overhype and Popular Misconceptions
+- The Core Issue: Actually Doing Something
+  - Empathy Versus Compassionate Action
+  - Self-Oriented Versus Other-Oriented Perspectives
+  - Physiological Predictors of Prosocial Behavior
+  - The Role of Detachment in Compassionate Action
+  - Buddhist Approaches to Compassion
+  - Neural Correlates of Empathy and Compassion Training
+- Doing Something Effectively
+  - Pathological Altruism and Codependency
+  - Empathy-Induced Tunnel Vision and Misplaced Compassion
+  - The Challenge of Helping Those Most in Need
+- Are There Ever Any Bloody Altruists?
+  - The Rewarding Nature of Doing Good
+  - The Role of Self-Interest in Altruistic Acts
+  - Reputation and Moralizing Gods as Motivators
+  - Laboratory Evidence on Voluntary Versus Forced Giving
+  - The Rarity of Purely Selfless Acts
+- Conclusions
+  - Evolutionary Origins of Empathy
+  - The Gap Between Empathic State and Compassionate Act
+  - Challenges in Extending Empathy to Distant Others
+  - The Importance of Automaticity and Implicit Moral Training
+  - Balancing Affect and Cognition for Effective Compassion
+```

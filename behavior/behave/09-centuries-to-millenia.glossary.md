@@ -1,0 +1,33 @@
+- **Agriculture** — The domestication and cultivation of plants for food, a key factor shaping culture and social organization.  
+- **Animal domestication** — The process of adapting wild animals for human use, contributing to surplus and social stratification.  
+- **Big Gods** — Moralizing deities concerned with human behavior, emerging in large societies to enforce norms.  
+- **Cultural capital** — The collective resources of knowledge, beliefs, customs, and habits acquired socially rather than genetically.  
+- **Culture** — The ways people do and think about things, transmitted by nongenetic means; includes knowledge, beliefs, art, morals, laws, and customs.  
+- **Culture of honor** — A cultural pattern emphasizing reputation, retribution for insults, hospitality, and violence to defend social honor, often found in pastoralist societies and the American South.  
+- **Collectivist cultures** — Societies emphasizing harmony, interdependence, conformity, and group needs guiding behavior.  
+- **Individualist cultures** — Societies emphasizing autonomy, personal achievement, uniqueness, and individual rights.  
+- **Egalitarian cultures** — Societies characterized by roughly equal distribution of resources and power, typical of hunter-gatherers.  
+- **Endocannibalism** — The practice of consuming deceased relatives, as opposed to enemies (exocannibalism).  
+- **Ethnic heterogeneity** — The presence and mix of multiple ethnic groups within a population or region.  
+- **Ethnic patch** — A spatially clustered area occupied predominantly by a particular ethnic group.  
+- **Evolutionary success** — Passing on more copies of one’s genes to subsequent generations.  
+- **Heterogeneity** — Diversity within a population, including differences in ethnicity, culture, or social identity.  
+- **Honor killings** — The killing of a family member, usually a woman, to restore the family's perceived honor after shameful behavior.  
+- **Income inequality** — Unequal distribution of wealth and resources within a society.  
+- **Individualism** — Cultural orientation valuing personal independence and self-reliance.  
+- **Intergroup violence** — Conflict arising between distinct social, ethnic, or cultural groups.  
+- **Material culture** — Physical objects, artifacts, or tools created and used by a culture.  
+- **Moralizing gods** — Deities who police human morality and punish wrongdoing.  
+- **Nomadic pastoralism** — A subsistence strategy involving herding animals while moving across environments.  
+- **Population density** — Number of individuals per unit area, influencing cultural tightness and social behavior.  
+- **Population heterogeneity** — The diversity of different groups within a population, affecting social dynamics.  
+- **Prestate tribal societies** — Human groups existing outside formal states or centralized governments, often with high rates of conflict.  
+- **Ritualized violence** — Controlled or ceremonial forms of conflict not aimed at lethal harm.  
+- **Social capital** — Collective resources of trust, reciprocity, cooperation, and social networks facilitating societal functioning.  
+- **Socioeconomic status (SES)/health gradient** — The observed relationship where lower social status correlates with poorer health outcomes.  
+- **Stratified cultures** — Societies with hierarchical distribution of resources, wealth, and power.  
+- **Third-party punishment** — Norm enforcement carried out by a neutral party rather than directly by victims.  
+- **Tightness** — Cultural characteristic marked by strict norms, low tolerance for deviance, and strong social control.  
+- **Tool use** — The creation and use of objects to extend abilities; observed in humans and various animal species.  
+- **Urbanization** — The increasing proportion of a population living in cities, changing social interactions and norms.  
+- **Violent deaths** — Fatalities resulting from conflict, warfare, or interpersonal violence, often studied archaeologically or anthropologically.

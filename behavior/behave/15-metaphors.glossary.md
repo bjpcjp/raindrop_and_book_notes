@@ -1,0 +1,22 @@
+- **ACC (anterior cingulate cortex)** — A frontal cortical region involved in assessing the meaning of pain, error detection, and experiencing both literal and social pain, including empathy and exclusion.  
+- **Aniconism** — The religious practice or doctrine of banning icons or graven images.  
+- **Exaptation** — An evolutionary process where a trait evolved for one purpose is co-opted for a different function.  
+- **Embodied cognition** — The theory that cognitive processes are deeply rooted in the body's interactions, such as physical actions affecting moral judgment.  
+- **Frontotemporal dementia** — A neurodegenerative disease that destroys the neocortex and particularly affects von Economo neurons first.  
+- **Gustatory disgust** — A visceral response mediated by the insular cortex to avoid toxins and pathogens, triggered by tastes such as rancid food.  
+- **Haptic sensations** — Sensations related to the sense of touch, including texture and weight, which can influence social and cognitive perceptions.  
+- **Insular cortex (insula)** — A brain region that mediates visceral responses to disgust, norm violations, moral condemnation, and the feeling of physical and moral purity.  
+- **Macbeth effect** — The phenomenon where recalling immoral acts increases the desire for physical cleansing to alleviate moral distress.  
+- **Metaphor** — A figure of speech where a word or phrase is applied to an object or action to which it is not literally applicable, essential to symbolic language and cognition.  
+- **Neural reuse** — The evolutionary repurposing of existing brain circuits for new cognitive functions, such as the insula handling both visceral disgust and moral disgust.  
+- **Pseudospeciation** — The cognitive process of dehumanizing an out-group by perceiving them as a different species or less than fully human.  
+- **Pseudokinship** — The manipulation of perceived relatedness to create an artificial sense of kinship or estrangement.  
+- **Sacred values** — Moral or cultural principles considered inviolable and non-negotiable, often motivating behavior beyond material incentives.  
+- **Schadenfreude** — Pleasure derived from another person's pain or misfortune.  
+- **Social pain** — Emotional distress caused by social rejection or exclusion, which activates some of the same brain regions as physical pain.  
+- **Symbol** — An object, image, or word that stands in for or represents something else, often imbued with additional meanings and power.  
+- **Symbolic language** — Language that uses symbols, including metaphors and figures of speech, to convey meanings beyond the literal.  
+- **Symbolic concessions** — Acts that acknowledge and respect the sacred values or symbols of an opposing group, facilitating conflict resolution.  
+- **Von Economo neurons** — Specialized neurons found in the anterior cingulate and insula involved in complex social and emotional processing.  
+- **Visceral disgust** — A physical, gut-level response to perceived contamination or norm violations, closely tied to moral disgust.  
+- **Warmth metaphor (cold/hot personality)** — The cognitive association between physical temperature sensations and perceptions of social warmth or coldness.

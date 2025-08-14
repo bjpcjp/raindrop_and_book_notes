@@ -1,0 +1,24 @@
+- **Aggression** — behavior that can be offensive or defensive, reactive or spontaneous, emotional (hot-blooded) or instrumental (cold-blooded), and varies by context such as conspecific fighting or predator defense.  
+- **Altruism** — selfless behavior benefiting others, debated over whether it can exist purely without expectation of reciprocity or reward; includes pathological altruism where actions may have negative consequences.  
+- **Cold-blooded aggression/goodness** — affectless, unemotional forms of aggression or prosocial acts, often viewed as unsettling or sinister due to the lack of visible emotion.  
+- **Compassion** — a prosocial behavior involving an emotional response to others' suffering; often warmhearted.  
+- **Competition** — behavior ranging from cooperative race to discovery to harmful rivalry; meanings vary by context and discipline.  
+- **Empathy** — understanding and sharing another's feelings, distinct from sympathy.  
+- **Forgiveness** — the act of letting go of resentment or desire for revenge; distinct from reconciliation.  
+- **Hot-blooded aggression/goodness** — emotionally charged, passionate forms of aggression or prosocial acts.  
+- **Indifference** — absence of feeling or concern; described as the true opposite of love.  
+- **Instrumental aggression** — cold, calculated aggression done for a specific goal, not out of anger or emotion.  
+- **Maternal aggression** — protective aggression associated with maternity and distinctive hormonal profiles.  
+- **Pathological altruism** — altruistic behavior resulting in harm to self or others, sometimes linked to psychological or neurological conditions.  
+- **Prefrontal cortex** — brain region implicated in context-sensitive decision-making between right and wrong actions.  
+- **Premeditated aggression** — planned, deliberate aggressive acts as distinguished from impulsive aggression.  
+- **Prosocial behavior** — actions intended to benefit others, which may be warmhearted or cold-blooded.  
+- **Reciprocity** — exchange of benefits or actions between individuals, often underlying altruistic behavior.  
+- **Reconciliation** — restoration of friendly relations after conflict, distinct from forgiveness.  
+- **Reactive aggression** — aggression arising in direct response to provocation or threat.  
+- **Ritualized threats** — non-contact aggressive displays that serve social functions, common in many species.  
+- **Schadenfreude** — pleasure derived from another's misfortune.  
+- **Spite** — action intended to harm another, often at a cost to oneself.  
+- **Sympathy** — feeling sorrow or pity for another, differing from empathetic sharing of feelings.  
+- **Violence** — physical force intended to hurt or damage, which may be hot- or cold-blooded.  
+- **Warmhearted goodness** — prosocial acts characterized by positive affect and emotional warmth.

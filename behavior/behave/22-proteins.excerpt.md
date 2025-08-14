@@ -1,0 +1,1 @@
+Proteins are organic compounds whose unique functions are determined by their specific amino acid sequences encoded by genes in DNA, with the process mediated by RNA according to the central dogma of molecular biology. Mutations in genes—such as point, deletion, or insertion mutations—can alter protein structure and function, influencing individual variation and evolution.

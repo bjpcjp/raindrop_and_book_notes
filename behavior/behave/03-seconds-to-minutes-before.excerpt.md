@@ -1,0 +1,1 @@
+Over the course of seconds to minutes, a wide variety of external sensory inputs and internal bodily signals—many subliminal—rapidly influence the brain’s activity and shape behavior, often outside of conscious awareness. This complex interplay demonstrates that just before we act, our decisions are less rational and autonomous than we tend to believe.

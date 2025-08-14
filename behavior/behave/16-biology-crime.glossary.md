@@ -1,0 +1,27 @@
+- **Biological causation** — The influence of genetic, neural, hormonal, and environmental factors on behavior.  
+- **Compatibilism** — The philosophical stance that free will is compatible with determinism.  
+- **Compulsion** — A subset of behaviors strongly caused by factors that compromise rational, deliberative processes, potentially excusing responsibility.  
+- **Determinism** — The idea that all events, including human actions, are caused by preceding events according to natural laws.  
+- **Frontal cortex** — A brain region important for emotional regulation, impulse control, and rational decision making. Damage here can diminish responsibility.  
+- **Homounculus** — A metaphorical “little person” or control center within the brain imagined to exercise free will independently of biological processes.  
+- **Implicit Association Tests (IAT)** — Psychological tests used to detect implicit biases, including those potentially affecting jury decisions.  
+- **Innocence Project** — An organization that uses DNA fingerprinting to exonerate wrongfully convicted individuals.  
+- **Libet experiment** — A neuroscience study reporting that brain activity precedes conscious awareness of a decision, challenging traditional concepts of free will.  
+- **M’Naghten rule** — A legal standard for insanity, stating a person is not responsible if, at the crime time, they could not distinguish right from wrong due to mental disease.  
+- **Mitigated free will** — The view that free will exists but can be constrained or diminished by biological factors such as mental illness or brain injury.  
+- **Multifactorial biology** — The concept that behaviors arise from multiple interacting biological and environmental influences rather than single factors.  
+- **Neuroimaging** — Techniques like MRI used to visualize and study brain structure and function, with debated courtroom admissibility.  
+- **Neurolaw** — The interdisciplinary field studying the intersection of neuroscience and legal principles.  
+- **Neurotransmitters** — Chemical messengers in the brain that influence behavior and cognition.  
+- **Predictive power** — The ability of biological or environmental information to forecast individual behavior or outcomes.  
+- **Punishment** — Legal or social penalties intended to deter harmful behavior but complicated by questions of free will and responsibility.  
+- **Readiness potential** — Brain signals detected before conscious decisions to move, central to debates on volition and free will.  
+- **Responsibility** — The attribution of accountability for actions, often modified or negated by mental illness or brain damage.  
+- **Social level of responsibility** — Michael Gazzaniga’s notion that responsibility exists as a social construct, separate from material brain causes.  
+- **Stephen Morse** — A legal scholar skeptical of the practical impact of neuroscience on the concept of free will and legal responsibility.  
+- **Tear test** — A historical witchcraft test assessing if an accused person sheds tears, now recognized as flawed due to physiological factors affecting tear production.  
+- **Transcranial magnetic stimulation (TMS)** — A technique that can causally alter brain activity and thus behavior.  
+- **Vasopressin receptor gene** — Genetic variants influencing social and mating behaviors in animals and humans.  
+- **Virtuous punishment** — The notion that punishment inherently restores moral balance, challenged by modern neuroscience.  
+- **Walking line in the sand** — The ongoing debate over where to draw boundaries between biological causation and free will in legal responsibility.  
+- **You must have worked so hard / You must be so smart** — Phrases exemplifying the folk-psychological dichotomy assigning effort to free will and talent to biology.

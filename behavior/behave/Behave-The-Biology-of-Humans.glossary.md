@@ -1,0 +1,23 @@
+- **Aggression** — A behavior involving hostile or violent actions, with various types such as offensive, defensive, reactive, instrumental, and maternal aggression.  
+- **Altruism** — Behavior aimed at benefiting others, often debated whether it is truly selfless or motivated by reciprocity or self-interest.  
+- **Amygdala** — A limbic brain structure critical for processing fear, anxiety, and aggression, and involved in emotional learning and social vigilance.  
+- **Autonomic Nervous System** — Part of the nervous system regulating involuntary body functions; includes the sympathetic (arousing) and parasympathetic (calming) systems.  
+- **Basolateral Amygdala (BLA)** — A subregion of the amygdala involved in learned fear and processing the emotional significance of stimuli.  
+- **Behavior** — Actions or reactions of an organism, influenced by neurobiology, hormones, environment, genetics, and culture.  
+- **Cognition** — Mental processes including memory, attention, problem-solving, and decision-making, often associated with the frontal cortex.  
+- **Competition** — The struggle between individuals or groups for resources, status, or other valued outcomes, with social and biological dimensions.  
+- **Empathy** — The ability to understand and share the feelings of another, associated with specific brain regions like the anterior cingulate.  
+- **Frontal Cortex** — The brain region responsible for executive functions such as working memory, planning, emotion regulation, and inhibition.  
+- **Hippocampus** — A limbic structure involved in memory formation and contextual learning, interacting with the amygdala during emotional events.  
+- **Limbic System** — A group of brain structures, including the amygdala and hippocampus, involved in emotion, memory, and motivation.  
+- **Neurotransmitters** — Chemical messengers in the brain such as norepinephrine and acetylcholine that mediate neuronal communication.  
+- **Parasympathetic Nervous System** — The part of the autonomic nervous system promoting calm states, digestion, and recovery.  
+- **Prepfrontal Cortex (PFC)** — A subregion of the frontal cortex important for decision-making, impulse control, and executive governance of behavior.  
+- **Psychopaths** — Individuals characterized by reduced amygdala responsiveness to fear, impaired empathy, and instrumental, unemotional aggression.  
+- **Reactive Aggression** — Impulsive, emotionally driven aggression often triggered by provocation or threat.  
+- **Reward Circuitry** — Brain systems, including dopamine pathways, involved in processing of pleasure and motivation.  
+- **Self-Control** — The capacity to inhibit impulses and make decisions aligned with long-term goals, heavily reliant on frontal cortex function.  
+- **Sympathetic Nervous System** — The autonomic system responsible for arousal responses such as fight, flight, fear, and sexual activity.  
+- **Triune Brain Model** — A conceptual model dividing the brain into three layers: reptilian (automatic functions), limbic (emotions), and neocortex (cognition).  
+- **Von Economo Neurons** — Specialized neurons found in socially complex species, located in the anterior cingulate and insula, linked to social cognition.  
+- **Wellesley Effect** — Phenomenon where human females living in close proximity may synchronize their reproductive cycles.
