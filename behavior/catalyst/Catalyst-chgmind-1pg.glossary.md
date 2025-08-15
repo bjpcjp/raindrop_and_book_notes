@@ -1,0 +1,10 @@
+- **Agency** — Allowing people to make their own decisions and convince themselves rather than being told what to do.  
+- **Co r r o b o r a t i n g Evidence** — Using multiple sources of reinforcement to provide proof and strengthen change, concentrating evidence close in time.  
+- **Distance** — Perspectives that are too far away fall into a region of rejection; addressing this requires starting with smaller asks to create an unsticking point and switch fields.  
+- **Endowment** — People’s attachment to what they are already doing or the status quo; can be eased by surfacing the costs of inaction, burning bridges, or framing new things as regaining a loss.  
+- **Freemium** — A tactic to increase trialability by offering free versions or samples to reduce upfront costs and promote discovery.  
+- **Pause Button** — The hesitation people experience due to uncertainty, which leads to delayed action.  
+- **Reactance** — The natural pushback people have when they feel pushed; catalysts change minds by reducing pressure and allowing agency instead of direct persuasion.  
+- **Reducing Barriers to Change** — The process of addressing key roadblocks like reactance, endowment, distance, uncertainty, and corroborating evidence to enable change.  
+- **Switch the Field** — Using an unsticking point to shift perspectives and make what was previously rejected more acceptable.  
+- **Trialability** — Increasing the likelihood of change by enabling people to try new things with reduced risk or cost, such as freemium models or lowering upfront costs.
