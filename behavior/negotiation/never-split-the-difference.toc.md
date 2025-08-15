@@ -1,0 +1,48 @@
+```markdown
+# Table of Contents
+
+- Goal
+- Prepare
+- Tone
+- Mirror
+  - Mirror Process
+- Tactical Empathy
+- Labels
+- Neutralize the Negative
+- Accusation Audit
+- Start with No
+- Email Magic
+- That’s Right
+- Summary to trigger That’s Right
+- Never Split the Difference
+- Deadlines
+- Three uses of Fair
+- Extreme Anchor
+- Loss Aversion
+- Bend their Reality
+- Calibrated Questions
+  - Phrases to use
+- How
+  - Phrases to use
+  - Influence those behind the table
+- 7-38-55
+- Rule of Three
+- Spotting Liars
+- Spot Decision Makers
+- Use my own name
+- Saying No 4 times
+- Types of Negotiators
+- Deflect the Punch
+- Strategic Umbrage
+- I statements
+- Ackerman Bargaining
+- Black Swans
+- 3 Types of Leverage
+- Listen, listen, listen
+- Similarity Principle
+- Power of hopes & dreams
+- … because ...
+- Not crazy
+- Get Face Time
+- Negotiation One-Sheet
+```
