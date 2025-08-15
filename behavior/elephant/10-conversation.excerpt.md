@@ -1,1 +1,0 @@
-The essence of power lies in making others come to you, thus maintaining control and keeping opponents on the defensive by using bait and patience rather than aggressive pursuit. By conserving your energy and manipulating the desires and emotions of others, you force them to act on your terms, gaining the advantage and appearing powerful while avoiding rash, exhausting actions.
