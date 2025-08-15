@@ -1,0 +1,27 @@
+- **Agency problem** — Conflict of interest arising when an individual (agent) acting on behalf of an organization pursues personal benefits at odds with the organization's goals.  
+- **Anticipation of regret** — The expectation of experiencing regret in the future, influencing current decision-making to avoid potential emotional pain.  
+- **Disposition effect** — The tendency for investors to sell winning stocks too early to realize gains while holding on to losing stocks to avoid realizing losses.  
+- **Econs** — Hypothetical perfectly rational agents in economic theory who ignore emotions and consider only external incentives.  
+- **Emotional self-dealing** — Mental processes where individuals reward or punish themselves emotionally, affecting decision-making.  
+- **Endowment effect** — The increased value people place on things merely because they own them, often linked to loss aversion.  
+- **Hindsight bias** — The tendency to see past events as predictable after they have happened, intensifying feelings of regret.  
+- **Loss aversion** — A psychological bias where losses are perceived as more painful than gains of the same magnitude; often weighted about twice as much.  
+- **Mental accounts** — Cognitive partitions individuals create to segregate money or decisions into separate categories, affecting spending and investment behavior.  
+- **Narrow framing** — The focus on individual choices or accounts in isolation rather than considering a comprehensive view of overall outcomes.  
+- **Omission** — Failure to act; associated with lower anticipated regret compared to commission, especially when deviating from default options.  
+- **Precautionary principle** — A regulatory doctrine prioritizing the prevention of harm by requiring proof of safety before undertaking potentially risky actions.  
+- **Regret** — An emotion experienced after realizing a better alternative was available; stronger when caused by actions rather than inactions.  
+- **Responsibility** — Emotional weight or blame attached to actions, particularly greater when one actively causes negative outcomes.  
+- **Sunk-cost fallacy** — The mistake of continuing an endeavor due to prior investments (costs) that cannot be recovered, instead of making decisions based on future benefits.  
+- **Taboo tradeoff** — An aversion to exchanging sacred or morally charged values (such as health or safety) for money or other secular benefits.  
+- **System 1** — The fast, automatic, emotionally driven part of the mind that often performs intuitive mental accounting and emotional scoring.  
+- **System 2** — The slow, deliberate, and analytical part of the mind capable of overriding System 1’s biases with rational calculation.  
+- **Winner’s curse** — Emotional reward derived from realizing gains when closing a winning mental account, influencing suboptimal selling behavior.  
+- **Default option** — The status quo or preset choice that people tend to stick with to avoid regret associated with deviating and making active decisions.  
+- **Escalation of commitment** — Continued investment in a failing project due to psychological or organizational pressures, often linked to sunk-cost fallacy and agency problems.  
+- **Emotional pain (self-administered punishment)** — The intangible negative feelings incurred by individuals as they mentally score their actions and outcomes.  
+- **Psychological immune system** — Mental defenses that reduce the impact of regret and other negative emotions over time.  
+- **Regret aversion** — The inclination to avoid choices that might lead to future regret, often resulting in risk-averse or conventional decisions.  
+- **Regret and blame distinction** — Regret arises from violating personal norms or acting out of character, while blame stems from societal judgments of reasonable behavior.  
+- **Narrow framing** — Evaluation of decisions in isolated mental accounts rather than from a holistic perspective.  
+- **Loss aversion coefficient** — The quantitative measure of how strongly losses outweigh gains in decision-making contexts.

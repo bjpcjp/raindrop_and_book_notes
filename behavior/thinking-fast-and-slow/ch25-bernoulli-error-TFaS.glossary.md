@@ -1,0 +1,19 @@
+- **Behavioral economist** — A researcher studying how actual human behavior deviates from the rational-agent model in economics.  
+- **Bernoulli’s error** — The flaw in expected utility theory that ignores reference dependence and the influence of wealth history on utility.  
+- **Expected utility theory** — A theory that prescribes rational decision-making by maximizing the weighted average of utilities of possible outcomes.  
+- **Fechner’s law** — A psychophysical principle that subjective experience increases logarithmically with stimulus intensity.  
+- **Framing effects** — Changes in preferences caused by inconsequential variations in how choices are worded or presented.  
+- **Gamble (simple gamble)** — A choice involving uncertain outcomes, typically with specified probabilities and payoffs.  
+- **Loss aversion** — The tendency to prefer avoiding losses rather than acquiring equivalent gains, influenced by reference points.  
+- **Marginal utility** — The additional satisfaction or utility gained from receiving an incremental increase in wealth or goods.  
+- **Payoff** — The outcome or result received from a gamble or choice, measured in utility or monetary terms.  
+- **Psychophysics** — The study of the relationship between physical stimuli and the subjective experiences they evoke.  
+- **Prospect theory** — A descriptive theory of decision-making under risk that accounts for systematic violations of expected utility axioms and incorporates reference dependence.  
+- **Reference dependence** — The idea that the subjective value of an outcome depends on a reference point or prior state, not just absolute wealth.  
+- **Risk aversion** — A preference for a sure outcome over a gamble with equal or higher expected value due to diminishing marginal utility.  
+- **Risk seeking** — Preference for a gamble over a sure thing, often occurring in the domain of losses or when facing bad options.  
+- **System 1** — The fast, intuitive, and automatic mode of human cognition contrasted with the slow, deliberative System 2.  
+- **System 2** — The slower, analytical, and effortful mode of cognition responsible for reasoning and decision-making.  
+- **Utility** — A measure of subjective psychological value or satisfaction derived from an outcome or level of wealth.  
+- **Wealth** — The amount of monetary resources an individual possesses, serving as the basis for utility calculations in decision theory.  
+- **WYSIATI (What You See Is All There Is)** — The cognitive tendency to make decisions based only on information currently available, ignoring what may be missing.

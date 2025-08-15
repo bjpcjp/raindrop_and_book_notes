@@ -1,0 +1,25 @@
+- **Agent** — A metaphorical entity used to describe System 1’s traits and preferences for mental economy and ease of understanding.  
+- **Associative coherence** — The tendency of ideas or events to evoke or reinforce each other in memory, creating a coherent interpretation or story.  
+- **Associative links** — Connections between ideas or events that co-occur with some regularity and shape our mental model of the world.  
+- **Associative machine** — A metaphor for System 1 as a network of linked ideas that automatically spreads activation to represent reality.  
+- **Causal connection** — The relationship where one event is recognized as the cause of another, often perceived automatically by System 1.  
+- **Causal intuition** — The innate tendency to see or infer cause-and-effect relations, sometimes applied inappropriately to statistical or unrelated events.  
+- **Causality (physical)** — The perception that one physical event directly causes another, often seen as immediate and automatic.  
+- **Causality (intentional)** — The perception that agents act with intentions causing events, as demonstrated by attributing emotions and goals to moving shapes.  
+- **Cognitive ease** — A mental state where associative coherence facilitates rapid, effortless understanding and acceptance of information.  
+- **Coherence** — A consistent and logical connection among ideas or events that makes them appear normal or expected together.  
+- **Context** — The set of currently activated ideas or circumstances that shape the interpretation of new information and detection of abnormalities.  
+- **Intentional causality** — Attributing actions and events to the intentions and decisions of agents or minds, distinct from physical causality.  
+- **Moses illusion** — A cognitive error where people fail to detect an incorrect detail because it fits a familiar associative context.  
+- **Normality** — The state or quality of events or ideas that are expected or fit existing mental models and norms.  
+- **Norms** — Shared, typical features or ranges within categories that form a background for understanding and detecting anomalies.  
+- **Norm theory** — A psychological explanation of how events alter perceptions of normality by linking them to memory and associative patterns.  
+- **Passive expectation** — A type of anticipation where events are not actively awaited but are still considered normal and unsurprising when they occur.  
+- **Physical causality** — Perceived cause-effect relations based on objects and events physically interacting, often experienced as direct observation.  
+- **Prediction error (surprise)** — The detection by System 1 that an event does not fit the current model or context, signaling abnormality or novelty.  
+- **Reactive expectation** — Expectations that arise actively and consciously, where one awaits a particular anticipated event.  
+- **Statistical thinking** — Reasoning about individual cases based on category properties or ensembles, a mode of thought primarily managed by System 2.  
+- **Surprise** — The mental reaction to discrepancy between expectations and actual events, indicating model update or reevaluation.  
+- **System 1** — The fast, automatic, associative mental system that maintains a model of normality, detects surprises, and infers causality intuitively.  
+- **System 2** — The slower, conscious, deliberate mental system capable of controlling attention, reasoning statistically, and overriding System 1.  
+- **Violation of normality** — Detection that an event or idea does not conform to the established model or norms, often eliciting immediate brain response.

@@ -1,0 +1,18 @@
+- **Bayesian inference** — A statistical method for updating the probability of a hypothesis based on prior knowledge and new evidence.  
+- **Base rate** — The initial probability or frequency of an event in a population before specific evidence is considered.  
+- **Causal base rates** — Base rates that suggest a causal mechanism affecting individual outcomes, interpreted as a factor influencing the specific case.  
+- **Causal stories** — Narratives that explain an event by linking causes to effects, providing context for understanding probabilities.  
+- **Cognitive flaw** — An error or bias in reasoning, such as neglecting base-rate information in probability judgments.  
+- **Diffusion of responsibility** — A social psychological phenomenon where individuals feel less compelled to act in the presence of others.  
+- **Helping experiment** — A social psychology study demonstrating bystander effect and diffusion of responsibility during a simulated emergency.  
+- **Imperfectly reliable testimony** — Witness statements or evidence that are not always accurate and have known error rates.  
+- **Individual case** — A specific instance or event being assessed, as opposed to aggregate or population data.  
+- **Norms and prototypical exemplars** — Mental representations of typical members of a category used for rapid judgments.  
+- **Prior probability** — The initial degree of belief in a hypothesis before considering new evidence.  
+- **Stereotype** — A mental representation or belief about a group that attributes characteristic traits to its members, often simplifying judgment.  
+- **Statistical base rates** — Population-level statistical facts that provide context but do not imply causal mechanisms for individual cases.  
+- **Statistical reasoning** — Logical thinking based on statistical data and probabilities, often requiring explicit calculation or inference.  
+- **System 1** — The intuitive, fast, automatic mode of thinking that uses heuristics and stereotypes to make judgments.  
+- **System 2** — The slow, deliberate, analytical mode of thinking used for complex reasoning and statistical analysis.  
+- **Underweighting base rates** — The common tendency to ignore or insufficiently consider base-rate information when making judgments.  
+- **Witness reliability** — The degree to which a witness correctly identifies facts, subject to error rates in identification or memory.

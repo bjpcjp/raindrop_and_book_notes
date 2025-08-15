@@ -1,0 +1,15 @@
+- **Basic Assessments** — Continuous evaluations by System 1 of key survival-related problems such as threat level, normality, and whether to approach or avoid a situation.  
+- **Cognitive Ease** — A state indicating safety and familiarity that influences basic assessments and intuitive judgments.  
+- **Face Reading** — The rapid judgment of traits like dominance and trustworthiness from facial features, influencing assessments of strangers and political candidates.  
+- **Heuristics** — Mental shortcuts where System 1 substitutes an easier question or assessment for a more difficult one during judgment.  
+- **Intensity Matching** — A System 1 aptitude that compares and translates intensity values across different dimensions, such as matching the severity of crimes to loudness of sounds.  
+- **Judgment Heuristic** — A simplified, automatic assessment used by the mind (often System 1) to make complex judgments easier.  
+- **Mental Shotgun** — The tendency of System 1 to perform multiple related computations automatically whenever a single intentional judgment or question arises, leading to excess processing.  
+- **Prototype** — A mental representation in System 1 used to characterize categories by typical examples or averages rather than sums or totals.  
+- **Representativeness** — A basic assessment computation involving similarity judgments to prototypes or exemplars.  
+- **System 1** — The fast, automatic, effortless, and continuous mode of thinking responsible for intuitive judgments and basic assessments.  
+- **System 2** — The slower, effortful, deliberate mode of thinking responsible for conscious, analytical, and controlled judgments and computations.  
+- **Translation of Values** — The ability of System 1 to convert measurements or values across different scales or dimensions to make intuitive comparisons.  
+- **Voting Judgments** — Intuitive political decisions influenced by rapid face-based assessments of competence and likability, predominantly driven by System 1.  
+- **Visual Prototype Judgment** — The instantaneous perception of averages and norms in visual arrays, performed by System 1 without conscious effort.  
+- **Witnessing Emotional Response** — Neural reactions to winning or losing candidates that reflect automatic, biologically-based emotional judgments linked to facial cues.

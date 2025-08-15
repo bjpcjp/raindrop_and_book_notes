@@ -1,0 +1,27 @@
+- **Altruistic punishment** — Punishing unfair behavior despite personal cost, associated with pleasure center activation in the brain, helping maintain social order.  
+- **Amygdala** — Brain region acting as the "threat center," rapidly reacting to threatening stimuli even without conscious awareness.  
+- **Approach** — Behavioral tendency motivated by positivity, generally weaker than escape in the context of negativity dominance.  
+- **Behavioral economics** — Field combining economics and psychology to study actual decision-making behavior, including concepts like loss aversion.  
+- **Concession** — A sacrifice or compromise offered in negotiation, perceived as a loss by the giver and a gain by the receiver.  
+- **Entitlement** — A reference point or status quo that individuals or institutions feel morally entitled to retain without unjust loss.  
+- **Fairness** — Social norm evaluating economic and interpersonal behavior based on moral rules, especially regarding losses imposed on others.  
+- **Gain** — An outcome exceeding a reference point or goal, generally motivating behavior less strongly than avoiding losses.  
+- **Grandfather clause** — A provision that protects existing stakeholders from losses during policy or organizational reforms.  
+- **Loss aversion** — The tendency to prefer avoiding losses rather than acquiring equivalent gains; losses loom larger psychologically than gains.  
+- **Loss dominance (Negativity dominance)** — The principle that bad states, emotions, or events have stronger psychological and behavioral impacts than good ones.  
+- **Neuroeconomics** — Discipline merging neuroscience and economics to study the brain’s role in economic decision-making.  
+- **Opportunity cost (Foregone gain)** — Potential gain not realized, which is psychologically less impactful than an actual loss.  
+- **Par (Golf reference point)** — A baseline score representing expected performance; used as a reference point illustrating loss aversion in behavior.  
+- **Path dependency** — The tendency to maintain current status or decisions due to stronger motivation to avoid losses than to pursue gains.  
+- **Pleasure centers (in the brain)** — Areas activated during rewarding experiences, including the satisfaction derived from altruistic punishment.  
+- **Prescriptive fairness** — The societal expectation or moral judgment about what economic actors should do to be considered fair.  
+- **Reference point** — A baseline or standard (status quo or goal) from which outcomes are perceived as gains or losses.  
+- **Renegotiation** — The process of revising an existing agreement, complicated by loss aversion as changes are viewed as concessions or losses.  
+- **Reward asymmetry** — The brain’s stronger response to punish meanness than to reward generosity.  
+- **Status quo bias** — Preference for maintaining current conditions due to the stronger psychological motivation to avoid losses.  
+- **Symbolic threat** — A non-physical, representational cue (e.g., bad words, opposing opinions) that triggers threat responses similar to real danger.  
+- **System 1** — The brain's fast, automatic, and unconscious processing system that prioritizes threats and negative information.  
+- **Threat detection** — Neural mechanisms that rapidly identify danger signals, favoring quick responses to bad news over good news.  
+- **Two-systems model of the mind** — Psychological framework separating fast, unconscious processing (System 1) from slower, conscious reasoning (System 2).  
+- **Unfair behavior (Economic)** — Actions exploiting market power to impose losses on others without just cause, eliciting social opprobrium and punishment.  
+- **Wage entitlement** — The moral right of a current employee to retain their established wage despite market changes affecting replacements.

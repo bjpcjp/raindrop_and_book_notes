@@ -1,0 +1,12 @@
+- **Conjunction fallacy** — The error of judging the conjunction of two events as more probable than one of the events alone, violating the rule that the probability of a conjunction cannot exceed that of its constituents.  
+- **Frequency representation** — A cognitive strategy that involves thinking in terms of counts or natural frequencies (e.g., "how many") rather than abstract percentages, aiding better understanding of probabilities.  
+- **Heuristics** — Mental shortcuts or intuitive rules of thumb used to make judgments and decisions quickly, often leading to systematic biases or errors.  
+- **Joint evaluation** — A comparison condition in decision-making experiments where multiple options are presented simultaneously, allowing direct side-by-side evaluation.  
+- **Less-is-more effect** — A phenomenon where removing items or details from a set or description can make it more positively evaluated or seem more probable, contrary to logical summation.  
+- **Logical rule** — An established principle derived from logic or mathematics that dictates consistent reasoning or correct inference, such as probability laws.  
+- **Plausibility** — The quality of appearing believable or coherent in a given context, often influencing judgments independently of actual probability.  
+- **Probability** — A measure of the likelihood that an event will occur, obeying the axioms of probability theory (e.g., the probability of a conjunction cannot exceed that of its components).  
+- **Representativeness heuristic** — A mental shortcut where people judge probabilities based on how similar an event is to a known stereotype or pattern rather than on actual statistical likelihood.  
+- **System 1** — The fast, automatic, intuitive, and effortless mode of thinking that generates quick impressions and feelings, often overriding analytical reasoning.  
+- **System 2** — The slower, deliberate, analytical, and effortful mode of thinking responsible for logical reasoning and overriding intuitive errors when engaged.  
+- **Venn diagrams** — Visual tools used to represent logical relationships between sets, illustrating concepts such as subset inclusion relevant to probability judgments.

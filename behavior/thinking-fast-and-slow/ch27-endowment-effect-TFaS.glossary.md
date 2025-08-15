@@ -1,0 +1,11 @@
+- **Endowment Effect** — The phenomenon where owning a good increases its value to the owner, causing them to demand more to sell it than they would be willing to pay to buy it.  
+- **Indifference Curve** — A graph connecting combinations of two goods between which a person is indifferent, having the same level of utility.  
+- **Loss Aversion** — The tendency for losses to loom larger than gains of the same magnitude, making people more sensitive to losses than to equivalent gains.  
+- **Marginal Utility** — The additional satisfaction or benefit gained from consuming one more unit of a good or service.  
+- **Prospect Theory** — A behavioral economic theory that describes how people choose between probabilistic alternatives involving risk, taking into account reference points and loss aversion.  
+- **Reference Point** — The baseline or status quo against which gains and losses are evaluated in decision making.  
+- **Status Quo Bias** — The preference to keep things the same by avoiding changes, often driven by loss aversion.  
+- **System 1** — The automatic, fast, intuitive mode of thinking that often governs immediate emotional reactions such as loss aversion.  
+- **Trader’s Mindset** — An attitude where goods are viewed as intended for exchange, reducing the endowment effect and loss aversion.  
+- **Utility** — A measure of satisfaction or happiness derived from the consumption of goods and services.  
+- **Value Function** — In prospect theory, a function that is concave for gains, convex for losses, and steeper for losses than for gains, representing loss aversion.

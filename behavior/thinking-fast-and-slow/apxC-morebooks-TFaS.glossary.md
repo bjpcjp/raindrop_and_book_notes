@@ -1,0 +1,9 @@
+- **Attention** — The cognitive process of selectively concentrating on one aspect of the environment while ignoring others.
+- **Bias** — A systematic deviation from rational judgment or objective standards.
+- **Effort** — The mental or physical energy exerted to perform a task or activity.
+- **Frame** — The context or perspective through which choices and information are presented, affecting decision-making.
+- **Heuristics** — Mental shortcuts or rules of thumb that simplify decision-making but can lead to biases.
+- **Hedonic Psychology** — The study of what makes experiences and life pleasant or unpleasant.
+- **Intuitive Judgment** — Rapid, automatic decision-making based on gut feelings rather than deliberate analysis.
+- **Judgment Under Uncertainty** — The process of making decisions or forming opinions when outcomes are unpredictable or information is incomplete.
+- **Well-Being** — The overall quality of an individual's experience and functioning, often measured in terms of happiness and life satisfaction.

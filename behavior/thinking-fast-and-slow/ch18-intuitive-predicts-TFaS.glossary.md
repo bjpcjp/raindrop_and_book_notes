@@ -1,0 +1,19 @@
+- **Baseline prediction** — The average or default prediction made when no specific information about the case is available.  
+- **Confidence** — The subjective feeling of certainty in a judgment, often influenced by the coherence of the story constructed from evidence.  
+- **Correlation** — A statistical measure of the degree to which two variables share common factors and move together.  
+- **Evidence** — Information or data used to form judgments or predictions.  
+- **Evaluation** — The process of assessing evidence relative to a relevant norm or reference group.  
+- **Intensity matching** — A cognitive operation where the intensity of the evidence is matched to the intensity of the predicted outcome on a compatible scale.  
+- **Intuitive prediction** — A forecast generated quickly by System 1, based on associative processes and heuristics rather than analytical reasoning.  
+- **Law of small numbers** — The mistaken belief that small samples closely reflect the properties of the population, leading to overestimation of extremes in judgment.  
+- **Nonregressive prediction** — Intuitive predictions that do not adjust for regression toward the mean, leading to overconfident and extreme estimates.  
+- **Predictive bias** — Systematic errors in predictions caused by ignoring uncertainty or overreliance on weak evidence.  
+- **Prediction** — A forecast or estimate of a future outcome, often made by combining evidence and judgment.  
+- **Reference group** — The set or category against which evidence is compared when making evaluations or predictions.  
+- **Regression toward the mean** — The statistical phenomenon where extreme outcomes tend to be followed by outcomes closer to the average on subsequent measurements.  
+- **Shared factors** — Underlying influences or variables that affect two or more related outcomes, creating correlation between them.  
+- **Skilled intuition** — Rapid, automatic judgments formed through experience and expertise, recognizing familiar cues and patterns.  
+- **Substitution** — A heuristic where the mind replaces a difficult question with an easier one without conscious awareness.  
+- **System 1** — The fast, automatic, associative, and intuitive mode of thinking.  
+- **System 2** — The slow, deliberate, analytical, and effortful mode of thinking responsible for reflective judgment and correction of intuitive errors.  
+- **WYSIATI (What You See Is All There Is)** — A cognitive bias where decisions and predictions are made based solely on the information immediately available, ignoring what is missing.

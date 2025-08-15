@@ -1,0 +1,18 @@
+- **Cognitive load** — The mental effort used to hold information in short-term memory while performing a task, which can weaken self-control and make System 2 less effective.  
+- **Cognitive Reflection Test** — A test developed by Shane Frederick consisting of riddles that elicit intuitive but incorrect answers to measure the ability of System 2 to override automatic intuitive responses.  
+- **Ego depletion** — The diminished capacity for self-control and mental effort after exerting willpower on a previous task, involving loss of motivation rather than ability.  
+- **Effortful thinking** — Conscious mental activity that requires focus, self-control, and cognitive resources, typically managed by System 2.  
+- **Flow** — A psychological state of effortless concentration and deep engagement in a task, characterized by losing awareness of time and self, requiring no exertion of self-control.  
+- **Glucose** — A form of sugar that fuels brain activity; levels drop during effortful mental tasks, and replenishing glucose can restore cognitive performance and self-control.  
+- **Intelligence** — The ability to reason, solve problems, and find relevant material in memory, correlating with cognitive aptitude and executive control.  
+- **Law of least effort** — The tendency to avoid expending cognitive or physical effort unless necessary, leading to reliance on intuitive answers and minimal self-control.  
+- **Mental energy** — A limited resource consumed during effortful cognitive tasks and self-control, often equated with glucose availability in the brain.  
+- **Monitoring** — The System 2 function of supervising and controlling thoughts and actions initiated by System 1.  
+- **Rationality** — A cognitive disposition to engage in active, reflective thinking, question intuitions, and avoid superficial judgments; distinct from intelligence.  
+- **Self-control** — The ability to regulate thoughts, emotions, and behaviors deliberately, often involving effort and drawing on a shared mental energy resource.  
+- **Short-term memory** — The temporary storage system used by System 2 to hold and manipulate information necessary for complex cognitive tasks.  
+- **Stanovich’s reflective mind** — One part of System 2 responsible for rational thinking and resisting biases, distinct from the algorithmic mind that handles computational tasks.  
+- **System 1** — The fast, automatic, intuitive, and effortless mode of thinking that generates impressions and suggestions for behavior.  
+- **System 2** — The slow, deliberate, effortful, and self-controlled mode of thinking responsible for reasoning, monitoring, and overriding System 1.  
+- **Task switching** — Frequently changing between different tasks, which can increase mental effort and reduce effectiveness of System 2.  
+- **Willpower** — The mental effort or voluntary control exerted to resist temptations, maintain focus, and sustain cognitive effort, which can become depleted.

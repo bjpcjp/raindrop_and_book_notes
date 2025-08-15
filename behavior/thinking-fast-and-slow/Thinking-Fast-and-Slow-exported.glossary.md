@@ -1,0 +1,23 @@
+- **Add-1 Task** — A cognitive exercise requiring each digit in a string to be incremented by one, used to measure mental effort and working memory capacity.  
+- **Availability Heuristic** — A mental shortcut in which people judge the frequency or likelihood of an event by how easily examples come to mind.  
+- **Cognitive Illusions** — Errors in thinking that arise automatically from intuitive processes, akin to visual illusions but occurring in reasoning or judgment.  
+- **Cognitive Reflection Test** — A set of problems designed to measure the tendency to override an incorrect intuitive answer with reflective, effortful thinking.  
+- **Ego Depletion** — A state of reduced capacity for self-control and cognitive effort after prior exertion of willpower or attention.  
+- **Executive Control** — The ability of System 2 to regulate attention, suppress impulses, maintain task sets, and control thoughts and actions deliberately.  
+- **Flow** — A mental state of effortless concentration and immersion in an activity, characterized by the suspension of self-control effort.  
+- **Heuristic** — A simplifying mental shortcut or rule of thumb that System 1 uses to make quick judgments and decisions.  
+- **Illusions (Cognitive)** — Systematic errors of intuition and judgment that arise from the automatic operations of System 1.  
+- **Intelligence** — The cognitive capacity to perform reasoning and demanding computations effectively, often measured by IQ tests.  
+- **Lazy Controller** — A metaphor for System 2’s reluctance to engage in effortful thought and self-control beyond what is necessary.  
+- **Mental Effort** — The cognitive energy required to perform tasks that demand attention, working memory, and deliberate thought, primarily managed by System 2.  
+- **Overconfidence** — The tendency to place too much faith in one's intuitive judgments without adequate reflective scrutiny.  
+- **Pupil Dilation** — A physiological indicator of mental effort and cognitive load, reflecting the engagement level of System 2 during challenging tasks.  
+- **Rationality** — The capacity to be engaged, skeptical, and reflective in one’s thinking, distinguished from raw intelligence and associated with System 2’s monitoring.  
+- **Self-Control** — The effortful ability to override impulses and automatic responses, primarily managed by System 2, and susceptible to depletion.  
+- **Short-Term Memory / Working Memory** — The cognitive system that temporarily holds and manipulates information necessary for complex tasks, reliant on System 2’s active control.  
+- **Standby Mode (System 2)** — The default low-effort state where System 2 is minimally engaged and ready to take control when System 1 encounters difficulty.  
+- **System 1** — The fast, automatic, intuitive, and effortless operating mental system that generates impressions and feelings.  
+- **System 2** — The slow, deliberate, effortful, and self-controlled mental system responsible for conscious reasoning and complex computations.  
+- **Task Set** — A cognitive configuration programmed by System 2 to guide attention and override habitual responses for specific goals.  
+- **Two Systems** — The dual-process framework dividing mental operations into System 1 (automatic) and System 2 (effortful), essential for understanding judgment and decision-making.  
+- **Working Memory Capacity** — The limited ability to hold and manipulate several pieces of information simultaneously, critical for problem-solving and reasoning.

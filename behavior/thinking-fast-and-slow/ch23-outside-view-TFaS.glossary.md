@@ -1,0 +1,11 @@
+- **Base rate** — The underlying probability or frequency of an event within a reference class, used as a baseline prediction before considering case-specific details.  
+- **Baseline prediction** — An estimate based solely on the statistics of a reference class, serving as the anchor for forecasting before adjustments for individual circumstances.  
+- **Inside view** — A forecasting approach focusing on the specific details and circumstances of the individual case, often leading to overoptimistic estimates.  
+- **Interest class forecasting** — *(likely a typo for reference class forecasting)* See **Reference class forecasting**.  
+- **Unknown unknowns** — Events and factors that cannot be anticipated because they are entirely unforeseen at the time of planning.  
+- **Outside view** — A forecasting method that looks at outcomes of similar past projects or cases (reference class) to make more realistic predictions about the current project.  
+- **Planning fallacy** — The tendency to underestimate the time, costs, and risks of future actions while overestimating the benefits, often by focusing too much on best-case scenarios.  
+- **Reference class** — A group or category of past projects or cases similar enough to the current one to provide meaningful statistical data for forecasting.  
+- **Reference class forecasting** — A forecasting technique that involves identifying an appropriate reference class, gathering statistical data about that class, and using it as a baseline to improve prediction accuracy.  
+- **Sunk-cost fallacy** — The mistaken decision to continue investing in a project based on past investments rather than future prospects or rational analysis.  
+- **WYSIATI** — Acronym for "What You See Is All There Is," describing the cognitive bias of making judgments based only on information immediately available, ignoring unknowns or missing data.

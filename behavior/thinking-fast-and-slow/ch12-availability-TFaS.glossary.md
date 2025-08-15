@@ -1,0 +1,16 @@
+- **Availability heuristic** — A mental shortcut where people estimate the frequency or size of a category based on how easily instances come to mind.  
+- **Availability bias** — Systematic errors in judgment caused by factors other than frequency that make instances more or less easily recalled.  
+- **Cognitive strain** — Mental effort experienced during difficult tasks, often indicated by facial expressions like frowning.  
+- **Deliberate problem-solving strategy** — A controlled, conscious approach to judgment or decision making, often associated with System 2 processing.  
+- **Ease of retrieval (Fluency)** — The ease and speed with which examples or instances come to mind, influencing judgments of frequency or trait presence.  
+- **Explained fluency** — When people attribute difficulty or ease in recalling instances to an external, irrelevant factor, which reduces the influence of fluency on judgment.  
+- **Frequency judgment** — The estimation of how often an event occurs or how large a category is, often affected by availability.  
+- **Judgment heuristics** — Mental shortcuts people use to make judgments and decisions quickly and efficiently.  
+- **Personal involvement** — The degree to which a person is invested or concerned with the judgment task, often leading to more analytical processing.  
+- **Salient event** — An event that attracts attention due to its prominence, making it more readily recalled and affecting availability.  
+- **Self-serving bias** — The tendency to overestimate one’s own contributions or positive attributes relative to others.  
+- **Simple substitution (Question substitution)** — A process where people replace a complex judgment with an easier one, such as estimating frequency by ease of recall.  
+- **System 1** — The fast, automatic, and intuitive mental processing system that often relies on heuristics like availability.  
+- **System 2** — The slower, effortful, and analytical mental processing system that can override biases and engage in deliberate reasoning.  
+- **Unexplained unavailability heuristic** — A refined concept of availability where judgments are influenced by the surprising difficulty of recalling instances beyond expectations.  
+- **Vivid examples** — Memorable and emotionally striking instances that are more easily recalled and thus more available in memory.

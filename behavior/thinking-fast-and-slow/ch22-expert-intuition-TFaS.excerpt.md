@@ -1,0 +1,1 @@
+Expert intuition can be trusted when the environment is sufficiently regular and the professional has had ample opportunity to learn its patterns through prolonged practice and clear feedback. Subjective confidence alone is unreliable, and true expertise depends on the validity of cues recognized by the expert’s associative memory rather than on feelings of certainty.

@@ -1,0 +1,19 @@
+- **Associative activation** — The process by which an idea evokes many other related ideas simultaneously in the brain, creating a self-reinforcing and coherent pattern of cognitive, emotional, and physical responses.  
+- **Associative coherence** — A pattern of mental events where all activated elements support and strengthen one another, producing a diverse yet integrated response.  
+- **Associative memory** — A vast network of ideas (nodes) linked by various types of relationships such as resemblance, contiguity, and causality, allowing activation to spread rapidly among related concepts.  
+- **Cause and effect (causality)** — One of Hume’s three principles of association, where causes are linked to their effects in associative memory.  
+- **Embodied cognition** — The concept that thinking involves the body as well as the brain, meaning physical reactions are part of cognitive processes.  
+- **Ideomotor effect** — The unconscious priming of behavior by ideas, where thoughts evoke corresponding actions without awareness.  
+- **Priming** — A psychological phenomenon where exposure to one stimulus influences the response to a subsequent stimulus, often without conscious awareness.  
+- **Priming effects** — Changes in the ease or speed of recognizing or responding to related ideas or behaviors following exposure to a particular stimulus.  
+- **Reciprocal priming** — A feedback loop where thinking influences behavior, and that behavior reinforces the original thought.  
+- **Resemblance** — One of Hume’s principles of association, where ideas are connected because they resemble one another.  
+- **Self-reinforcing pattern** — A mental process where ideas, emotions, and physical reactions mutually enhance and sustain each other automatically.  
+- **Spreading activation (cascade)** — A process where the activation of one idea triggers multiple related ideas across an associative network simultaneously.  
+- **Surprise** — The recognition by System 1 that an event or conjunction of ideas is uncommon or unexpected, triggering an emotional and cognitive response.  
+- **System 1** — The automatic, fast, unconscious part of the mind responsible for intuitive judgments, associative thinking, and immediate reactions.  
+- **System 2** — The deliberate, slow, conscious part of the mind that monitors, analyzes, and rationalizes decisions and actions, often unaware of System 1 processes.  
+- **Temporal contiguity** — One of Hume’s principles of association, where ideas are linked because they occur close together in time or space.  
+- **The Lady Macbeth effect** — A phenomenon where feelings of moral or psychological impurity stimulate a desire for physical cleansing.  
+- **Unconscious priming** — Influence on thoughts, emotions, or actions by stimuli that the individual is not aware of perceiving.  
+- **Vohs’s money priming** — Research findings indicating that reminders of money unconsciously increase self-reliance, independence, and decreased willingness to help others.

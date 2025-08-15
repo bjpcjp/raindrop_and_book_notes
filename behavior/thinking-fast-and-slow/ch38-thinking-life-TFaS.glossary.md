@@ -1,0 +1,19 @@
+- **Adaptation** — The process by which people gradually pay less attention to new circumstances, leading to a return to baseline levels of happiness or mood.  
+- **Affective forecasting** — Predicting how future events will impact our happiness, often prone to errors and misjudgments.  
+- **Balancing effects** — The phenomenon where a situation has both positive and negative impacts on well-being, resulting in low net correlation with happiness.  
+- **Duration neglect** — Ignoring the length of an experience when evaluating its overall impact, focusing instead on certain moments.  
+- **Experienced well-being** — The happiness or mood people actually feel in the moment during their daily activities.  
+- **Focusing illusion** — The cognitive bias causing people to give too much importance to the aspect of life they are currently thinking about, exaggerating its overall impact on happiness.  
+- **Heuristic** — A mental shortcut used to simplify complex judgments and decisions, often leading to substitution of one question with another.  
+- **Judgment heuristics** — Methods people unconsciously use to answer complex questions quickly by substituting simpler related questions.  
+- **Life satisfaction** — A global evaluation of one’s life, often influenced by a small sample of salient thoughts rather than a thorough assessment.  
+- **Miswanting** — A term describing bad choices that arise from errors in affective forecasting, leading to pursuing outcomes that don’t increase happiness.  
+- **Novelty effect** — The increased attention and happiness derived from new experiences or circumstances, which tends to fade over time.  
+- **Remembering self** — The aspect of self that constructs stories about life events, focuses on peaks and endings, and influences how episodes are recalled and evaluated.  
+- **Salience** — The quality of being particularly noticeable or important in one’s thoughts, which affects judgments about life satisfaction.  
+- **Self-reinforcing cycle of thoughts** — A process, as in depression, where negative thoughts perpetuate unpleasant mood states.  
+- **Substitution** — The mental process of answering a difficult question by replacing it with an easier one, often unconsciously.  
+- **System 1** — The fast, automatic, and intuitive mode of thinking that often drives heuristic-based judgments.  
+- **Time neglect** — Overlooking the influence of duration or frequency in evaluating experiences or states of well-being.  
+- **Voluntary life circumstances** — Life events or conditions chosen by individuals, such as marriage, that often evoke positive thoughts when considered, regardless of long-term happiness impact.  
+- **WYSIATI (What You See Is All There Is)** — A cognitive bias where people make judgments based on the information immediately available, ignoring missing or unseen data.

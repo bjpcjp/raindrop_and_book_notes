@@ -1,0 +1,1 @@
+The document lists notable works by Daniel Kahneman, including collaborations on topics such as international well-being differences, heuristics and biases, intuitive judgment, choices and values, hedonic psychology, and judgment under uncertainty. These titles reflect Kahneman's focus on psychological processes underlying decision-making and subjective well-being.

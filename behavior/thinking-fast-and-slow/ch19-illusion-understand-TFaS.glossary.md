@@ -1,0 +1,29 @@
+- **Outcome bias** — The tendency to judge a decision by its result rather than by the quality of the decision process at the time it was made.
+- **Narrative fallacy** — The human tendency to create simple, coherent stories to explain past events, often ignoring randomness and luck.
+- **Halo effect** — A cognitive bias where the perception of one positive trait (e.g., business success) influences the perception of other unrelated traits (e.g., leadership style).
+- **Hindsight bias (I-knew-it-all-along effect)** — The tendency to believe, after an event has occurred, that the outcome was predictable and that one had known it beforehand.
+- **Regression to the mean** — The statistical phenomenon where extreme outcomes tend to be followed by more moderate ones due to randomness, not necessarily changes in behavior or skill.
+- **WY SIATI rule** — An acronym for "What You See Is All There Is," describing the human tendency to make judgments based on limited information, ignoring missing knowledge.
+- **Skill vs luck** — The distinction between outcomes caused by personal ability or effort and those resulting from chance or random events.
+- **Premonition** — A feeling or intuition about the future that is often only labeled as valid when the predicted event actually occurs, contributing to biases in understanding.
+- **Intuition** — A gut feeling or immediate understanding that is often retrospectively deemed correct only when subsequent events confirm it.
+- **Illusion of understanding** — The false belief that one fully comprehends the causes of past events, leading to overconfidence in predicting the future.
+- **Illusion of control** — The mistaken belief that one can influence outcomes heavily governed by chance or luck.
+- **Sense-making organ** — The human mind’s tendency to construct coherent explanations or narratives to understand past events.
+- **Substitution** — The cognitive error of replacing the memory of past beliefs with current beliefs when asked to recall them.
+- **Outcome predictability** — The degree to which future events can be accurately anticipated based on prior knowledge, which is often overestimated.
+- **Risk aversion** — The behavior of avoiding risk due to fear of negative outcomes, often intensified by hindsight bias and fear of blame.
+- **Unknowable events** — Future occurrences that could not reasonably have been predicted or known in advance.
+- **Causal narrative** — A straightforward story that links events through cause and effect, often oversimplifying the complexity of real-world outcomes.
+- **Flimsy accounts** — Weak or oversimplified explanations of past events that ignore complexity and chance.
+- **Mind’s limitation in belief recall** — The human brain’s imperfect ability to accurately remember previous beliefs or knowledge after they have changed.
+- **Wrong causal attributions** — Misinterpreting cause-effect relationships, often reversing them due to cognitive biases like the halo effect.
+- **Overconfidence** — Excessive belief in one's own knowledge or predictive abilities, often fed by compelling stories and hindsight bias.
+- **Business success illusions** — Misleading perceptions about the determinants of firm performance, exaggerating leadership impact and downplaying luck.
+- **Luck’s role in outcomes** — Acknowledgment that chance events significantly influence success and failure, contrary to common narratives of skill alone.
+- **Narrative coherence** — The appeal of stories that are simple, logical, and easy to follow, which contributes to false certainty.
+- **Learning from surprises** — The process of updating beliefs after unexpected events, which can distort memory and judgment.
+- **Legal outcome bias** — The tendency of juries or observers to judge decisions harshly based on unfavorable outcomes, not on the reasonableness of decisions at the time.
+- **Bureaucratic risk aversion** — The tendency of organizations and individuals to adopt rigid procedures to avoid blame due to hindsight scrutiny.
+- **Reassuring illusion** — The comforting but false belief that events are understandable and the future is predictable.
+- **Stories of success and failure** — Popular narratives that tend to overemphasize leadership qualities while ignoring randomness and regression to the mean.

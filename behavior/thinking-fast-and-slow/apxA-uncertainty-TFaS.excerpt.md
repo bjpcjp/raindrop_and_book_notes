@@ -1,0 +1,1 @@
+People often rely on three heuristics—representativeness, availability, and adjustment from an anchor—to make judgments under uncertainty, which are generally efficient but can lead to systematic and predictable errors. Understanding these cognitive biases is crucial for improving decision-making in situations involving probabilistic assessments and uncertain outcomes.

@@ -1,0 +1,26 @@
+- **Availability cascade** — A self-reinforcing process in which a vivid and frequently repeated event becomes highly accessible in memory, influencing public perception and behavior disproportionally to its actual probability.  
+- **Cognitive ease** — The mental experience of processing information fluently and effortlessly, which affects judgments of probability and decision weights.  
+- **Denominator neglect** — A cognitive bias where people focus on the numerator (number of favorable outcomes) and underweight or ignore the size of the denominator (total possible outcomes), leading to distorted risk perceptions.  
+- **Decision weight** — The subjective weight assigned to an outcome's probability when making decisions, which often differs from the objective probability.  
+- **Disproportionate emotional arousal** — An emotional reaction that is stronger than warranted by the actual probability of an event, often triggered by vivid imagery or association.  
+- **Emotionally vivid outcomes** — Outcomes that evoke strong emotional imagery or feelings, leading to reduced sensitivity to differences in their probabilities.  
+- **Experience-based choice (Choice from experience)** — Decision-making based on repeated exposure to actual outcomes rather than verbal descriptions; often leads to underweighting of rare events.  
+- **Focal attention** — The selective focus on a specific event or outcome that can increase its perceived probability and decision weight.  
+- **Frequency format** — Describing probabilities as counts or frequencies (e.g., "1 in 1,000") rather than abstract percentages, which tends to increase the perceived risk due to vivid imagery.  
+- **Global impression** — An overall mental representation or summary evaluation of a person, object, or prospect formed by integrating multiple experiences or pieces of information.  
+- **Interview effect** — (Implied) Not explicitly named here but related to how descriptions and formats influence judgment; see also vividness and framing effects.  
+- **Overestimation** — The cognitive bias where the perceived probability of unlikely events is judged to be higher than their actual probability.  
+- **Overweighting** — The phenomenon of assigning excessive decision weight to unlikely events during decision making.  
+- **Possibility effect** — The tendency to overweight very small probabilities in decision making, reflecting a disproportionate response to the mere possibility of an event.  
+- **Practicing confirmatory bias** — The mental tendency to selectively retrieve or focus on information that supports a given hypothesis or event, contributing to overestimation.  
+- **Prospect theory** — A behavioral economic theory describing how people assign decision weights to probabilities and value outcomes, often showing probability distortion.  
+- **Probability insensitivity** — A reduced responsiveness of decision weight to changes in probability, particularly for emotionally vivid or concrete outcomes.  
+- **Rare events** — Events with very low probability but often overweighted or exaggerated in public perception due to vividness and availability.  
+- **Risk communication format** — The manner in which risk or probability information is presented, which significantly influences perception and decision making.  
+- **Salience** — The quality of an event or outcome that makes it stand out and attract focal attention, thereby increasing its subjective importance.  
+- **Scenario specificity** — When alternatives or outcomes are clearly and equally specified, leading to more coherent and accurate probability judgments.  
+- **System 1** — The fast, automatic, intuitive mode of thinking that relies on associative memory, emotions, and vividness.  
+- **System 2** — The slower, more deliberate and analytical mode of thinking that processes abstract probability and logic.  
+- **Vividness** — The degree to which an event or outcome is represented in rich, concrete, and easily imagined detail, influencing emotional response and decision weights.  
+- **Vivid probabilities** — Probability information presented or perceived with supporting vivid imagery, which can distort subjective weighting.  
+- **Weighting function** — In prospect theory, the transformation of objective probabilities into subjective decision weights that deviate from linear probability.

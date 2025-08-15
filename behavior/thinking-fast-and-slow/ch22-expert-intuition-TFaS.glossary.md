@@ -1,0 +1,27 @@
+- **Adversarial collaboration** — A joint research effort between scholars who disagree, aimed at resolving disputes through cooperative study and moderated discussion.  
+- **Algorithm** — A rigid, formal procedure or set of rules used for making decisions or predictions, often contrasted with human intuition.  
+- **Associative memory** — The cognitive mechanism by which cues in a situation trigger stored knowledge, enabling recognition and intuitive judgment.  
+- **Bias** — Systematic deviations from rational judgment, often highlighted in heuristics and biases research as sources of error in intuition.  
+- **Chess expertise** — Skill developed through extensive practice, enabling quick recognition of complex patterns and strategic moves.  
+- **Clinical prediction** — Judgments made by clinicians about patients' outcomes, often shown to be less accurate than statistical algorithms in low-validity environments.  
+- **Confidence (subjective)** — The degree of belief a person has in their judgment, which is often not a reliable indicator of accuracy.  
+- **Coherence** — The internal consistency and logical flow of a story or judgment, contributing to a feeling of confidence.  
+- **Ecological validity (validity of environment)** — The extent to which an environment is regular and predictable, allowing for the development of reliable intuitions.  
+- **Feedback** — Information received after an action or judgment that helps refine and improve skill through learning.  
+- **Heuristics** — Mental shortcuts or rules of thumb used to make decisions quickly, sometimes leading to substitution of questions.  
+- **Illusion of validity** — The mistaken belief that one's intuitive judgments are accurate, despite evidence to the contrary.  
+- **Intuition** — Rapid, non-conscious judgments or decisions often described as knowing without knowing how, fundamentally a form of recognition.  
+- **Learned fear** — Emotional learning where aversion develops quickly after a single or repeated negative experience.  
+- **Mental simulation** — A deliberate, conscious process of imagining the outcomes of a potential plan to test its suitability.  
+- **Naturalistic Decision Making (NDM)** — A research approach focusing on how experts make decisions in real-world, complex environments.  
+- **Pattern recognition** — The ability to identify familiar configurations based on past experience, central to intuitive expertise.  
+- **Practice (prolonged)** — Extensive and repeated engagement in tasks necessary to acquire genuine intuitive skill.  
+- **Provenance** — The history and background context of an object or judgment, useful for assessing authenticity or validity.  
+- **Recognition-Primed Decision (RPD) model** — A theory describing how experts use recognition of patterns combined with mental simulation to make decisions quickly and effectively.  
+- **Regular environment** — An environment characterized by stable patterns and predictable cues, supporting the development of expertise.  
+- **Skill acquisition** — The process of developing competence through practice and learning in a domain involving many miniskills.  
+- **Subjective confidence** — A person’s perceived certainty about a judgment, which may not correlate with actual accuracy.  
+- **Substitution** — A cognitive process where a difficult question is unconsciously replaced by an easier one, leading to potentially misleading intuitive answers.  
+- **System 1** — The fast, automatic, associative, and intuitive mode of thought.  
+- **System 2** — The slow, deliberate, analytical, and reflective mode of thought.  
+- **Wicked environment** — A setting in which feedback is misleading or contaminates learning, causing experts to draw incorrect conclusions from experience.

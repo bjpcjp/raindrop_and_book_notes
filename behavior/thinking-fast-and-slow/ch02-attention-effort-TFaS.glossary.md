@@ -1,0 +1,23 @@
+- **Add-1 task** — A cognitive exercise where each digit in a string of four digits is incremented by one under a steady rhythm, used to measure mental effort and working memory capacity.  
+- **Add-3 task** — A more difficult variation of the Add-1 task, requiring incrementing each digit by three, representing a near-limit mental challenge in effort and working memory.  
+- **Attention** — The selective focusing of mental resources on particular information or tasks, managed by System 2 when effortful control is required.  
+- **Cognitive pupillometry** — The study of pupil size changes as an indicator of mental effort during cognitive tasks.  
+- **Effort** — The mental energy invested in performing demanding cognitive tasks, especially by System 2, involving self-control and concentration.  
+- **Executive control** — The cognitive process involving the adoption, maintenance, and termination of task sets, particularly when overriding habitual responses or resolving conflicts.  
+- **Inverted-V pattern** — The characteristic shape of pupil size variations during effortful tasks: dilation builds, peaks during maximal effort, and then relaxes after the task demand lessens.  
+- **Law of least effort** — The principle that people tend to choose the path requiring the least cognitive or physical effort when multiple ways to achieve the same goal exist.  
+- **Limitation of working memory** — The limited capacity of System 2 to hold and manipulate several ideas or digits simultaneously, which constrains complex cognitive tasks.  
+- **Mental effort** — The exertion required to perform tasks that demand active, conscious processing, as opposed to automatic or intuitive operations.  
+- **Mental overload** — The state in which cognitive demands exceed System 2’s processing capacity, leading to reduced performance or selective attention allocation.  
+- **Metronome pacing** — The use of a steady beat to regulate task timing and measure how cognitive effort fluctuates with task demands.  
+- **Pupil dilation** — The enlargement of pupils as a physiological indicator correlated with increased mental effort and cognitive workload.  
+- **Self-control** — The capacity of System 2 to override automatic impulses from System 1 in order to perform deliberate, effortful actions.  
+- **Short-term memory** — The temporary storage component engaged during tasks like Add-1 and Add-3, essential for holding information briefly while it is processed.  
+- **Skill acquisition** — The process by which repeated practice reduces the mental effort required for a task by making it more automatic and less demanding on System 2.  
+- **Slow thinking** — Thought processes managed by System 2 that require conscious, effortful, and often slower cognitive operations.  
+- **System 1** — The intuitive, fast, automatic, and effortless cognitive system responsible for quick judgments and habitual responses.  
+- **System 2** — The analytical, slow, effortful cognitive system responsible for deliberate thought, self-control, and complex mental tasks.  
+- **Task set** — A mental configuration programmed by System 2 that overrides automatic responses to perform a new or unusual cognitive task.  
+- **Switching costs** — The effort and cognitive demand required to shift attention or task sets from one mental activity to another, often causing performance declines.  
+- **Time pressure** — A factor that increases cognitive effort by reducing the available time to perform complex mental operations, as seen in paced tasks.  
+- **Working memory** — The cognitive system responsible for temporarily storing and manipulating information, essential for goal-directed tasks requiring effortful control.

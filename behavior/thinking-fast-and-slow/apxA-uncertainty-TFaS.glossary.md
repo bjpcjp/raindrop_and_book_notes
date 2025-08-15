@@ -1,0 +1,28 @@
+- **Adjustment and Anchoring** — A heuristic where estimates start from an initial value (anchor) and are adjusted, often insufficiently, leading to biased final judgments.  
+- **Anchoring** — The cognitive bias causing estimates to be influenced by an initial value or starting point, resulting in insufficient adjustment.  
+- **Availability** — A heuristic in which people assess frequency or probability based on how easily instances or scenarios can be recalled or imagined.  
+- **Biases due to imaginability** — Errors arising when ease of mentally constructing instances leads to inaccurate judgments about their actual frequency.  
+- **Biases due to the effectiveness of a search set** — Judgment errors caused by differences in the ease of searching for certain types of instances or information.  
+- **Biases due to the retrievability of instances** — Errors where classes with more easily recalled instances are judged as more frequent, regardless of actual frequency.  
+- **Conjunctive events** — Events that require the occurrence of multiple conditions simultaneously; probabilities tend to be overestimated due to anchoring bias.  
+- **Disjunctive events** — Events that occur if at least one of multiple conditions is met; probabilities tend to be underestimated due to anchoring bias.  
+- **Gambler’s fallacy** — The mistaken belief that deviations in a random sequence will be “corrected” soon, e.g., expecting an outcome opposite to recent runs.  
+- **Illusion of validity** — Overconfidence in predictions based on the perceived representativeness or consistency of input information, ignoring limitations on accuracy.  
+- **Illusory correlation** — The tendency to overestimate the frequency of co-occurrence between two events, often due to strong associative bonds rather than actual data.  
+- **Insensitivity to prior probability (base rate neglect)** — The failure to properly consider initial or base rates when assessing probabilities, relying instead on representativeness.  
+- **Insensitivity to predictability** — Ignoring the reliability or predictability of evidence when making numerical predictions, leading to overly extreme or unadjusted forecasts.  
+- **Insensitivity to sample size** — Neglecting the influence of the size of a sample on the variability or reliability of statistics and probability judgments.  
+- **Law of small numbers** — The incorrect expectation that small samples should closely reflect the properties of the overall population.  
+- **Local representativeness** — The erroneous expectation that small segments of a random sequence will exhibit the same characteristics as the entire sequence.  
+- **Misconceptions of chance** — Incorrect beliefs about how chance operates, such as expecting random sequences to be balanced locally or self-correcting.  
+- **Posterior probability** — The updated probability after considering new evidence; often underestimated in impact due to insensitivity to sample size.  
+- **Predictability** — The degree to which future values or outcomes can be accurately forecast based on given information; often ignored in intuitive judgment.  
+- **Prior probability (base rate frequency)** — The initial likelihood of an event or category before new evidence is considered.  
+- **Probability distribution (subjective)** — A person’s expressed beliefs about the likelihood of different outcomes, often biased due to anchoring and insufficient calibration.  
+- **Regression toward the mean** — The statistical phenomenon where extreme values tend to be followed by less extreme values closer to the average.  
+- **Representativeness heuristic** — A judgmental shortcut where the probability of an event is assessed based on similarity or resemblance to a prototype or stereotype.  
+- **Sample size effect** — The principle that larger samples tend to yield more reliable and less variable statistics than smaller samples.  
+- **Sampling variability** — The natural fluctuation in sample statistics due to chance differences between samples of different sizes or compositions.  
+- **Subjective probability** — An individual’s personal estimate of the likelihood of an event, which may not conform to formal probability rules but reflects internal beliefs.  
+- **Systematic errors** — Predictable and consistent biases in judgment caused by reliance on heuristics rather than formal statistical reasoning.  
+- **Underadjustment** — The tendency to insufficiently modify an initial estimate or anchor when forming a final judgment, leading to biased results.
