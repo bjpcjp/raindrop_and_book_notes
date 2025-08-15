@@ -1,0 +1,31 @@
+- **Amoral** — Not concerned with the distinction between right and wrong; power is described as essentially amoral.  
+- **Appeal to Self-Interest** — A strategy to persuade others by focusing on their benefits rather than altruism.  
+- **Authenticity** — Masking true intentions and feelings; encouraged to disguise strengths and vulnerabilities.  
+- **Bait** — A tactic to lure others into a desired position or action.  
+- **Cunning** — Skilled deception and craftiness used to gain power.  
+- **Deception** — The art of misleading others, considered a key weapon in the game of power.  
+- **Dependency** — Creating a state where others rely on you, increasing your control over them.  
+- **Distance (Emotional)** — The ability to separate oneself emotionally to think objectively and strategically.  
+- **Disguise** — Concealing true intentions or qualities to manipulate perception.  
+- **Favoritism** — Overreliance on friends or trusted individuals, which can lead to betrayal.  
+- **Feigning** — Pretending or faking an emotional state or quality to mislead others.  
+- **Flattery** — Complimentary behavior aimed at pleasing superiors without appearing insincere.  
+- **Game of Power** — Described as a constant, strategic social struggle requiring subtlety and indirect tactics.  
+- **Ingratitude** — The tendency of recipients of favors, especially friends, to become ungrateful or resentful.  
+- **Indirection** — Taking non-obvious, circuitous routes to achieve an objective.  
+- **Master (Superior)** — The person in a higher position of power, who must be carefully managed and not outshone.  
+- **Mask** — A metaphor for adopting various personas to suit different situations in power dynamics.  
+- **Naivete (Feigning)** — Pretending innocence or ignorance as a strategy to disarm opponents.  
+- **Nonplayers** — People who claim to opt out of power games but often manipulate indirectly.  
+- **Patience** — A disciplined, strategic waiting that prevents mistakes and impulsive actions in pursuit of power.  
+- **Power** — The ability to influence or control others; viewed as a game involving strategy and emotion mastery.  
+- **Powerlessness** — A state that brings misery and vulnerability, to be avoided by mastering power games.  
+- **Psychology (Mastery)** — The study and understanding of human motives and behavior to manipulate effectively.  
+- **Reputation** — A critical asset to guard with one’s life in power dynamics.  
+- **Resentment** — Negative feelings that arise when one feels threatened or outshone in the power hierarchy.  
+- **Surrender Tactic** — Using the appearance of weakness as a form of strategic power.  
+- **Subtlety** — The quality of being indirect and clever in action and speech to succeed in power games.  
+- **Trust (Overreliance)** — Placing too much confidence in friends, which often leads to betrayal.  
+- **Velvet Glove** — A metaphor for combining charm and gentleness with hidden strength or ruthlessness.  
+- **Vulnerability** — Exposing one’s weaknesses can be a strategic or dangerous maneuver in power dynamics.  
+- **Winning through Actions** — Achieving goals by deeds rather than arguments or overt confrontation.

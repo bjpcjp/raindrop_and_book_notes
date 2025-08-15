@@ -1,0 +1,28 @@
+- **Affinity** — A close relationship or connection based on feelings or friendship.  
+- **Avaricious** — Having an extreme greed for wealth or material gain.  
+- **Betrayal** — The act of being disloyal or treacherous to a friend or ally.  
+- **Chamberlain** — A high official in royal courts, often responsible for managing the household or acting as chief councillor.  
+- **Civil War** — A conflict between factions or regions within the same country.  
+- **Conspiracy** — A secret plan by a group to carry out harmful or illegal acts.  
+- **Councillor** — An adviser to a ruler or leader, providing guidance on political or state matters.  
+- **Dishonesty** — Lack of honesty; deceptive behavior often concealed in personal relations.  
+- **Enmity** — A state of hostility or active opposition between individuals or groups.  
+- **Enemy** — A person or group hostile toward another, often opposed politically or militarily.  
+- **Favor** — An act of kindness or a privilege granted, often creating expectations of gratitude.  
+- **Gratitude** — The quality of being thankful and showing appreciation for favors or kindness received.  
+- **Ingratitude** — Failure or refusal to show thanks or appreciation for favors or kindness.  
+- **Jealousy** — A feeling of envy or resentment toward another’s advantages or possessions.  
+- **Loyalty** — Faithfulness or allegiance to a person, cause, or leader.  
+- **Manipulation** — Skillful control or influence, often in a deceitful or unfair manner.  
+- **Merit** — The quality of being deserving, especially of reward or praise.  
+- **Motivation** — The reason or incentive that drives a person’s actions or decisions.  
+- **Power** — The ability to control or influence others or events.  
+- **Ruler** — A person exercising sovereign authority over a state or people.  
+- **Scapegoat** — A person who is unfairly blamed for problems or failures of others.  
+- **Self-interest** — Acting based on personal advantage or benefit.  
+- **Spoiled** — Deteriorated in character through excessive indulgence or privilege.  
+- **Strategy** — A plan of action designed to achieve a long-term or overall aim.  
+- **Suspicion** — A feeling of doubt or mistrust about someone's motives or actions.  
+- **Tyrannical** — Exercising power in a harsh, oppressive, or unjust manner.  
+- **Wits** — Mental sharpness and inventiveness; keen intelligence.  
+- **Wolf** — Used metaphorically to represent predatory or dangerous people.

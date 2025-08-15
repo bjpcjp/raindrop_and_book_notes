@@ -1,0 +1,28 @@
+- **Authority** — The power or right to give orders and make decisions, highlighting that subjects must avoid surpassing their superiors.  
+- **Court Jester** — A figure who uses humor to entertain a ruler but must avoid making the master appear cold or surly.  
+- **Cosimo I** — Founder of the Medici dynasty, symbolized by Jupiter.  
+- **Cosimo II** — Medici ruler who was honored by Galileo with a celestial emblem.  
+- **D’Artagnan** — King Louis XIV’s head musketeer who arrested Nicolas Fouquet.  
+- **Favoritism** — Preferential treatment from a master that can be lost if one outshines the master.  
+- **Flattery** — Discreet praise used to make a master feel superior without inciting insecurity.  
+- **Galileo Galilei** — Italian astronomer who strategically dedicated his Jupiter moons discovery to the Medici family to gain patronage.  
+- **Jean-Baptiste Colbert** — Successor to Fouquet, known for parsimony and loyalty to King Louis XIV.  
+- **Jupiter’s Moons** — Four natural satellites whose discovery by Galileo was used to honor the Medici family.  
+- **Keys to Power** — Strategies to avoid outshining a master, including flattery, discretion, and making the master appear more brilliant.  
+- **Louis XIV (Sun King)** — King of France who was vain, insecure, and intolerant of those who outshone him.  
+- **Medici Family** — Powerful Italian dynasty that valued symbolic representations of cosmic power to showcase supremacy.  
+- **Nicolas Fouquet** — Finance minister who fell out of favor with Louis XIV by hosting an overly extravagant party.  
+- **Outshining the Master** — Displaying talents or achievements that threaten the superior, provoking fear, insecurity, or retaliation.  
+- **Patronage** — Support or financial backing given by a powerful person or ruler, often sought by artists and scientists.  
+- **Power** — The ability to influence others and maintain superior standing, often requiring careful management of appearances and relationships.  
+- **Pre-eminence** — A master’s desire to be recognized as the most brilliant or superior individual.  
+- **Prince Astorre Manfredi** — Talented and charming prince outshining Cesare Borgia, leading to his downfall.  
+- **Sen no Rikyu** — Favorite of Emperor Hideyoshi who was executed for presumptuously elevating his status.  
+- **Spectacle** — An elaborate display meant to impress but potentially threatening if it outshines the master.  
+- **Statue of Rikyu** — A symbol of overstepping bounds by portraying oneself with noble status, causing downfall.  
+- **Sun (Symbolism)** — Represents the master’s central position of power and brilliance, which must never be overshadowed.  
+- **Transgression of the Law** — Actions that violate the principle of never outshining the master, often resulting in severe punishment.  
+- **Vaux-le-Vicomte** — Fouquet’s château where the extravagant party took place.  
+- **Vanity** — Excessive pride in one’s own appearance or achievements, especially a master’s sensitivity to being outdone.  
+- **Weak Master** — A superior whose position is insecure and may be discreetly undermined.  
+- **Zealous Subordination** — The practice of deliberately making a master appear more intelligent or capable to secure one’s position.

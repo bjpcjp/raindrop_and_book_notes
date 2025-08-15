@@ -1,0 +1,1 @@
+Disdain and ignore petty problems or enemies to deny them power and credibility, as attention often strengthens and enlarges them. However, while publicly showing contempt, one must also monitor such issues privately to prevent them from growing into serious threats.

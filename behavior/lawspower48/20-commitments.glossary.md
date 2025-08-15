@@ -1,0 +1,29 @@
+- **Aloofness** — Maintaining emotional distance to enhance power and desirability.
+- **Alcibiades tactic** — Playing multiple sides against each other without committing to any.
+- **Authority** — The power achieved and maintained by independence and non-commitment.
+- **Commitment** — A bond or obligation to a person, group, or cause which can limit power.
+- **Distant support** — Seeming interested in others’ conflicts without getting involved.
+- **Emotional entanglement** — Becoming emotionally involved, which weakens independence.
+- **Flirting and withdrawing** — Engaging others' interest while maintaining control by not yielding.
+- **Fool** — One who rushes to take sides and loses personal power.
+- **Independence** — Autonomy from obligations or alliances; key to maintaining power.
+- **Inner aloofness** — Keeping emotional distance even while accepting gifts or favors.
+- **Judgment** — The careful consideration to avoid commitments and impulsive alliances.
+- **Keeping options open** — Refusing to commit permanently to maintain leverage and freedom.
+- **Kingdom of Mantua** — Example of a small state preserving independence through non-commitment.
+- **Loyalty** — A commitment that can become a weakness or a trap in power struggles.
+- **Manipulation** — Playing rivals or suitors against each other to gain power.
+- **Mediation** — Acting as an intermediary between warring parties to gain influence.
+- **Non-commitment** — Refusing to pledge oneself to any one side to increase power.
+- **Petty squabbles** — Minor conflicts best avoided to preserve autonomy and strength.
+- **Playing the Virgin Queen** — Keeping suitors hopeful but never satisfied to maintain control.
+- **Power** — The ability to influence or dominate through independence and strategic non-commitment.
+- **Promises** — Commitments made strategically to multiple sides without genuine allegiance.
+- **Reputation for independence** — A status that attracts more suitors and amplifies influence.
+- **Self-control** — Mastery over emotions to avoid being drawn into conflicts.
+- **Seeming interest** — Appearing supportive without genuine involvement.
+- **Strategic aloofness** — Using distance as a tool to enhance authority and desirability.
+- **Suitors** — Parties or individuals seeking favor or commitment from a person in power.
+- **Suspended desire** — The power built by keeping others hoping without yielding.
+- **Taslleriand’s caution** — Avoid rushing into commitments during uncertain circumstances.
+- **Whirlpool of emotions** — The chaotic environment of others’ conflicts that one should avoid.

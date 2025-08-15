@@ -1,0 +1,18 @@
+- **Contrasts** — Opposite traits hidden beneath overt behavior, revealing true weaknesses when probed beyond appearances.
+- **Emotional voids** — Insecurity and unhappiness; primary emotional gaps people seek to fill, making them vulnerable to influence.
+- **Helpless child** — A psychological weakness rooted in unmet childhood needs or indulgences; manifests as childish behavior in adults.
+- **Idols** — Personal motives or drives such as fame, self-interest, or pleasure that act as keys to influence an individual.
+- **Little things** — Small gestures, habits, or unconscious behaviors that reveal deeper secrets or vulnerabilities.
+- **Little weaknesses** — Subtle flaws or soft spots that can be exploited to gain leverage over others.
+- **Masks** — The conscious behaviors and facades people put up to conceal their weaknesses.
+- **Need for social validation** — A strong urge for recognition and acceptance, often exploited to control individuals.
+- **Passions** — Intense emotions like lust, greed, or hatred that people cannot control, which can be leveraged for influence.
+- **Psychological armor** — Defensive behaviors and attitudes people use to protect themselves from change or intrusion.
+- **Reversal** — The potential danger of exploiting weaknesses as emotional reactions may spiral beyond one’s control.
+- **Secret pleasures** — Hidden indulgences that serve as weak points or entryways for manipulation.
+- **Self-interest** — A personal drive or motive that can be used as leverage in influence.
+- **Sucker** — A vulnerable person characterized by dissatisfaction, insecurity, or neediness, making them easy to manipulate.
+- **Thumbscrew** — The metaphorical pressure point on a person’s weakness that can be turned to control or influence them.
+- **Uncontrollable emotions** — Feelings that override rationality, such as fear or vanity, which can be exploited for power.
+- **Weak link** — An individual within a group or an organization whose influence or vulnerabilities affect the whole power structure.
+- **Working the weak link** — The strategy of gaining influence by manipulating someone with indirect power over the primary target.

@@ -1,0 +1,18 @@
+- **Bay of Pigs** — A failed 1961 U.S. invasion of Cuba aimed at overthrowing Fidel Castro, which increased his international fame.  
+- **Carranza government** — The ruling Mexican government during Pancho Villa’s rebellion and the 1916 Punitive Expedition.  
+- **Church of England** — The church established by King Henry VIII after breaking from the Roman Catholic Church, with the king as its head.  
+- **Contempt** — A powerful attitude of disdain that cancels out opponents by ignoring them and refusing to acknowledge their existence.  
+- **Disdain** — To regard with scorn or contempt, especially as a tactic to show superiority by ignoring or rejecting.  
+- **Excommunication** — The severest penalty imposed by the Catholic Church, excluding a person from participation in the sacraments and community.  
+- **Ignoring** — The deliberate act of not acknowledging an enemy, problem, or insult to deny it power and minimize its impact.  
+- **King Louis XIV** — French king known for using contempt as a weapon by ignoring those he disliked to maintain superiority.  
+- **Pancho Villa** — Mexican rebel leader and bandit who eluded the 1916 U.S. Punitive Expedition, increasing his popularity by defying a superior force.  
+- **Pentagon Papers** — U.S. government documents leaked in 1971 detailing involvement in Indochina, whose publicity caused political turmoil.  
+- **Pope Clement VII** — The pope who supported Henry VIII’s marriage to Catherine of Aragon but refused to annul it, provoking the English Reformation.  
+- **Punitive Expedition** — A 1916 U.S. military mission led by General Pershing to capture Pancho Villa, which failed and became politically embarrassing.  
+- **Sour grapes** — A tactic of dismissing what one cannot have by pretending not to want it, thus masking feelings of disappointment and maintaining dignity.  
+- **The Fox and the Grapes** — A fable illustrating the "sour grapes" attitude, where the fox pretends the grapes he cannot reach are unworthy.  
+- **The Monkey and the Peas** — A fable illustrating frustration leading to losing control and making a bad situation worse by overreacting.  
+- **The Prodigy Ox** — A Japanese story illustrating the power of ignoring supposed omens or prodigies to prevent the creation of unnecessary problems.  
+- **The Tiny Wound** — A metaphor emphasizing that small problems often worsen when over-attended to, suggesting that ignoring minor issues can lead to healing.  
+- **Woodrow Wilson** — U.S. president who launched the failed Punitive Expedition to punish Pancho Villa and demonstrate American power.

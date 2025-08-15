@@ -1,0 +1,14 @@
+- **Authority** — The acceptance that people’s self-inflicted wounds and chosen hardships are less painful long-term than those imposed directly by others.  
+- **Brothers in Crime** — A con-artist tactic of involving victims in a scheme or crime to limit their options and secure their silence due to shared guilt.  
+- **Color the Choices** — Presenting multiple options with one clearly preferable to manipulate decision-making, often used on insecure leaders.  
+- **Controlling the Options** — Giving people a limited range of choices that all serve your purpose, creating an illusion of freedom while directing outcomes.  
+- **Force the Resister** — Encouraging a person to choose the opposite of what you want by insisting they do the undesired action first, useful for willful individuals.  
+- **Horns of a Dilemma** — Forcing someone to choose between two unfavorable outcomes, trapping them so that any choice benefits you.  
+- **Illusion of Choice** — A tactic where people believe they are making free decisions while all options lead to a predetermined outcome.  
+- **Martyrs** — In Ninon de Lenclos’s system, men who gain social and intellectual companionship without paying but hope to become favored lovers.  
+- **Narrow Range of Choices** — Limited options that reduce anxiety and decision paralysis, making manipulation easier.  
+- **Payeurs** — Men who financially support Ninon de Lenclos in exchange for the possibility—but not guarantee—of intimacy under her control.  
+- **Reversal** — The strategic decision to limit or grant freedom to opponents’ options depending on whether observation or control accomplishes greater long-term power.  
+- **Shrinking Options** — A negotiation tactic where the best choices are gradually withdrawn or worsened to pressure a decision.  
+- **Weak Man on the Precipice** — Using fear and exaggerated dangers to manipulate indecisive or timid individuals into choosing your preferred action.  
+- **Withdrawal and Disappearance** — Withdrawing power or presence to force others into a choice favorable to you by showing the chaos that results from your absence.

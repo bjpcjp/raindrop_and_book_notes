@@ -1,0 +1,23 @@
+- **Bargain Demon** — A person obsessed with finding the cheapest price, often wasting time and peace of mind on inferior goods, causing insecurity and inefficiency.  
+- **Buried Treasure** — The rare and usually accidental discovery of valuables hidden underground, often pursued by lazy or deluded individuals without scientific basis.  
+- **Caesar** — Historical example of a powerful person who spent money freely as part of their influence and power.  
+- **Duchess of Marlborough** — An example of financial sadism where petty control over money eroded relationships and delayed important projects.  
+- **Generating Power** — The circulation and strategic spending of money to gain influence rather than hoarding it.  
+- **Greedy Fish** — Individuals who view money coldly as mere numbers, ignoring human sentiments, alienating allies and becoming isolated.  
+- **Indiscriminate Giver** — One who gives generously without strategy, seeking admiration but often creating emotional burdens and diminished influence.  
+- **Joseph Weil ("The Yellow Kid")** — A con artist who exploited human greed by offering seemingly free opportunities with hidden costs.  
+- **Lorenzo de’ Medici** — Renaissance patron who used strategic generosity in the arts to mask the less admired sources of wealth and gain influence.  
+- **Miser** — A person who hoards wealth but gains no benefit from it, illustrating the value of money is in its use rather than possession.  
+- **Patronage** — The practice of using wealth to support artists or influential figures to create social capital and influence.  
+- **Pharaoh's Generosity** — A biblical example showing that enduring power is tied to sustained generosity; withholding generosity signals decline.  
+- **Power** — The ability to influence others, often maintained through strategic generosity and wise use of resources rather than mere wealth.  
+- **Reputation** — The perception others have of a person, deeply affected by how that person uses money and displays generosity or pettiness.  
+- **Strategic Generosity** — The intentional giving of money or gifts with a specific goal to create influence or indebtedness, balancing generosity and power.  
+- **The Flame-Colored Cloak** — A story illustrating that even small gifts given strategically can create powerful bonds of gratitude and influence.  
+- **The Gift** — A tool in social relations that implies equality or superiority and creates obligations or indebtedness.  
+- **The River (Image)** — A metaphor for the flow and circulation of money or resources generating abundance, contrasted with stagnation from hoarding.  
+- **Tight Purse Strings** — Miserly behavior that appears unattractive and limits influence, especially among powerful people.  
+- **Transgression** — Actions violating the principle that nothing valuable is truly free, leading to hidden costs or loss of power.  
+- **Unexpected Gifts** — Sudden, rare gifts that open people emotionally and politically, more effective than constant giving.  
+- **Value of Money** — Money’s worth lies not in possession but in its active use to build relationships, influence, and power.  
+- **Yellow Kid's Lesson** — The idea that greed and the desire for a "free lunch" make people vulnerable to fraud and deception.

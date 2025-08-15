@@ -1,0 +1,27 @@
+- **Bridge of Sighs** — The famous bridge in Venice leading to a prison, symbolizing betrayal or downfall.  
+- **Bismarck, Otto von** — Prussian statesman who gained power by making kings dependent on him rather than allying with strong powers.  
+- **Condottiere** — Mercenary soldiers in Renaissance Italy who were replaceable despite their military valor.  
+- **Dependency** — A state where someone relies on another for happiness, welfare, or success, creating power for the provider.  
+- **Extensive Power** — Power gained by involvement in many areas, creating a broad base of influence and alliances.  
+- **Fate Entwining** — The strategic interconnection of one's interests with those of others to make separation harmful or impossible.  
+- **Independence** — Freedom from others, which limits one’s power due to lack of influence over others.  
+- **Interdependence** — Mutual dependency between people or parties, often preferred over pure independence.  
+- **Intensive Power** — Power based on a singular, unique skill or talent that cannot be easily replaced.  
+- **Judgment** — The principle that maintaining independence requires others to rely on you continuously.  
+- **Keys to Power** — Strategies to create dependency through indispensable skills, relationships, or secrets.  
+- **Leon Tolstoy’s Fables** — Illustrated by the story of two horses, symbolizing the consequences of unequal burdens and replaceability.  
+- **Louis XI** — French king who protected his astrologer to maintain dependency and control over perceived threats.  
+- **Machivelli, Niccolò** — Renaissance political philosopher who noted that dependency ensures loyalty and trustworthiness.  
+- **Master** — The person in authority who depends on the subordinate's services or skills.  
+- **Michelangelo** — Renaissance artist who made himself indispensable to Pope Julius II due to his unique talent.  
+- **Monopoly** — Complete control of a market or domain, often leading to isolation and vulnerability.  
+- **Mutual Dependence** — A balanced power relationship where two or more parties rely on each other.  
+- **Reverse Independence** — A form of freedom gained by making others dependent on you, rather than being fully independent.  
+- **Secret-Intelligence Tactic** — Holding others’ secrets to create unbreakable bonds of dependency and power.  
+- **Spider King (Louis XI)** — Nickname for Louis XI, known for weaving webs of power through calculated dependency.  
+- **The Cat That Walked By Himself** — A Kipling story illustrating independence coupled with self-interest and selective cooperation.  
+- **The Count of Carmagnola** — Condottiere executed after becoming too independent and powerful, showing the danger of replaceability.  
+- **The Elm-Tree and the Vine** — A fable contrasting true support and stubborn independence leading to downfall.  
+- **The Man Behind the Throne** — A servant or advisor whose true power comes from being indispensable to the ruler.  
+- **Transgression of the Law** — Examples of failing to maintain indispensability leading to betrayal or execution.  
+- **Witch-Hunt (Hollywood)** — Historical example of power dynamics where dependency chains protected individuals despite external pressures.

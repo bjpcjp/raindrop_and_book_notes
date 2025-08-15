@@ -1,0 +1,13 @@
+- **Deceiver’s Mirror** — A mirroring technique that involves creating a perfect copy of reality to deceive targets, often used by con artists and for camouflage.  
+- **Hallucinatory Effect** — Creating a convincing copy or illusion that people mistake for reality, leading them into deception.  
+- **Moral Effect** — Mirroring someone’s unpleasant behavior back to them to teach a lesson by making them experience their own actions’ impact.  
+- **Mirror Effect** — The power of reflecting others’ actions, desires, or values back at them to unsettle, infuriate, or seduce them.  
+- **Mirror Situation** — A dangerous scenario resembling a previous one, where associations and comparisons may harm one’s reputation or position.  
+- **Narcissus Effect** — Psychologically mirroring another person’s desires and self-image to seduce and gain power by reflecting their inner self.  
+- **Neutralizing Effect** — Mirroring an enemy’s actions exactly to shield one’s own strategy and confuse or infuriate the opponent.  
+- **Shadow** — Following and covertly mirroring an opponent’s movements to gather intelligence and anticipate their strategy.  
+- **Seducer’s Mirror** — Using the Narcissus Effect to embody another’s ideal self-image and desires to captivate and control them.  
+- **Shield of Perseus** — A metaphorical polished mirror used to reflect one’s enemy’s actions and hide one’s own moves, neutralizing threats.  
+- **Teacher’s Mirror** — Using the Moral Effect to show someone their faults or unpleasant behavior through experience rather than argument.  
+- **Warrior’s Mirror** — The practical use of the Neutralizing Effect to imitate enemies in combat or conflict to gain advantage.  
+- **Courtier’s Mirror** — Subtly reflecting the unspoken desires and tastes of others, often through indirect and wordless communication, to enchant and gain influence.

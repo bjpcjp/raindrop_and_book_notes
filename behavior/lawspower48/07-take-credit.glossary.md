@@ -1,0 +1,32 @@
+- **Alternating-current system (AC)** — Electrical system developed by Tesla as an improvement over direct current, standard today.  
+- **Authority** — The reputation of being knowledgeable, often gained by acquiring and using others’ knowledge.  
+- **Balboa, Vasco Núñez de** — Explorer who discovered a wealthy empire but lost credit and life due to rivals.  
+- **Batchelor, Charles** — Friend of Edison who encouraged Tesla to seek fortune in America.  
+- **Credit** — Recognition or acknowledgement for work or invention, often as important as the invention itself.  
+- **Direct-current system (DC)** — Electrical system supported by Edison, opposed to Tesla’s AC system.  
+- **Edison, Thomas** — Inventor and businessman known for hiring others to do work and taking credit for inventions.  
+- **Efficiency** — The ability to accomplish a task with minimum wasted effort or expense, enhanced by using others’ work.  
+- **Exhaustion** — Result of trying to do all work alone, leading to burnout and wasted energy.  
+- **Fable** — Short story illustrating a lesson or moral, often with animals as characters.  
+- **George Westinghouse** — Industrial magnate who funded Tesla’s AC research and offered royalty agreements.  
+- **Innovation** — The process of creating new ideas, products, or methods, often benefiting from others’ prior work.  
+- **Intellectual theft** — Taking credit for others’ ideas or inventions without acknowledgment.  
+- **Investors** — People who provide funding for inventions or businesses, attracted by promise of credit or profit.  
+- **Legwork** — The physical or mental effort done by others to support one’s success or power.  
+- **Patents** — Legal protections for inventions, often fought over for credit and monetary gain.  
+- **Peter Paul Rubens** — Artist who delegated work to specialists but took credit as the master creator.  
+- **Power** — The ability to control or influence others, often maintained by leveraging others’ efforts.  
+- **Publicist** — Someone skilled in presenting and taking credit for inventions or achievements to the public.  
+- **Recognition** — Public acknowledgement for work done; critical for establishing power and reputation.  
+- **Reversal** — Situations when taking all credit is disadvantageous and sharing credit strategically is wiser.  
+- **Role delegation** — Assigning specific tasks to others with specialized skills to increase overall productivity.  
+- **Royalty agreement** — Contract promising inventor a percentage of profits from an invention’s use.  
+- **Sabotage** — Actions taken to undermine rivals, as Edison did to Tesla.  
+- **Science and politics** — The reality that scientific work is often influenced by competition and rivalry.  
+- **Secrets** — Keeping inventions or discoveries quiet to prevent theft of credit before one can secure recognition.  
+- **Share credit** — Strategically allowing others to receive recognition to maintain alliances or positions.  
+- **Standing on the shoulders of giants** — Using prior knowledge and achievements of others to advance one’s own work.  
+- **Tesla, Nikola** — Brilliant inventor who refused to compromise on credit, leading to obscurity and poverty.  
+- **Vulture** — A metaphor for those who benefit from the efforts of others without doing the work themselves.  
+- **Westinghouse, George** — Backer of Tesla’s AC technology who later revoked a generous royalty contract under financial pressure.  
+- **Work delegation** — The practice of having others perform tasks, enabling higher efficiency and power accumulation.

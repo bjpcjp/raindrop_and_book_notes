@@ -1,0 +1,30 @@
+- **Alcibiades** — A leading Athenian politician ostracized due to his flamboyant lifestyle and perceived threat to the city’s cohesion.  
+- **Andrew Johnson** — U.S. president who unsuccessfully tried to isolate Ulysses S. Grant, provoking Grant's rise in power.  
+- **Aristides** — Athenian general known as “The Just,” ostracized for his arrogance and divisive presence despite his contributions.  
+- **Atahualpa** — King of the Incan Empire, whose capture and execution by Pizarro led to the empire's collapse.  
+- **Banishing (Banishment)** — The act of removing or isolating a troublesome individual from a group to maintain cohesion and peace.  
+- **Black faction (Florence)** — The older money faction in Florence that opposed the Whites and worked with Pope Boniface VIII to seize power.  
+- **Blacks and Whites (Florence factions)** — Rival political factions in Florence; the Whites were new merchants, the Blacks were the old elite.  
+- **Boniface VIII** — Shrewd pope who manipulated Florentine factions and neutralized Dante to extend papal power over Tuscany.  
+- **Charles de Valois** — French prince called by Boniface VIII to help take control of Tuscany and Florence, used to bribe and divide opposition.  
+- **Dante Alighieri** — Celebrated Florentine poet and politician who resisted papal interference but was isolated, exiled, and condemned.  
+- **Democracy (Athenian)** — A political system focused on citizen participation and cohesion vulnerable to disruption by divisive individuals.  
+- **Discontent (Chronic dissatisfaction)** — A personality trait of individuals who stir unrest and sow dissension in groups.  
+- **Dissension** — Conflict and division within a group caused by disruptive individuals or factions.  
+- **Dr. Milton H. Erickson** — Family therapist who identified that dysfunction often revolves around a single troublemaker isolateable by physical separation.  
+- **Exile** — The enforced removal of a person from their community, used historically as a tool to preserve social order.  
+- **Florence** — Italian republic divided by factional conflict, manipulated by Pope Boniface VIII to extend papal control.  
+- **Hernando Cortés** — Conquistador who conquered the Aztec empire by capturing its leader, thus causing the empire to collapse.  
+- **Hyperbolus** — Obnoxious Athenian citizen whose banishment ended the practice of ostracism in Athens.  
+- **Isolation** — Strategic separation of a leader or troublemaker from their base of support to neutralize their influence.  
+- **Machiavelli** — Renaissance political thinker who advised inflicting harm in ways that prevent revenge.  
+- **Moctezuma** — Aztec king captured by Hernando Cortés, whose fall led to the empire’s disintegration.  
+- **Ostracism** — Ancient Athenian practice of voting to temporarily banish disruptive individuals for ten years to preserve democratic stability.  
+- **Pizarro** — Conquistador who captured Atahualpa and dismantled the Incan empire by removing its leader.  
+- **Power center** — The single strong individual or small group in any organization or society around whom others congregate.  
+- **Rasputin** — Monk who gained power in the Russian court by exploiting feelings of isolation experienced by the czarina.  
+- **Shepherd (Leader)** — The central figure whose removal causes the group (sheep) to scatter and lose cohesion.  
+- **Stirrer (Troublemaker)** — The individual in a group who initiates discord, often exhibiting overbearing or chronic dissatisfaction.  
+- **Themistocles** — Athenian general ostracized for his arrogance and overbearing nature despite significant achievements.  
+- **Whites (Florence)** — The newer merchant faction in Florence that held power and opposed the older elites.  
+- **William H. Prescott** — Historian who documented the conquest of Peru and the effects of Atahualpa’s capture.

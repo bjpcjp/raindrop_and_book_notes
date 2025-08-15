@@ -1,0 +1,25 @@
+- **Action** — A demonstration or physical deed used to prove a point more effectively than words or argument.  
+- **Argument** — Verbal exchange aimed at proving a point, often leading to resentment and lasting ill will rather than genuine agreement.  
+- **Authority** — The power or right to give orders and enforce obedience; often best maintained by showing results rather than engaging in argument.  
+- **Demonstration** — The act of showing or proving something through visible and undeniable action instead of discussion.  
+- **Distraction** — A tactic of diverting attention, used effectively in verbal argument to cover deception or lies.  
+- **Expertise** — Specialized knowledge or skill in a particular area, which may be disregarded if presented through argument rather than action.  
+- **Ill will** — Negative feelings such as resentment or hostility, often stirred by argument.  
+- **Indirect persuasion** — Influencing others by actions, symbols, or situations rather than direct confrontation or debate.  
+- **Interpretation** — The act of explaining or making sense of stories, examples, or behavior beyond literal meaning.  
+- **Judgment** — The evaluation that winning through argument is less effective and often harmful compared to winning through actions.  
+- **Key to power** — Understanding the long-term consequences of actions and choosing indirect methods for influencing others.  
+- **Literal demonstration** — Physical or visual proof that makes an idea undeniable and prevents argument or resentment.  
+- **Misinterpretation** — The incorrect understanding of words or actions, common in heated argument.  
+- **Opponents** — Those who oppose or disagree with one’s ideas or actions, best influenced by demonstration not debate.  
+- **Persuasion** — The act of convincing others to agree or comply, more effective when done by action rather than words.  
+- **Physical proof** — Concrete evidence presented through action or symbol, which is impossible to dispute.  
+- **Power** — The ability to influence or control others, best maintained through indirect methods and demonstration.  
+- **Reversal** — Using argument deliberately as a tactic to distract or cover deception, rather than to seek truth or agreement.  
+- **Resentment** — Bitter indignation at having been treated unfairly, often the result of verbal disputes or arguments.  
+- **Show, don’t tell** — The principle of proving your point by action and example instead of words or arguments.  
+- **Silent persuasion** — Influencing others without verbal communication, relying on actions, symbols, or demonstrations.  
+- **Symbol** — An object or event that conveys a profound message or meaning understood by all without words.  
+- **Technical explanation** — Complex reasoning or jargon used in argument, often ineffective in convincing others resistant to debate.  
+- **Visceral demonstration** — An action that creates a deep emotional or physical feeling, making understanding immediate and compelling.  
+- **Words** — Spoken or written language often viewed as unreliable and easily misinterpreted in disputes.

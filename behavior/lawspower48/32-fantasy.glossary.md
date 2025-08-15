@@ -1,0 +1,27 @@
+- **Alchemy** — A mystical art promising transformation of base materials into gold, symbolizing sudden and miraculous change.  
+- **Appeal to Fantasy** — The act of tapping into people's desires for illusions or romanticized visions instead of harsh realities.  
+- **Banality of Reality** — The mundane, oppressive daily truths that weigh on people and contrast with their fantasies.  
+- **Charlatan** — A person who deceives others by falsely claiming special knowledge or skill, especially to exploit fantasies.  
+- **Common Man Fantasy** — The idealization of the simple, problem-free life of ordinary people, as opposed to the complicated lives of the powerful.  
+- **Con Artist** — A swindler who exploits others’ fantasies and desires using deception and false promises.  
+- **Distance (in Fantasy)** — The necessary gap between the fantasy and reality to maintain allure and prevent disillusionment.  
+- **Fantasy** — A pleasurable, often unrealistic vision or hope that offers escape from harsh reality.  
+- **Fantasy of Adventure** — The desire to enter a new, exotic, or thrilling world with different codes and freedoms.  
+- **Fantasy of Exoticism** — The lure of strange, unknown cultures or customs that captivate imagination and entertain.  
+- **Fantasy of Mystical Union** — A vision of harmonious togetherness and solidarity that transcends social fragmentation and conflict.  
+- **Fantasy of Resurrection** — A longing for reversal of death or irreversible loss, often exploited in forgery or false revivals.  
+- **Forger** — An individual who creates false artifacts or documents, playing on fantasies to deceive experts and the public.  
+- **Humdrum Reality** — The dull, slow, and often difficult nature of real life requiring work and patience.  
+- **Mimicry** — The act of imitating the reigning leader or dominant mood to blend into social environments.  
+- **Mirage** — An alluring but unattainable image or promise that fuels desire without fulfillment.  
+- **Opulence** — The display of wealth and luxury used to create an aura that feeds fantasies of power and success.  
+- **Oppressiveness of Reality** — The harsh and discouraging nature of actual circumstances that makes fantasies attractive.  
+- **Play Element in Fantasy** — The shared understanding that the fantasy is a form of entertainment and diversion, not necessarily truth.  
+- **Pot of Gold** — A metaphor for sudden, total wealth or miraculous success promised by fantasy.  
+- **Reincarnation (symbolic)** — The transformation or rebranding of a persona to inhabit a new identity that fuels a desired fantasy.  
+- **Romance** — The embellishment or idealization of a story that makes it more attractive than harsh truth.  
+- **Swindle** — A deceptive scheme that exploits fantasies for personal gain.  
+- **Taboo** — Social or cultural prohibitions that, when broken or hinted at, enhance the power of certain fantasies.  
+- **Unrealized Fantasy** — A fantasy that remains partially distant or unfulfilled, maintaining its power by never becoming mundane or commonplace.  
+- **Venetian Decline** — Historical context illustrating how fantasy (alchemy) was used as a hopeful distraction from economic and social decay.  
+- **Wishful Thinking** — Belief in desirable outcomes without evidence or rational basis, fueling fantasies over reality.

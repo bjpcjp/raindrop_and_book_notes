@@ -1,0 +1,1 @@
+Reputation is the foundation of power, capable of intimidating enemies and securing influence without direct confrontation, and must be carefully cultivated, protected, and leveraged throughout one’s life. Attacking an opponent’s reputation can be a potent strategy, but it requires subtlety and restraint to avoid damaging one’s own standing.

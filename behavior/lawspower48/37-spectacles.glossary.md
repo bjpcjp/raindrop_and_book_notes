@@ -1,0 +1,32 @@
+- **Aphrodite** — Greek goddess of love and beauty, symbolically embodied by Cleopatra in a grand spectacle.  
+- **Aura** — A distinctive quality or atmosphere surrounding a person, often enhanced by imagery and symbolism.  
+- **Caprice** — A sudden change of mood or behavior; linked to manipulation of appearances to influence perception.  
+- **Carousel** — A rotating platform often used as a metaphor for spectacle and pageantry (implicit through grand displays).  
+- **Chasity** — Symbol associated with the Roman goddess Diana, used to convey purity and respectability.  
+- **Cleopatra** — Queen of Egypt known for creating compelling visual spectacles to assert power.  
+- **Color Symbolism** — Use of colors (e.g., black and white for Diane de Poitiers) to convey symbolic meanings and emotional associations.  
+- **Cross** — A Christian symbol superimposed on the sun that signified Constantine’s conversion and ascendant power of Christianity.  
+- **Diana** — Roman goddess of the hunt, chastity, and purity; a powerful symbolic identity adopted by Diane de Poitiers.  
+- **Emotional Appeal** — Using imagery and symbols to bypass rational thought and provoke feelings and loyalty.  
+- **Festival** — Public spectacle staged to distract, unite, or glamorize authority (per Machiavelli).  
+- **Goujon Sculpture Diane Chasseresse** — Statue symbolizing Diane de Poitiers as goddess Diana, reinforcing her mythic stature.  
+- **Image** — Visual representation that communicates meaning and emotion instantly, often used to project power.  
+- **Insignia** — A badge or symbol representing a person or union; Diane and Henri’s intertwined initials were a powerful insignia.  
+- **Judgment** — Critical assessment or interpretation of symbolic acts and spectacles.  
+- **Key to Power** — The notion that images and symbols can strengthen authority by evoking emotional resonance rather than relying on words.  
+- **Law 37** — The principle of creating compelling spectacles to enhance presence and manipulate perception.  
+- **Lure of Visuals** — The innate human response to striking imagery and symbols that captivate and lead emotions.  
+- **Magnetism** — The irresistible attraction created by grand symbolic gestures and imagery.  
+- **Medicine of the Moon** — Dr. Weisleder’s spectacle of healing by moonlight, illustrating the power of symbolism over science.  
+- **Moon Doctor** — Nickname for Dr. Weisleder, who used the symbolism of the moon to create a powerful healing spectacle.  
+- **Motif** — A recurring visual element or symbol used to convey unity, such as Diane and Henri’s intertwined initials.  
+- **Power Symbol** — An emblem or image that communicates authority and commands respect beyond words.  
+- **Renaissance** — Historical period when visual supremacy became pronounced, elevating the importance of images and symbols.  
+- **Scene** — A staged visual event or tableau intended to evoke strong impressions or associations.  
+- **Spectacle** — A grand, arresting visual display designed to dazzle and influence an audience.  
+- **Symbol** — An object or image representing abstract concepts loaded with emotional meaning, functioning as a shortcut of expression.  
+- **Symbolist Thought** — A mode of understanding that associates ideas through symbolic meanings rather than causal logic.  
+- **Tableau Vivant** — A live representation of a scene, often symbolic, used to glorify and mythologize figures.  
+- **Visual Primacy** — The dominance of sight over other senses in perception and meaning-making.  
+- **Visual Sequence** — The ordered arrangement of images or symbols to create layered meanings or hierarchies of importance.  
+- **Word vs. Image** — The contrast between persuasion by words, which invite debate, and images, which impose immediate emotional impact.

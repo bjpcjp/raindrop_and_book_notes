@@ -1,0 +1,43 @@
+```markdown
+# Table of Contents
+
+- LAW 32  
+- PLAY TO PEOPLE’S FANTASIES  
+- JUDGMENT  
+- THE FUNERAL OF THE LIONESS  
+- OBSERVANCE OF THE LAW  
+  - Venice’s Prosperity and Decline  
+  - Arrival of Il Bragadino  
+  - Bragadino’s Influence and Scam  
+  - Departure and Repeat of the Pattern  
+- Interpretation  
+  - Mamugnà as Bragadino  
+  - Establishing Reputation through Wealth  
+  - Power of Fantasy in Times of Decline  
+  - Quotes on Fantasy and Lies  
+- KEYS TO POWER  
+  - Fantasy Requires Reality as Backdrop  
+  - Persistent Realities and Corresponding Fantasies  
+    - Change is Slow vs. Sudden Transformation  
+    - Social Codes vs. New Worlds and Adventure  
+    - Fragmented Society vs. Mystical Union  
+    - Death vs. Sudden Reversal  
+  - Examples of Fantasies and Scams  
+    - Leonhard Thurneisser  
+    - George Psalmanazar  
+    - Mata Hari  
+    - Oscar Hartzell  
+    - Han van Meegeren Forgery  
+  - Principles for Maintaining Fantasy  
+    - Distance and Vagueness  
+    - The Moon as Symbol of Fantasy  
+- Authority: Lying as Romance vs. Truth  
+- REVERSAL  
+  - Risks of Failing to Deliver Fantasy  
+  - Bragadino’s Execution  
+  - Fantasy as Desire for Simple Things  
+  - Examples of Fantasy in Politics and Entertainment  
+    - Abraham Lincoln’s Persona  
+    - P. T. Barnum and Tom Thumb  
+  - Maintaining Distance in Commoner Personas  
+```

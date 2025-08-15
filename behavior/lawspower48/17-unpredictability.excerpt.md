@@ -1,0 +1,1 @@
+Deliberate unpredictability unsettles others by disrupting their expectations and patterns, giving you a strategic advantage through confusion and fear. This tactic, effective in both high-stakes competition and everyday life, must be used judiciously, as excessive unpredictability can signal instability and undermine your position.

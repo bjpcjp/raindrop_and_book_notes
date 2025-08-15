@@ -1,0 +1,26 @@
+- **Athenian money** — The financial resources that infiltrated Spartan society, undermining its rigid system and contributing to its downfall.  
+- **Chess** — A board game characterized by linear, aggressive, and position-oriented strategy focusing on direct confrontation.  
+- **Character armor** — Psychological rigidity developed as a defense mechanism that limits flexibility and adaptability.  
+- **Concentration** — The strategic focus of power and force in a decisive blow after dispersing to confuse the enemy.  
+- **Form** — A visible, fixed shape or plan that can be grasped and attacked by an opponent.  
+- **Formlessness** — The state of being adaptable, fluid, and unpredictable, making one ungraspable and difficult to attack.  
+- **Guerrilla warfare** — A form of indirect, fluid warfare that relies on mobility, formlessness, and psychological tactics rather than direct confrontation.  
+- **Go (wei-chi)** — An Asian board game emphasizing subtle, fluid, and indirect strategy, focusing on encirclement and mobility rather than direct attack.  
+- **Indirect warfare** — A style of conflict that avoids direct engagement, using elusiveness, deception, and psychological strategies to weaken the enemy.  
+- **Jigsaw pattern** — A dispersed and irregular formation used in warfare or strategy to confuse opponents and prevent them from understanding one’s moves.  
+- **Mao Tse-tung** — Communist leader known for employing formless, fluid strategies inspired by wei-chi to defeat superior Nationalist forces.  
+- **Mercury** — Symbol of formlessness; the winged messenger god representing adaptability, elusiveness, and the power to assume any form.  
+- **Mobility** — The ability to move swiftly and unpredictably, essential to maintaining formlessness and evading fixed attacks.  
+- **Nationalists** — Chiang Kai-shek’s forces during the Chinese civil war, characterized by superior firepower but rigid and predictable strategy.  
+- **Rothschild, Baron James** — Historical figure who gained and maintained power by adapting to changing political climates without revealing weaknesses.  
+- **Rigid system** — A fixed, inflexible mode of operation or governance that becomes predictable and vulnerable over time.  
+- **Sparta** — Ancient Greek city-state known for its rigid military society, discipline, and focus on warfare, ultimately undone by inflexibility.  
+- **Strategic abstraction** — The evolution of strategy toward mental, indirect, and multidimensional thinking beyond physical formations.  
+- **Sun-tzu** — Ancient Chinese military strategist who emphasized formlessness and adaptability as keys to victory.  
+- **Thebes** — City-state whose military victory contributed to the final collapse of Sparta.  
+- **T. E. Lawrence** — Early proponent of guerrilla warfare, utilizing elusiveness, detachment, and mobility to fight superior forces.  
+- **Unfathomability** — The quality of being concealed and mysterious to opponents, preventing them from predicting or countering moves.  
+- **War of detachment** — A conflict style where one avoids direct contact, maintaining distance and using indirect tactics to wear down the enemy.  
+- **Wealth** — Resources that, when improperly managed or embraced by rigid systems, can erode discipline and lead to vulnerability.  
+- **Western rigidity** — The inflexible style of governance or power that ultimately becomes an Achilles’ heel when faced with adaptive opponents.  
+- **World War II, Post** — Historical context where the Chinese communists used formless tactics to defeat the Nationalists in Manchuria.

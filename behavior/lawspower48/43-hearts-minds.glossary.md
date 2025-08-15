@@ -1,0 +1,29 @@
+- **Astyages** — Median king whose oppression led the Persians to revolt under Cyrus.  
+- **Chuko Liang** — Ancient Chinese strategist who used persuasion and mercy to win over enemies.  
+- **Coercion** — A forceful method that provokes resistance and retaliation.  
+- **Emotions** — Primary feelings like love, hate, and jealousy used to influence and seduce others.  
+- **Force** — Direct power or violence that strengthens resistance rather than winning loyalty.  
+- **Heart** — The emotional center of a person's psychology critical for persuasion.  
+- **Hearts and Minds** — The emotional and intellectual aspects of individuals that must be engaged for loyalty.  
+- **Individual Psychology** — The unique emotional makeup and weaknesses of a person exploited for persuasion.  
+- **Intellectual Weaknesses** — Vulnerabilities related to cognition or beliefs used to influence others.  
+- **Internal Opposition** — Resentment and hatred growing from ignoring or mistreating people’s emotions.  
+- **Keyhole** — A metaphor for finding the small opening into someone's heart and mind to persuade without force.  
+- **Loved Ones** — Family and close relations used as emotional leverage in persuasion.  
+- **Marie-Antoinette** — Queen of France, symbol of neglecting to work on hearts and minds, leading to downfall.  
+- **Menghuo** — Southern king repeatedly captured and released by Chuko Liang, ultimately won over.  
+- **Napoleon Bonaparte** — Historic figure emphasizing the power of influencing masses over leaders.  
+- **Persuasion** — The act of gently influencing others by appealing to both emotions and intellect.  
+- **Petit Trianon** — The private garden and retreat created by Marie-Antoinette, symbolizing detachment from people.  
+- **Power Base** — The network of loyal supporters maintained by attending to their hearts and minds.  
+- **Reaction** — The negative emotional response typically triggered by coercion or force.  
+- **Self-Interest** — The strongest motivator for people, appeals to personal benefit in persuasion.  
+- **Seduction** — The subtle art of convincing others to willingly move in your direction through emotional and intellectual appeals.  
+- **Soldiers’ Morale** — The spirits and motivation of troops, influenced by leadership example and psychological tactics.  
+- **Symbolic Gestures** — Acts showing goodwill or sacrifice that build affinity and soften resistance.  
+- **T. E. Lawrence** — Military leader who emphasized winning individual soldiers’ hearts and minds.  
+- **The Masses** — Large groups of people whose support is crucial for true power and lasting influence.  
+- **Two-Pronged Approach** — A strategy combining emotional and intellectual appeals to seduce others.  
+- **Wutugu** — Barbarian king whose army was destroyed by Chuko Liang’s strategic trap.  
+
+

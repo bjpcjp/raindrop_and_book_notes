@@ -1,0 +1,1 @@
+Use the labor and knowledge of others to advance your own goals, ensuring you take credit for the results to build your power and reputation, while being vigilant to protect your work from being stolen. Success depends on wisely balancing when to claim credit and when to share it, as those who rely solely on their own efforts risk exhaustion and obscurity.

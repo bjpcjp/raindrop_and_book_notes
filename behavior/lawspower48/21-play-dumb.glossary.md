@@ -1,0 +1,30 @@
+- **Anthills** — Small mounds created by ants, used here as markers for digging during the gem search.  
+- **Arnold, Philip** — One of the prospectors who orchestrated the diamond mine con in Wyoming.  
+- **Bismarck, Otto von** — Prussian councillor who used the tactic of appearing foolish to deceive an Austrian negotiator.  
+- **Blome, Count** — Austrian diplomat and card player deceived by Bismarck’s feigned recklessness.  
+- **Clodhopper image** — A persona of being awkward or unsophisticated, adopted to seem less intelligent.  
+- **Diamond mine** — The fictitious source of diamonds in Wyoming used in the con by Arnold and Slack.  
+- **Expert verification** — The process of having specialists confirm the authenticity or value of something, exploited in the con.  
+- **Feigning stupidity** — Deliberately appearing less intelligent to disarm suspicion or manipulate others.  
+- **Fine print** — The detailed terms usually at the bottom or back of a document, often overlooked.  
+- **Harpending, Asbury** — U.S. financier unwittingly duped in the diamond mine scam.  
+- **Intellectual superiority** — The perception that one is smarter than another, a key factor in trust and deception.  
+- **Jewelers’ appraisal** — The evaluation of gems’ worth, which was grossly overestimated in the con.  
+- **Louis Janin** — Mining expert who believed the mine was genuine after extensive fieldwork.  
+- **Masquerading as a swine** — Chinese phrase for playing the fool to deceive powerful adversaries.  
+- **Naivete** — The quality of being innocent or unsophisticated, used as a disguise in cons.  
+- **Opossum** — An animal that plays dead to avoid predation, metaphor for feigning stupidity as a defense.  
+- **Philip Arnold’s farm** — What Arnold expanded after profiting from the scam.  
+- **Playing possum** — Pretending to be inactive or stupid to deceive.  
+- **Playing the fool** — A deliberate tactic of appearing stupid to disarm others or hide ambition.  
+- **Prussian councillor** — Refers to Bismarck, who used strategic folly.  
+- **Prospectors** — Individuals searching for mineral deposits, in this case, the scammers Arnold and Slack.  
+- **Ralston, William** — Owner of the Bank of California involved in the investment of the diamond mine.  
+- **Reputation ruin** — The loss of respect or credibility, as experienced by Harpending.  
+- **Salted mine** — A mining term meaning to plant valuable gems or minerals to deceive others.  
+- **Slack, John** — Partner to Arnold in orchestrating the diamond mine con.  
+- **Sophistication** — Worldliness or refined taste, which can be downplayed to appear less intelligent.  
+- **Tiffany, Charles** — Jeweler who confirmed the gems’ value, unknowingly involved in the scam.  
+- **Trading on stupidity** — Using one’s apparent ignorance to gain advantage over others.  
+- **Ulterior motives** — Hidden intentions behind actions, masked by appearing less intelligent.  
+- **Wisdom in appearing ignorant** — The strategic act of feigning stupidity despite possessing intelligence.

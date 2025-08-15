@@ -1,0 +1,16 @@
+- **Atheism Conquered** — A book by Tommaso Campanella defending Catholicism while subtly expressing heretical ideas.  
+- **Campanella, Tommaso** — A Dominican monk and philosopher persecuted for heretical beliefs who feigned madness and disguised his true ideas to survive.  
+- **Counter-Reformation** — A violent reaction by the Catholic Church in the late sixteenth century to suppress Protestantism and heresy, including the Inquisition.  
+- **Dissimulation** — The act of disguising one’s true beliefs or intentions, often by outwardly conforming to prevailing norms while privately holding different views.  
+- **Hispanic Monarchy** — A political book by Campanella deceptively praising Spanish expansionist policies to show orthodoxy while masking his true ideas.  
+- **Inquisition** — Church-led institutions aimed at rooting out heresy, notably active during the Counter-Reformation and Spanish persecution of converts.  
+- **Marranos** — Jews in Spain forced to convert to Christianity who clandestinely maintained Jewish beliefs and practices.  
+- **Orthodoxy** — The accepted or established beliefs, customs, and practices of a society or religion.  
+- **Pausanias** — A Spartan commander who adopted Persian customs, was suspected of treason, and punished for flaunting difference from Greek norms.  
+- **Public Censure** — Social or official punishment through criticism or ostracism for violating accepted norms.  
+- **Repression** — The act of suppressing dissent or unconventional ideas, often through force or social pressure.  
+- **Socratic Method** — Philosophical practice of questioning prevailing opinions, usually undertaken by a few rather than the many.  
+- **Transgression** — Violation of laws, norms, or social conventions, often leading to punishment or isolation.  
+- **Universal Folly** — The common, misguided beliefs or behaviors accepted by the majority in society.  
+- **Wise Men** — Individuals who conceal their true thoughts and feelings, selectively sharing originality with a discerning few.  
+- **Worldly Mask** — The adoption of conventional behavior and speech in public to blend in while maintaining private beliefs.

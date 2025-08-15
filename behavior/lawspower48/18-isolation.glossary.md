@@ -1,0 +1,24 @@
+- **Ch’in Shih Huang Ti** — First emperor of unified China (221–210 B.C.), known for his vast empire, paranoia, and isolation.  
+- **Citadel** — A fortress, often symbolic of isolated and despotic power vulnerable to betrayal and collapse.  
+- **Confucius** — Chinese philosopher whose teachings on moral life were outlawed and persecuted under Shih Huang Ti.  
+- **Courtiers** — Members of a royal court who attend and serve the monarch, often closely surrounding power.  
+- **Cicero** — Roman statesman who rose to influence through extensive social networking and connections.  
+- **Eunuchs** — Castrated men who often served in royal courts and possessed influence, including plots against rulers.  
+- **Fortress** — A fortified building or compound intended for protection, but often leading to isolation and vulnerability.  
+- **Great Wall of China** — Massive fortification built under Shih Huang Ti to guard China’s borders.  
+- **Hsien-yang** — Capital city of Shih Huang Ti’s empire, site of his vast palace and underground passageways.  
+- **Isolation** — Withdrawal from social contact, leading to loss of information, vulnerability, and paranoia.  
+- **Judgment Day (in Pontormo’s frescoes)** — Biblical scene representing final resurrection and reckoning, depicted in the chapel.  
+- **Lever** — The daily morning ritual at Louis XIV’s court marking the king’s waking and serving as a social focus.  
+- **Louis XIV** — French king who centralized power at Versailles by surrounding himself constantly with nobles.  
+- **Masque of the Red Death** — Edgar Allan Poe’s story symbolizing the futility of isolation against inevitable death and decay.  
+- **Machiavelli** — Renaissance political theorist who argued against fortresses and for social openness to maintain power.  
+- **Pontormo** — Renaissance painter whose isolated work on frescoes led to a chaotic, unfinished legacy.  
+- **Red Death** — A fictional deadly plague from Poe's story symbolizing inescapable fate and consequences of isolation.  
+- **San Lorenzo** — Church in Florence where Pontormo painted his ill-fated frescoes.  
+- **Social circulation** — Moving freely among different social groups to maintain information flow and alliances.  
+- **Solitude** — State of being alone, which can impair reason and lead to superstition or madness.  
+- **Talleyrand** — French statesman noted for maintaining power by keeping contact with all social strata, including criminals.  
+- **Versailles** — Palace built by Louis XIV to keep nobles close and maintain control through visibility and social openness.  
+- **Wall** — Physical and symbolic barrier; can isolate and weaken power by cutting off communication and intelligence.  
+- **Waspish nose** — Descriptive term used for Shih Huang Ti’s harsh and fierce appearance.

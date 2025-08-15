@@ -1,0 +1,27 @@
+- **Acheron** — A mythical river in Greek mythology associated with the underworld, symbolizing danger or death.  
+- **Ass** — In La Fontaine’s fable, a character accused and punished for minor transgressions, symbolizing scapegoating and injustice.  
+- **Casanova** — Famous historical figure known for his reputation as a great seducer, illustrating how reputation aids conquests.  
+- **Chuko Liang (Sleeping Dragon)** — Legendary Chinese general known for his clever tactics and reputation that intimidated enemies.  
+- **Doubt** — A powerful weapon in reputation warfare; once introduced, it unsettles opponents and is difficult to dispel.  
+- **Effrontery** — Boldness or insolence; can be crafted into a reputation if used strategically (e.g., Oscar Wilde).  
+- **Incense** — Aromatic substance burned as part of Chuko Liang’s intimidation tactic to craft an image of calm control.  
+- **Mesmerism** — Hypnotism used as a scientific-sounding attraction and subject of ridicule in Barnum’s reputation battles.  
+- **Mi Tzu-hsia** — Historical figure whose changing reputation determined his fate in the Wei kingdom, demonstrating the power of perception.  
+- **Mystery (Unknowableness)** — The secret nature of people’s character that leads to reliance on appearance and reputation for judgment.  
+- **Peale’s Museum** — Competitor to P.T. Barnum whose reputation was attacked and ultimately destroyed in a battle of public opinion.  
+- **P. T. Barnum** — American showman who actively built and defended his reputation while undermining his rivals’ through rumors and ridicule.  
+- **Public Opinion** — The collective judgment or perception of society that can elevate or destroy a reputation.  
+- **Reputation** — The perception of a person's character created and maintained to wield influence, intimidate, and protect oneself.  
+- **Ridicule** — A subtle tactic to weaken an opponent's reputation without direct slander, often effective once one has a strong reputation.  
+- **Rumor** — Insidious, unverified information used to sow doubt and damage an opponent’s reputation.  
+- **Satire** — A sophisticated tactic to undermine rivals by humor and mockery, requiring a solid personal reputation.  
+- **Sima Yi** — Enemy general of Chuko Liang who was intimidated by Liang’s reputation, leading to retreat without battle.  
+- **Sleeping Dragon** — Nickname of Chuko Liang symbolizing his reputation for cunning and unpredictability.  
+- **Slaughter (Execution by Electrocution)** — Used by Thomas Edison as a negative reputation campaign against Nikola Tesla’s AC current.  
+- **Solidarity in Reputation** — The concept of aligning with others’ good reputations to improve or whitewash one’s own image.  
+- **Subtlety** — The quality necessary in attacking or defending reputation to avoid damaging one’s own image.  
+- **Tacit Agreement** — Implied understanding or agreement, as seen in Barnum’s initial deal to buy the American Museum.  
+- **The Animals Stricken with the Plague** — La Fontaine’s fable illustrating how reputation governs judgment and scapegoating within society.  
+- **Visibility (Appearance)** — External signs such as clothing and behavior heavily influence others’ judgments in the absence of true knowledge.  
+- **Whitewashing** — The act of improving a tarnished reputation by association with someone of high standing.  
+- **Wolves and Foxes** — Characters in the fable symbolizing cunning and self-interest used to rationalize behavior and avoid blame.

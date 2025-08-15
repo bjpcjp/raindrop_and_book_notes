@@ -1,0 +1,19 @@
+- **Artful spying** — The practice of gathering valuable information discreetly by posing as a friend in social interactions.
+- **Confession (false)** — Pretending to reveal personal secrets to induce others to share their real ones.
+- **Disinformation** — Intentionally planting false information to mislead opponents and gain strategic advantage.
+- **Foreknowledge** — Advanced knowledge of an enemy's situation, essential to outmaneuver them, typically obtained through spying.
+- **Glass ceiling** — (implied) Limitations in information visibility which spying aims to break through.
+- **Indirect questions** — Subtle queries used in conversation to extract hidden intentions and weaknesses without alarming the subject.
+- **La Rochefoucauld’s ruse** — The tactic of feigning sincerity to draw out others’ confidences and secrets.
+- **Loyalty test** — A method of probing a person’s character by tempting them to reveal their true allegiance or honesty.
+- **Polite social encounters** — Opportunities for discreetly gathering intelligence by observing and conversing without raising suspicion.
+- **Probing** — The act of exploring or questioning indirectly to uncover hidden motives or information.
+- **Retaliatory disinformation** — Using false information as a defense against being spied on.
+- **Secret agents** — Operatives placed within enemy territory to gather or feed information covertly.
+- **Silent observation** — Suppressing one’s own personality in conversation to encourage others to reveal information inadvertently.
+- **Spies** — Individuals who gather intelligence covertly, either directly or through intermediaries.
+- **Testing character** — Strategic actions designed to observe reactions, revealing true intentions and trustworthiness.
+- **Third eye** — Metaphorical insight gained through spying that allows one to see beyond surface appearances and into others’ intentions.
+- **Talleyrand’s conversation technique** — Using charm, silence, and insinuations to get others to talk about themselves and reveal secrets.
+- **Vehement contradiction** — Challenging someone aggressively during conversation to provoke them into exposing hidden truths.
+- **Worming out information** — Extracting secrets gradually by befriending or manipulating individuals close to a target.

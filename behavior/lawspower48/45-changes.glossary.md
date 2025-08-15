@@ -1,0 +1,32 @@
+- **Anger against Cromwell** — Royal displeasure caused by ill-conceived reforms and an unwanted marriage arrangement.  
+- **Change** — The process of renewal or innovation, often upsetting to people’s core habits and routines.  
+- **Confucius** — Ancient Chinese philosopher symbolizing tradition and conservatism in Mao’s propaganda.  
+- **Cromwell, Thomas** — Henry VIII’s minister who initiated rapid religious and political reforms in England.  
+- **Cult of Mithras** — A Roman sun-god cult whose December 25 birthday was co-opted by the Christian church.  
+- **Cultural Revolution** — Mao’s late 1960s policy that triggered intense social upheaval and political struggle.  
+- **Divorce of Henry VIII** — The king’s desire to annul his marriage, sparking a break with Rome and religious reform.  
+- **English Reformation** — The rapid and radical change from Catholicism to Protestantism under Henry VIII and Cromwell.  
+- **Familiarity** — The human psychological need to cling to past habits, rituals, and symbols for security.  
+- **Heretics** — Those who resisted the new Protestant reforms and clung to Catholicism.  
+- **Holbein, Hans** — Painter commissioned to create an idealized portrait of Anne of Cleves.  
+- **King Henry VIII** — English monarch who broke with the Catholic Church to secure a divorce and initiate religious reform.  
+- **Legalism** — Chinese philosophical school favoring strict law and violence to establish order, embraced by Mao against Confucianism.  
+- **Mao Tse-tung** — Chinese Communist leader who cloaked revolutionary change in traditional cultural symbols to gain peasant support.  
+- **Mao’s propaganda** — Use of historical figures and reinterpretation of the past to legitimize communist reforms and personal power.  
+- **Monasteries’ dissolution** — The confiscation and destruction of religious houses during English Reformation.  
+- **Napoleon’s court** — A sober, work-focused court replacing the extravagant one of pre-revolutionary France to seem reassuring.  
+- **New order** — Radical restructuring of institutions and values, often meeting resistance because it disrupts familiar norms.  
+- **Paris Saturnalia** — Ancient Roman midwinter festival with traditions later incorporated into Christmas.  
+- **Past (in political strategy)** — The use or reinterpretation of history and tradition to legitimize and cushion reforms.  
+- **Peasantry (Chinese)** — The conservative rural population whose attachment to tradition Mao exploited for revolutionary support.  
+- **Public execution** — The method used to end Cromwell’s life after his fall from Henry VIII’s favor.  
+- **Reaction to reform** — Inevitable pushback by people unsettled by rapid or radical changes to their familiar life.  
+- **Reinterpretation of history** — Altering or selectively presenting the past to support current political objectives.  
+- **Reforms (gradual vs. rapid)** — Slow, evolutionary changes are more effective and less traumatic than quick, drastic ones.  
+- **Rituals** — Established customs or ceremonies providing continuity and comfort amid change.  
+- **Roman Republic symbolism** — Retaining old forms and symbols post-monarchy to ease political transition.  
+- **Saturnalia** — A joyful Roman festival that influenced later wintertime celebrations.  
+- **Scientific conservatism** — Resistance within science to radical new ideas, often overcome only by generational change.  
+- **The Water Margin** — A Chinese medieval novel Mao used to align Communist ideals with traditional heroic narratives.  
+- **Wang Mang** — Chinese emperor who manipulated Confucian texts to justify his reforms.  
+- **Zeitgeist** — The prevailing spirit or mood of a time that influences the reception of reforms.

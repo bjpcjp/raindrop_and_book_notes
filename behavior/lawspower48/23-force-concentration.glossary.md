@@ -1,0 +1,20 @@
+- **Attachment** — Loyalty or close association with a single powerful patron or source of power to gain sustained influence and support.
+- **Bleed** — The state of dispersing forces or energies across many fronts, leading to vulnerability and weakening of power.
+- **Concentration** — The focusing and consolidation of power, resources, or effort at a strong, decisive point to maximize effectiveness.
+- **Diffusion** — The process of spreading energies, attention, or resources thinly over multiple targets or areas, usually weakening overall power.
+- **Dispersion** — The scattering or dividing of forces or loyalties, which can lead to diminished strength or increased risk.
+- **Extensity** — Breadth of activity or influence across many areas, generally less effective than focused intensity.
+- **Intensity** — Depth and strength of concentrated effort or power in a single area, often producing superior results.
+- **Loyalty** — Faithfulness to a single leader, patron, or cause, critical for maintaining unified power.
+- **Patron** — A powerful supporter or master to whom one is loyal or attached for protection, resources, or advancement.
+- **Power** — The ability to influence or control others, often existing in concentrated forms or networks.
+- **Single-mindedness** — Focusing unwaveringly on one goal or purpose with determination and concentration.
+- **Source of Power** — The key individual, group, or institution controlling resources or influence, to which one should attach for security and growth.
+- **Strategic Concentration** — The deliberate focusing of efforts on a critical point to achieve decisive advantage.
+- **Strength** — The quality of being powerful, effective, and resilient often achieved through unity and concentration.
+- **Support Network** — A group or system of allies and resources consolidated to maintain or extend power.
+- **Tactical Dispersion** — Strategic spreading or hiding of forces to avoid defeat, especially used by weaker parties against stronger opponents.
+- **Unity** — The state of being joined or linked together, essential for the cohesion and effectiveness of a group or family.
+- **Vulnerability** — Exposure to danger or attack, often the result of overextension or divided allegiance.
+- **Wi-lingness to Serve** — The readiness to devote oneself to a patron or cause, which can translate into power through loyalty.
+- **Working in Concert** — Coordinated action among parts of an organization or family to produce synchronized effectiveness.

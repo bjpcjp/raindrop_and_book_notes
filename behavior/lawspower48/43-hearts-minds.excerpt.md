@@ -1,0 +1,1 @@
+To gain and maintain power, one must skillfully appeal to the individual psychologies and emotions of others, seducing them into loyalty rather than coercing them, as force breeds resistance and hatred. By understanding what people hold dear and fear, and using a combination of mercy and strategic persuasion, a leader can win genuine support and secure lasting influence.

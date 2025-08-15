@@ -1,0 +1,1 @@
+The key to successful deception lies in appearing less intelligent than your mark, as making others feel intellectually superior disarms their suspicion and makes them more trusting. This tactic, exemplified by Arnold and Slack’s diamond mine scam, leverages the victim’s vanity and underestimation to manipulate and outwit even the most astute individuals.

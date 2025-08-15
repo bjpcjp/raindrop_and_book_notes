@@ -1,0 +1,1 @@
+Mastering the art of timing requires patience, the ability to recognize the right moment, and the skill to wait for the tide to turn before striking decisively. Joseph Fouché exemplifies this by anticipating social shifts, patiently building support, manipulating opponents’ perceptions of time, and acting swiftly when the moment is ripe to secure and maintain power.
