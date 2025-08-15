@@ -1,0 +1,28 @@
+- **Amplitude Taper Loss (ATL)** — Loss in antenna gain due to non-uniform amplitude distribution across the aperture.
+- **Axial Length** — Distance along the centerline from the aperture to the waveguide in a horn antenna.
+- **Biconical Horn** — Antenna consisting of two cones with a common vertex, supporting TEM and higher-order modes.
+- **Beamwidth** — Angular width of the main lobe of an antenna beam, commonly specified at 3 or 10 dB down from the peak.
+- **Box Horn** — Horn antenna that uses multiple waveguide modes to reduce amplitude taper loss and axial length.
+- **Circular-Aperture Horn** — Horn antenna with a circular aperture, supporting TE11 and TM11 modes.
+- **Choke Horn** — Small-aperture horn with corrugated concentric rings in the flange to reduce cross-polarization and backlobes.
+- **Corrugated Ground Plane** — Ground plane featuring corrugations designed to reduce edge diffraction and backlobes by creating artificial magnetic conductor properties.
+- **Corrugated Horn** — Horn antenna with circumferential corrugations to improve polarization purity, reduce sidelobes, and equalize beamwidths.
+- **Diagonal Plane** — Plane between the E- and H-planes of a horn antenna, often where cross-polarization effects are observed.
+- **Directivity** — Measure of the concentration of an antenna’s radiation pattern in a particular direction.
+- **E-plane** — Plane containing the electric field vector and the direction of maximum radiation in a horn antenna.
+- **H-plane** — Plane containing the magnetic field vector and the direction of maximum radiation in a horn antenna.
+- **Obliquity Factor** — Factor \((1 + \cos \theta)/2\) applied to correct antenna pattern intensities for angular dependence.
+- **Phase Center** — Effective point in an antenna from which radiation appears to originate; location varies with angle and plane.
+- **Phase Error Loss (PEL)** — Loss arising from deviations in the phase distribution across the antenna aperture.
+- **Pyramidal Horn (Rectangular Horn)** — Horn antenna flaring from a rectangular waveguide with flat metallic walls, supporting TE10 mode.
+- **Quadratic Phase Distribution Constant (S)** — Dimensionless constant characterizing the quadratic phase error across a horn aperture.
+- **Ridged Waveguide Horn** — Horn antenna fed by a waveguide with ridges that lower cutoff frequency and extend bandwidth.
+- **Scalar Horn** — Corrugated horn with a wide half-flare angle, designed for wide beamwidth and fixed phase-center at the apex.
+- **Slant Radius (R)** — Distance from the junction of the projected sides of a horn flare to the aperture plane along the flare surface.
+- **T-bar-fed Slot Antenna** — Cavity-backed slot antenna fed by a T-shaped probe to achieve broadband impedance matching.
+- **TE10 Mode** — Lowest order rectangular waveguide mode with a cosine electric field distribution across the width.
+- **TE11 Mode** — Dominant mode in circular waveguides characterized by an azimuthal electric field distribution.
+- **TM11 Mode** — Transverse magnetic mode in circular waveguides, used to shape mode patterns in stepped or multimode horns.
+- **Uniform Distribution** — Aperture field distribution with constant amplitude across the aperture, often associated with minimal amplitude taper loss.
+- **Waveguide Modes** — Specific field distributions supported by waveguide geometries, such as TE and TM modes.
+- **Wavelength (λ)** — Distance over which the wave’s shape repeats, fundamental parameter in antenna design.

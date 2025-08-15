@@ -1,0 +1,25 @@
+- **Adaptive array** — An array that can adjust feed coefficients dynamically to optimize signal reception or transmission, often using digital signal processing.
+- **Amplitude distribution** — The variation of excitation amplitudes across the elements of an array to shape the radiation pattern and control sidelobe levels.
+- **Array factor** — The pattern resulting from the relative positions and excitations of isotropic elements in an array, separate from the individual element pattern.
+- **Beamwidth** — The angular width of the main lobe of an antenna radiation pattern, often measured between half-power (-3 dB) points.
+- **Broadside array** — An array in which the main beam is directed perpendicular to the array axis, typically with zero progressive phase shift.
+- **Circular Taylor distribution** — A type of amplitude taper for planar arrays to reduce sidelobe levels while maintaining beam shape.
+- **Directivity** — The ratio of radiation intensity in the maximum direction to the average radiation intensity, indicating antenna concentration of power.
+- **End-fire array** — An array with progressive phase shifts that produce a main beam along the array axis rather than broadside.
+- **Feed network** — The system supplying amplitude and phase excitations to the elements of an antenna array.
+- **Grating lobes** — Secondary beams of equal or near-equal amplitude formed in arrays with element spacing greater than half a wavelength.
+- **Isotropic radiator** — An idealized antenna element radiating equally in all directions.
+- **Linear array** — An array with elements arranged in a straight line, often along one of the coordinate axes.
+- **Mutual coupling** — Interaction between antenna elements in an array where one element affects the currents and impedances of neighboring elements.
+- **Mutual impedance** — The complex impedance representing the coupling between one antenna element and others in the array.
+- **Pattern null** — A direction in which the radiation intensity is zero or minimal due to destructive interference.
+- **Phased array** — An array that uses adjustable phase shifters at each element to steer the beam electronically without physical movement.
+- **Progressive phase shift (δ)** — The incremental phase difference applied between adjacent array elements to steer the beam.
+- **Scan blindness** — A phenomenon where the input reflection coefficient rises sharply, causing the array to fail to radiate or receive at certain scan angles.
+- **Scan impedance** — The input impedance of an array element as a function of the scan angle, influenced by mutual coupling.
+- **Sidelobes** — Secondary maxima in the radiation pattern outside the main beam, typically undesirable.
+- **Time-delay network** — A feed system introducing true time delays to enable wideband beam scanning without beam squint.
+- **Triangle (hexagonal) array** — A planar array whose elements are arranged in a hexagonal or equilateral triangular grid, exhibiting six-fold symmetry.
+- **Unit circle (visible region)** — In k-space, the region defined by |sin θ| ≤ 1 limiting the range of scan angles without grating lobes.
+- **Wide beamwidth element** — An antenna element with a broad radiation pattern, often leading to higher mutual coupling and scan blindness risks.
+- **Z-axis array** — An array aligned along the z-coordinate axis, commonly used as a reference for beam and pattern calculations.

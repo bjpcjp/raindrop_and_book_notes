@@ -1,0 +1,30 @@
+- **Active region** — The finite region of an antenna where most of the input power is radiated, scaling with wavelength.
+- **Amplitude ripple** — Variations in antenna radiation pattern amplitude caused by interactions of multiple radiation modes.
+- **Archimedean spiral** — A spiral antenna whose radius increases uniformly with angle (r = r0 + aφ), useful but not fully frequency-independent.
+- **Balanced line** — A transmission line with two conductors carrying equal and opposite currents, used to feed two-arm spirals.
+- **Beamformer** — A network feeding multiple arms of a spiral antenna, dividing power into equal amplitude outputs with linear phase progression.
+- **Beamwidth** — The angular width of the main antenna radiation lobe, often defined at half-power points.
+- **Biconical antenna** — An antenna whose shape is determined by angles, but not frequency-independent due to currents that fail truncation requirements.
+- **Circular polarization (RHC/LHC)** — Electromagnetic wave polarization with rotating electric fields; right-hand circular (RHC) and left-hand circular (LHC).
+- **Complementary structure** — An antenna structure where metal and space widths form a complementary pattern, with characteristic impedance derived from Babinet–Booker principle.
+- **Conical log spiral antenna** — A spiral antenna formed on a cone, radiating primarily toward the cone vertex with controllable beamwidth.
+- **Cross-polarization** — Radiation polarized orthogonally to the desired polarization, often caused by feeder currents or pattern imperfections.
+- **Cavity-backed antenna** — An antenna placed over a metallic cavity (often loaded with absorber) to suppress unwanted polarizations and back radiation.
+- **Directivity** — The measure of how focused an antenna’s radiation pattern is in the direction of maximum radiation.
+- **Expansion factor (EF)** — The ratio of radius increase per turn in an equiangular spiral antenna, related to growth rate.
+- **Feed network** — A system of transmission lines and circuits providing correct amplitude and phase excitation to multiple antenna arms.
+- **Frequency-independent antenna** — An antenna whose radiation characteristics do not change significantly with frequency, often accomplished by self-scaling geometry.
+- **Fourier/modal expansion** — Representation of antenna patterns as sums of modes with specific phase rotations associated with circular polarization.
+- **Infinite balun** — A balun design exploiting the truncation property of self-scaling antennas, attaching coax at the spiral center without exciting outside currents.
+- **Log-periodic antenna** — An antenna with elements scaled logarithmically in size and spacing, producing periodic behavior versus the logarithm of frequency.
+- **Log-periodic dipole antenna** — A multi-element broadband antenna whose dipole lengths and spacings scale by a constant τ to cover a wide frequency range.
+- **Modulated arm width (MAW) spiral** — A spiral antenna with sinusoidal variation in arm width forming bandstop chokes that suppress unwanted radiation modes.
+- **Mutual coupling** — Electromagnetic interaction between antenna elements or arms, affecting antenna impedance and pattern.
+- **Phase center** — The effective point from which antenna radiation appears to emanate, important for antenna placement and reflector feeding.
+- **Polarization mode number (m)** — The index representing the number of 2π phase rotations in feed phasing or radiation pattern of spiral antenna modes.
+- **Self-scaling antenna** — An antenna containing scaled versions of itself at different sizes, enabling frequency-independent operation.
+- **Sinuous antenna** — A log-periodic planar antenna with arms shaped by sinusoidal curves for broadband circular polarization.
+- **Spacing constant (σ)** — A parameter defining element spacing relative to element length in log-periodic dipole antennas.
+- **Truncation constants** — Empirical values defining antenna element sizes or active region boundaries used to determine frequency limits.
+- **Traveling-wave region** — Part of an antenna where currents progress without reflection, important for continuous scaling and radiation.
+- **Z-directed radiation** — Radiation along the axis normal to the plane of a spiral antenna, generally a null direction for self-scaling antennas.

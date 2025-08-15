@@ -1,0 +1,29 @@
+- **Absorbing Boundary Conditions (ABCs)** — Approximate boundaries in finite computational domains to simulate radiation into infinite space, reducing reflections and numerical instabilities.  
+- **Aperture** — The opening through which an antenna radiates or receives electromagnetic fields, often modeled using equivalent electric and magnetic currents.  
+- **Boundary Conditions** — Constraints on electric and magnetic fields at interfaces between different materials, enforcing field continuity or specifying surface currents and charges.  
+- **Central Difference Derivative** — A numerical scheme using values at points on both sides to approximate derivatives with second-order accuracy, fundamental in FDTD time stepping.  
+- **Conductance (σ), Magnetic Conductance (σ\*)** — Material properties representing electric and magnetic losses in media used in FDTD formulations.  
+- **Courant Condition** — Stability criterion for time step selection in FDTD ensuring waves propagate no faster than physically allowed through discretized cells.  
+- **Current Distribution** — Assumed or computed spatial variation of electric or magnetic current densities on an antenna or scattering object, represented as expansions of basis functions in moment methods.  
+- **Directivity** — The ratio of peak radiation intensity to average intensity averaged over all directions, a measure of antenna spatial concentration.  
+- **Electric Field Integral Equation (EFIE)** — An integral equation enforcing the zero tangential electric field boundary condition on conducting surfaces, solved using moment methods.  
+- **Equivalent Currents** — Hypothetical electric and magnetic currents on a surface replacing fields inside a volume, used in aperture and scattering analyses via the equivalence theorem.  
+- **Far Field (Radiation Field)** — The region far from an antenna where fields behave as outward propagating spherical waves, with power density decreasing as 1/r².  
+- **Fermat’s Principle** — Optical principle stating rays follow paths minimizing optical path length, used to trace rays in geometric optics.  
+- **Finite-Difference Time-Domain (FDTD) Method** — A numerical time-domain method for solving Maxwell's curl equations over discretized spatial cells, alternating updates of electric and magnetic fields.  
+- **Geometric Optics (GO)** — Ray-based approximation method treating electromagnetic propagation as rays reflecting and refracting per Fermat’s principle, accurate for electrically large structures.  
+- **Geometric Theory of Diffraction (GTD)** — Extension of GO including diffraction effects from edges and discontinuities to handle shadow and transition regions more accurately.  
+- **Half-Power Beamwidth (HPBW)** — Angular width between points on an antenna radiation pattern where power drops to half (−3 dB) of its maximum value.  
+- **Huygens Source Approximation** — Modeling an aperture as a distribution of equivalent electric and magnetic currents radiating fields with the assumption of plane-wave-like relation between E and H fields.  
+- **Impedance Bandwidth** — Frequency range over which the antenna input impedance remains within acceptable matching limits.  
+- **Input Impedance** — Complex ratio of voltage to current at antenna feed point, including radiation resistance and reactive components.  
+- **Integral Equation** — Mathematical expression relating fields and currents through integrals, fundamental in moment method formulations.  
+- **Magnetic Currents** — Fictitious currents used to model slot antennas and apply duality principles for analysis.  
+- **Method of Moments (MOM)** — Numerical technique expanding unknown currents in basis functions and solving integral equations approximately by converting to matrix equations.  
+- **Near Field** — Region close to the antenna where reactive and radiating fields coexist with complex spatial variation.  
+- **Physical Optics (PO)** — Approximate high-frequency method calculating induced currents on conducting surfaces illuminated by incident fields to find scattered radiation.  
+- **Radiation Resistance** — Equivalent resistance representing power radiated by an antenna relative to input current squared.  
+- **Reactance Theorem** — Integral formulation relating mutual reactance between antennas through field-current interactions, used in MOM mutual impedance calculations.  
+- **Uniform Theory of Diffraction (UTD)** — Uniform extension of GTD providing smooth, non-singular diffraction coefficients for edge diffraction and shadow boundaries.  
+- **Vector Potentials** — Auxiliary mathematical functions (magnetic vector A, electric vector F) used to simplify electromagnetic field calculations though lacking direct physical observability.  
+- **Yee Cell** — The fundamental spatial discretization cell for FDTD, with electric and magnetic field components staggered in space and time to allow stable numerical solution.

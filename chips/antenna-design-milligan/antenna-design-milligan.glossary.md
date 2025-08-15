@@ -1,0 +1,27 @@
+- **Aperture Efficiency** — Ratio of an antenna’s effective area to its physical area, reduced by material, distribution, and mismatch losses.  
+- **Axial Ratio** — Ratio of the major to minor axis of the polarization ellipse, indicating the quality of circular polarization.  
+- **Beam Efficiency** — Ratio of power within a specified main beam cone to the total radiated power.  
+- **Beamwidth** — Angular width of the antenna radiation pattern, typically measured at half-power (3 dB) points.  
+- **Circular Polarization** — Polarization where the electric field magnitude is constant but rotates clockwise or counterclockwise.  
+- **Directivity** — Measure of the concentration of radiated power in the direction of maximum radiation relative to average radiation intensity.  
+- **Effective Area (Aeff)** — Area over which an antenna effectively collects power from an incident electromagnetic wave.  
+- **Electric Field (E)** — Vector component of an electromagnetic wave perpendicular to the magnetic field and propagation direction.  
+- **Gain** — Measure of an antenna’s ability to direct input power into radiation in a specific direction, accounting for efficiency.  
+- **Huygens Source** — A conceptual aperture distribution used to model equivalent electric and magnetic currents radiating from an antenna aperture.  
+- **Impedance Mismatch Loss** — Power lost due to a difference between antenna input impedance and connected transmission line or source impedance.  
+- **Mutual Coupling** — Interaction between antennas where the current on one antenna induces currents on another, affecting their impedances and radiation.  
+- **Mutual Impedance** — The ratio of induced voltage in one antenna to the current driving another, reflecting coupling between antennas.  
+- **Path Loss** — Reduction in power density of an electromagnetic wave as it propagates through space from a transmitter to a receiver.  
+- **Pencil Beam** — A narrow antenna radiation pattern with the main lobe centered near broadside (θ = 0°).  
+- **Phasor Notation** — Representation of time-harmonic sinusoidal quantities as complex exponentials for simplification of electromagnetic analysis.  
+- **Polarization** — Orientation of the electric field vector of an electromagnetic wave.  
+- **Polarization Efficiency** — Fraction of power transferred between antennas with potentially mismatched polarizations due to polarization mismatch loss.  
+- **Poynting Vector (S)** — Vector representing the power density and direction of electromagnetic wave propagation; given by the cross product of E and H.  
+- **Radiation Intensity (U)** — Power radiated per unit solid angle, independent of distance from the antenna.  
+- **Radar Cross Section (RCS, σ)** — Equivalent area that quantifies how detectable an object is by radar, representing the scattered power normalized to incident power density.  
+- **Reflection Coefficient (ρ)** — Complex ratio representing voltage wave reflection due to impedance mismatch between antenna and transmission line.  
+- **Return Loss** — Measure in dB of power reflected back due to impedance mismatch, expressed as −20 log|ρ|.  
+- **Standing Wave Ratio (VSWR)** — Ratio of maximum to minimum voltage amplitude on a transmission line due to reflections; related to reflection coefficient.  
+- **Vector Effective Height (h)** — Vector relating the open-circuit voltage on antenna terminals to the incident electric field, encompassing polarization effects.  
+- **Wave Number (k)** — 2π divided by the wavelength (λ), representing the spatial frequency of a wave.  
+- **Wave Polarization Basis** — Choice of orthogonal unit vectors (e.g., linear θ̂, φ̂ or circular R̂, L̂) to express the electric field components of a wave.

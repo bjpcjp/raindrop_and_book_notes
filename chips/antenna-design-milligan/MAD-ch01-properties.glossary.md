@@ -1,0 +1,29 @@
+- **Aperture Efficiency** — The ratio of an antenna’s effective area to its physical area, accounting for losses due to material, distribution, and mismatch.
+- **Axial Ratio** — The ratio of the major to minor axes of the polarization ellipse; indicates the quality of circular polarization.
+- **Beam Efficiency** — The ratio of power within a specified cone centered on the antenna boresight to the total radiated power.
+- **Directivity** — A measure of how concentrated the radiation is in the direction of maximum radiation compared to average radiation intensity.
+- **Effective Area (Aeff)** — The area of an antenna that captures power from an incident electromagnetic wave, related to its gain and efficiency.
+- **Effective Height (Vector Effective Height)** — A vector relating the open-circuit voltage at the antenna terminals to the incident electric field, incorporating polarization.
+- **Field Intensity (E)** — The electric field magnitude in volts per meter; decreases as 1/R in the far field.
+- **Far Field** — The region far from the antenna where the radiated wavefronts can be approximated as plane waves, and fields decrease as 1/R.
+- **Gain** — The ratio of power radiated in a particular direction to that of an isotropic radiator; equals directivity times antenna efficiency.
+- **Mutual Coupling** — Interaction between antennas where current induced on one antenna affects another, described by mutual impedance or S-parameters.
+- **Near Field** — The region close to the antenna where reactive fields dominate and field variations are complex, decreasing faster than 1/R.
+- **Path Loss** — The reduction in power density of an electromagnetic wave as it propagates through space, including free-space loss and other losses.
+- **Poynting Vector (S)** — The vector product of electric and magnetic fields representing the direction and power density of electromagnetic energy flow.
+- **Polarization** — The orientation of the electric field vector of an electromagnetic wave; commonly linear or circular polarization.
+- **Polarization Efficiency** — The fraction of received power retained due to the alignment between transmitting and receiving antenna polarizations.
+- **Radiation Intensity (U)** — The power radiated per unit solid angle, normalized to remove the 1/R² dependency of power density.
+- **Radar Cross Section (RCS)** — The effective scattering area of a target, representing how much incident power is re-radiated back to a radar.
+- **Reflection Coefficient (ρ)** — The ratio of the reflected voltage wave to the incident wave at an impedance discontinuity, related to return loss and VSWR.
+- **Return Loss** — A measure (in dB) of power reflected due to impedance mismatch; higher return loss indicates better matching.
+- **Standing Wave Ratio (VSWR)** — The ratio of maximum to minimum voltage on a transmission line resulting from reflections caused by impedance mismatch.
+- **Vector Effective Height** — A complex vector quantity that includes both amplitude and polarization characteristics, relating voltage response to incident fields.
+- **Wave Number (k)** — A scalar equal to 2π/λ representing the spatial variation of a sinusoidal wave.
+- **Wave Polarization Ratio (ρ̂L, ρ̂c)** — Complex ratios describing linear or circular polarization states of an antenna or wave.
+- **Wave Propagation Direction (S)** — Direction of wave travel, orthogonal to the plane defined by the electric and magnetic fields.
+- **Wave Wavelength (λ)** — The physical length of one complete cycle of an electromagnetic wave, related to frequency and the speed of light.
+- **Wave Vector** — The direction and wavenumber of wave propagation, often denoted in phase terms e^(−j(kR−ωt)).
+- **Wave Reflection over Soil** — The reflection characteristics of soil affecting electromagnetic waves differently for horizontal and vertical polarizations due to dielectric properties.
+- **Wireless Link Budget** — A spreadsheet or calculation including transmitter power, antenna gains, path loss, polarization loss, and receiver noise to predict system margin.
+- **Wavelength (λ)** — The distance over which a wave’s shape repeats, calculated as speed of light divided by frequency.

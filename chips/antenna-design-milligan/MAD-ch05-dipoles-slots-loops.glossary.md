@@ -1,0 +1,28 @@
+- **Alford Loop** — An antenna consisting of two curved dipoles fed in opposite directions, producing an omnidirectional horizontally polarized pattern when placed over a ground plane.
+- **Babinet–Booker Principle** — A principle relating complementary antennas (such as dipoles and slots) by interchanging electric and magnetic fields, enabling calculations of input impedance and patterns from one antenna from its complement.
+- **Balun** — A device that transitions between balanced and unbalanced transmission lines, preventing unwanted currents on feeder lines that can cause pattern distortion or cross-polarization.
+- **Biﬁlar Wire Winding** — A balun winding method where two wires are wound together, allowing balanced or unbalanced currents to be manipulated via ferrite cores.
+- **Candelabra Balun** — A ferrite core balun that transforms unbalanced-mode impedance to balanced mode using parallel-to-series winding arrangements.
+- **Circular Polarization (CP)** — Polarization in which the electric field rotates circularly, produced by feeding orthogonal dipoles in quadrature phase.
+- **Cavity-Backed Slot** — A slot antenna backed by a cavity designed to radiate only on one side, which doubles gain and increases input impedance compared to a slot radiating on both sides.
+- **Corner Reflector** — An antenna configuration with a dipole placed between two flat reflector plates, typically at a 90° angle, which restricts radiation directions, increasing gain and directivity.
+- **Dipole** — A conductive rod, usually split and fed at the center, supporting standing-wave currents that radiate linearly polarized waves; variations include half-wave, folded, and loaded dipoles.
+- **Discone Antenna** — A broadband antenna with a disc as the upper pole and a cone as the lower pole, fed coaxially; offers wide impedance bandwidth and dipole-like patterns.
+- **Folded Dipole** — A half-wavelength dipole formed by two parallel conductors connected at their ends, which increases input impedance approximately fourfold compared to a simple dipole.
+- **Gamma Match** — A method for feeding antennas using an unbalanced coax line, connecting the outer shield to the dipole center and tapping the center conductor to one side with series capacitive tuning.
+- **Ground Plane** — A conductive surface used to provide a reference plane in antenna systems, affecting the radiation pattern and impedance; can be finite or infinite in analysis.
+- **L/2 Balun (Half-Wavelength Balun)** — A balun using a half-wavelength transmission line section to achieve impedance transformation and balanced-unbalanced current cancellation.
+- **Monopole** — A single conductor antenna mounted above a ground plane, equivalent to half a dipole with half the input impedance and increased gain due to hemispherical radiation.
+- **Mutual Impedance** — The impedance arising from coupling between two antennas or antenna elements, affecting input impedance and radiation patterns.
+- **Natural Balun** — A balun formed by feeding a loop antenna in such a way that currents flow in opposite directions along the loop, canceling unbalanced feed currents naturally.
+- **Quadriﬁlar Helix** — An antenna composed of two interwound helix loops fed in quadrature, producing circular polarization with a broad beamwidth and distinct current patterns.
+- **Radiation Resistance** — The equivalent resistance that accounts for power radiated by the antenna as electromagnetic waves, distinct from loss resistances.
+- **Resonant Loop Antenna** — A loop antenna with a total perimeter near one wavelength; supports a standing-wave current distribution and radiates a dipole-like pattern.
+- **Shunt Feeding** — An antenna feeding technique using a shunt-stub or T-match configuration to connect directly to the antenna structure, sometimes enabling direct grounding.
+- **Sleeve Antenna** — An antenna with a coaxial sleeve around the radiating element designed to broaden bandwidth and control current distribution; variants include single and dual sleeves.
+- **Split Coax Balun** — A balun constructed by slitting the outer conductor of a coaxial cable, supporting both balanced and unbalanced modes for improved performance.
+- **Standing-Wave Current** — The sinusoidal current distribution along an antenna element or slot due to wave reflections at terminations, important for determining radiation characteristics.
+- **Super Turnstile (Batwing) Antenna** — A wideband antenna combining slot and dipole elements arranged in a four-wing configuration, commonly used in television broadcasting.
+- **Tapered Coax Balun (Split Tapered Coaxial Balun)** — A broadband balun utilizing a tapered coax structure transitioning to two-wire balanced lines with impedance transformation.
+- **Turnstile Antenna** — Two crossed dipoles fed with equal amplitude and quadrature phase, producing circular polarization; can use varied dipole lengths to achieve phase shift.
+- **Waves on Slots** — Magnetic current approximation used to analyze slots that have standing-wave voltage distributions and radiate complementary patterns to dipoles.

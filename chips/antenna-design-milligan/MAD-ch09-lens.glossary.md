@@ -1,0 +1,29 @@
+- **Abbe sine condition** — A lens design condition ensuring zero coma aberrations for small feed deviations by making the refracting surface spherical with a center at the effective focus.  
+- **Amplitude taper loss (ATL)** — Power loss caused by nonuniform amplitude distribution across the antenna aperture.  
+- **Aperture distribution** — The power or field amplitude variation across the antenna aperture, determined by the feed pattern and lens effects.  
+- **Bootlace lens** — A lens composed of two antenna arrays connected by cables with true-time delay, providing multiple focal points and dynamic beam scanning.  
+- **Coma** — An optical aberration causing asymmetry and distortion in the antenna beam, increasing with off-axis feed displacement.  
+- **Compound lens (doublet)** — A lens combining a refracting lens and a phase shifter to broaden bandwidth and compensate for phase errors.  
+- **Diffraction** — Wave spreading and pattern formation effects caused by finite aperture size, influencing far-field antenna radiation.  
+- **Dual-surface lens** — A lens with two refracting surfaces, offering additional degrees of freedom to correct aberrations and shape aperture distribution.  
+- **Effective focal length (fe)** — The adjusted focal length used in lens designs to satisfy phase and focusing conditions.  
+- **Feed angle (ψ)** — The angle between the feed radiation direction and the lens axis, used to characterize lens geometry and illumination.  
+- **Feed spillover loss (SPL)** — Power loss due to feed radiation falling outside the lens aperture edge.  
+- **Fermat’s principle** — The principle of equal optical path lengths used in lens design to determine surface shapes.  
+- **Focal length (f)** — The distance from the feed to the lens or from the lens to the aperture plane where rays converge or are collimated.  
+- **Fresnel zone (zoning)** — The technique of stepping lens surfaces by multiples of wavelength thickness to reduce weight and loss, at the expense of bandwidth.  
+- **Gaussian beam** — A beam model with a Gaussian amplitude profile, used to approximate antenna beam waist and depth of focus.  
+- **Hyperbolical lens** — A single-surface refracting lens with a hyperbolic surface shape, producing collimated plane waves and reducing aperture illumination at edges.  
+- **Index of refraction (n)** — The ratio of the speed of light in a vacuum to that in the lens medium, determined by dielectric permittivity and permeability.  
+- **Luneburg lens** — A spherically symmetric gradient-index lens that focuses energy from any feed location on its surface into a beam pointed opposite the feed.  
+- **Metal plate lens** — A lens made from parallel metal plates constructing an effective refractive index less than unity, controlling wave propagation by guiding structures.  
+- **Numerical ray tracing** — Computational method tracing rays through lens surfaces to satisfy path length and phase conditions in lens design.  
+- **Off-axis scanning** — Beam steering achieved by laterally displacing the feed position relative to the lens axis, limited by aberrations like coma.  
+- **Phase error loss** — Power loss due to deviations from uniform phase distribution across the antenna aperture.  
+- **Planar surface lens (contact lens)** — A lens with one flat surface in contact with or near an antenna, altering its radiation pattern by refraction at the outer surface.  
+- **Polystyrene lens** — A lens made of polystyrene dielectric material, typically characterized by n ≈ 1.6.  
+- **Power pattern (F(ψ))** — The angular power distribution of the feed antenna.  
+- **Retrodirective feed network** — A feed mechanism that uses true time delay lines producing phase-corrected multiple beams through a lens.  
+- **Spherical wave** — Wave radiated from a point source spreading uniformly in all directions, used in lens feed models.  
+- **Transmission-line mismatch** — Reflection and standing wave phenomena caused by impedance differences at lens surfaces.  
+- **Zoned lens bandwidth** — The bandwidth of a lens limited by phase differences due to stepped thickness changes introduced by zoning.

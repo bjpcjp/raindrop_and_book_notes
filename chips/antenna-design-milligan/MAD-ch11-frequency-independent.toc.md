@@ -1,0 +1,59 @@
+```markdown
+# Table of Contents
+
+- 11 FREQUENCY-INDEPENDENT ANTENNAS
+  - Introduction
+  - Spiral Antennas
+    - Measured Pattern of Spiral Antennas (Fig. 11-1, 11-2)
+    - Modes and Circular Polarization
+    - Angle of Arrival (AOA) Systems
+  - 11-1 Modal Expansion of Antenna Patterns
+    - Modal Phasing and Equations (11-1 to 11-4)
+  - 11-2 Archimedean Spiral
+    - Geometry and Radiation Properties (Eq. 11-5)
+    - Pattern and Impedance Characteristics
+  - 11-3 Equiangular Spiral
+    - Definition and Geometry (Eq. 11-6 to 11-9)
+    - Input Impedance and Arm/GAP Ratio (Table 11-1, Eq. 11-10, 11-11)
+    - Loss Estimation and Matching
+  - 11-4 Pattern Analysis of Spiral Antennas
+    - Higher-Order Modes and Overmode Radiation (Table 11-2 to 11-5, Fig. 11-5 to 11-8)
+  - 11-5 Spiral Construction and Feeding
+    - 11-5.1 Spiral Construction
+    - 11-5.2 Balun Feed
+    - 11-5.3 Infinite Balun
+    - 11-5.4 Beamformer and Coaxial Line Feed
+  - 11-6 Spiral and Beamformer Measurements
+    - Modal Expansion and S-Parameter Measurements (Eq. 11-13 to 11-16)
+  - 11-7 Feed Network and Antenna Interaction
+    - Combined S-Parameter Matrix (Eq. 11-17 to 11-19)
+  - 11-8 Modulated Arm Width Spiral
+    - Design and Operation Principles (Fig. 11-10)
+  - 11-9 Conical Log Spiral Antenna
+    - Geometry and Pattern Control (Eq. 11-20 to 11-21, Fig. 11-11, 11-12)
+    - Design Tables (Tables 11-7 to 11-10)
+    - Example Design
+  - 11-10 Mode 2 Conical Log Spiral Antenna
+    - Beamwidth and Beam Direction (Table 11-14)
+    - Example Design
+  - 11-11 Feeding Conical Log Spirals
+    - Balanced Line and Coax Feeds
+    - Impedance Considerations
+  - Log-Periodic Antennas
+    - General Principles and Frequency Scaling
+  - 11-12 Log-Periodic Dipole Antenna
+    - Geometry and Design Parameters (Eq. 11-22 to 11-26)
+    - Truncation Constants and Element Number (Eq. 11-27 to 11-33)
+    - Example Design
+    - Feeding and Phase Center (Fig. 11-17, Tables 11-15 to 11-18)
+    - Elevation Angle Effects and Arrays (Fig. 11-18, 11-19)
+  - 11-13 Other Log-Periodic Types
+    - Trapezoidal Tooth Antennas (Fig. 11-20 to 11-22, Table 11-19)
+  - 11-14 Log-Periodic Antenna Feeding Paraboloidal Reflector
+    - Phase Center and Illumination Losses (Eq. 11-37, Tables 11-20 to 11-25)
+  - 11-15 V Log-Periodic Array
+    - Design and Performance (Fig. 11-23, 11-24)
+  - 11-16 Cavity-Backed Planar Log-Periodic Antennas
+    - Interlog and Sinuous Antennas (Fig. 11-25, 11-26)
+    - Design Considerations and Circumference (Eq. 11-38, 11-39)
+```

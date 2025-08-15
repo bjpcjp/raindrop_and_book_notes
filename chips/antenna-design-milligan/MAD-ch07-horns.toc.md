@@ -1,0 +1,83 @@
+```markdown
+# Table of Contents
+
+- 7 Horn Antennas
+  - 7-1 Rectangular Horn (Pyramidal)
+    - Example: Pattern Level Calculation
+    - Beamwidth
+      - Table 7-1 Rectangular-Horn H-Plane Beamwidth Points
+      - Table 7-2 Rectangular-Horn E-Plane Beamwidth Points
+      - Example: Beamwidth Calculation
+    - Optimum Rectangular Horn
+      - Equations for Design Parameters
+      - Example: Horn Design for 22 dB Gain
+      - Design Scales for Optimum Horn
+    - Designing to Given Beamwidths
+      - Example: Design for Given Beamwidths
+    - Phase Center
+      - Table 7-3 Phase-Center Axial Location
+      - Example: Phase-Center Location Calculation
+  - 7-2 Circular-Aperture Horn
+    - Aperture Fields and Modes (TE11)
+    - Universal Patterns
+    - Example: Pattern Level Calculation
+    - Beamwidth
+      - Table 7-4 Circular-Horn Beamwidths
+      - Example: Beamwidth and Gain Calculation
+    - Optimum Circular Horn Design
+  - 7-2.1 Phase Center
+    - Table 7-5 Phase-Center Axial Location
+    - Example: Phase-Center Location Calculation
+  - 7-3 Circular (Conical) Corrugated Horn
+    - Corrugation Effects and Mode HE11
+    - Universal Pattern (Figure 7-8)
+    - Table 7-6 Corrugated Horn Beamwidth Points
+    - Examples: Beamwidth and Gain Calculations
+    - Phase Center
+      - Table 7-7 Phase-Center Axial Location
+      - Example: Phase-Center Location Calculation
+    - Scalar Horn
+      - Half-Flare Angle and Optimum Diameter (Table 7-8)
+    - Corrugation Design
+      - Empirical Depth Formula
+    - Choke Horns
+    - Rectangular Corrugated Horns
+      - Example: Gain Calculation
+  - 7-4 Corrugated Ground Plane
+    - Surface Wave Behavior and Impedance
+    - Key Equations and Design Rules
+    - Applications: Edge Diffraction Reduction
+    - Radial Transmission-Line Corrugations
+      - Table 7-9 Radial Transmission Outer Choke Depth
+  - 7-5 Gaussian Beam
+    - Paraxial and Far-Field Approximations
+    - Beam Waist, Depth of Focus, and Divergence
+    - Key Equations and Scales (7-7, 7-8, 7-9)
+    - Gaussian Beam Approximation to Corrugated Horns
+  - 7-6 Ridged Waveguide Horns
+    - Dual- and Quad-Ridged Waveguide Design
+    - Transverse Resonance Method and Cutoff Frequencies
+    - Input Impedance Calculations
+    - Waveguide and Horn Structure
+      - Figure 7-14 Dual-Ridged Horn Cross Section
+    - Measured Results and Modal Decomposition
+      - Figures 7-15 to 7-19
+  - 7-7 Box Horn
+    - Use of Multiple Modes (TE10 and TE30)
+    - Mode Phasing and Tapered Distributions
+    - Table 7-10 Box Horn Characteristics
+    - Example: Design for 50° Beamwidth
+  - 7-8 T-Bar-Fed Slot Antenna
+    - Antenna Geometry and Feed
+    - Table 7-11 Dimensions for Two Designs
+    - Bandwidth and Performance Considerations
+  - 7-9 Multimode Circular Horn
+    - Mode Generation by Diameter Step
+    - Mode Phasing and Bandwidth Limitations
+    - Dielectric and Metal Steps for TM11 Mode
+  - 7-10 Biconical Horn
+    - Geometry and Modes (TEM and TE01)
+    - Gain and Beamwidth Calculations
+    - Example Calculations for Gain and Beamwidth
+- References
+```

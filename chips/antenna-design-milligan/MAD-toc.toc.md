@@ -1,0 +1,108 @@
+```markdown
+# Table of Contents
+
+- Preface xv
+- 1 Properties of Antennas 1
+  - 1-1 Antenna Radiation 2
+  - 1-2 Gain 3
+  - 1-3 Effective Area 6
+  - 1-4 Path Loss 6
+  - 1-5 Radar Range Equation and Cross Section 7
+  - 1-6 Why Use an Antenna? 9
+  - 1-7 Directivity 10
+  - 1-8 Directivity Estimates 11
+  - 1-9 Beam Efficiency 16
+  - 1-10 Input-Impedance Mismatch Loss 17
+  - 1-11 Polarization 18
+  - 1-12 Vector Effective Height 27
+  - 1-13 Antenna Factor 29
+  - 1-14 Mutual Coupling Between Antennas 29
+  - 1-15 Antenna Noise Temperature 30
+  - 1-16 Communication Link Budget and Radar Range 35
+  - 1-17 Multipath 36
+  - 1-18 Propagation Over Soil 37
+  - 1-19 Multipath Fading 39
+- 2 Radiation Structures and Numerical Methods 42
+  - 2-1 Auxiliary Vector Potentials 43
+  - 2-2 Apertures: Huygens Source Approximation 51
+  - 2-3 Boundary Conditions 57
+  - 2-4 Physical Optics 59
+  - 2-5 Method of Moments 67
+  - 2-6 Finite-Difference Time-Domain Method 76
+  - 2-7 Ray Optics and the Geometric Theory of Diffraction 84
+- 3 Arrays 102
+  - 3-1 Two-Element Array 104
+  - 3-2 Linear Array of N Elements 109
+  - 3-3 Hansen and Woodyard End-Fire Array 114
+  - 3-4 Phased Arrays 115
+  - 3-5 Grating Lobes 117
+  - 3-6 Multiple Beams 118
+  - 3-7 Planar Array 120
+  - 3-8 Grating Lobes in Planar Arrays 125
+  - 3-9 Mutual Impedance 127
+  - 3-10 Scan Blindness and Array Element Pattern 127
+  - 3-11 Compensating Array Feeding for Mutual Coupling 128
+  - 3-12 Array Gain 129
+  - 3-13 Arrays Using Arbitrarily Oriented Elements 133
+- 4 Aperture Distributions and Array Synthesis 136
+  - 4-1 Amplitude Taper and Phase Error Efficiencies 137
+  - 4-2 Simple Linear Distributions 140
+  - 4-3 Taylor One-Parameter Linear Distribution 144
+  - 4-4 Taylor n Line Distribution 147
+  - 4-5 Taylor Line Distribution with Edge Nulls 152
+  - 4-6 Elliott’s Method for Modified Taylor Distribution 155
+  - 4-7 Bayliss Line-Source Distribution 158
+  - 4-8 Woodward Line-Source Synthesis 162
+  - 4-9 Schelkunoff’s Unit-Circle Method 164
+  - 4-10 Dolph–Chebyshev Linear Array 170
+  - 4-11 Villeneuve Array Synthesis 172
+  - 4-12 Zero Sampling of Continuous Distributions 173
+  - 4-13 Fourier Series Shaped-Beam Array Synthesis 175
+  - 4-14 Orchard Method of Array Synthesis 178
+  - 4-15 Series-Fed Array and Traveling-Wave Feed Synthesis 188
+  - 4-16 Circular Apertures 191
+  - 4-17 Circular Gaussian Distribution 194
+  - 4-18 Hansen Single-Parameter Circular Distribution 195
+  - 4-19 Taylor Circular-Aperture Distribution 196
+  - 4-20 Bayliss Circular-Aperture Distribution 200
+  - 4-21 Planar Arrays 202
+  - 4-22 Convolution Technique for Planar Arrays 203
+  - 4-23 Aperture Blockage 208
+  - 4-24 Quadratic Phase Error 211
+  - 4-25 Beam Efficiency of Circular Apertures 214
+- 5 Dipoles, Slots, and Loops 217
+  - 5-1 Standing-Wave Currents 218
+  - 5-2 Radiation Resistance (Conductance) 220
+  - 5-3 Babinet–Booker Principle 222
+  - 5-4 Dipoles Located Over a Ground Plane 223
+  - 5-5 Dipole Mounted Over Finite Ground Planes 225
+  - 5-6 Crossed Dipoles for Circular Polarization 231
+  - 5-7 Super Turnstile or Batwing Antenna 234
+  - 5-8 Corner Reflector 237
+  - 5-9 Monopole 242
+  - 5-10 Sleeve Antenna 242
+  - 5-11 Cavity-Mounted Dipole Antenna 245
+  - 5-12 Folded Dipole 247
+  - 5-13 Shunt Feeding 248
+  - 5-14 Discone Antenna 249
+  - 5-15 Baluns 251
+  - 5-16 Small Loop 260
+  - 5-17 Alford Loop 261
+  - 5-18 Resonant Loop 263
+  - 5-19 Quadrifilar Helix 264
+  - 5-20 Cavity-Backed Slots 266
+  - 5-21 Stripline Series Slots 266
+  - 5-22 Shallow-Cavity Crossed-Slot Antenna 269
+  - 5-23 Waveguide-Fed Slots 270
+  - 5-24 Rectangular-Waveguide Wall Slots 271
+  - 5-25 Circular-Waveguide Slots 276
+  - 5-26 Waveguide Slot Arrays 278
+- 6 Microstrip Antennas 285
+- 7 Horn Antennas 336
+- 8 Reflector Antennas 380
+- 9 Lens Antennas 447
+- 10 Traveling-Wave Antennas 474
+- 11 Frequency-Independent Antennas 521
+- 12 Phased Arrays 573
+- Index 607
+```

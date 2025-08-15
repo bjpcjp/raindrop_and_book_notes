@@ -1,0 +1,29 @@
+- **Amplitude taper efficiency (ATL)** — Efficiency reflecting power loss due to nonuniform amplitude distribution in the aperture of a reflector antenna.
+- **Aperture theory** — Analytical method that models the reflector antenna by the distribution of fields over its aperture, often using physical optics.
+- **Astigmatism** — Phenomenon where unequal phase centers exist in different planes of the feed or reflector, causing degradation in antenna patterns.
+- **Beam deviation factor (BDF)** — Ratio of scanned beam peak angle to the feed offset angle; indicates how feed displacement translates to beam scanning in a reflector antenna.
+- **Blockage loss** — Reduction in antenna efficiency and gain caused by feed and subreflector structures blocking part of the reflector aperture.
+- **Central blockage** — Shadowing of the main reflector by the feed or subreflector, causing both loss of aperture area and diffraction effects.
+- **Cross-polarization efficiency (XOL)** — Efficiency factor accounting for power radiated in the cross-polarized component relative to total radiated power.
+- **Defocusing (axial defocusing)** — Displacement of the feed from the reflector focus along the axis, causing phase errors and reduced antenna efficiency.
+- **Diffraction loss** — Gain or efficiency reduction caused by edge effects and finite size of reflectors or subreflectors producing diffracted fields.
+- **Displaced-axis dual reflector** — Dual reflector antenna geometry where the main reflector’s vertex becomes a ring-focus and rays miss central blockage, improving efficiency.
+- **Dual reflector antenna** — Antenna system with two reflectors, such as Cassegrain or Gregorian, increasing effective focal length and improving feed illumination.
+- **Edge taper** — Reduction in feed radiation amplitude toward the reflector rim; affects spillover, sidelobes, and aperture illumination efficiency.
+- **Feed blockage** — Power lost or scattered due to shadowing of the main reflector by the feed antenna.
+- **Feed scanning** — Lateral displacement of the feed from the focal point to scan the reflected beam; causes phase errors and sidelobe artifacts.
+- **Focal plane fields** — Electromagnetic fields present in the reflector’s focal region; matching these fields with feed fields is critical for antenna efficiency.
+- **Front-to-back ratio (F/B)** — Ratio of the antenna’s forward radiation to its radiation in the opposite direction, influenced by feed pattern and reflector geometry.
+- **Geometrical optics (GO)** — Approximates wave propagation by rays; used in reflector analysis assuming large reflector dimensions.
+- **Gregorian dual reflector** — Dual reflector antenna using an elliptical subreflector positioned beyond the main reflector focus.
+- **Hyperboloidal subreflector** — Secondary reflector shaped as a hyperbola, used in Cassegrain antennas to produce desired wave transformation.
+- **Illumination efficiency** — Overall measure of how well the feed illuminates the reflector aperture accounting for amplitude and phase distributions.
+- **Induced field ratio (IFR)** — Ratio relating the re-radiated fields from currents induced on struts or structures to the blocked incident field.
+- **Loss factors** — Terms including amplitude taper loss, spillover loss, phase error loss, blockage loss, and diffraction loss that reduce antenna gain.
+- **Magniﬁcation factor (M)** — Ratio of effective focal length to the main reflector focal length in dual reflector antennas.
+- **Phase error loss (PEL)** — Reduction in antenna efficiency due to phase deviations from ideal wavefront in the aperture.
+- **Physical optics (PO)** — Approximate analysis technique that models induced currents on reflector surfaces to compute radiated fields.
+- **Reflection coefficient factor (V)** — Magnitude of feed reflection caused by power reflected back from the reflector to the feed.
+- **Spherical reflector** — Reflector antenna shaped as a portion of a sphere; allows wider feed scanning but produces spherical aberrations.
+- **Spillover loss (SPL)** — Power lost by feed radiation spilling over beyond the reflector edges.
+- **Subreflector** — Secondary reflector in a dual reflector system that modifies wavefront from feed before it illuminates the main reflector.

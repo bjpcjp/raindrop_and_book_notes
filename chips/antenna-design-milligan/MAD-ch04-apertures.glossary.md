@@ -1,0 +1,27 @@
+- **Amplitude taper efficiency (ATL)** — A measure of directivity loss caused by amplitude variations in the aperture distribution, distinct from phase variations.
+- **Aperture distribution** — The amplitude and phase pattern of the electromagnetic field over an antenna aperture.
+- **Aperture efficiency** — The effectiveness of an aperture in radiating power in the desired direction, factoring amplitude and phase errors.
+- **Bayliss line-source distribution** — A linear aperture distribution shaped to have a null at boresight and controlled sidelobes, used in difference patterns.
+- **Beamwidth factor** — A multiplier that scales the half-power beamwidth relative to the uniform aperture case.
+- **Chebyshev polynomials** — Mathematical polynomials used to create Dolph–Chebyshev arrays with equal ripple sidelobes and minimum beamwidth for a given sidelobe level.
+- **Dolph–Chebyshev array** — An array design method that uses Chebyshev polynomials to produce equal-level sidelobes and narrow beamwidth.
+- **Edge taper** — The level of field amplitude reduction at the aperture edge compared to the center, affecting sidelobe levels.
+- **Fourier series synthesis** — A method to design antenna arrays by representing the pattern as a Fourier series and matching coefficients to the desired beam shape.
+- **Huygens source approximation** — A method treating the aperture as comprising elemental sources radiating spherical waves, used to analyze aperture radiation.
+- **Mutual coupling** — Interaction between antenna array elements affecting excitation patterns and potentially causing undesired effects.
+- **Null (pattern null)** — Directions at which the antenna radiation pattern goes to zero, controlled to reduce interference or shape the beam.
+- **Orchard method** — An iterative array synthesis technique manipulating complex plane zeros to achieve individually specified sidelobes and main beam shaping.
+- **Phase error efficiency (PEL)** — A measure of directivity loss caused by phase variations in the aperture field.
+- **Progressive phase shift (δ)** — The constant phase difference between consecutive array elements, often used to scan the beam.
+- **Sidelobe level (SLR)** — The relative power level of sidelobes compared to the main beam in an antenna radiation pattern.
+- **Sidelobe taper (pedestal)** — A uniform offset voltage or amplitude added to a tapered distribution to control sidelobes and beamwidth.
+- **Schelkunoff’s unit-circle method** — A technique representing array patterns as polynomials in the complex plane, analyzing zeros on the unit circle to design arrays.
+- **Superdirectivity** — Achieving directivity beyond that of a uniform distribution by controlling pattern zeros; comes with reduced bandwidth and efficiency.
+- **Taylor one-parameter distribution** — A linear aperture distribution controlled by one parameter to reduce sidelobes while maintaining beamwidth.
+- **Taylor n line distribution** — An extension of Taylor’s method adjusting multiple inner zeros to improve sidelobe control closer to Dolph–Chebyshev behavior.
+- **Taylor line distribution with edge nulls** — A modified Taylor distribution forcing nulls at the aperture edges to meet physical aperture constraints.
+- **Unit circle (W-plane)** — In array theory, the complex plane where the variable W = e^(jψ) lies, used for polynomial representation of array patterns.
+- **Visible region** — The portion of the angular or frequency space where the antenna or array radiates effectively, linked to spatial sampling.
+- **Woodward line-source synthesis** — A method of shaping linear arrays by summing shifted uniform distributions weighted by sampled points of the desired pattern.
+- **Zero (pattern zero)** — A root of the array factor polynomial corresponding to a null in the radiation pattern; zeros placement affects beam shape.
+- **Zero sampling** — Matching discrete array zeros to the nulls of a continuous distribution to approximate desired aperture patterns.

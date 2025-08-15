@@ -1,0 +1,57 @@
+```markdown
+- 2 RADIATION STRUCTURES AND NUMERICAL METHODS
+  - Antenna Analysis Overview
+  - 2-1 AUXILIARY VECTOR POTENTIALS
+    - 2-1.1 Radiation from Electric Currents
+      - Magnetic Vector Potential Formulation
+      - Radiation Approximation
+      - Example: Short-Length Current Element
+    - 2-1.2 Radiation from Magnetic Currents
+      - Electric Vector Potential and Magnetic Currents
+      - Example: Small Constant-Current Loop
+  - 2-2 APERTURES: HUYGENS SOURCE APPROXIMATION
+    - Far-Field Approximation
+    - Fourier Transform of Aperture Fields
+    - Aperture Distributions and Pattern Shapes
+    - Examples and Calculations
+    - 2-2.1 Near- and Far-Field Regions
+    - 2-2.2 Huygens Source Approximation
+  - 2-3 BOUNDARY CONDITIONS
+    - Material Boundary Conditions
+    - Perfect Electric and Magnetic Conductors
+    - Image Theory for Ground Planes
+  - 2-4 PHYSICAL OPTICS
+    - Radiated Fields from Currents
+    - Induced Currents on Surfaces
+    - Physical Optics Applications
+    - Iterative Physical Optics
+    - Examples: Corner Reflector, Paraboloidal Reflector
+    - Edge Effects and Physical Theory of Diffraction (PTD)
+    - Equivalent Currents
+    - Reactance Theorem and Mutual Coupling
+  - 2-5 METHOD OF MOMENTS
+    - General Method of Moments (MoM) Concept
+    - Use of Reactance Theorem in MoM
+    - Solving Integral Equations with Basis Functions
+    - Thin-Wire Moment Method Codes
+    - Surface and Volume MoM Codes
+    - Examples of MoM Models
+  - 2-6 FINITE-DIFFERENCE TIME-DOMAIN METHOD (FDTD)
+    - Overview and Applications
+    - Implementation Details
+      - Central Difference Derivative
+      - Finite-Difference Maxwell’s Equations
+      - Yee’s Cell Concept
+      - Time Step for Stability (Courant Condition)
+      - Numerical Dispersion and Stability
+      - Computer Storage and Execution Times
+      - Excitation Signals (Gaussian pulses)
+    - Example: Waveguide Horn Analysis
+  - 2-7 RAY OPTICS AND THE GEOMETRIC THEORY OF DIFFRACTION (GTD)
+    - Introduction and Limitations
+    - Fermat’s Principle
+    - GTD Example: Dipole over Finite Strip
+    - E-Plane Pattern of Rectangular Horn
+    - H-Plane Pattern of Rectangular Horn
+    - Amplitude Variations Along a Ray
+```

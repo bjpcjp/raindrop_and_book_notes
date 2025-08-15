@@ -1,0 +1,27 @@
+- **Aperture Distribution** — Spatial variation of field amplitude and phase across an antenna’s aperture affecting its radiation pattern and efficiency.  
+- **Balun** — A device that converts between balanced and unbalanced transmission lines or feeds in antennas.  
+- **Beam Efficiency** — The ratio of the power radiated within the main lobe of an antenna’s radiation pattern to the total radiated power.  
+- **Beamformer** — A network or algorithm used to control the amplitude and phase of elements in an antenna array to form desired beams.  
+- **Biconical Horn** — A horn antenna featuring two conical conductors serving as radiating elements for broadband performance.  
+- **Butterfly Pattern** — A type of omnidirectional antenna radiation characteristic resembling a butterfly shape.  
+- **Circular Polarization** — A polarization state where the electric field vector rotates circularly in time at a constant magnitude.  
+- **Directivity** — The measure of how concentrated an antenna’s radiation is in a particular direction compared to an isotropic radiator.  
+- **Dipole Antenna** — A simple antenna consisting of two conductive elements, typically half-wavelength in length.  
+- **Finite-Difference Time-Domain (FDTD) Method** — A numerical technique to solve Maxwell’s equations by discretizing in time and space for antenna modeling.  
+- **Folded Dipole** — A dipole antenna where the conductor is folded back parallel to itself to increase impedance.  
+- **Gain** — The ratio of an antenna’s radiated power in a given direction to that of an isotropic radiator, including efficiency.  
+- **Grating Lobes** — Undesired lobes in array antenna patterns caused by element spacing larger than one wavelength.  
+- **Helical Antenna** — A wire antenna wound in a helix used for circular polarization and wide bandwidth.  
+- **Log-Periodic Antenna** — A frequency-independent antenna consisting of elements whose length and spacing scale logarithmically.  
+- **Microstrip Antenna** — A low-profile antenna consisting of a conducting patch on a dielectric substrate above a ground plane.  
+- **Mutual Coupling** — Interaction between neighboring antennas or elements affecting their impedance and radiation patterns.  
+- **Phased Array** — An antenna array whose individual elements’ phases are electronically controlled to steer beams without physical movement.  
+- **Physical Optics** — A high-frequency approximation method to estimate radiated fields based on induced currents on surfaces.  
+- **Polarization** — The orientation of the electric field vector of an electromagnetic wave radiated by an antenna.  
+- **Reflector Antenna** — An antenna using a curved reflecting surface, such as a paraboloid, to direct radio waves.  
+- **Resonant Loop Antenna** — A loop antenna sized to resonate at the operating frequency, typically used for magnetic field coupling.  
+- **Side Lobe** — Secondary maxima in an antenna radiation pattern outside the main lobe, often unwanted.  
+- **Spillover** — Radiation from the feed of a reflector antenna that misses the reflector surface, causing efficiency loss.  
+- **Traveling-Wave Antenna** — An antenna that uses traveling electromagnetic waves along its structure for radiation, often broadband.  
+- **Vector Effective Height** — A vector quantity relating an antenna’s induced voltage to the incident electric field.  
+- **Waveguide Slot Antenna** — An antenna constructed by introducing slots into the wall of a waveguide that radiate energy.

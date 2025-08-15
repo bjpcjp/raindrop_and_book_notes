@@ -1,0 +1,68 @@
+```markdown
+# Table of Contents
+
+- 10 TRAVELING-WAVE ANTENNAS
+  - 10-1 General Traveling Waves
+    - Eq. (10-1) Field Representation
+    - Surface Waves (P > 1) and Leaky Waves (P < 1)
+    - Pattern Calculations
+    - Hansen and Woodyard Criterion (Eqs. 10-8 to 10-10)
+    - Directivity and Beamwidth (Figures 10-1 to 10-3)
+    - Slow Wave (Section 10-1.1)
+      - Wave Binding and Attenuation (Eqs. 10-14 to 10-16)
+      - Constant Field Contours (Figure 10-4)
+    - Fast Waves (Leaky Wave Structure) (Section 10-1.2)
+      - Waveguide Cutoff and Radiation Angle
+  - 10-2 Long Wire Antennas
+    - Traveling-Wave Current and Radiation Pattern (Eq. 10-17, Figure 10-5)
+    - Beam Peak and Directivity (Table 10-1)
+    - Beverage Antenna (Section 10-2.1, Figure 10-6)
+    - V Antenna (Section 10-2.2, Figure 10-7)
+      - Design Formulas (Eq. 10-18, 10-19)
+    - Rhombic Antenna (Section 10-2.3, Figure 10-8)
+      - Angle for Maximum Output (Table 10-2)
+      - Height for Beam Elevation (Eq. 10-20)
+  - 10-3 Yagi–Uda Antennas
+    - Mutual Coupling and Impedance (Eqs. 10-21 to 10-25)
+    - Parasitic Element Roles: Director vs. Reflector (Figure 10-9)
+    - Three-Element Yagi–Uda Design (Figure 10-10)
+    - Moment Method Analysis (Eq. 10-26)
+    - Optimization Techniques and Bandwidth (Eqs. 10-27 to 10-29)
+    - Six-Element and Sixteen-Element Designs (Tables 10-3 to 10-6)
+    - Element Length Adjustments for Diameter and Boom (Tables 10-7 to 10-9)
+    - Multiple-Feed Yagi–Uda Antennas (Section 10-3.1, Figure 10-11)
+      - Four-Element and Two-Element Crisscross Feed (Tables 10-10, 10-11, Figures 10-11, 10-12)
+      - Feed Matrix Approach (Eq. 10-30)
+    - Resonant Loop Yagi–Uda Antennas (Section 10-3.2, Figure 10-13)
+      - Dimensions and Frequency Response (Tables 10-12 to 10-15)
+  - 10-4 Corrugated Rod (Cigar) Antenna
+    - Structure and Modes (Figure 10-14)
+    - Measured Parameters and Design Procedure (Table 10-16, Scale 10-1)
+    - Example Design at 10 GHz
+  - 10-5 Dielectric Rod (Polyrod) Antenna
+    - HE11 Hybrid Mode and Field Description
+    - Diameter vs. Relative Propagation Constant for Common Dielectrics (Table 10-17, Scales 10-2, 10-3)
+    - Feed Arrangement and Tapering (Figure 10-15)
+    - Loss Considerations and Examples
+    - Pattern Comparison of Teflon vs. Delrin Rods (Figure 10-16)
+  - 10-6 Helical Wire Antenna
+    - Helix Geometry and Modes (Eq. 10-31)
+    - Axial Mode Operation (Eqs. 10-32 to 10-35, Figures 10-18, 10-19)
+    - Operational Limits for Pitch Angle and Circumference
+    - Feed Methods and Matching Techniques (Figure 10-17)
+    - Long Helical Antenna and Mode Suppression (Figure 10-20, Table 10-18)
+    - Empirical Gain, Bandwidth, and Beamwidth Formulas
+    - Short Helical Antenna in Cavity (Section 10-6.5, Figure 10-21)
+  - 10-7 Short Backfire Antenna
+    - Structure and Operation (Figures 10-22 to 10-26)
+    - Pattern Characteristics and Bandwidth
+    - Comparison to Paraboloid Reflector
+  - 10-8 Tapered Slot Antennas
+    - Types: ETSA, LTSA, CWSA, DETSA (Figure 10-27)
+    - Operation, Pattern, and Polarization Properties
+    - Feeding Methods and Balanced Configurations (Figures 10-28, 10-29, 10-30)
+    - Array Characteristics and Mutual Coupling
+  - 10-9 Leaky Wave Structures
+    - Beam Direction and Directivity (Eqs. 10-36, 10-37)
+    - Waveguide Slot Antenna Concepts
+```
