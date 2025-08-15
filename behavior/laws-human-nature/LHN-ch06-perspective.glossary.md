@@ -1,0 +1,16 @@
+- **Elevated perspective** — A widened and deeper view of events that includes long-term goals, consequences, and broader context beyond immediate circumstances.  
+- **Farsighted perspective** — A process of detachment, calmness, and deep analysis to approximate hindsight wisdom in the present moment.  
+- **Long-term goals** — Concrete objectives set for the future that guide strategic decision-making over immediate reactions.  
+- **Manufacturing the effect of time** — Deliberately widening and deepening perspective in the present to mimic the clarity gained through the passage of time.  
+- **Mental filtering system** — A prioritization framework that helps distinguish essential information from trivial details to avoid overwhelm.  
+- **Narcotic effects** — The addictive response to frequent stimuli, such as instant news updates, which distort attention and decision-making.  
+- **Nonconsequential thinking** — Oversimplified reasoning that ignores complex chains of cause and effect, often leading to unintended consequences.  
+- **Patience** — A mental ability trained to resist impulsive actions, allowing time for clearer thinking and better strategic decisions.  
+- **Scale of priorities** — A ranked hierarchy of values and objectives used to guide focus and filter information.  
+- **Shortsightedness (Law of Shortsightedness)** — The human tendency to be overly influenced by immediate, visible events, leading to reactive and narrow decision-making.  
+- **Short-term thinking** — A mode of improvising and reacting to events without sufficient information or consideration of long-term effects.  
+- **Strategic thinking** — Forward-looking, multi-step planning aligned with long-term goals, contrasting with reactive tactics.  
+- **Ticker tape fever** — An addiction to real-time updates and momentary trends that leads to impatience and distorted judgment.  
+- **Tactical hell** — A condition of being stuck in reactive battles or struggles that distract from broader strategic objectives.  
+- **Unintended consequences** — Negative or unforeseen results that arise from decisions made without thorough consideration of context and causality.  
+- **Wider perspective** — Expanding one’s view to include all relevant factors, potential motivations, and future implications beyond the immediate moment.

@@ -1,0 +1,16 @@
+- **Adversity** — Difficult moments involving obstacles, frustrations, pain, or loss that provide opportunities for learning and strengthening one’s attitude toward life.  
+- **Anxious Attitude** — An attitude characterized by anticipating obstacles and criticism, leading to excessive need for control and limiting experiences.  
+- **Attitude** — A readiness of the psyche to act or react in a certain way; the lens through which individuals perceive and interpret the world.  
+- **Avoidant Attitude** — A tendency to avoid responsibility or challenges to protect self-esteem, often resulting in escape behaviors and lack of accomplishment.  
+- **Constricted Attitude** — A negative, narrow mindset that limits experiences due to fear, insecurity, or vulnerability.  
+- **Depressive Attitude** — An outlook marked by internalizing negative judgments and anticipating loss or rejection, often accompanied by withdrawal and self-sabotage.  
+- **Energy and Health** — Physical vitality and well-being significantly influenced by attitude and willpower, affecting recovery and aging processes.  
+- **Expansive Attitude** — A positive, open, and broad-minded approach that embraces new experiences and ideas.  
+- **Failure** — An event or outcome often used as a learning tool to overcome fear, improve confidence, and foster growth.  
+- **Hostile Attitude** — A tendency to anticipate and provoke anger or rejection in others as a defense against perceived threats.  
+- **Human Nature** — The characteristics and behaviors common to humans, influenced by individual attitudes and perceptions.  
+- **Perception** — The subjective way individuals interpret and understand their experiences and surroundings.  
+- **Positive Attitude** — An expansive and open mindset that enhances creativity, resilience, and social connection.  
+- **Resentful Attitude** — A mindset characterized by feelings of injustice, long-held grudges, and passive-aggressive behaviors stemming from perceived neglect or disrespect.  
+- **Self-sabotage** — Unconscious behaviors and attitudes that create feared negative circumstances or hinder personal success.  
+- **Willpower** — The mental strength and determination to control one’s attitude and actions, enabling personal growth and overcoming adversity.

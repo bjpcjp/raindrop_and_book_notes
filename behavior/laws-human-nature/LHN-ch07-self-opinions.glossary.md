@@ -1,0 +1,28 @@
+- **Autonomy** — The feeling or perception of acting of one's own free will, essential for people to accept influence without resistance.  
+- **Confirm their self-opinion** — A strategy of persuasion that involves affirming people's sense of autonomy, intelligence, and goodness to lower their defenses.  
+- **Defensiveness** — A natural human reaction to perceived threats to autonomy, intelligence, or goodness, causing resistance to influence.  
+- **Emotional rapport** — A feeling of mutual warmth and connection established through empathy, laughter, and shared pleasure, helping soften resistance.  
+- **Flexible mind** — An ideal mental state combining youthful openness to influence with adult reasoning, allowing one to remain receptive to new ideas.  
+- **Flattery** — Strategic praise aimed at assuaging people's insecurities, especially praising effort over talent, used to lower resistance over time.  
+- **Goodness (self-opinion)** — The universal belief people have that they are fundamentally good, decent, and morally upright, which can be leveraged in persuasion.  
+- **Influence** — The capacity to affect others' attitudes or behaviors, an unavoidable social dynamic requiring skill and empathy.  
+- **Insecurities** — Personal vulnerabilities such as doubts about looks, skills, or status; identifying and flattering these can soften resistance.  
+- **Intelligence (self-opinion)** — People’s perception of their own cleverness or intellect in their own way, which they protect fiercely.  
+- **Judo (mental judo)** — A persuasion technique using a person's resistance or stubbornness by redirecting their energy to achieve desired changes.  
+- **Listening (deep listening)** — Engaging fully in paying attention to another person’s words and nonverbal cues to understand and build rapport.  
+- **Mutual warmth** — The shared feeling of goodwill and respect between people, crucial to reducing resistance in conversations.  
+- **Nonverbal cues** — Subtle signals like eye movement, tone, and touch that communicate emotions and attitudes, important in building rapport.  
+- **Peer pressure** — The social influence that can cause people to change their behavior, which must be carefully navigated to preserve perceived autonomy.  
+- **Praise** — A tool for influence involving positive feedback, preferably sincere and subtle, reinforcing people’s self-image and lowering defenses.  
+- **Rapport** — A harmonious relationship marked by mutual understanding and empathy, fostering openness to influence.  
+- **Resistance** — The natural pushback people exhibit when they feel their autonomy, intelligence, or goodness is threatened.  
+- **Self-opinion** — An individual's perception of themselves based on three universals: autonomy, intelligence, and basic goodness; central to their identity and response to influence.  
+- **Self-protective side** — The aspect of human personality developed early to defend physical space, dignity, and freedom of choice.  
+- **Shared pleasures** — Enjoyable experiences such as laughter or light physical contact used to build emotional connection.  
+- **Small gifts** — Modest rewards given to foster loyalty and gratitude without offending people's sense of independence.  
+- **Social animals** — The human nature of being inherently social, making influence unavoidable in interactions.  
+- **Strategic flattery** — Compliments designed carefully to align with a person's insecurities and self-image to make them more receptive.  
+- **Stubbornness** — A form of resistance where people assert their will against influence, which can be leveraged by agreeing and using reverse psychology.  
+- **Validation** — The act of confirming and appreciating another’s values, wisdom, or goodness to instill inner security.  
+- **Warmth (emotional)** — An attitude of acceptance and care that creates a safe environment for influence.  
+- **Wisdom (respect for)** — Recognition and appreciation of another's experience and judgment, used to confirm their intelligence and lower defenses.

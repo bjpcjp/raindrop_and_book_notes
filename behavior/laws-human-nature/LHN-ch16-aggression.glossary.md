@@ -1,0 +1,20 @@
+- **Aggression** — An inherent human tendency to assert power and influence, which can manifest positively as controlled, productive energy or negatively as destructive and antisocial behavior.  
+- **Ambition** — A positive element of controlled aggression involving the pursuit of significant personal goals and dreams, rooted in childhood aspirations.  
+- **Blame-Shifter Strategy** — A passive-aggressive tactic where an individual deflects criticism and guilt onto others, making them doubt their own feelings and judgment.  
+- **Chronic Aggressor** — An individual with a persistent need for control and dominance, often reacting aggressively due to deep-seated insecurities and helplessness.  
+- **Controlled Aggression** — The disciplined and productive use of assertive energy to achieve goals, solve problems, and realize ambitions without harming others.  
+- **Dependency Strategy** — A passive-aggressive approach in which a person gains power by fostering emotional or practical dependence, then manipulating through coldness or unpredictability.  
+- **Fearlessness** — A natural, childlike quality of boldness and resilience that can be reclaimed to assert oneself confidently and demand respect.  
+- **Helplessness (underlying)** — The unconscious feeling at the root of aggression, stemming from vulnerability, insecurity, and a sense of lack of control.  
+- **Passive Aggression** — Indirect assertion of influence or control through subtle, often socially acceptable behaviors intended to manipulate or frustrate others.  
+- **Passive-Tyrant Strategy** — A method of tyrannizing others by being unpredictably demanding and impossible to please, usually employed by those in positions of power.  
+- **Persistence** — A quality of relentless effort and willpower in pursuing objectives, essential for breaking through obstacles through controlled aggression.  
+- **Power** — The fundamental human need for influence and control over circumstances and others, often driving aggressive behaviors.  
+- **Sympathy Strategy** — Passive-aggressive manipulation through cultivating a victimhood persona and eliciting sympathy and attention by playing on others’ guilt.  
+- **The Law of Aggression** — The principle recognizing that beneath polite facades, humans possess aggressive instincts driven by frustration and need for dominance.  
+- **The Passive-Aggressive Spectrum** — The range from low-level everyday passive-aggressive behaviors to chronic, manipulative passive aggression displayed by some individuals.  
+- **The Source of Human Aggression** — The awareness of mortality, insecurity, unpredictability in relationships, and unmet desires that fuel unconscious feelings of helplessness leading to aggression.  
+- **The Subtle-Superiority Strategy** — A passive-aggressive tactic involving patterns of lateness or forgetfulness paired with insincere apologies, signaling a need to assert subtle dominance.  
+- **Taming Aggression** — The process of recognizing, controlling, and channeling aggressive energy into socially productive and positive actions.  
+- **Unconscious Processing (of aggression)** — The hidden mental activity where feelings of helplessness and threat are transformed into aggressive impulses before action is taken.  
+- **Will (in terms of aggression)** — The intensity of desire and determination to achieve control or influence in social and personal conflicts.

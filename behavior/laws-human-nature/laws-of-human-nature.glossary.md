@@ -1,0 +1,26 @@
+- **Analytic Empathy** — The ability to understand others by analyzing their tastes, values, background, and behavior to better grasp their perspective.  
+- **Blame Bias** — The tendency to blame others or external factors for one’s mistakes rather than self-reflecting.  
+- **Character** — The ingrained set of habits and patterns that compel a person’s behavior, largely formed in early years.  
+- **Confirmation Bias** — The habit of seeking or interpreting information that confirms preexisting beliefs.  
+- **Conviction Bias** — The tendency to strongly defend ideas that please us, even if we have doubts about them.  
+- **Deep Narcissist** — A person with a fragmented, unstable self-image prone to rage, paranoia, envy, and excessive self-absorption.  
+- **Emotional Self** — The aspect of the self governed by emotions that often operates beyond conscious control.  
+- **Empathic Attitude** — An open and nonjudgmental mindset that assumes ignorance and avoids snap judgments to better understand others.  
+- **Empathic Skill** — The practiced ability to gauge others’ emotions accurately, often validated through direct or indirect feedback.  
+- **Functional Narcissist** — A person with self-love who maintains a coherent sense of self and resilience, able to engage with others.  
+- **Group Bias** — The unconscious adoption of ideas shared by a social group to relieve feelings of isolation.  
+- **High-grade Irrationality** — Intense emotional states triggered by external pressures that skew perception and prompt rash actions.  
+- **Impression Management** — The deliberate control and shaping of one’s nonverbal cues and behavior to influence how others perceive them.  
+- **Inflaming Individuals** — People who provoke strong emotions—positive or negative—in others, causing irrational reactions.  
+- **Low-grade Irrationality** — Subtle emotional influences and biases that unconsciously distort thought and decision-making.  
+- **Microexpression** — A brief, involuntary facial expression revealing true emotions that contradict spoken words.  
+- **Narcissistic Spectrum** — The continuum measuring levels of self-absorption from functional to deep narcissism.  
+- **Playacting / Role-playing** — The social behavior of wearing masks or adopting roles to present oneself favorably while concealing true feelings.  
+- **Pleasure Principle (in thinking)** — The mind’s tendency to seek ideas that soothe the ego and avoid unpleasant truths.  
+- **Projection of Saintly Qualities** — The strategy of displaying humility, generosity, and honesty publicly to gain trust and admiration.  
+- **Reaction Time (Increase)** — Deliberately slowing responses to events or provocations to reduce emotional reactivity.  
+- **Rationality** — The awareness of emotional bias and the ability to counteract it by thinking clearly and objectively.  
+- **Superiority Bias** — The tendency to view oneself as more rational and ethical than one truly is.  
+- **Tensile Strength (of Character)** — The quality of resilience and adaptability in a person’s character that allows them to withstand stress without breaking.  
+- **Visceral Empathy** — The automatic, bodily attunement to others’ emotions through nonverbal cues like tone, posture, and facial expression.  
+- **Weak Character** — Traits marked by evasiveness, brittleness under pressure, and resistance to learning from criticism.

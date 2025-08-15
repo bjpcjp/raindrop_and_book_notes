@@ -1,0 +1,14 @@
+- **Analytic empathy** — Understanding others by using information about their background, values, and tastes to supplement emotional attunement and overcome biases.  
+- **Complete Control Narcissist** — A deeply narcissistic type who uses charm and manipulation to gain social power and control others by exploiting their insecurities.  
+- **Deep narcissist** — Individuals with a fragmented or absent coherent self, characterized by hypersensitivity, envy, paranoia, and a desperate need for constant attention.  
+- **Empathic attitude** — An open, non-judgmental mindset that assumes ignorance about others and seeks to explore their unique psychological makeup.  
+- **Empathic skill** — The practiced ability to understand others deeply, refined through feedback and interaction to improve social insight.  
+- **Functional narcissist** — Individuals with a coherent self-image allowing for self-esteem and resilience, who can fluctuate but generally are able to engage outwardly with others and their work.  
+- **Healthy narcissist** — A person with a strong, resilient self-love that embraces their flaws, recovers quickly from wounds, and directs attention outward through empathy or creative work.  
+- **Moralizer** — Someone who publicly denounces others’ narcissism but may themselves be deeply self-absorbed and enjoy speaking or preaching.  
+- **Narcissism** — A spectrum measuring self-absorption, from healthy self-esteem to deep narcissistic dysfunction that impairs relationships and reality perception.  
+- **Narcissistic spectrum** — The range of human self-absorption, extending from deep narcissism through functional narcissism to healthy narcissism and empathy.  
+- **Self-image** — An internal, coherent sense of self that regulates insecurities and provides self-validation independent of others’ constant approval.  
+- **Self-love** — The natural human tendency to care for and validate oneself, which can be harmful if turned inward exclusively but empowering when balanced with empathy.  
+- **Theatrical Narcissist** — A deeply narcissistic type who disguises their self-absorption through excessive drama, victimhood, or moral posturing to attract attention and manipulate empathy.  
+- **Visceral empathy** — Emotional attunement to others’ moods and feelings through sensing their body language, tone, and nonverbal cues, producing a visceral physical response.

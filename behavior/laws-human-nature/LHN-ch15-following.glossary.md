@@ -1,0 +1,27 @@
+- **Adaptability** — The ability to adjust and renew one’s authority by sensing changing moods, appealing to new audiences, and evolving leadership style over time.  
+- **Ambivalence** — The coexistence of contradictory emotions such as love and hostility or admiration and envy toward leaders.  
+- **Authority** — The art of creating an appearance of power, legitimacy, and fairness that results in people willingly following and trusting a leader.  
+- **Authenticity** — Establishing authority naturally by embodying a leadership style true to one’s character and strengths.  
+- **Aura** — A leader’s mysterious presence created by mixing contradictory signals that captivate and intrigue followers.  
+- **Balance of Presence and Absence** — Managing visibility to maintain authority by being neither too familiar nor too distant, fostering idealization and respect.  
+- **Code of Behavior** — The internal voice of the higher self, demanding discipline, responsibility, and adherence to high standards.  
+- **Empathy** — A visceral sensitivity to the moods and feelings of those being led, essential for maintaining respect and connection.  
+- **Essential Ambivalence** — The natural human tendency to simultaneously respect and fear or despise those in power.  
+- **Excellence** — Striving for the highest standards and self-discipline in work, producing lasting, meaningful contributions.  
+- **Follower Loyalty** — The conditional support followers give, which can be fickle and volatile if leadership shows weakness or mistakes.  
+- **Inner Authority** — The higher self’s conscience and guide that motivates discipline, responsibility, and purpose.  
+- **Leadership Archetypes** — Recognizable styles of authority reflecting natural strengths, such as the Deliverer, Founder, Visionary Artist, Truth Seeker, Quiet Pragmatist, Healer, and Teacher.  
+- **Legitimacy** — The perception that a leader’s power is rightful, fair, and just, underpinning authority.  
+- **Long-term Vision** — A leader’s capacity to see the bigger picture, anticipate future trends, and focus on the greater good of the group.  
+- **Mastery of Authority** — Developing the skills to influence and lead without relying heavily on force, rewards, or motivational speeches.  
+- **Mistrust Build-up** — Hidden resentment and doubt that accumulate when leaders fail to connect or act in the group’s interests.  
+- **Perceived Strength** — The impression of power and resolve that prevents followers from doubting or undermining a leader.  
+- **Responsibility** — The leader’s duty to prioritize the welfare and unity of the group over personal gain.  
+- **Respect** — Mutual regard between leader and followers critical for sustained authority and group cohesion.  
+- **Self-Discipline** — The internal control required to maintain high work standards, focus, and contribute meaningfully.  
+- **Taboo of Taking** — The danger of appearing to deprive followers of resources, rights, or privileges, which undermines authority.  
+- **Third Eye** — The developed ability to maintain perspective beyond the moment and foresee potential futures for the group.  
+- **Tone** — The example set by a leader’s work ethic and demeanor, influencing followers’ commitment and behavior.  
+- **Trust** — The foundational belief by followers that a leader acts in their interest, enabling forgiveness and resilience in loyalty.  
+- **Vision** — A far-reaching outlook that guides the group toward a greater purpose beyond immediate concerns.  
+- **Willpower Obedience** — Followers’ joyful compliance motivated by belief in leader’s wisdom rather than compulsion.

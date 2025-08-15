@@ -1,0 +1,1 @@
+Leadership requires mastering the delicate balance of projecting authority through vision and empathy, understanding human ambivalence toward power, and continuously adapting to maintain trust. True authority engages people’s willpower and loyalty by embodying a higher purpose, authenticity, and responsibility, rather than relying on force or superficial popularity.

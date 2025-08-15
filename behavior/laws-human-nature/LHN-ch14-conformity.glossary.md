@@ -1,0 +1,29 @@
+- **Battle-tested group** — A group hardened by challenges and crises, whose members demonstrate resilience and inner strength under pressure.  
+- **Collective sense of purpose** — A clear, stated, and publicized mission that unites group members towards a positive and concrete goal.  
+- **Conformity** — The unconscious imitation of others’ behaviors, thoughts, and emotions in a group, leading to diminished individual uniqueness.  
+- **Court** — The social environment within a group where individuals vie for favor and influence around a leader, often through flattery and alliance-building.  
+- **Courtiers** — Individuals within a court who use various strategies to gain and maintain favor from leadership; includes types such as Intriguer, Stirrer, Gatekeeper, Enabler, Jester, Mirrorer, Favorite, and Punching Bag.  
+- **Emotional contagion** — The automatic and unconscious spread of emotions among group members, influencing individual feelings and moods.  
+- **Faction** — A subgroup within a larger group that splits off and can challenge or control the main leadership over time.  
+- **Gatekeeper** — A courtier who controls access to the leader and monopolizes information flow by idealizing the leader and gaining exclusive proximity.  
+- **Group culture** — The shared ideals, values, and spirit that characterize a group, often influenced by its founders’ personalities.  
+- **Group dynamics** — The recurring patterns of behavior, roles, and interactions that emerge naturally within groups.  
+- **Group enemy** — An external or internal adversary identified by a group to unite against, often accompanied by distorted perceptions.  
+- **Group intelligence** — The awareness and understanding of how groups affect individual thinking and emotions, enabling resistance to negative group influences.  
+- **Hypercertainty** — The inflated confidence and rush to act experienced in groups, making members prone to risky decisions.  
+- **Individual effect (of groups)** — The specific ways groups influence individuals, including desire to fit in, perform, emotional contagion, and hypercertainty.  
+- **Intriguer** — A courtier who masks true ambitions behind loyalty, engaging in covert power plays while using others as tools.  
+- **Lieutenants** — Trusted team members selected for skills, character, and diversity, who manage execution of ideas within a reality group.  
+- **Mirrorer** — A courtier skilled at reflecting others’ moods and validating ideas subtly to gain support across the court.  
+- **Need to perform** — The unconscious pressure in groups to act and speak in ways that demonstrate loyalty and fit in, often exaggerating agreement.  
+- **Punching Bag** — The lowest-status individual in a court, subject to ridicule and exclusion, often isolated by others.  
+- **Reality group** — An ideal functional group focused on tangible goals, open communication, diverse opinions, and productive work free from exhausting politics.  
+- **Shadow Enabler** — A courtier who manages and enables a leader’s hidden darker impulses, serving as protector of their Shadow side.  
+- **Social force** — An invisible, physiological energy that connects group members through shared sensations, driving feelings of belonging and collective emotion.  
+- **Social personality** — The altered version of oneself that emerges in group settings, influenced by others’ behaviors, emotions, and beliefs.  
+- **Stirrer** — A courtier who exploits insecurities and spreads anxiety within the group to gain attention and influence.  
+- **Team diversity** — The inclusion of individuals with varied temperaments, backgrounds, skills, and ideas within a group to foster creativity and effectiveness.  
+- **The court jester** — A court member allowed to challenge or mock others, including leaders, but with little real power due to fear of responsibility.  
+- **The favorite** — A courtier who gains power through personal friendship with the leader rather than merit or loyalty alone.  
+- **The law of conformity** — The principle that individuals tend to imitate and conform to group norms, often unconsciously.  
+- **Upward pull** — The positive influence groups can exert, fostering cooperation, empathy, diverse contributions, and high-level functioning.

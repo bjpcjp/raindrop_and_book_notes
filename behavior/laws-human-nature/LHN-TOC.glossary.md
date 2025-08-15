@@ -1,0 +1,27 @@
+- **Aimlessness** — Lack of clear purpose that hinders forward progress.  
+- **Aggression** — Hostility that can be disguised behind a friendly appearance.  
+- **Covetousness** — Desire to possess or acquire, making one an elusive object of desire.  
+- **Defensiveness** — The resistance people show when their self-opinion is challenged.  
+- **Death Denial** — Avoidance or repression of the awareness of mortality.  
+- **Emotional Self** — The aspect of oneself that manages feelings and reactions.  
+- **Envy** — Fragile ego traits manifesting as resentment toward others’ success.  
+- **Fickleness** — The tendency of people to be inconsistent or change loyalties.  
+- **Gender Rigidity** — Strict adherence to traditional masculine or feminine roles.  
+- **Generational Myopia** — Short-sightedness concerning historical and generational context.  
+- **Grandiosity** — Overestimation of one’s abilities or self-importance.  
+- **Irrationality** — Acting on emotions or impulses rather than logic.  
+- **Masks** — Behavioral façades people use to conceal their true selves.  
+- **Narcissism** — Self-centeredness that obstructs empathy toward others.  
+- **Repression** — The unconscious blocking of unpleasant impulses or emotions.  
+- **Resistance** — Opposition, especially emotional, to change or influence.  
+- **Role-playing** — Adopting behaviors and personas to fit social expectations.  
+- **Self-love** — Appreciation of oneself that can be transformed into empathy.  
+- **Self-opinion** — The personal view one holds about oneself, affecting openness.  
+- **Self-sabotage** — Undermining one’s own success through negative attitudes or actions.  
+- **Shortsightedness** — Lack of foresight or the ability to see long-term consequences.  
+- **Strength of Character** — The moral and emotional resilience displayed by individuals.  
+- **Purpose** — A guiding aim or intention that drives meaningful action.  
+- **Conformity** — Yielding to group pressure, often leading to loss of individuality.  
+- **Hostility** — Underlying aggression that can be hidden beneath friendliness.  
+- **Masculine/Feminine Within** — Internal characteristics associated with gender identity.  
+- **Historical Moment** — Critical periods that offer unique opportunities for action.

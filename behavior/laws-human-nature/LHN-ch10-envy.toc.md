@@ -1,0 +1,25 @@
+```markdown
+- Beware the Fragile Ego
+- The Law of Envy
+- Keys to Human Nature
+  - Passive vs. Active Envy
+  - Decoding Envy
+- Signs of Envy
+  - Microexpressions
+  - Poisonous Praise
+  - Backbiting
+  - The Push and Pull
+- Envier Types
+  - The Leveler
+  - The Self-entitled Slacker
+  - The Status Fiend
+  - The Attacher
+  - The Insecure Master
+- Envy Triggers
+- Beyond Envy
+  - Move Closer to What You Envy
+  - Engage in Downward Comparisons
+  - Practice Mitfreude
+  - Transmute Envy into Emulation
+  - Admire Human Greatness
+```

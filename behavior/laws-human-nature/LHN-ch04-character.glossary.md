@@ -1,0 +1,20 @@
+- **Character** — A deeply ingrained set of traits and habits formed in early life that compels repeated behaviors and shapes one’s destiny.  
+- **Compulsive Behavior** — Repetitive actions driven by ingrained character patterns, often beyond conscious control.  
+- **Drama Magnet** — A type who seeks constant emotional involvement by positioning themselves as a victim and creating ongoing conflicts.  
+- **Easy Moralizer** — A person who expresses outrage over injustices but secretly engages in the behaviors they condemn, often lacking empathy.  
+- **Hyperperfectionist** — Someone obsessed with control and high standards, often unable to delegate and prone to burnout and failure.  
+- **Personalizer** — A person who takes others’ actions or words as personal attacks, often stemming from childhood deprivation and resulting in persistent disappointment.  
+- **Pleaser** — An excessively nice and considerate individual whose behavior masks resentment and defensiveness developed as a survival strategy.  
+- **Patterns** — Recurring behaviors and decisions that reveal a person’s character through time.  
+- **Pampered Prince/Princess** — A person indulged and protected in childhood, prone to tantrums and demanding behavior when desires aren’t met.  
+- **Relentless Rebel** — One who despises authority and criticism, compels superiority through defiance, and remains emotionally adolescent.  
+- **Self-Awareness** — The recognition and understanding of one’s own character, limitations, and compulsive patterns.  
+- **Set Character** — The concept that one’s character is largely fixed and shaped by early experiences and ingrained habits, limiting but not fully determining behavior.  
+- **Skill in Reading Character** — The ability to discern true character traits through observation of actions and patterns rather than appearances or reputations.  
+- **Strength of Character** — The resilience, adaptability, patience, and persistence that enable a person to handle adversity and learn from experience.  
+- **Superior Character** — A consciously developed and refined character that accepts its nature, mitigates weaknesses, and channels traits into strengths.  
+- **Tensile Quality** — The metaphorical resilience of strong character, able to bend without breaking under pressure.  
+- **Toxic Types** — Recurring problematic character patterns that are harmful to associate with and should be avoided or disengaged from.  
+- **Training Habits** — Deliberate actions taken to cultivate stronger character traits such as patience, discipline, and teamwork.  
+- **Trustworthiness** — The reliability and integrity of a person, often revealed through their response to criticism and handling of responsibility.  
+- **Vulnerabilities (Character Weaknesses)** — Aspects of character that lead to compulsive negative patterns and hinder growth or cooperation.

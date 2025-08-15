@@ -1,0 +1,17 @@
+- **Appearance Bias** — The tendency to see people not as they really are, but as they appear, often influenced by social presentation and the halo effect.  
+- **Blame Bias** — The inclination to avoid introspection after mistakes and instead blame others, circumstances, or lapses to reduce personal pain.  
+- **Confirmation Bias** — The habit of seeking and favoring evidence that confirms our preexisting beliefs while ignoring disconfirming evidence.  
+- **Emotional Self** — The part of our mind driven by emotions and impulses, often operating beyond our conscious will and rational control.  
+- **Group Bias** — The tendency to adopt ideas and opinions because they align with those of a group we belong to, motivated by the relief from isolation.  
+- **Group Effect** — A high-grade emotional state experienced within a large group, often amplifying collective emotions and diminishing individual rationality.  
+- **High-Grade Irrationality** — Emotional states intensified by external triggers, leading to tunnel vision on emotions and reactive, often rash, behavior.  
+- **Inflaming Individuals** — People who naturally provoke strong emotional reactions (love, hatred, trust, or mistrust) in others, often causing irrationality.  
+- **Irrationality** — A lack of awareness of emotional influence on thinking, leading to reactive decisions and repeated negative life patterns.  
+- **Low-Grade Irrationality** — Subconscious moods and feelings that subtly bias thinking and decision-making processes without immediate awareness.  
+- **Neocortex** — The part of the brain responsible for cognition, abstract thinking, and language, sitting atop the limbic and reptilian brains.  
+- **Pleasure Principle** — The fundamental desire to seek pleasurable thoughts and avoid painful or unpleasant ideas, strongly influencing biases.  
+- **Rationality** — The ability to recognize and counteract emotional biases through introspection and deliberate thought before acting.  
+- **Reptilian Brain** — The oldest brain region controlling automatic bodily responses and instincts.  
+- **Reaction Time** — The delay or pause learned through practice to counteract immediate emotional reactions and allow rational thinking.  
+- **Superiority Bias** — The tendency to view oneself as rational, ethical, and morally superior, often a self-deception to align with cultural ideals.  
+- **Trigger Points from Early Childhood** — Emotional vulnerabilities developed in early life that can be unconsciously reactivated by present circumstances.

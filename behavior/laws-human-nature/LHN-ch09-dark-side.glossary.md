@@ -1,0 +1,21 @@
+- **Accidental behavior** — Actions that inadvertently reveal a person’s repressed desires, often justified by blaming illness or lack of control.  
+- **The Dark Side** — The hidden, shadowy part of a person’s character containing insecurities and aggressive, selfish impulses.  
+- **Emotional outbursts** — Sudden loss of self-control revealing deep resentments and repressed feelings.  
+- **Emphatic traits** — Strong, exaggerated personality traits that mask the opposite qualities within a person.  
+- **The Extreme Entrepreneur** — A person who appears self-reliant and detail-oriented but secretly desires dependency and control breakdown.  
+- **The Fanatic** — Someone with intense convictions that mask underlying insecurities and doubts, often shifting beliefs to suit circumstances.  
+- **Integration** — The process of becoming aware of, accepting, and channeling one’s Shadow into productive and authentic expression.  
+- **Overidealization** — Viewing causes, people, or beliefs in black-and-white terms to mask repressed emotions and justify aggressive behavior.  
+- **Passive-Aggressive Charmer** — A person who hides aggressive and envious tendencies behind an overly nice and accommodating facade.  
+- **The Projection** — Attributing one’s own repressed desires or faults onto others to justify personal feelings or behaviors.  
+- **Projection** — The psychological defense mechanism where one ascribes one’s unacceptable impulses to others.  
+- **The Rigid Rationalist** — A person who suppresses irrational and emotional aspects, often responding with intellectual superiority and occasional emotional outbursts.  
+- **The Saint** — A person who displays apparent moral purity to hide hunger for power, attention, or sensual desires.  
+- **Self-awareness** — Conscious recognition and understanding of one’s own repressed traits and impulses.  
+- **Shadow** — The unconscious part of the personality containing repressed desires, fears, and weaknesses.  
+- **Signs of Shadow release** — Indicators such as contradictory behavior, emotional outbursts, vehement denial, projection, and accidental behavior signaling the Shadow’s emergence.  
+- **The Snob** — Someone who seeks superiority by emphasizing appearances and uniqueness to mask insecurity and mediocrity.  
+- **Vehement denial** — The act of denying one’s unconscious feelings or desires by outwardly expressing the opposite.  
+- **The Tough Guy** — A person projecting intimidating masculinity to conceal emotional vulnerability and insecurity.  
+- **Unconscious** — The part of the mind where the Shadow operates, holding repressed material that influences behavior outside awareness.  
+- **The Integrated Human** — A person who acknowledges and balances both the conscious self and the Shadow, demonstrating authenticity and emotional maturity.
