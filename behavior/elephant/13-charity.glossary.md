@@ -1,0 +1,22 @@
+- **Balance of Power** — A strategy where ambition seeks weaker rulers to create dependency rather than aligning with already powerful forces.  
+- **Creeping Ivy** — Metaphor for entwining oneself around sources of power to become indispensable.  
+- **Dependence** — A relationship where one party relies on another for survival or success, creating leverage and power.  
+- **Extensive Power** — Power based on involvement in many areas or departments, creating numerous alliances and dependencies.  
+- **First Impressions** — Initial perceptions that strongly influence trust and openness in relationships.  
+- **Intensive Power** — Power based on a unique, specialized skill that makes a person indispensable, independent of positions.  
+- **Interdependence** — Mutual reliance between individuals or groups, often a practical basis of power relations.  
+- **Laws of Power** — Principles guiding the creation and maintenance of power, such as making others depend on you.  
+- **Leverage** — The advantage gained in a power relationship by making oneself indispensable to a master or superior.  
+- **Master** — The individual in power who depends on others for support, intelligence, or strength.  
+- **Mutual Dependence** — A balanced relationship where both parties rely on each other, often more stable than complete dominance.  
+- **Power** — The ability to get others to do as you wish, ideally without force or coercion.  
+- **Power Base** — The foundation of support and influence on which a politician or leader builds authority.  
+- **Reverse Independence** — A state where others’ dependence on you creates your own freedom from needing a master.  
+- **Selective Honesty** — A strategic act of honesty or generosity to disarm suspicion and manipulate others.  
+- **Skill Indispensability** — Possessing a unique talent or role that makes one irreplaceable and so powerful.  
+- **Spider King** — Nickname for Louis XI of France, who maintained power by creating dependence and controlling others.  
+- **Support Relationship** — A bond with a weaker ruler or master wherein the dependent party provides essential backing.  
+- **Survival Strategy** — Methods like creating dependency to maintain position and influence despite stronger rivals.  
+- **Trust** — An emotional state that can be manipulated through calculated acts of kindness or honesty to lower defenses.  
+- **Vine and Elm Fable** — A metaphor illustrating the folly of seeking independence without support versus growing strong through alliances.  
+- **Wise Prince** — A ruler who intentionally keeps subjects dependent to maintain loyalty and control.

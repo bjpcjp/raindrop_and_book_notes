@@ -1,0 +1,1 @@
+Reputation is a critical tool for gaining and maintaining power, as it shapes how others perceive and judge you, often outweighing the reality of your character. P.T. Barnum exemplified this by using sensational attention-grabbing tactics, understanding that any kind of notoriety—positive or negative—ensures success by keeping you visible and influential.

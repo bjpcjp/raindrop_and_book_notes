@@ -1,0 +1,24 @@
+- **Arrogant and Proud Man** — A dangerous type whose oversensitive pride leads to violent vengeance over perceived slights; avoid offending him.  
+- **Citadel** — A fortress high on a hill symbolizing power’s isolation and vulnerability, prone to betrayal and easy defeat.  
+- **Fortezza Mentality** — The mindset of seeking security through isolation, which leads to vulnerability, paranoia, and loss of power.  
+- **Fronde** — A terrible civil war in France involving resentful nobility opposing the growing power of the throne.  
+- **Isolation** — The state of being cut off socially or politically, which causes loss of perspective, creativity, maneuverability, and increases danger.  
+- **Jacopo da Pontormo** — Renaissance artist whose isolated work on frescoes led to a lack of proportion and eventual failure of his masterpiece.  
+- **King’s Court (Versailles)** — The centralized, open social space where Louis XIV kept nobles occupied and closely watched to prevent conspiracies.  
+- **Law 19** — "Know Who You’re Dealing With—Do Not Offend the Wrong Person," emphasizing careful judgment of others to avoid dangerous enemies.  
+- **Lope de Aguirre** — Historical figure known for relentless and violent revenge driven by wounded pride.  
+- **Machiavelli’s View on Fortresses** — Fortresses symbolize isolation and weakness; rulers should rely on subjects’ goodwill instead of forts.  
+- **Mobility (Power)** — The ability to move through different social circles and maintain wide connections to prevent isolation and vulnerability.  
+- **Mr. Suspicion** — A paranoid type who mistrusts everyone, easy to manipulate but dangerous if suspicious of you.  
+- **Nobility (Fronde)** — The aristocratic class that opposed central royal power but was weakened and controlled politically by Louis XIV.  
+- **Opponents, Suckers, and Victims** — Categories of people one encounters in power struggles; recognizing types is key to strategic interaction.  
+- **Plain, Unassuming, and Often Unintelligent Man** — A difficult mark to deceive because of literal thinking who wastes time and resources when targeted.  
+- **Pontormo’s Frescoes** — Artistic work that suffered from isolation-induced flaws: obsession with detail and loss of overall coherence.  
+- **Rebellion** — The political danger that grows when rulers isolate themselves and lose contact with their people.  
+- **Serpent with a Long Memory** — A calculating, cold, and vengeful type who seeks well-planned revenge over time; must be crushed or removed if harmed.  
+- **Social Arts** — Skills necessary for power and creativity, developed through constant social interaction and exposure.  
+- **Solitude** — A dangerous state that threatens reason and virtue, fostering superstition, madness, and social awkwardness.  
+- **Talleyrand** — French statesman who maintained power by staying connected with all social levels, including shady elements, enabling political survival.  
+- **The Golden Dream** — Reference to El Dorado seekers, illustrating obsession driven by pride and revenge, epitomized by Lope de Aguirre.  
+- **Versailles** — The palace where Louis XIV centralized power, minimized noble privacy, and fostered constant social interaction to prevent plots.  
+- **Wolves in Lambs’ Clothing** — Deceptive people who may seem harmless but are dangerous and seek revenge if offended.

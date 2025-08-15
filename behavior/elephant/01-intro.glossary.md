@@ -1,0 +1,30 @@
+- **Amoral** — Lacking a sense of right and wrong; power is described as essentially amoral and judged by outcomes, not intentions.  
+- **Appearnaces** — The outward look or mask one presents to others, crucial in deception and power games.  
+- **Boil and Simmer** — Metaphor for hidden emotions like greed, envy, lust, and hatred beneath a civilized surface.  
+- **Court** — The historical aristocratic environment of power dynamics involving subtlety and intrigue.  
+- **Courtier’s Dilemma** — The challenge to serve a master with subtlety while outwitting rivals without overt aggression.  
+- **Deception** — A key power strategy involving lies, masquerade, and trickery to manipulate others.  
+- **Duplicity** — Double-dealing or deceitfulness; essential for navigating power relationships subtly.  
+- **Emotions** — Strong feelings like anger and love that must be mastered and controlled to maintain power.  
+- **Indirection** — Making moves subtly and indirectly avoiding overt force or treachery.  
+- **Iron Hand in a Velvet Glove** — Combining firmness with gentleness in strategy and behavior.  
+- **Janus** — Roman god symbolizing the need to look simultaneously to past and future for power.  
+- **Masks** — Figurative or literal disguises used to conceal true intentions in social interactions.  
+- **Manipulation** — Skillful use of influence to control or deceive others in power games.  
+- **Moral Judgments** — Evaluations based on good or evil, which can obscure practical assessment of power dynamics.  
+- **Naïveté** — An appearance of innocence that can be a deliberate and effective deception tactic.  
+- **Nonplayers** — People who claim to avoid power games but often disguise their manipulation and strategies.  
+- **Patience** — A vital power skill involving restraint and long-term strategic thinking.  
+- **Power** — The ability to influence or control others and events, central to human behavior and relations.  
+- **Power Games** — The strategic interactions involving subtlety, deception, and manipulation to acquire influence.  
+- **Prudence** — Careful judgment essential for navigating the complexities of power without rashness.  
+- **Resentment** — Negative reaction avoided by effective, subtle power plays that mask true intentions.  
+- **Seduction** — A method to gain influence softly, often employed by court figures.  
+- **Self-Interest** — The motivating force behind many requests for help or cooperation.  
+- **Strategy** — Planned actions and moves in anticipation of others’ responses in power contests.  
+- **Subtlety** — The quality of being delicate, refined, and indirect in behavior or approach.  
+- **Suspended Terror** — Creating unpredictability and anxiety in others as a strategic tool (Law 17).  
+- **Tactical Thinking** — Constant vigilance and planning several moves ahead to navigate power dynamics.  
+- **Velvet Glove** — A metaphor for gentleness hiding strength or force behind it.  
+- **Weakness (Displayed)** — A disguised tactic in power, feigning vulnerability to gain advantage (Law 22).  
+- **Wise Man’s Stratagems** — Powerful, sometimes ruthless, plans that can have profound effects.

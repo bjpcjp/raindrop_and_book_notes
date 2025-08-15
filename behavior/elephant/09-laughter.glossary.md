@@ -1,0 +1,24 @@
+- **AC (Alternating Current)** — An electrical system developed by Nikola Tesla, allowing efficient long-distance transmission of electricity, which became the industry standard.
+- **Air of Mystery** — The deliberate creation of ambiguity and unpredictability in one's behavior to attract attention, intrigue, and power by making oneself unpredictable and hard to interpret.
+- **Alternating Current (AC)** — See AC.
+- **Charles John Kean** — The greatest actor of 1850 who performed Macbeth during an event where Lola Montez’s attention-seeking failed.
+- **Continental Edison Company** — European division of Edison’s company where Tesla initially worked.
+- **Direct Current (DC)** — Edison’s preferred electrical system, which Tesla opposed.
+- **Edison Medal** — A recognition awarded by the American Institute of Electrical Engineers, which Tesla refused in 1917.
+- **Edison, Thomas** — Inventor known for dazzling public experiments and manipulations to gain attention, opposing Nikola Tesla.
+- **George Westinghouse** — Industrialist who funded Tesla's AC research and offered him royalties.
+- **Hannibal** — Carthaginian general famous for clever deceptive tactics creating confusion and fear among enemies.
+- **Lola Montez** — Attention-seeker who rose to prominence but eventually overplayed her publicity, causing social exile.
+- **Mata Hari** — Stage name of Margaretha Zelle, a dancer who used mystery and fabricated exotic origins to gain fame and influence.
+- **Marconi, Guglielmo** — Inventor credited with radio, though his work heavily relied on Tesla's patents and innovations.
+- **Mystery** — A state of being unknown or obscured, used as a tool to captivate attention and evoke fascination or fear.
+- **Nikola Tesla** — Brilliant inventor overshadowed by Edison; key figure in AC development and inventor of foundational technologies for radio.
+- **Pietro Aretino** — Early sixteenth-century Roman servant who gained fame by satirizing powerful persons publicly.
+- **Public Attention** — The focused notice and interest of the audience or society, essential for fame and power.
+- **Reputation** — The public's collective perception of an individual, which must be carefully managed to avoid negative interpretations.
+- **Slanderous Attack** — A public and often harsh criticism aimed at a powerful person to gain attention.
+- **Thomas Edison** — See Edison, Thomas.
+- **Tortoise, Elephant, and Hippopotamus Fable** — A story illustrating the strategy of letting others perform the labor while taking credit.
+- **Veils/Dance of the Veils** — A metaphor for mystery and selective revelation, enhancing intrigue and interest.
+- **Westinghouse, George** — See George Westinghouse.
+- **Youthful Ambition** — The drive of individuals like Margaretha Zelle to rise above lowly positions via creative self-presentation.

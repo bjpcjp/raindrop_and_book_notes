@@ -1,0 +1,26 @@
+- **Appearance** — The outward look or behavior used to deceive others about true intentions.  
+- **Bismarck, Otto von** — Prussian statesman known for strategic deception and unifying Germany under Prussia.  
+- **Cabinet minister** — A high-ranking government official; Bismarck was appointed one after his peace speech.  
+- **Decoy** — A false target or goal used to mislead others and conceal true intentions.  
+- **Deception** — The deliberate act of misleading or concealing one’s real purpose for strategic advantage.  
+- **False sincerity** — The act of seeming genuine and trustworthy to disguise deception.  
+- **Feigned confidence** — Pretended trust in someone to elicit their real confidence.  
+- **Honesty** — A straightforward telling of the truth, which can be a blunt instrument and disadvantageous in power struggles.  
+- **Iron and blood** — Bismarck’s phrase signifying that important affairs are decided through force rather than words.  
+- **Jay Geezil** — A Chicago businessman tricked into a con involving a rigged boxing match and property sale.  
+- **J. P. Morgan** — A powerful financier name-dropped to impress and deceive in the con story.  
+- **King Frederick William IV** — The Prussian king who preferred peace and opposed war against Austria in 1850.  
+- **Misleading signals** — Communication that deliberately hides true intent by giving contradictory or false impressions.  
+- **Mr. Sam Geezil** — Victim of the Yellow Kid Weil’s con artist scheme.  
+- **Power** — The ability to influence and control others, often gained through concealment of true intentions.  
+- **Prince William** — Heir to the Prussian throne in 1850, favoring war against Austria.  
+- **Red herring** — A distraction or false lead used to divert attention from real goals.  
+- **Sincerity** — The appearance of genuine belief or feeling, which can be feigned to deceive.  
+- **Smoke screen** — A tactic or cover that hides real intentions by drawing attention to something harmless or familiar.  
+- **Strategic deception** — The calculated use of deceit to confuse opponents and gain advantage.  
+- **The Duke of Marlborough** — English general who used deceptive military tactics during the War of the Spanish Succession.  
+- **The Yellow Kid (Joseph Weil)** — A notorious con artist who masterminded a famous boxing match scam.  
+- **War fever** — The public enthusiasm and agitation for war, often ignorant of its true costs.  
+- **Wartime calculations** — The assessment of military preparedness and political consequences before engaging in war.  
+- **Wild-goose chase** — A futile pursuit caused by being misled to focus on false goals.  
+- **Woe unto the statesman** — Bismarck’s warning against making war without lasting justification.

@@ -1,0 +1,1 @@
+Effective power relies on gathering accurate information through subtle spying and deception while protecting oneself with disinformation. To maintain control and security, one must crush enemies completely, leaving no chance for them to recover or seek revenge.

@@ -1,0 +1,32 @@
+- **Adaptable** — Able to adjust strategies or behavior to new conditions or opponents.  
+- **Capricious** — Unpredictable or whimsical behavior used to unsettle others.  
+- **Chemist** — A scientist who analyzes substances to detect unusual elements or compounds.  
+- **Confucius** — Ancient Chinese philosopher whose teachings were outlawed by Shih Huang Ti.  
+- **Counterpunch** — A responsive punch thrown as a reaction to an opponent’s attack.  
+- **Eunuchs** — Castrated men often employed as palace servants or guards in imperial courts.  
+- **Fortress** — A stronghold or defensive structure, used metaphorically for isolation.  
+- **Forfeit** — To give up or resign, especially a game or contest.  
+- **Great Wall of China** — The long defensive barrier built to protect China from invaders.  
+- **Hallucinations** — Perceptions of things that are not real, often linked to mental unraveling.  
+- **Initiative** — The ability to take the first step or control in an interaction or contest.  
+- **Isolation** — The state of being separated from others, often leading to vulnerability.  
+- **Lever** — The morning ritual at Versailles where the king was attended by courtiers.  
+- **Louis XIV** — King of France known for his palace at Versailles and controlling court rituals.  
+- **Masks** — Concealing disguises worn to hide identity or intentions, as in Poe’s story.  
+- **McClellan, George Brinton** — Union general during the American Civil War.  
+- **Patterns** — Predictable sequences of behavior or moves relied upon by opponents.  
+- **Parry** — To deflect or counter an opponent’s action or plan.  
+- **Philipo Maria Visconti** — Duke of Milan known for unpredictable and confusing court behavior.  
+- **Predictability** — The quality of acting in expected or habitual ways that can be anticipated.  
+- **Psychic problem** — Mental instability or psychological disorder.  
+- **Ritual** — A formalized, repeated procedure with symbolic meaning.  
+- **Shih Huang Ti** — The first emperor of unified China, known for his paranoia and isolation.  
+- **Sangfroid** — Coolness and composure under pressure.  
+- **Spiel** — A speech or long explanation meant to persuade or confuse.  
+- **Stonewall Jackson** — Confederate general known for his confusing and misleading military tactics.  
+- **Strategist** — A person skilled in planning and directing military or competitive operations.  
+- **Stalemate** — A situation where no progress or advantage can be gained.  
+- **Trait of terror** — The fear induced by sudden, unexpected, or inexplicable actions.  
+- **Unpredictability** — The quality of being erratic or not able to be foreseen, used to confuse opponents.  
+- **Versailles** — The palace of Louis XIV where court life was centered and controlled.  
+- **Waiting** — The state of being in suspense or anticipation, often causing anxiety or confusion.

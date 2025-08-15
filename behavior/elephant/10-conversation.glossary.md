@@ -1,0 +1,25 @@
+- **Authority** — The power gained by acquiring knowledge from others, allowing one to appear wise and influential without original inventions.  
+- **Bait** — An enticing offer or situation used to lure opponents into a trap, giving control to the one who sets it.  
+- **Bond-men and bondwomen** — Servants or laborers used metaphorically to describe those who assist in achieving a goal, even if not skilled.  
+- **Credit** — Recognition or acknowledgment for an invention or creation, often more valuable than the creation itself.  
+- **Emotions** — Feelings such as anger that must be mastered to maintain control and play long-term power games effectively.  
+- **Exploit** — To use others’ work or resources to further one’s own objectives, often taking credit for it.  
+- **Glory** — Fame and recognition associated with achievements or inventions.  
+- **Illusion** — A mistaken belief, such as thinking science is free from politics or rivalry.  
+- **Influence** — The ability to affect others’ actions or thoughts, often by manipulation or controlling situations.  
+- **Investors** — People who provide capital for inventions or projects, crucial for turning ideas into reality.  
+- **Knowledge** — Information and wisdom accumulated from others’ experiences, essential for gaining power without reinventing the wheel.  
+- **Manipulation** — The act of skillfully controlling or influencing others to serve one’s own ends, often subtly.  
+- **Mastery** — Complete control or command over one’s emotions, actions, or situation, crucial for effective power.  
+- **Parasitic use** — Taking credit or benefit from others’ work without contributing oneself.  
+- **Power** — The ability to control situations and others, often by forcing opponents to react rather than act freely.  
+- **Predators** — Those who actively create or seize power, likened to hunters in a jungle.  
+- **Rivalry** — Competition between individuals or groups for power, recognition, or resources.  
+- **Security** — Support or resources (like the carriage or horses in the Chinese proverb) that make achieving goals easier and less exhausting.  
+- **Stealing** — Appropriating others’ ideas or work for one’s own benefit, sometimes openly admitted in commerce.  
+- **Strategy** — Planned actions designed to gain or maintain power by controlling opponents’ moves.  
+- **Support system** — Skilled individuals or resources hired or employed to do work while the leader takes credit.  
+- **Talent** — The skills or creativity possessed by others, which can be utilized to advance one’s own position.  
+- **Trap** — A setup designed to lure opponents into making mistakes or losing control.  
+- **Vulture** — A metaphor for those who live off the efforts or failures of others rather than creating value themselves.  
+- **Wisdom of the past** — The accumulated knowledge and insights from earlier generations that can be leveraged for modern advantage.

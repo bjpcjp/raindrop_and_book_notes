@@ -1,0 +1,25 @@
+```markdown
+- Interpretation  
+  - The Yellow Kid and Sam Geezil  
+- Observance of the Law II  
+  - Haile Selassie and Dejazmach Balcha  
+- Interpretation  
+  - Selassie's Use of Smoke Screens  
+- Keys to Power  
+  - Bland Fronts and Familiarity  
+  - Patterns and Noble Gestures  
+  - Blending In and the Smoke Screen  
+  - Historical Examples  
+- Reversal  
+  - Owning a Reputation for Deception  
+  - Use of Colorful Diversions  
+- Law 4: Always Say Less Than Necessary  
+  - Judgment  
+  - Transgression of the Law  
+    - Coriolanus’s Political Ambitions  
+    - Public Speeches and Their Consequences  
+- Interpretation  
+  - The Downfall of Coriolanus  
+- Historical Reference  
+  - Louis XIV’s Use of Secrecy  
+```

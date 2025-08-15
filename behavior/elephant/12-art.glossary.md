@@ -1,0 +1,27 @@
+- **Bavaria** — A kingdom where Lola Montez wielded influence over King Ludwig, causing political turmoil.  
+- **Bigamy** — The act of marrying someone while still legally married to another person, as Lola Montez was charged with in England.  
+- **Cassius** — A Roman conspirator against Julius Caesar, known for his envy and infectious discontent that led to tragedy.  
+- **Condottiere** — A mercenary soldier in Renaissance Italy, often betrayed or eliminated once no longer indispensable.  
+- **Count of Carmagnola** — A condottiere who was executed despite his service for Venice, illustrating the fate of those who lose indispensability.  
+- **Courtly manners** — Refined social behaviors displayed by Talleyrand, contributing to his influential charm.  
+- **Duel** — A formal combat between two people, which led to the death of Alexandre Dujarier after being challenged by a rival critic.  
+- **Emotional osmosis** — The process by which people absorb the moods, emotions, and ways of thinking of those they associate with.  
+- **Infection (emotional)** — The spread of dissatisfaction, misery, or instability from one person to others, notably from “infectors” like Lola Montez or Cassius.  
+- **Infector** — An individual whose unstable character and intense emotions negatively affect others, drawing them into turmoil or misfortune.  
+- **Julius Caesar** — Roman leader whose assassination was partly fueled by Cassius’s influence on Brutus.  
+- **King Ludwig of Bavaria** — Monarch “bewitched” by Lola Montez, whose rule ended after her influence caused civil unrest.  
+- **Lille, France** — No direct reference; the text involves Paris and Munich in Lola Montez’s story, not Lille.  
+- **Lola Montez** — Stage name of Marie Gilbert, a dancer and courtesan whose forceful character infected and controlled powerful men.  
+- **Louisiana Purchase** — Not mentioned in text; unrelated historical event.  
+- **Mercenary** — A professional soldier hired to serve in a foreign army, exemplified by condottieri like the Count of Carmagnola.  
+- **Napoleon Bonaparte** — A peasant-born French leader who admired Talleyrand’s cultured manner and charm.  
+- **Quarantine** — The metaphorical isolation from infectors to prevent emotional and social damage.  
+- **Senator** — Not referenced explicitly; the document mentions deputies and ministers but not senators.  
+- **Simon Thomas** — A doctor mentioned by Montaigne, who believed in the healing power of youthful cheerfulness.  
+- **Talleyrand** — French statesman known for charm and graciousness, whose presence positively infected Napoleon.  
+- **The Bridge of Sighs** — The bridge in Venice where the Count of Carmagnola realized he was being led to prison.  
+- **The Cat That Walked By Himself** — A Kipling story illustrating independence and self-reliance.  
+- **The Nut and the Campanile** — A fable about a nut whose growth destroyed the wall sheltering it, symbolizing self-destructive instability.  
+- **The Two Horses** — A fable by Tolstoy illustrating consequences of unequal effort and value.  
+- **William of Prussia (King William I)** — Successor to Frederick William IV, initially disliking Bismarck but becoming dependent on him.  
+- **Yond Cassius** — A Shakespearean reference describing Cassius as dangerous due to his discontent and envy.
