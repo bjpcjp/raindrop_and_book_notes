@@ -1,0 +1,28 @@
+- **Action Units (AUs)** — Discrete facial muscle movements coded in the Facial Action Coding System (FACS) that form the basis of facial expression analysis in SPAFF.
+- **Affection** — A SPAFF code expressing genuine caring and concern, facilitating closeness and bonding.
+- **Anger** — Affective behavior indicating displeasure or perceived violation of autonomy and respect.
+- **Belligerence** — Provocative behavior seeking to irritate or enrage the partner, often involving taunting or interpersonal challenges.
+- **Chronbach’s Alpha** — A reliability statistic used to assess internal consistency or agreement in SPAFF coding.
+- **Confusion Matrix** — A tabular display of agreements and disagreements between coders used to calculate reliability such as Cohen’s kappa.
+- **Contempt** — Behavior aimed at belittling, hurting, or humiliating a partner by communicating superiority or disrespect.
+- **Continuous Scale (SPAFF)** — A weighted scoring system translating SPAFF codes into a continuous scale from negative to positive valence.
+- **Cronbach’s Alpha** — A measure of internal consistency (reliability) used in coding assessments.
+- **Defensiveness** — A SPAFF code indicating deflection of blame or responsibility, often involving counterattacks or excuses.
+- **Domineering** — Attempts to assert control over a partner or conversation through invalidation, lecturing, or manipulation.
+- **Disgust** — An involuntary response to noxious or morally objectionable stimuli, involving distinctive facial expressions.
+- **Empathy** — The mirroring of a partner’s affect conveying understanding and care, considered part of Affection.
+- **Facial Action Coding System (FACS)** — A detailed system for coding facial muscle movements used as the foundation for SPAFF facial coding.
+- **Fear/Tension** — Affective signs of anxiety, worry, or nervous anticipation characterized by speech disturbances and fidgeting.
+- **Humor** — Shared amusement characterized by mutual laughter, wit, private jokes, or playful teasing.
+- **Intraclass Correlation Coefficient (ICC)** — A reliability metric assessing agreement for continuous ratings in SPAFF coding.
+- **Interest** — Positive engagement and information-seeking behavior toward one’s partner, often involving questions and nonverbal attention.
+- **Latent Variables** — Unobserved psychological constructs inferred from multiple observable indicators in SPAFF coding.
+- **Neutral** — A SPAFF code representing nonaffective, informational exchanges with relaxed voice and facial expression.
+- **Paralinguistic Cues** — Vocal elements such as pitch, tone, and rhythm which convey affective meaning in SPAFF coding.
+- **Physical Cues** — Observable bodily or facial movements that serve as indicators of specific SPAFF affective codes.
+- **Specific Affect Coding System (SPAFF)** — A coding system designed to categorize affective behavior during interpersonal interactions.
+- **Stonewalling** — Active withdrawal behavior communicating unwillingness to listen or respond, characterized by nonresponsive body language.
+- **Threats** — Hostile domineering behaviors using explicit conditions and punitive consequences to control a partner.
+- **Validation** — Behavior conveying sincere understanding and acceptance of a partner’s feelings or opinions.
+- **Whining** — A plaintive, high-pitched vocal protest that communicates victimhood or emotional pleading.
+- **Weighting Scheme** — Assigning numerical weights to SPAFF codes based on their predictive relationships to positive or negative relationship outcomes.

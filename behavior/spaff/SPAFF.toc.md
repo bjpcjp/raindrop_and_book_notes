@@ -1,0 +1,124 @@
+```markdown
+# Table of Contents
+
+- The Specific Affect Coding System (SPAFF)
+  - Introduction (p. 267)
+  - History of the SPAFF (p. 267)
+  - Learning to Code Behavior: The Philosophy of the SPAFF (p. 268)
+  - SPAFF Codes Are Latent Psychological Constructs (p. 268)
+  - Physical Features and Cultural Informants (p. 269)
+  - Becoming a Cultural Informant: Seeing Versus Observing (p. 270)
+  - Three Rules of People Watching (p. 270)
+    - Rule 1: View a Behavior as Though It Were Chosen From Alternatives
+    - Rule 2: View Behavior as Designed to Portray a Character
+    - Rule 3: Watch a Person as if an Actor Playing That Person
+  - Facial Expressions of the SPAFF (p. 271)
+    - Action Units of the Upper Face
+    - Action Units of the Lower Face
+  - Codes of the SPAFF (p. 272)
+    - Affection
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Anger
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Belligerence
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Contempt
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Criticism
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Defensiveness
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Domineering
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Disgust
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Enthusiasm (Formerly Joy)
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Fear/Tension
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Humor
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Interest
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Neutral
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Sadness
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Stonewalling
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Threats
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Validation
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+    - Whining
+      - Function
+      - Indicators
+      - Physical Cues
+      - Counterindicators
+  - The Nuts and Bolts of SPAFF Coding (p. 282)
+    - Training
+      - Step 1: People Watching and Constructs
+      - Step 2: FACS Training
+      - Step 3: Learning the SPAFF Codes
+  - Data Collection and Reliability Assessment (p. 282)
+    - Video- and Audiotapes
+    - Reliability Assessment
+    - Sample Confusion Matrix (p. 283)
+  - The Future of the SPAFF (p. 283)
+    - The SPAFF as a Scale
+    - The SPAFF as a Language
+  - Conclusion (p. 284)
+  - Notes (p. 284)
+  - References (p. 284)
+```
