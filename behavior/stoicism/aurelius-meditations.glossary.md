@@ -1,0 +1,29 @@
+- **affection** — Natural benevolence or kind feelings toward others, central to human sociability.
+- **Athenian Creed** — A satirical reference by John Witherspoon listing Shaftesbury, Marcus Antoninus, and Hutcheson as quasi-religious figures.
+- **benevolence** — The natural desire to perform good offices for others; key moral sentiment praised by Hutcheson.
+- **Clemmency** — Mercy or leniency, notably exercised by Marcus Aurelius toward enemies and conspirators.
+- **conscience** — Synonymous with moral sense or the "governing part" of the soul, directing right action.
+- **consent** — Alignment or acquiescence with the divine will or law of nature.
+- **divine fire** — The spark or part of God believed to be present within every rational soul, central to Stoic philosophy.
+- **divinity** — The godlike or divine aspect present within human rational souls in Stoic thought.
+- **divine providence** — The concept that God governs all things in the universe with wisdom and goodness.
+- **emotions** — Feelings such as piety, gratitude, charity, and compassion valued over anger and envy in Stoicism.
+- **fate** — The Stoic doctrine of predestination and universal order.
+- **governing part (hegemonikon)** — The rational soul or intellect that rules over passions and appetites.
+- **heart** — The moral and spiritual equivalent of the rational soul; the seat of benevolence and moral sense.
+- **human nature** — Naturally sociable and benevolent, contrary to doctrines of original sin.
+- **law of nature** — The immutable, eternal law known by reason, directing all beings toward the good of the whole.
+- **liberty** — The ability to act in accordance with nature and divine law; debated in relation to predestination.
+- **martyrdom** — Criticized by Hutcheson for excess among early Christians, though acknowledged as an expression of faith.
+- **Marcus Aurelius** — Roman emperor and Stoic philosopher whose Meditations were translated and extensively annotated by Hutcheson and Moor.
+- **moral faculty (moral sense)** — The inner faculty in humans to perceive virtue and vice, often equated with reason or conscience.
+- **natural sociability** — The innate human tendency toward social connection and concern for others.
+- **original sin** — Christian doctrine rejected by Hutcheson; he maintained humans are naturally good.
+- **passions and affections** — Emotions governed by reason, where lower passions must be subordinated to higher affections like benevolence.
+- **predestination** — The doctrine that all events are willed by God, aligned with Stoic fate but reconciled by Hutcheson with free moral agency.
+- **rational soul** — The divine element within humans responsible for reason, virtue, and knowledge of the law.
+- **resignation** — Acceptance and acquiescence to the divine order or fate as an expression of virtue.
+- **sensus communis** — The common sense or shared public spirit recognized in Roman moralists, meaning natural affection and social virtue.
+- **social virtue** — The collective good-will, piety, and benevolence necessary for society, emphasized by Hutcheson.
+- **Stoicism** — The philosophy advocating virtue, reason, and acceptance of divine providence; source for Hutcheson's moral ideas.
+- **virtue** — Moral excellence, knowledge of good and evil, and conformity to the law of nature and God’s will.
