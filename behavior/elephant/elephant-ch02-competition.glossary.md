@@ -1,0 +1,29 @@
+- **Arms race** — A competitive struggle where participants continuously escalate their efforts or traits to outdo rivals, often seen in evolution or social competition.  
+- **Capillary action** — The process by which water moves upward against gravity through narrow spaces, vital for transporting water in trees.  
+- **Coalition** — A group of allies who team up to gain or maintain power, especially in social or political contexts.  
+- **Competition** — A contest or rivalry where one individual's gain is often another's loss, driving evolution and social behavior.  
+- **Counter-signaling** — A form of signaling in which close associates use seemingly negative or unfriendly signals to demonstrate intimacy that outsiders cannot interpret.  
+- **Deception** — The act of misleading others to gain advantage, often leading to evolutionary pressure for lie-detection skills.  
+- **Dominance** — A form of social status based on power and intimidation, often maintained through fear and force.  
+- **Ecological challenges** — Environmental problems such as predation, climate adaptation, and resource acquisition that can encourage cooperation.  
+- **Evolutionary biology** — The study of the processes and patterns of biological evolution.  
+- **Fitness** — The ability to survive and reproduce successfully, often summarized as "survival of the fittest."  
+- **Games (competitive)** — Structured arenas or scenarios in which individuals or groups compete for limited resources or status, such as sex, social status, and politics.  
+- **Handicap principle** — The idea that costly or risky signals serve as honest indicators of an individual’s quality because only high-quality individuals can afford them.  
+- **Honest signal** — A reliable indicator of an underlying trait or capability, costly or difficult to fake.  
+- **Intra-species competition** — Competition occurring within a species, often for mates, status, or resources.  
+- **Judging (social)** — The instinctive process of evaluating others’ traits and behaviors, important in social competition.  
+- **Machievellian intelligence hypothesis** — The theory that human intelligence evolved primarily to navigate complex social competition, including deception and alliance-building.  
+- **Mate competition** — Rivalry between individuals of the same sex for access to sexual partners, driving evolutionary development of signaling traits.  
+- **Norm enforcement** — Social mechanisms used to maintain cooperative behavior and limit wasteful competition within groups.  
+- **Pecking order** — A dominance hierarchy where individuals are ranked linearly based on power or status.  
+- **Perception (partner evaluation)** — Assessing the value of potential mates, friends, or allies based on desirable traits.  
+- **Prestige** — Social status gained through admiration and respect, conferred voluntarily by others, often based on skills or appeal.  
+- **Signals** — Behaviors or traits used to convey information about an individual’s qualities or intentions.  
+- **Sexual jealousy** — A competitive emotional response related to mate guarding and competition.  
+- **Sexual selection** — Evolutionary pressure arising from mate competition, leading to exaggerated traits like the peacock’s tail.  
+- **Social brain hypothesis** — The theory that human brain size and intelligence grew primarily due to complex social interactions and competition.  
+- **Social status** — An individual’s rank or standing within a group, influencing respect and influence.  
+- **Spark of intelligence (human)** — The distinctive, large human brain evolved largely through competition within our species.  
+- **Survival** — The act or fact of continuing to live, often secondary in evolution to reproduction.  
+- **Zero-sum game** — A situation in which one participant’s gain is exactly balanced by the losses of others.

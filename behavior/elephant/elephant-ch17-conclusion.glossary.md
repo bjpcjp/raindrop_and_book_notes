@@ -1,0 +1,19 @@
+- **Competitive altruism** — A biological concept where individuals act prosocially largely out of self-interest to gain higher status or reciprocal benefits.  
+- **Enlightened self-interest** — The philosophy that doing good for others ultimately benefits oneself; doing well by doing good.  
+- **First-person explanations** — Self-reflective insights or acknowledgments of one’s own hidden motives or biases.  
+- **Hidden functions** — The covert, often unspoken purposes or motives behind behaviors or institutions, distinct from their stated goals.  
+- **Hypocrisy** — The act of professing certain virtues while failing to live up to them; described as a tax vice pays to virtue.  
+- **Indirect reciprocity** — A form of cooperation where individuals help others, enhancing their own reputation or future benefits through social networks.  
+- **Intellectual innovation** — Showing off or gaining status through novel contributions to knowledge or technology.  
+- **Naturalistic fallacy** — The mistaken belief that what is natural is inherently good or morally right.  
+- **Physician, Heal Thyself** — The principle urging self-awareness and scrutiny of one’s own hidden motives before judging others.  
+- **Press Secretary (mind’s)** — Metaphor for the part of the mind that manages self-image and presents a positive narrative internally and externally.  
+- **Prosocial motives** — Motivations aimed at benefiting others or the group rather than oneself.  
+- **Self-deception** — The psychological mechanism by which individuals unknowingly hide their true selfish motives from themselves.  
+- **Selfish motives** — Hidden personal interests that drive behavior, often disguised as noble intentions.  
+- **Situational awareness** — The ability to perceive and understand the true motives and dynamics in social interactions beyond surface explanations.  
+- **Species-level explanations** — Generalized accounts of human behavior that apply broadly across populations rather than to individuals.  
+- **Third-person effect** — The tendency to believe that persuasive messages impact others more than oneself, often underlying social influence strategies.  
+- **Tactical humility** — The practice of engaging with others' perspectives thoughtfully, acknowledging complexity and avoiding direct accusations of selfishness.  
+- **Vices in disguise** — The notion that apparent virtues are often manifestations of underlying selfish or flawed motives.  
+- **Wasteful signaling expenditures** — Resources spent by individuals or institutions primarily to display status rather than to achieve substantive benefits.

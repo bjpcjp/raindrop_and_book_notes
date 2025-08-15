@@ -1,0 +1,10 @@
+- **Deniability** — The property of laughter that allows people to deny or downplay the meaning or intent behind their laughter, providing a safe exit from accusations of impropriety.  
+- **Incongruity theory** — A theory that laughter occurs when expectations are violated in a pleasing way, often explaining jokes with setups and punchlines.  
+- **Laughter** — An innate, universal, involuntary social vocalization expressing a “We’re just playing” message, used to signal playfulness, bond socially, and mark social boundaries.  
+- **Norms** — Social rules and expectations about behavior; violations of norms can provoke both serious consequences and laughter as a form of social play or exploration.  
+- **Play** — A voluntary, nonfunctional behavior in animals used to explore and practice skills in a safe, relaxed setting; often signaled among humans and animals by laughter and other signals.  
+- **Play signal** — A communication cue (like laughter in humans or play bows in dogs) that indicates playful intentions and marks the boundary of seriousness in social interactions.  
+- **Psychological distance** — The perceived emotional or social remoteness from a person or event, affecting how much empathy is felt and how likely one is to laugh at another’s misfortune.  
+- **Relief theory** — A theory that laughter releases excess nervous energy or tension after a threat or negative emotion subsides; criticized for lacking biological evidence of such “nervous energy.”  
+- **Superiority theory** — A theory that laughter arises from feeling superior to others, often through mockery or scorn, but insufficient to explain all types of laughter such as tickling.  
+- **Teasing** — Provoking light suffering in a playful way accompanied by laughter, which can either strengthen or weaken relationships depending on intent and reception.

@@ -1,0 +1,13 @@
+- **Adaptation** — A functional trait evolved and maintained by natural selection for its role in enhancing biological fitness.  
+- **Art** — Anything made special, not for functional purpose but for human attention and enjoyment, including visual, performing, language, body, and domestic arts.  
+- **Artistic discernment** — The skill of evaluating and distinguishing high-quality art from low-quality art, important for assessing the artist's fitness.  
+- **Bower** — Elaborate structures built by male bowerbirds to attract females, often decorated to display fitness.  
+- **Bowerbird** — A family of Australian and New Guinean birds known for building and decorating bowers as fitness displays.  
+- **Extrinsic properties** — Factors about artwork outside the artwork itself, such as the artist’s identity, skill, effort, originality, or the process of creation.  
+- **Fitness display** — A behavior or trait that advertises an individual’s health, energy, vigor, skill, or overall biological fitness to others.  
+- **Handicap principle** — The idea that costly and difficult behaviors serve as reliable signals of an individual's fitness because only fit individuals can afford them.  
+- **Intrinsic properties** — Qualities inherent in the artwork itself that can be directly perceived, such as colors, textures, and brush strokes.  
+- **Natural selection** — The evolutionary process favoring traits that enhance survival and reproduction by weeding out costly or disadvantageous behaviors.  
+- **Sexual selection** — A form of natural selection where traits are favored because they increase mating success, often promoting seemingly wasteful displays.  
+- **Technical perfection** — The degree to which an artwork or crafted object is made with precision, skill, and accuracy.  
+- **Waste** — Time, energy, or resources spent on non-functional activities, valued in art as a signal of surplus fitness.

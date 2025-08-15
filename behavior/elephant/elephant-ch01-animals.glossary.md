@@ -1,0 +1,26 @@
+- **Altruism** — Self-sacrificing behavior that appears to benefit others at a cost to oneself.  
+- **Alpha male** — The highest-ranked male in a dominance hierarchy within a group, typically dominant over others.  
+- **Babblers** — A small brown bird species living in groups with rigid dominance hierarchies, known for cooperative but competitive helping behaviors.  
+- **Competitive altruism** — The phenomenon where individuals compete to help others in order to gain social prestige and personal benefits.  
+- **Dominance hierarchy** — A social ranking system within a group, where individuals have different ranks of authority and status.  
+- **Evolution** — The process by which species change over generations through natural selection, shaping behavior and brain design.  
+- **Groomer** — The individual primate who performs social grooming by removing dirt and parasites from a partner’s fur.  
+- **Groomee** — The individual primate who receives social grooming from another primate.  
+- **Group size** — The number of individuals in a social group, which correlates with grooming time due to political complexity.  
+- **Hygiene** — The practice of removing dirt, parasites, and debris from the body, a basic function of grooming behavior.  
+- **Instinct** — Innate behavioral patterns driven by natural selection, often without conscious awareness of underlying motives.  
+- **Mating opportunities** — Chances individuals have to reproduce, which can be influenced by social prestige and status.  
+- **Mutual grooming partnerships** — Stable, reciprocal relationships between primates that involve exchanging grooming over time.  
+- **Natural selection** — The evolutionary mechanism favoring traits that enhance survival and reproduction.  
+- **Opposable thumbs** — Thumb arrangement that enables primates to grasp and manipulate objects, aiding in grooming.  
+- **Prestige status** — Social credit earned by individuals through helpful behaviors, granting them benefits such as mating privileges and group protection.  
+- **Political function (of grooming)** — The role grooming plays in forming alliances, trust, and social bonds beyond hygiene.  
+- **Reciprocity** — A mutual exchange of benefits or services between individuals, such as grooming each other.  
+- **Robin Dunbar** — A primatologist who concluded that social grooming serves political purposes in primate societies.  
+- **Self-deception** — The psychological process of deceiving oneself to better deceive others, potentially useful in social conflicts.  
+- **Self-grooming** — The act of an individual cleaning parts of its own body, limited in scope among primates.  
+- **Social grooming** — Grooming behavior performed between individuals to maintain hygiene, build alliances, and strengthen social bonds.  
+- **Social group** — A collection of individuals that interact regularly and form complex social structures.  
+- **Social rank** — An individual’s position within a dominance hierarchy or social status scale.  
+- **Trust** — Confidence in the reliability or goodwill of another, built through repeated social interactions like grooming.  
+- **Zahavi, Amotz** — Ornithologist who studied Arabian babblers and formulated the concept of competitive altruism based on prestige.

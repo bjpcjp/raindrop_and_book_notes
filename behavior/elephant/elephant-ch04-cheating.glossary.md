@@ -1,0 +1,32 @@
+- **Amoral stance** — An approach that avoids moral judgment, focusing instead on describing behaviors without labeling them as good or bad.  
+- **Big rules** — Important societal norms prohibiting serious crimes like robbery, arson, rape, and murder.  
+- **Brown paper bag** — A modest disguise used to conceal illegal public drinking, providing cover by reducing the openness of the norm violation.  
+- **Cheating** — Violating norms or rules to gain benefits without incurring typical costs.  
+- **Closeted knowledge** — Information known by many but not openly acknowledged or recognized as common knowledge.  
+- **Conspire** — To make secret plans jointly to commit an unlawful or harmful act; derived from Latin meaning “to breathe together.”  
+- **Cryptic communication** — Using obscure or coded language that is understood by a select audience but hidden from others.  
+- **Discreet communication** — Subtle, ambiguous, or secretive communication methods used to avoid detection or common knowledge.  
+- **Enforcement** — The process of detecting and successfully prosecuting norm violations.  
+- **Gray areas** — Ambiguous boundaries in norms that allow for interpretation and exploitation by cheaters.  
+- **Imagined audience** — A mental model of peers or society watching and judging one's behavior, which influences discretion in norm violations.  
+- **Indirection** — The use of hints, innuendo, or subtle remarks to convey meaning while maintaining plausible deniability.  
+- **Innuendo** — A veiled or indirect remark often used to suggest something improper without stating it outright.  
+- **Norm enforcement** — Actions taken by individuals or authorities to uphold societal rules and punish violations.  
+- **Norms** — Informal rules or standards governing behavior within a society or group.  
+- **Norm skirting** — Evading norms by exploiting ambiguities or pushing boundaries instead of outright violation.  
+- **Off the record** — Communication that is informal or indirect, allowing denial or ambiguity.  
+- **On the record** — Open, formal communication that is clear, quotable, and acknowledged publicly.  
+- **Pretexts** — False but plausible excuses or justifications used to mask true motives and avoid blame or prosecution.  
+- **Private knowledge** — Information known by individuals but not shared with others, hence not common.  
+- **Public drinking (discreet)** — Consuming alcohol in public using modest concealment to reduce criticism or enforcement.  
+- **Scalping** — Illegal reselling of event tickets, often disguised through covert language or tactics.  
+- **Self-deception** — A psychological mechanism of cheating oneself, often unconscious, to hide true motives or behaviors.  
+- **Shame** — The painful emotion associated with being seen in a degrading situation, motivating concealment of norm violations.  
+- **Show-offy behavior** — Subtle boasting through indirect signals like language or conspicuous consumption to avoid overt flaunting.  
+- **Silent conspiracy** — A situation where many suspect wrongdoing but do not openly acknowledge it, preventing common knowledge.  
+- **Subtext** — The underlying or implicit meaning behind spoken words, allowing for deniability.  
+- **Subtlety** — Using nuanced or indirect actions to evade clear detection or blame for norm violations.  
+- **Symbols** — Objects, colors, or signals that convey meaning, enabling covert communication or allegiance.  
+- **Threat of paperwork** — Bureaucratic hassle that can discourage authorities from enforcing minor infractions.  
+- **Whispering (discreet speech)** — Quiet, cryptic communication aimed at avoiding being overheard or understood broadly.  
+- **Winking** — A form of body language used to communicate discreetly, relying on non-verbal cues to maintain plausible deniability.

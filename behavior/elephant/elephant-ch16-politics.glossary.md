@@ -1,0 +1,13 @@
+- **Apparatchik** — A loyal member of a political organization who obeys orders and signals allegiance to their group, often prioritizing loyalty over practical outcomes.  
+- **Expressive Voting** — Voting motivated by expressing identity or loyalty, rather than aiming to influence political outcomes.  
+- **Instrumental Voting** — Voting intended to influence political outcomes, based on altruistic or selfish motives.  
+- **Loyalty Signaling** — The act of demonstrating allegiance to one’s political or social group as a performance to gain social rewards.  
+- **One-Dimensional Politics** — The clustering of political beliefs along a single dominant ideological axis, typically reflecting coalitional loyalty rather than nuanced policy positions.  
+- **Political Badges** — Conspicuous symbols, slogans, or markers used to advertise group membership and political loyalty.  
+- **Political Do-Right** — The archetype of a politically engaged citizen motivated by altruistic goals to improve society, acting pragmatically and focused on outcomes.  
+- **Puzzle 1: Disregard for Vote Decisiveness** — The observation that voters show little change in turnout despite large differences in their likelihood to influence election outcomes.  
+- **Puzzle 2: Uninformed Voters** — The widespread ignorance and apathy of voters towards factual political knowledge and issue details.  
+- **Puzzle 3: Entrenched Opinions and Strong Emotions** — The tendency of voters to hold rigid political beliefs, resist contrary evidence, and express strong emotions rather than pragmatically updating views.  
+- **Self-Interest versus Group Interest** — The phenomenon where individuals often prioritize the interests of their political or social groups above their own personal interests in voting and political action.  
+- **Swing State** — A state where the outcome of an election is uncertain and where individual votes have a relatively higher chance of influencing election results.  
+- **Voting Costs** — The time and effort expended in forming political opinions and participating in elections, which often outweigh the infinitesimal personal benefits of voting.

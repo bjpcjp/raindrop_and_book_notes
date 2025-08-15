@@ -1,0 +1,33 @@
+- **Allies** — Family, friends, and others in a support network who provide physical, political, or social help during illness or incapacity.
+- **Counter-irritation** — A harmful historical medical practice involving cutting into the patient and reopening wounds to prevent healing.
+- **Conspicuous care / conspicuous caring** — The use of medicine and care as a visible demonstration of support, effort, and loyalty rather than solely for therapeutic benefit.
+- **Conspicuous effort** — The visible sacrifice or work involved in providing care or gifts to signal genuine concern and maximize social credit.
+- **Conspicuous caring hypothesis** — The theory that medicine functions partly as a ritualized social signal of care, beyond its medical healing purposes.
+- **Diagnostic tests** — Medical procedures aimed at identifying diseases or conditions.
+- **Economically marginal medicine** — Medical treatments that are received by some patients but not others, or that might be used more if spending increased.
+- **Emergency medicine** — Medical care provided during urgent or life-threatening situations.
+- **End-of-life care** — Medical treatments aimed at patients in their final year of life, often costly but with limited therapeutic benefit.
+- **Healing motive** — The desire for medicine to restore health and treat illness.
+- **Health at any cost** — The idea of pursuing medical treatment solely for its therapeutic benefits regardless of cost, effort, or social context.
+- **Homemade food gift** — A culturally important gesture demonstrating effort and care when assisting the sick, valued more than store-bought equivalents.
+- **Hospital stays** — Periods of admitted medical care requiring overnight or longer presence in a hospital.
+- **Leeching and bloodletting** — Historical medical treatments believed to remove “bad humors” but recognized today as harmful or ineffective.
+- **Marginal medicine** — Medical care that some individuals receive beyond basic healthcare, often with less certain health benefits.
+- **Medical consumers** — Individuals who seek and receive medical care.
+- **Medical errors** — Mistakes in healthcare delivery that can cause patient harm or death.
+- **Medical subsidies** — Financial support that reduces the out-of-pocket cost of medical care for patients.
+- **Medical spending** — The total financial outlay for medical care, including treatments, diagnostics, drugs, and hospital services.
+- **Medical treatments** — Interventions including drugs, surgeries, diagnostic tests, and therapies aimed at diagnosing, treating, or preventing illness.
+- **Nurse practitioners** — Healthcare providers trained to diagnose and treat patients, shown to be medically effective but underused compared to doctors.
+- **Oregon Health Insurance Experiment** — A randomized study assessing the health effects of Medicaid enrollment through lottery assignment.
+- **Political support** — Advocacy and social protection by allies during a person’s illness or incapacity.
+- **Placebo effect** — A perceived or actual improvement in health due to the belief that one is receiving treatment, rather than the treatment itself.
+- **Quid pro quo** — The mutual exchange of support, such as helping someone in hope of future reciprocation.
+- **Randomized controlled study** — An experimental method randomly assigning participants to different interventions to establish causal effects.
+- **RAND Health Insurance Experiment** — A large, controlled study measuring the impact of medical spending on health outcomes.
+- **Risk-adjusted death rates** — Hospital or surgeon patient mortality rates adjusted for patient risk factors, used as a quality metric.
+- **Second opinions** — Consulting an additional healthcare professional to verify or provide alternative diagnoses or treatments.
+- **Shaman** — A tribal healer combining spiritual and medical roles, performing rituals with and without therapeutic efficacy.
+- **Social credit** — Social recognition or approval gained by demonstrating care or loyalty through medical spending or support.
+- **Support network** — The group of people providing physical, emotional, or political help during illness.
+- **Supplemental medical spending** — Additional medical care beyond basic or necessary treatments, often driven by social or conspicuous motives.

@@ -1,0 +1,29 @@
+- **Belief-First Model of Religion** — The idea that religious behaviors are caused primarily by supernatural beliefs, which in turn arise from evidence for or against those beliefs.  
+- **Badge** — A visible symbol or behavior that signals membership and loyalty to a particular religious community, helping distinguish insiders from outsiders.  
+- **Celibacy** — A religious vow of abstaining from sexual activity, often practiced by leaders to demonstrate loyalty and avoid divided allegiances.  
+- **Cheating (in religion)** — Betraying community norms through hypocrisy, free-riding, or neglecting religious duties while appearing pious.  
+- **Communal Model of Religion** — The understanding that religion functions as a social system focused on community cohesion and cooperation, rather than private beliefs alone.  
+- **Costly Signaling** — Rituals or sacrifices that are costly in time, energy, or resources and serve as honest demonstrations of loyalty within religious communities.  
+- **Dance/Synchrony Rituals** — Shared rhythmic movements or chants in religious practice that enhance group solidarity and cooperation.  
+- **Faith-Based Religions** — Religions, such as Christianity and Islam, that emphasize doctrinal beliefs as central to membership.  
+- **Free-Riding** — Benefiting from religious community resources or protections without reciprocating through participation or contributions.  
+- **Hill-Climbing (Status Seeking)** — The instinctual striving for higher social status that can lead to escalating religious sacrifices and extreme behaviors like martyrdom.  
+- **Holier-Than-Thou Arms Race** — Competitive displays of religious devotion where members strive to outdo each other in costly sacrifices to gain social trust and status.  
+- **Martyrdom** — The ultimate religious sacrifice involving self-destructive acts for the community, motivated by status, prestige, and beliefs about the afterlife.  
+- **Mating Strategies** — Norms governing sexual and family behavior promoted by religion to maintain community stability, often emphasizing monogamy and high fertility.  
+- **Norm Enforcement** — Mechanisms such as monitoring, gossip, and punishment used by religious communities to ensure cooperation and punish transgressors.  
+- **Orthodoxy** — The set of accepted religious beliefs that are enforced socially to maintain group cohesion and distinguish communities.  
+- **Personal Sacrifice** — Giving up resources like time, money, health, or status in religious rituals to demonstrate commitment to the group.  
+- **Prestige** — Social status and admiration gained within religious communities through sacrifices and conformity to norms.  
+- **Prosocial Norms** — Religious rules promoting cooperation, compassion, generosity, and other positive social behaviors.  
+- **Public Goods Game** — An experimental measure of cooperation used to study the effects of synchrony and ritual participation on collective behavior.  
+- **Ritual** — A formalized set of religious actions performed communally to express loyalty, build trust, and reinforce social norms.  
+- **Sacrifice** — The voluntary giving up or wasting of resources in the name of religion to signal loyalty and foster trust within a community.  
+- **Self-Deception (in Religion)** — The tendency to truly believe religious doctrines in order to convincingly signal faith and commitment to others.  
+- **Social Incentives** — External rewards and punishments from the community that influence religious beliefs and behaviors.  
+- **Social Technology** — Practices and beliefs developed by religions to facilitate cooperation, trust, and community cohesion.  
+- **Stigmatizing Beliefs** — Religious doctrines or practices that seem strange or off-putting to outsiders, serving to mark in-group loyalty and discourage outsiders.  
+- **Supernatural Beliefs** — Doctrines involving gods, spirits, afterlives, and miracles that support religious social systems by promoting moral behavior and group cohesion.  
+- **Trust** — Confidence in others’ loyalty and cooperative behavior, maintained through religious sacrifices and norm adherence.  
+- **Vows of Poverty and Chastity** — Religious commitments to renounce material wealth and sexual activity as extreme forms of sacrifice and dedication.  
+- **Zamzam Well** — A sacred water source in Mecca used ritually during the Hajj pilgrimage.

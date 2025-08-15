@@ -1,0 +1,19 @@
+- **Ally** — A partner in social, professional, or political contexts with whom one teams up for mutual benefit and survival.
+- **Backpack (metaphor)** — Represents the collection of knowledge, skills, and useful information a person possesses and can demonstrate in conversation.
+- **Cost–benefit structure** — The analysis of the trade-offs involved in a behavior, such as speaking or listening during conversation.
+- **Criterion of relevance** — The social norm that conversation contributions should relate to the current topic or task.
+- **Idiosyncratic judgments** — Highly individual and subjective evaluations, often affecting decisions like academic peer review.
+- **Information altruism** — The act of sharing new information freely with others despite potential costs.
+- **Listening** — Receiving and processing information from others; low-cost activity that facilitates vicarious learning.
+- **Opportunity cost** — The loss of potential gain when choosing one alternative over another, such as revealing valuable information to others.
+- **Peer review** — The process by which academic work is evaluated by experts to determine its suitability for publication or funding.
+- **Prestige** — One’s perceived value as an ally or social partner, often enhanced by skills such as speaking or association with other prestigious individuals.
+- **Reciprocal-exchange theory** — The idea that speakers and listeners trade information back and forth in conversation in a tit-for-tat manner.
+- **Reflected prestige** — Prestige gained indirectly through association with other respected or impressive individuals.
+- **Relevance** — A key principle guiding conversation topics to remain appropriate and connected to the ongoing dialogue.
+- **Speaking** — The act of sharing information, which incurs costs but provides social benefits, often through showing off one’s abilities.
+- **Subtext (in conversation)** — The implied message behind what is said, usually signaling the speaker’s intelligence, status, or value as an ally.
+- **Text (in conversation)** — The explicit informational content being communicated during conversation.
+- **Trading partner** — Someone with whom one exchanges discrete pieces of information or resources, as opposed to seeking a broader alliance.
+- **Verbal plumage** — Language that is more elaborate than necessary, used to impress listeners rather than purely to convey information.
+- **Vicarious learning** — Learning through others' knowledge and experiences rather than direct personal experience.

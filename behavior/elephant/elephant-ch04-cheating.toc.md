@@ -1,0 +1,58 @@
+```markdown
+# Table of Contents
+
+- Cheating
+  - Everybody cheats
+  - Why do we cheat?
+  - Evolutionary aspects of cheating
+    - Cheater-detection adaptations
+    - Norm-evasion adaptations
+  - Shame and its role in cheating
+  - Cheating out in the open vs. subtle cheating
+    - Example: Cheating on a test
+    - Example: Drinking in public with a brown paper bag
+  - A quick caveat: A judgment-free zone
+- Common Knowledge
+  - Andersen’s “The Emperor’s New Clothes”
+  - Definition and importance of common knowledge
+  - Examples to illustrate common vs. closeted knowledge 
+  - Role of common knowledge in cheating and norm enforcement
+- When a Little Discretion Goes a Long Way
+  - Scalping tickets as a case study
+  - Incentives and challenges for norm enforcers
+  - Challenges in prosecuting norm violations
+  - Forms of discretion that aid cheating
+    - Pretexts
+    - Discreet communication
+    - Skirting norms
+    - Subtlety in honor cultures
+- Pretexts: Ready-Made Excuses
+  - Henry VIII’s annulment example
+  - Role and function of pretexts
+  - Modern examples of pretexts
+- Discreet Communication
+  - Definition and etymology of “conspire”
+  - Strategies for discreet communication
+    - Avoiding detection and common knowledge
+  - Examples of discreet communication
+    - Body language
+    - Cryptic language and slang
+    - Subtlety and subtext
+    - Symbolism
+    - Informal speech
+  - Importance of imagined audience
+- Skirting Norms
+  - Gray areas and ambiguous boundaries of norms
+  - Examples of skirting norms
+    - Obscenity standard: “I know it when I see it”
+    - Seinfeld masturbation episode
+    - Dress codes, workplace slacking, flirting, politics
+- Minor Sins
+  - Celebrity examples of norm violations
+  - Everyday vs. high-profile norm evasion
+  - Subtlety in boasting, politics, and manipulation
+- Getting Our Bearings
+  - The arms race between norm-evaders and norm-enforcers
+  - Norms and the necessity of big brains
+  - Preview: Focus on self-deception in the next chapter
+```

@@ -1,0 +1,26 @@
+- **Coalition enforcement** — The collective punishment of norm violators by a group acting together, enabling enforcement against even the strongest individuals.  
+- **Covenants** — Agreements or promises that require enforcement (often by force or threat) to be effective; "without the sword, are but words."  
+- **Currying favor** — Attempts to gain endorsement or approval from high-status individuals, which can be acceptable (being oneself) or unacceptable (sycophancy, bribery).  
+- **Egalitarianism** — A social system that emphasizes equality among members and prevents domination by individuals or coalitions.  
+- **Foraging** — The hunter-gatherer lifestyle of obtaining food by gathering, hunting, and fishing, practiced by human ancestors before agriculture.  
+- **Gossip** — Talking about people behind their backs, focusing on flaws, used as a social mechanism to enforce norms and damage reputations.  
+- **Laws** — Explicit, formally enforced norms such as needing licenses or prohibitions with strict consequences.  
+- **Meta-norm** — A norm that obliges individuals to punish or sanction those who fail to punish norm violators, enabling norm enforcement to be sustained.  
+- **Nomadic lifestyle** — A mobile way of living, characterized by moving camps periodically to follow resources, with limited property ownership.  
+- **Norms** — Rules or standards of behavior that members of a community are expected to follow, ranging from informal to strictly enforced.  
+- **Norm enforcement** — Actions taken to punish or sanction those who violate norms, including social disapproval, gossip, and formal penalties.  
+- **Norm-following** — Behavior that complies with the shared rules or expectations of a group or society.  
+- **Political skill** — The ability to form and lead coalitions and navigate complex social power dynamics, critical in human social groups.  
+- **Postural politics** — (Subgroup politics) The behaviors of forming factions or political groups within small communities, often taboo in close-knit groups.  
+- **Punishment** — Consequences or sanctions imposed on individuals who break norms, ranging from mild disapproval to severe penalties.  
+- **Reputation** — The collective perception of an individual's character and behavior, which influences social standing and norm enforcement.  
+- **Reverse dominance hierarchy** — A social order where the group collectively curbs the power of dominant individuals to maintain egalitarianism.  
+- **Selfish motives norm** — A social rule discouraging open acknowledgment of selfish reasons for actions, emphasizing prosocial motives instead.  
+- **Sharing norm** — Expectations around helping and sharing resources within a group, especially prominent in forager societies.  
+- **Social conformity** — The tendency or pressure within groups to adhere to shared norms and values, often enforced by social sanctions.  
+- **Social sanctions** — Informal or formal penalties such as scorn, exclusion, or punishment used to enforce norms.  
+- **Sycophancy** — Excessive flattery or groveling to gain favor, viewed as an illegitimate way to curry favor.  
+- **Threat of collective punishment** — The possibility of facing sanctions not just from the direct victim but from the entire group for norm violations.  
+- **Violence norm** — A prohibition against acts like assault and murder, universally enforced across human cultures.  
+- **Weapons** — Tools that leveled power disparities in human groups, enabling coalitions to punish dominant individuals and shaping social evolution.  
+- **Workplace politics** — Political behavior within small groups such as work teams, often discouraged due to its potential to harm group cohesion.

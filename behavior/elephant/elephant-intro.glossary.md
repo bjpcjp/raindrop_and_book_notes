@@ -1,0 +1,23 @@
+- **Conspicuous caring** — The display of care and support through medical treatment or other actions, serving social and loyalty-signaling purposes beyond mere health benefits.  
+- **Conspicuous consumption** — A term coined by Thorstein Veblen describing the purchase of luxury goods primarily to signal wealth and social status rather than for practical utility.  
+- **Cognitive biases** — Systematic patterns of deviation from norm or rationality in judgment, affecting self-perception and decision-making.  
+- **Elephant in the brain** — A metaphor for important but unacknowledged psychological motives, especially selfishness and hidden agendas influencing human behavior.  
+- **Elephant in the room** — An obvious important issue that people are reluctant to acknowledge or address; a social taboo.  
+- **Hidden motives** — Unacknowledged or unconscious reasons driving human behavior, often selfish or competitive in nature.  
+- **Hierarchy** — The social ranking within groups, often pursued and defended through subtle or overt competition and status-seeking behaviors.  
+- **Introspective taboo** — The reluctance or discomfort in acknowledging certain inner motives or truths about oneself.  
+- **Introspection illusion** — The mistaken belief that we have direct and accurate insight into our own mental states and motives.  
+- **Machiavellian behavior** — Social strategies characterized by manipulation, deceit, and political maneuvering to gain advantage or status.  
+- **Microsociology** — The study of everyday human social interactions and behaviors on a small scale, revealing the complexity and unconscious elements of social life.  
+- **Partisan agenda** — A political or group-based motivation that influences beliefs and actions, sometimes conflicting with stated or official motives.  
+- **Primatology** — The scientific study of primates, providing insights into human social nature and evolutionary behavior.  
+- **Self-deception** — The process by which individuals unconsciously hide or distort truths about their own motives to themselves and others.  
+- **Social agenda** — The underlying, often hidden social motives such as status-seeking, alliance-building, or loyalty exchange that influence behavior.  
+- **Social competition** — The struggle among individuals or groups for status, power, and resources within social hierarchies.  
+- **Strategic self-deception** — A form of self-deception evolved to help individuals appear prosocial and hide selfish motives from others.  
+- **Taboo topics** — Subjects, such as selfishness or status-seeking, that are culturally discouraged from open discussion or acknowledgment.  
+- **The elephant** — A metaphor representing human selfishness, hidden motives, social competition, and the tendency to deceive oneself and others.  
+- **Theory of hidden motives** — The hypothesis that much of human behavior, including institutional behavior, is driven by unacknowledged selfish or social motives.  
+- **Unconscious motives** — Desires or drives influencing behavior without the individual's conscious awareness.  
+- **Venerated social institutions** — Widely respected organizations or systems (e.g., schools, hospitals, religion) that often serve both official and covert agendas.  
+- **Visible vs. hidden agendas** — The contrast between the publicly stated goals of actions or institutions and their underlying, often unacknowledged motives.
