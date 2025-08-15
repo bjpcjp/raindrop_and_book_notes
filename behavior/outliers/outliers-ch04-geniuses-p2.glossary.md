@@ -1,0 +1,23 @@
+- **Accomplishment of natural growth** — A parenting strategy typical of poorer families where children are cared for but allowed to grow and develop independently without intense adult intervention.  
+- **Analytical intelligence** — The type of intelligence commonly measured by IQ tests, related to problem-solving and intellectual ability.  
+- **Boomtown** — A small town experiencing rapid growth, used here to describe Bozeman, Montana, where Chris Langan lived.  
+- **C T M U (Cognitive Theoretic Model of the Universe)** — Chris Langan’s expansive philosophical and scientific treatise on the nature of reality.  
+- **Concerted cultivation** — A middle-class parenting style involving active development of a child’s talents through structured activities, reasoning, and negotiation with authority figures.  
+- **Constraint** — The attitude learned by children from working-class or poor families, characterized by distance, distrust, and deference toward authority.  
+- **Entitlement** — A sense of having the right to assert oneself, ask questions, and manage interactions, cultivated in middle-class children through parenting practices.  
+- **General intelligence** — A broad cognitive capacity distinct from practical intelligence; often synonymous with IQ.  
+- **Harley Street psychiatrist** — A reference to a prominent London-based mental health professional, consulted by Oppenheimer during his probation.  
+- **Intellectual isolation** — A condition where a highly intelligent individual lacks community or institutional support to nurture and share their ideas.  
+- **Introductory calculus** — The first formal college-level course in calculus; pivotal in Langan’s academic experience.  
+- **Natural growth** — A child-rearing philosophy where parents allow children to develop naturally without heavy structuring or intervention.  
+- **Oppenheimer, Robert** — A theoretical physicist described as a genius analogous to Chris Langan but different in social skills and life outcomes; led the Manhattan Project.  
+- **Parents' financial statement** — A document required for college financial aid renewal, critical in Langan’s loss of scholarship.  
+- **Practical intelligence** — A social skill involving knowing what to say, to whom, when, and how, allowing one to navigate institutions and social hierarchies effectively.  
+- **Probation** — A disciplinary measure allowing a student to remain enrolled despite misbehavior, given to Oppenheimer after a poisoning incident.  
+- **Reform school** — A residential institution for juveniles who have committed offenses, attended by one of Langan’s brothers.  
+- **Reed College** — A liberal arts college in Oregon where Langan first attended and experienced cultural shock and academic failure.  
+- **Social savvy** — The learned knowledge and skillset enabling individuals to interact effectively with others and manage social situations.  
+- **Terman, Lewis** — A psychologist who studied gifted children, dividing them into success categories based largely on family background.  
+- **Termites** — Nickname for participants in Terman’s longitudinal study of gifted children.  
+- **Transmission** — A car component that failed in Langan’s vehicle, preventing him from attending early classes and prompting requests for schedule changes.  
+- **Working-class parenting style** — Parenting marked by less structured involvement and passive acceptance of school and authority decisions, in contrast to concerted cultivation.

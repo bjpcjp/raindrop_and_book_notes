@@ -1,0 +1,30 @@
+- **Archway** — an arched structure forming a passage or entrance.  
+- **Biscotti** — traditional Italian almond biscuits often eaten at holidays.  
+- **Carmine, Our Lady of Mount** — the church established by Rosetans in Pennsylvania.  
+- **Civic organizations** — local groups formed to serve community interests or activities.  
+- **Convent** — a community building housing a Christian religious community, especially nuns.  
+- **Dietician** — a health professional who analyzes and advises on diet and nutrition.  
+- **Extended family clans** — large family groups including multiple generations living closely.  
+- **Foggia** — an Italian province in the Apennine foothills, location of original Roseto.  
+- **Genealogies** — the study or tracing of lines of family descent.  
+- **Gestalt** — (implied concept) looking at health or success holistically rather than individually.  
+- **Heart disease** — medical condition involving the heart, a leading cause of death in the U.S.  
+- **Lard** — rendered pig fat used in cooking, higher in saturated fat than olive oil.  
+- **Mediterranean diet** — a diet rich in vegetables, fruits, and olive oil; contrasted with Roseto’s diet.  
+- **Outlier** — a statistical observation markedly different from others; a place or person outside the norm.  
+- **Palazzo Marchesale** — the palace of the Saggese family in Roseto Valfortore, Italy.  
+- **Paesani** — Italian term for fellow villagers or countrymen.  
+- **Pepperoni** — an American variety of spicy cured sausage commonly used as pizza topping.  
+- **Peptic ulcers** — sores in the lining of the stomach or duodenum, uncommon in Roseto residents.  
+- **Pizza (Italian vs. American)** — traditional Italian pizza is thin crust with simple toppings; American pizza is thicker with meats and extra ingredients.  
+- **Roseto, Italy** — the original medieval village in the Apennine foothills of Italy.  
+- **Roseto, Pennsylvania** — American immigrant town founded by Rosetans with close-knit social structures.  
+- **Slate quarry** — place where slate stone is mined; common work for Rosetans in both Italy and Pennsylvania.  
+- **Social structure** — the organized pattern of relationships and institutions in a community.  
+- **Sociologist** — a scientist who studies society and social behavior.  
+- **Suicide** — the act of intentionally causing one's own death; notably absent in Roseto community.  
+- **Three-generational family meals** — shared meals involving grandparents, parents, and children together.  
+- **Traditional festivals** — culturally significant community celebrations organized by leaders like Father de Nisco.  
+- **Welfare** — government provision for those in financial need; absent among Rosetans.  
+- **Wolf, Stewart** — physician who investigated unusually low heart disease in Roseto, Pennsylvania.  
+- **World War I** — (implied historical context) period influencing immigration and ethnic group relations in early 20th-century America.

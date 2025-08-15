@@ -1,0 +1,26 @@
+- **Arawak** — Indigenous Indian tribe native to Jamaica.  
+- **Archdeacon Hay** — Anglican pastor and family friend who tutored Daisy Nation's daughters.  
+- **Chinee-shop** — Jamaican term for a store, typically run by members of the Chinese community.  
+- **Colored** — A social class in Jamaica denoting mixed-race individuals, often privileged compared to the black majority.  
+- **Concubine** — A woman in a relationship with a man without being legally married, often used historically for enslaved women in Jamaica.  
+- **Emancipation** — The act of being set free from slavery or bondage; historically significant in Jamaica.  
+- **Harewood** — A small village in Saint Catherine parish, Jamaica, where Daisy Nation’s family lived.  
+- **Jamaican parish** — An administrative division in Jamaica equivalent to a county or district.  
+- **Jamaican sociologist Orlando Patterson** — Scholar who studied Jamaica’s colored class and their social status.  
+- **Latin and algebra** — Academic subjects taught to prepare children for high school in Jamaica.  
+- **Lawyers and members of parliament (1950s Jamaica)** — Professions broken down by skin tone illustrating racial hierarchy and social stratification.  
+- **Light brown, olive, white and light** — Jamaican skin tone categories affecting social status and opportunity.  
+- **MacMillan, William M.** — South African historian who critiqued Jamaica’s education system and influenced reforms.  
+- **Mulatto** — A person of mixed African and European ancestry in Jamaica, often afforded social privileges.  
+- **Mr. Chance** — Chinese shopkeeper who lent money to Daisy Nation for her daughter's university education.  
+- **Race and color prejudice** — The social hierarchy and discrimination based on skin shade, particularly among Jamaicans.  
+- **Rhodes Scholarship** — Prestigious international scholarship awarded to selected individuals from the Ford family.  
+- **Saint Catherine's** — Central Jamaican parish where the Nation family lived.  
+- **Saint Hilda's** — Anglican boarding school in Jamaica for daughters of clergy and property owners.  
+- **Skin tone hierarchy** — Social ranking in Jamaica based on the lightness or darkness of one’s skin.  
+- **Slave market** — Historical place where enslaved Africans were bought and sold, e.g., Alligator Pond in Jamaica.  
+- **Slave society** — Social system in Jamaica where the majority population was enslaved African descent.  
+- **Sugar plantation** — Jamaican agricultural estate relying on slave labor, contrasting with cotton plantations in the U.S. South.  
+- **W. M. MacMillan’s Warning from the West Indies** — A critical 1930s book addressing Jamaica’s educational shortcomings and social inequality.  
+- **William Ford** — Irish ancestor who bought a slave woman and fathered John Ford, starting the Ford family lineage.  
+- **World War II scholarship reforms** — Introduction of all-island scholarships following 1937 riots to improve educational access in Jamaica.

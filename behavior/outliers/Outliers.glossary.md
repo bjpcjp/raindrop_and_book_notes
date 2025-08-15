@@ -1,0 +1,29 @@
+- **All-star leagues** — Elite sports teams formed by selecting top players at an early age for advanced competition.
+- **Accumulated advantage** — The process by which small initial differences lead to increasing advantages over time.
+- **Age-class hockey** — Youth hockey leagues categorized by players' ages, with January 1 as the typical cutoff date.
+- **Ability grouping** — Educational practice of placing children of similar abilities or maturity levels in distinct classes.
+- **Birthdate cutoff** — A fixed date determining eligibility and grouping in sports or education based on birth month and year.
+- **Civic organizations** — Community groups that contribute to social bonding and support within a town or population.
+- **Differentiated experience** — Varied educational or athletic experiences that provide some individuals with more opportunities to develop skills.
+- **Ecology (biological)** — The environment and conditions affecting an organism's growth and survival beyond genetic factors.
+- **Elite educational system** — Educational programs designed to nurture gifted or talented students.
+- **Extended family clans** — Family groups often living together and providing social support across generations.
+- **Gifted program** — Specialized educational tracks for students demonstrating exceptional ability or achievement.
+- **Hockey scouts** — Experts who identify promising young hockey players for recruitment and advancement.
+- **Major Junior A (hockey)** — The highest level of junior hockey in Canada, acting as a feeder league to professional ranks.
+- **Meritocracy** — Social system where advancement is based on individual ability and talent rather than other factors.
+- **Mideaval village organization** — Settlement structure centered around a central square, often typical of historical European towns.
+- **Minor-league hockey** — Amateur or semi-professional hockey leagues below the professional level.
+- **Outlier** — A person or observation that deviates markedly from the norm or average.
+- **Parentage and patronage** — Influence of family background and social connections on individual success.
+- **Peer selection** — Choosing participants in teams or educational tracks based on comparisons with age or ability-matched peers.
+- **Physiological maturity** — Physical development level, often tied to chronological age differences among children.
+- **Plaque–mouse effect** — (Typo or misinterpretation in text; not defined)
+- **Professional hockey player** — An athlete playing hockey at the highest competitive and paid level.
+- **Relative age effect** — Phenomenon where individuals born earlier in the eligibility period have an advantage in selection and development opportunities.
+- **Self-fulfilling prophecy** — A false belief that induces behaviors causing the belief to become true.
+- **Social structure** — The established patterns of relationships and social arrangements in a community or society.
+- **Streaming** — Educational or sports practice separating individuals into groups based on perceived ability or achievement.
+- **Talent spotter** — Person who seeks out individuals with potential in sports or other fields.
+- **Ten thousand-hour rule** — The idea that approximately 10,000 hours of practice is required to achieve mastery in a field.
+- **Threshold date** — Alternative term for cutoff date used to separate age groups or eligibility.

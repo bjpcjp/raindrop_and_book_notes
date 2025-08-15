@@ -1,0 +1,26 @@
+- **10,000-Hour Rule** — The idea that approximately ten thousand hours of deliberate practice are required to achieve world-class expertise in any complex task.
+- **Altair 8800** — An affordable, do-it-yourself minicomputer kit introduced in 1975 that marked the beginning of the personal computer revolution.
+- **ASR-33 Teletype** — A time-sharing terminal that allowed direct connection to mainframe computers, enabling real-time programming.
+- **Bobby Fischer** — Legendary chess grandmaster known for reaching elite status faster than the typical ten-year or ten-thousand-hour practice rule.
+- **C-Cubed (Computer Center Corporation)** — A company leasing computer time to local businesses, which provided free programming time to high school students like Bill Gates.
+- **Deliberate Practice** — Purposeful and focused practice aimed at improving performance, distinguished from simple repetition or casual effort.
+- **Hockey and Soccer Cutoff Dates** — The selection rule using birth months (e.g., September 1 cutoff) that advantages older children within an age cohort, impacting athlete development.
+- **ISI (Information Sciences Inc.)** — A tech firm that gave high school computer club students free computing time in exchange for software testing.
+- **Lakeside School** — A private school in Seattle where Bill Gates first accessed a time-sharing computer terminal and began programming intensively.
+- **Mainframe Computer** — Large, expensive computers predominant before time-sharing, requiring batch processing via punch cards.
+- **Paul Allen** — Co-founder of Microsoft and childhood friend of Bill Gates; also had early and extensive computer experience.
+- **Peter Bruno** — A club owner in Hamburg who employed Liverpool bands like the Beatles for long, extended performances.
+- **Philips** — Implied context was not addressed directly; omit to avoid confusion.
+- **Programming with Punch Cards** — Early computer programming method using physical cards for code input, slow and error-prone.
+- **Silicon Valley** — The tech hub where figures like Bill Joy, Bill Gates, and Steve Jobs emerged along with companies like Sun Microsystems and Microsoft.
+- **Steve Ballmer** — Microsoft executive born in 1956, representing the optimal birth cohort for the personal computer revolution.
+- **Steve Jobs** — Cofounder of Apple, who had extraordinary access to electronics components and engineering culture growing up in Silicon Valley.
+- **Sun Microsystems** — A major Silicon Valley tech firm co-founded by Bill Joy and others who were born within a narrow mid-1950s window.
+- **Ten Thousand Hours** — The magic number of hours needed to master most complex skills based on studies across fields including music, sports, and chess.
+- **Time-sharing System** — A revolutionary computer operating method allowing multiple users to access a computer simultaneously via terminals.
+- **University of Michigan Computer Center** — Pioneering early time-sharing system that gave students like Bill Joy extensive programming practice opportunities.
+- **Vinod Khosla** — One of the four founders of Sun Microsystems, born in 1955.
+- **Warren Buffett** — Contemporary billionaire often listed among the richest people in history.
+- **William Joy** — Father of Bill Joy.
+- **William Joy** — The legendary computer scientist who rewrote UNIX and Java, co-founding Sun Microsystems.
+- **Yorkshire Rule** (implicit reference to sports selection bias by age due to cutoff dates, as discussed for hockey and soccer).
