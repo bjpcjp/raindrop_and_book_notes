@@ -1,0 +1,28 @@
+- **64-bit mode** — Operating mode of x86 processors supporting 64-bit registers, larger address space, more registers, and improved function parameter passing; generally offers better performance and supports >2GB memory.
+- **Boolean vector operations** — Using integers as bit-vectors where bitwise operators (&, |, ^, ~) operate on multiple Boolean values simultaneously, improving efficiency.
+- **Cache contentions** — Performance degradation caused by multiple data or code accessing the same cache lines, leading to inefficient caching.
+- **Code cache** — CPU cache storing executable instructions to speed up code fetch and execution.
+- **Context switch** — Switching between tasks or threads in multitasking systems, incurring overhead from cache and pipeline state changes.
+- **Deferred inline function** — Function inserted at call site by compiler to avoid call overhead; compiler may ignore inlining requests based on complexity or performance impact.
+- **Dynamic linking** — Use of shared libraries (.dll, .so) loaded at runtime; introduces overhead and may reduce performance compared to static linking.
+- **Function pointer** — Pointer variable holding address of a function; calling via pointer can cause branch mispredictions if target varies.
+- **Increment operator (pre/post)** — ++i (pre-increment) increments before use; i++ (post-increment) increments after use; post-increment may incur slight delay depending on usage.
+- **Inline function** — Function whose calls are replaced by function body at compile time to eliminate call overhead.
+- **Loop unrolling** — Expanding loop body multiple times to reduce loop control overhead and branches; may increase code size and impact cache.
+- **Member pointer** — Pointer to a class member variable or function; implementation complexity increases with multiple inheritance; less efficient if class definition incomplete.
+- **Micro-op cache** — Specialized CPU cache storing decoded micro-operations for faster repeated execution.
+- **Out-of-order execution** — CPU execution technique allowing non-dependent instructions to execute in parallel or early to improve throughput.
+- **Position-independent code (PIC)** — Code that executes correctly regardless of memory address; used in shared libraries but incurs overhead.
+- **Profiler** — Tool for analyzing program performance by measuring function call frequency and execution times using instrumentation, sampling, or event-based methods.
+- **Register storage** — Use of CPU registers to store variables for fast access; limited number of registers especially in 32-bit mode.
+- **Runtime type identification (RTTI)** — Mechanism to determine object type at runtime, adding overhead.
+- **Stack storage** — Memory area for function call management including local variables and return addresses; data here tend to be cache friendly.
+- **Static storage** — Memory area for global or static variables with lifetime throughout program execution, potentially reducing cache efficiency.
+- **Switch statement** — Control statement branching among multiple targets; efficient when case labels are contiguous via jump tables, else compiled as branch trees.
+- **Template metaprogramming** — Technique using C++ templates to perform computations and code generation at compile time.
+- **Thread-local storage** — Storage of static or global variables per thread; less efficient due to indirection, better replaced by stack storage.
+- **Virtual function** — Member function resolved at runtime through vtable; incurs overhead compared to non-virtual functions.
+- **Volatile keyword** — Indicates variable can be changed outside program flow (e.g., by another thread), preventing compiler optimizations on it.
+- **Whole program optimization** — Compiler feature analyzing and optimizing across multiple source files to improve inlining and code generation.
+- **x87 floating point registers** — Traditional 80-bit floating point register stack used for extended precision and legacy float operations.
+- **XMM/YMM/ZMM registers** — Vector registers used for SIMD (single instruction, multiple data) operations in SSE, AVX, and AVX-512 instruction sets respectively.

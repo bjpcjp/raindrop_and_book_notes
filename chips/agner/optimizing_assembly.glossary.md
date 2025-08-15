@@ -1,0 +1,28 @@
+- **ABI (Application Binary Interface)** — A standard for how functions are called, how parameters and return values are transferred, and which registers a function is allowed to change.
+- **Assembler** — A tool that converts assembly language code into machine code.
+- **Assembly code** — Low-level programming language that corresponds closely to machine instructions.
+- **Calling convention** — Rules that define how functions receive parameters and return values, and which registers must be preserved.
+- **Code cache** — Processor feature that stores decoded instructions to improve execution speed.
+- **Callee-save registers** — Registers that a called function must save and restore if it modifies them.
+- **Caller** — The function or code that calls another function.
+- **Constant propagation** — Compiler optimization technique that replaces variables with known constant values.
+- **Displacement** — A constant offset added to the address computed by base and index registers in memory addressing.
+- **EMMS instruction** — Instruction used to clear the MMX state before returning from functions.
+- **Intrinsic functions** — High-level language functions that correspond directly to specific machine instructions.
+- **LEA (Load Effective Address)** — An instruction used to perform address arithmetic without accessing memory.
+- **Memory operand** — An instruction operand that references a memory location.
+- **Mod-reg-r/m byte** — Part of x86 instruction encoding that specifies addressing mode and operands.
+- **Multithreading** — Execution of multiple threads or processes concurrently to utilize multiple CPU cores.
+- **Position-independent code** — Code that can execute correctly regardless of its absolute memory address.
+- **Prefix (Instruction prefix)** — Bytes before an opcode that modify instruction behavior (e.g., operand size or address size).
+- **Register allocation** — Compiler process of assigning variables to CPU registers.
+- **Register-to-register move** — Instruction to copy data from one register to another.
+- **REX prefix** — Instruction prefix used in 64-bit mode to extend registers and specify operand size.
+- **RIP-relative addressing** — Memory addressing mode in 64-bit mode that accesses data relative to the instruction pointer.
+- **Shadow space** — A reserved 32-byte area on the stack in 64-bit Windows used for saving register parameters.
+- **Stack alignment** — Requirement that the stack pointer be aligned to specific byte boundaries before function calls.
+- **Static linking** — Incorporating all used library code into the executable at compile time.
+- **VEX prefix** — Multi-byte instruction prefix used in AVX instruction encoding to specify SIMD operations.
+- **Virtual method table (vtable)** — Structure used in object-oriented programming to support dynamic dispatch (not directly mentioned but related).
+- **YMM registers** — 256-bit AVX vector registers used for SIMD operations.
+- **ZMM registers** — 512-bit AVX-512 vector registers with support for extended SIMD instructions.

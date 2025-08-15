@@ -1,0 +1,11 @@
+- **Execution port** — Ports on Intel processors that handle micro-operations; each can process one μop at a time and may become a bottleneck if multiple μops require the same port simultaneously.  
+- **Execution unit** — Functional units within a CPU core capable of executing specific categories of micro-operations, such as integer ALUs or floating point units.  
+- **Instruction** — Assembly code mnemonic representing a CPU operation; may include multiple variants combined into one entry.  
+- **Instruction set** — A collection of instructions supported by processors, e.g., x86, MMX, SSE, AVX, AVX512, etc.  
+- **Latency** — The minimum delay in clock cycles caused by an instruction in a dependency chain, excluding memory latency; affected by operand types and specific hardware features.  
+- **Micro-operation (μop)** — A simpler internal operation derived from a complex machine instruction, processed by the CPU's execution units.  
+- **Operands** — The input entities of instructions like registers, memory locations, or immediate constants, often abbreviated in tables (e.g., r, m, i, xmm).  
+- **Reciprocal throughput** — Also called issue latency; average number of clock cycles between issuing independent instructions of the same kind, representing cycles per instruction.  
+- **Throughput** — The maximum number of independent instructions of the same kind executed per clock cycle, reciprocal of the reciprocal throughput.  
+- **Uop (μop)** — See Micro-operation.  
+- **Vector register** — Registers used for SIMD instructions including xmm (128-bit), ymm (256-bit), and zmm (512-bit) registers in x86 CPUs.

@@ -1,0 +1,31 @@
+- **ABI (Application Binary Interface)** — Specifies standardized binary interfaces like calling conventions, data representations, and name mangling for compatibility between compilers and operating systems.  
+- **Alignment** — The arrangement of data in memory according to byte boundaries, affecting performance and compatibility.  
+- **Assembly Language** — Low-level programming language representation of machine code; compilers can output assembly for debugging or analysis.  
+- **Calling Convention** — Rules defining how function parameters are passed, how return values are delivered, and by whom the stack is cleaned up.  
+- **Callee-save Registers** — Registers that must be saved and restored by the called function to preserve their values.  
+- **Caller-save (Scratch) Registers** — Registers that can be used freely by a function but whose values need to be saved by the caller if needed later.  
+- **Composite Objects** — Structures, classes, or unions whose members are stored consecutively in memory with possible padding for alignment.  
+- **Data Member Pointer** — Pointer representing the offset of a data member within a class object; may use extra storage due to inheritance complexities.  
+- **Endian-ness** — Byte order in memory; refers to how multi-byte data values are stored as sequences of bytes.  
+- **Exception Handling and Stack Unwinding** — Mechanism to handle exceptions or abnormal exits by tracing back through function calls to properly destroy objects and restore processor state.  
+- **Floating Point Registers (ST(0)-ST(7))** — x87 FPU registers used to hold floating point values; usage and preservation rules vary by platform and compiler.  
+- **Function Pointer** — Pointer to a function, used to call functions indirectly; subject to different representations across compilers.  
+- **Function Prolog and Epilog** — Sections of function code that set up and restore stack frames, registers, and other state needed for correct function execution and stack unwinding.  
+- **Gnu Name Mangling** — Scheme used primarily by the Gnu compiler for encoding function and type information into symbols for linking, described in Itanium C++ ABI.  
+- **Import Table** — Data structure in executables used for resolving addresses of external DLL/shared object functions at load or runtime.  
+- **Initialization and Termination Functions** — Functions automatically called before program entry (constructors) and after program exit (destructors) for global/static objects.  
+- **Member Function Pointer** — Pointer representing an address or offset of a member function; complexity arises due to inheritance and virtual functions.  
+- **Memory Models** — Models defining address ranges and pointer types depending on architecture and operating system (e.g., tiny, small, flat, large, position-independent).  
+- **Name Mangling** — Encoding of additional type and function signature information into symbol names for function overloading and linkage compatibility.  
+- **Object File Format** — File format used for compiled object code, including OMF, COFF (PE/PE32+), ELF, and Mach-O, each with distinct features and compatibility.  
+- **Parameter Passing** — Methods used for passing function parameters, including passing via registers or stack, affected by calling conventions and architecture.  
+- **Position-Independent Code (PIC)** — Machine code that executes properly regardless of its absolute address in memory, essential for shared libraries.  
+- **Register Usage** — Rules defining which CPU registers are used for parameter passing, return values, scratch use, and preservation by callee.  
+- **Return Pointer** — Hidden parameter passed to a function to store the return value when the value is too large or complex to be returned in registers.  
+- **Segment Registers** — Registers used in 16-bit mode to define memory segments; restricted or unused in modern 32- and 64-bit modes.  
+- **Shadow Space** — Reserved stack space in 64-bit Windows calling convention used to store register parameters.  
+- **Stack Alignment** — Requirement that the stack pointer be aligned to a specific boundary (e.g., 16 bytes) at function entry and calls for performance and correctness.  
+- **Static Libraries** — Archives of object files linked at compile time instead of dynamically at load time; traditionally compiler-specific.  
+- **Template Functions and Classes** — C++ features where function and class declarations are parameterized by types or values, affecting name mangling and linkage.  
+- **Vector Registers (XMM, YMM, ZMM)** — CPU registers used for SIMD operations; size and usage depend on the instruction set version (SSE, AVX, AVX512).  
+- **Virtual Table (vtable)** — Table of pointers to virtual member functions used to implement dynamic dispatch (polymorphism) in C++ classes.

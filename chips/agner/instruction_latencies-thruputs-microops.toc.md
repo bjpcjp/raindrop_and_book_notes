@@ -1,0 +1,108 @@
+```markdown
+# Table of Contents
+
+- Introduction  
+- Definition of terms  
+  - Instruction  
+  - Operands  
+  - Latency  
+  - Reciprocal throughput  
+  - μops  
+  - Execution unit  
+  - Execution port  
+  - Instruction set  
+  - How the values were measured  
+- Instruction sets  
+  - x86  
+  - 80186  
+  - 80286  
+  - 80386  
+  - 80486  
+  - x87  
+  - Pentium / PPro  
+  - MMX  
+  - SSE  
+  - SSE2  
+  - SSE3  
+  - SSSE3  
+  - 64 bit  
+  - SSE4.1 / SSE4.2  
+  - AES  
+  - CLMUL  
+  - AVX / AVX2  
+  - FMA3 / FMA4  
+  - MOVBE  
+  - POPCNT  
+  - XSAVE / XSAVEOPT  
+  - RDRAND / RDSEED  
+  - BMI1 / BMI2  
+  - ADX  
+  - AVX512 subsets  
+  - SHA  
+  - MPX  
+  - SMAP  
+  - CVT16  
+  - 3DNow / 3DNowE  
+  - PREFETCHW / PREFETCHWT1  
+  - SSE4A  
+  - XOP  
+- Microprocessors tested  
+  - AMD K7 Athlon  
+  - AMD K8 Opteron  
+  - AMD K10 Opteron  
+  - AMD Bulldozer  
+  - AMD Piledriver  
+  - AMD Steamroller  
+  - AMD Excavator  
+  - AMD Ryzen  
+  - AMD Bobcat  
+  - AMD Kabini  
+  - Intel Pentium (P5)  
+  - Intel Pentium MMX  
+  - Intel Pentium II / III (P6)  
+  - Intel Pentium 4 / EM64T (Netburst)  
+  - Intel Pentium M (Dothan)  
+  - Intel Core Duo (Yonah)  
+  - Intel Core 2 (Merom / Wolfdale)  
+  - Intel Core i7 (Nehalem)  
+  - Intel 2nd gen Core (Sandy Bridge)  
+  - Intel 3rd gen Core (Ivy Bridge)  
+  - Intel 4th gen Core (Haswell)  
+  - Intel 5th gen Core (Broadwell)  
+  - Intel 6th gen Core (Skylake)  
+  - Intel 7th gen Core (Skylake-X)  
+  - Intel Atom 330 (Diamondville)  
+  - Intel Bay Trail (Silvermont)  
+  - Intel Apollo Lake (Goldmont)  
+  - Intel Gemini Lake (Goldmont Plus)  
+  - Intel Xeon Phi (Knights Landing)  
+  - VIA Nano L2200  
+  - VIA Nano L3050 (Isaiah)  
+- AMD K7  
+  - Integer instructions  
+  - Floating point x87 instructions  
+  - Integer MMX instructions  
+  - Floating point XMM instructions  
+  - 3DNow instructions  
+- AMD K8  
+  - Integer instructions  
+  - Floating point x87 instructions  
+  - Integer MMX and XMM instructions  
+  - Floating point XMM instructions  
+- AMD K10  
+  - Integer instructions  
+  - Floating point x87 instructions  
+  - Integer MMX and XMM instructions  
+  - Floating point XMM instructions  
+  - Obsolete 3DNow instructions  
+- AMD Bulldozer  
+  - Integer instructions  
+  - Floating point x87 instructions  
+  - Integer vector instructions  
+  - Floating point XMM and YMM instructions  
+- AMD Piledriver  
+  - Integer instructions  
+  - Floating point x87 instructions  
+  - Integer vector instructions  
+  - Floating point XMM and YMM instructions  
+```
