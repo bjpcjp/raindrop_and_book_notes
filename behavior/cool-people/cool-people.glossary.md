@@ -1,0 +1,21 @@
+- **Agreeableness** — A Big Five personality trait reflecting how sympathetic and warm a person is versus being critical and quarrelsome.  
+- **Autonomy** — The value of doing things in one’s own way, making one’s own decisions, and being creative and independent.  
+- **Big Five Personality Traits** — A widely used model describing five core personality dimensions: openness, conscientiousness, extraversion, agreeableness, and neuroticism (calm).  
+- **Calm** — The Big Five personality trait representing low neuroticism; emotionally stable and not easily upset.  
+- **Collectivism** — A cultural dimension emphasizing interdependence, group goals, and conformity over independence and individual achievement.  
+- **Conscientiousness** — A Big Five personality trait indicating dependability, self-discipline, and organization versus being careless or disorganized.  
+- **Cool (Coolness)** — A socially constructed positive attribute associated with being extraverted, hedonistic, powerful, adventurous, open, and autonomous; distinct from simply being good.  
+- **Cultural Psychology** — The study of how cultural contexts shape people’s perceptions, values, and behaviors.  
+- **Extraversion** — A Big Five personality trait characterized by enthusiasm, sociability, and assertiveness versus being reserved and quiet.  
+- **Good (Goodness)** — A broad positive attribute including qualities like warmth, agreeableness, conscientiousness, security, tradition, and universalism, distinct from coolness.  
+- **Hedonism** — A value reflecting the pursuit of pleasure and enjoyment of life.  
+- **Individualism** — A cultural dimension emphasizing independence, personal autonomy, and self-expression over group cohesion.  
+- **Neuroticism** — A Big Five personality trait related to emotional instability; low neuroticism corresponds to calmness.  
+- **Openness** — A Big Five personality trait involving receptivity to new experiences, creativity, and curiosity versus conventionality and conservatism.  
+- **Portrait Values Questionnaire** — A measure of core personal values including autonomy, hedonism, power, conformity, warmth, universalism, capability, security, tradition, and adventurousness.  
+- **Power** — A value reflecting influence over others, having authority, control, and often wealth.  
+- **Social Construct** — A concept or perception created and agreed upon by society rather than existing inherently.  
+- **Status** — The relative prestige, respect, or social standing a person receives from others in their group or society.  
+- **Tightness-Looseness** — A cultural dimension describing how strictly social norms are enforced (tight) versus how permissive and adaptable they are (loose).  
+- **Universalism** — A value emphasizing tolerance, protection, and appreciation of all people and nature.  
+- **WEIRD Countries** — Societies that are Western, Educated, Industrialized, Rich, and Democratic, often studied in psychology but not representative of all cultures.
