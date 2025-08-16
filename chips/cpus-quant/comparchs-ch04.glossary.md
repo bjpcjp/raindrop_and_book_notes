@@ -1,0 +1,26 @@
+- **Address Coalescing Unit** — GPU hardware that combines memory accesses from SIMD lanes into fewer transactions for better bandwidth.
+- **Arithmetic Intensity** — Ratio of floating-point operations to bytes accessed in memory, used to evaluate computational intensity.
+- **Chaining** — Forwarding of element-dependent operations in vector architectures allowing overlapping execution within a vector instruction.
+- **Chime** — Unit of time taken to execute one convoy of vector instructions; execution time in chimes is convoy count times vector length.
+- **Convoy** — A set of vector instructions that can execute simultaneously without structural hazards.
+- **CUDA Thread** — The lowest level of parallelism in CUDA programming; a thread executing SIMD instructions, mapped to a single vector element.
+- **Gather-Scatter** — Memory operations supporting indirect access via index vectors; gather loads from scattered locations, scatter stores to scattered locations.
+- **Grid** — CUDA programming abstraction representing a set of thread blocks executing a vectorizable loop on a GPU.
+- **Local Memory (CUDA)** — On-chip SRAM shared by SIMT lanes within a thread block, unavailable to other blocks.
+- **Mask Register** — Used to control conditional execution over vector or SIMD lanes, enabling/disabling operations per element.
+- **Multithreaded SIMD Processor** — GPU hardware unit executing multiple threads of SIMD instructions with concurrent SIMD lanes.
+- **PTX (Parallel Thread Execution)** — NVIDIA’s intermediate GPU instruction set and programming abstraction.
+- **SIMD Instruction** — A single instruction executed simultaneously on multiple data elements across lanes in vector or GPU architectures.
+- **SIMD Lane (Vector Lane)** — An execution unit processing a single element of a vector or SIMD thread.
+- **Strip Mining** — Technique to process vectors longer than hardware maximum length by splitting into smaller vector-sized segments.
+- **Thread Block** — A group of CUDA threads executed on a single multithreaded SIMD processor; analogous to strip-mined loop body.
+- **Thread Block Scheduler** — Hardware unit assigning thread blocks to GPU multithreaded SIMD processors.
+- **Thread of SIMD Instructions (Warp)** — A traditional thread in GPU terminology composed solely of SIMD instructions executed in lockstep.
+- **Vector Length Register (VLR)** — Register specifying the number of vector elements processed in vector architectures.
+- **Vector Mask Register** — Register holding per-element mask bits for conditional vector instruction execution.
+- **Vector Register** — Register holding multiple data elements operated on simultaneously by vector instructions.
+- **Vector Register File** — The collection of vector registers in a vector processor.
+- **Vectorized Loop** — A loop with iterations free of data dependences, suitable for SIMD or vector execution.
+- **Vector Processor** — A processor architecture operating on vectors, performing multiple data operations in a pipeline or parallel lanes.
+- **Warp Scheduler** — Hardware unit in a GPU managing scheduling and issuing SIMT warps for execution.
+- **Warp (SIMD Thread)** — NVIDIA GPU term for a group of 32 SIMD lanes executing the same instruction stream in lock-step.

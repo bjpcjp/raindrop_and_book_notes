@@ -1,0 +1,65 @@
+```markdown
+# Table of Contents
+
+- 2 Memory Hierarchy Design
+  - 2.1 Introduction (p.72)
+  - Basics of Memory Hierarchies: A Quick Review (p.74)
+    - Cache Placement and Set Associativity
+    - Write Strategies: Write-Through and Write-Back Caches
+    - The Three Cs Model of Cache Misses
+    - Cache Performance Metrics and Optimizations
+      - Larger Block Size
+      - Bigger Caches
+      - Higher Associativity
+      - Multilevel Caches
+      - Priority to Read Misses
+      - Address Translation during Cache Indexing
+  - 2.2 Ten Advanced Optimizations of Cache Performance (p.78)
+    - Reducing Hit Time
+      - Small and Simple First-Level Caches
+      - Way Prediction
+    - Increasing Cache Bandwidth
+      - Pipelined Cache Access
+      - Nonblocking Caches
+      - Multibanked Caches
+    - Reducing Miss Penalty
+      - Critical Word First and Early Restart
+      - Merging Write Buffers
+    - Reducing Miss Rate
+      - Compiler Optimizations (Loop Interchange, Blocking)
+    - Reducing Miss Penalty or Rate via Parallelism
+      - Hardware Prefetching
+      - Compiler-Controlled Prefetching
+    - Cache Optimization Summary (p.96)
+  - 2.3 Memory Technology and Optimizations (p.96)
+    - SRAM Technology
+    - DRAM Technology
+      - Row/Column Access and Refresh Requirements
+      - Performance Trends of DRAM Technologies (SDRAM, DDR)
+    - Improving Memory Performance Inside a DRAM Chip
+    - Graphics Data RAMs (GDDR)
+    - Reducing Power consumption in SDRAMs
+    - Flash Memory
+    - Enhancing Dependability in Memory Systems
+  - 2.4 Protection: Virtual Memory and Virtual Machines (p.104)
+    - Protection via Virtual Memory
+      - Paging and TLBs
+      - Multiprogramming and Privilege Modes
+    - Protection via Virtual Machines
+      - Virtual Machine Monitors (VMMs)
+      - Requirements of a VMM
+      - Instruction Set Architecture Support for Virtual Machines
+      - Impact of Virtual Machines on Virtual Memory and I/O
+      - Example: Xen Virtual Machine
+  - 2.5 Crosscutting Issues: The Design of Memory Hierarchies (p.112)
+    - Protection and Instruction Set Architecture
+    - Coherency of Cached Data
+  - 2.6 Putting It All Together: Memory Hierarchies in the ARM Cortex-A8 and Intel Core i7 (p.113)
+    - The ARM Cortex-A8
+      - Memory Organization and Cache Details
+      - Performance Metrics
+    - The Intel Core i7
+      - Cache & TLB Structures
+      - Detailed Memory Access Steps
+```
+

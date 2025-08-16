@@ -1,0 +1,38 @@
+- **Cache block (line)** — A group of multiple words moved together between memory levels to exploit spatial locality.
+- **Cache coherence** — The property ensuring that multiple cached copies of data across processors or devices remain consistent.
+- **Cache hit time** — The time to access data from the cache when the requested data is found.
+- **Cache miss** — A cache access that does not find the requested data, requiring access to a lower memory level.
+- **Cache miss penalty** — The additional time required to fetch a missed cache block from a lower memory level.
+- **Cache miss rate** — The fraction of cache accesses that result in misses.
+- **Cache replacement policy** — The strategy for replacing cache blocks when a new block must be brought in (e.g., LRU, pseudo-LRU).
+- **Cache set associativity** — The number of blocks per set in a set-associative cache; affects hit rate and hit time.
+- **Compulsory miss** — Misses that occur on the first access to a block, unavoidable even with infinite cache size.
+- **Conflict miss** — Misses caused by multiple blocks competing for the same cache set due to limited associativity.
+- **Direct-mapped cache** — A cache with exactly one block per set; simplest form of set associativity.
+- **Dynamic power** — Power consumed during active operation of a memory or cache, e.g., on reads and writes.
+- **Hit under miss (Nonblocking cache)** — A cache that allows hits to be serviced concurrently while missing blocks are being fetched.
+- **Inclusion property** — Property where data in a cache’s higher level are always a subset of data in the lower levels.
+- **Latency** — The delay between requesting data and receiving it.
+- **Locality of reference** — The tendency of programs to access the same set of memory locations repetitively over short periods (temporal locality) and nearby locations (spatial locality).
+- **Miss classification (The three Cs)** — Categories of misses: Compulsory, Capacity, Conflict.
+- **Miss rate per instruction** — Number of cache misses normalized by the number of instructions executed.
+- **Multibanked cache** — A cache divided into independently accessible banks to allow multiple simultaneous accesses.
+- **Multilevel cache** — A hierarchy of caches where each successive level is larger and slower.
+- **Nonblocking cache** — See hit under miss; allows servicing other cache requests during a miss.
+- **Page fault** — An event triggered when a virtual memory reference is not currently mapped in physical memory.
+- **Page table entry (PTE)** — A record in a page table mapping a virtual page to a physical frame, including access protections.
+- **Pipelined cache** — A cache design that breaks cache access into multiple stages to increase clock rate and bandwidth.
+- **Power down mode** — A low-power mode supported by memory devices such as SDRAM to save energy when idle.
+- **Processor virtual machine** — An abstraction that provides an isolated environment mimicking the native hardware for a guest OS.
+- **Set associative cache** — A cache consisting of multiple blocks per set allowing placement flexibility to reduce conflict misses.
+- **Shadow page table** — A page table maintained by a virtual machine monitor mapping guest virtual addresses directly to physical addresses.
+- **Soft error** — Errors caused by transient faults (e.g., cosmic rays) affecting memory cells but not permanent hardware damage.
+- **Static power (leakage power)** — Power consumed by cache or memory circuits when idle but powered.
+- **TLB (Translation Lookaside Buffer)** — A specialized cache that holds recent virtual-to-physical address translations to reduce address translation latency.
+- **TLB miss** — Occurs when a virtual address is not found in the TLB, requiring a page table walk.
+- **Virtual memory** — A memory management capability that enables processes to use a large, contiguous virtual address space mapped onto potentially fragmented physical memory.
+- **Way prediction** — A technique to predict which block within a set associative cache will be accessed, reducing hit time.
+- **Write buffer** — A buffer that holds data to be written to memory asynchronously, reducing processor stalls.
+- **Write merging** — Combining multiple writes to the same cache block in a write buffer to reduce memory traffic.
+- **Write-back cache** — A cache write strategy where data is updated only in the cache and written back to memory upon eviction.
+- **Write-through cache** — A cache write strategy where all writes update both the cache and the main memory immediately.

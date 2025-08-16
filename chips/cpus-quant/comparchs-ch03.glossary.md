@@ -1,0 +1,37 @@
+- **Add/Commit** — The final stage of instruction execution in a speculative processor when results are written to the architectural state and instruction leaves the reorder buffer.
+- **Antidependence (WAR hazard)** — A name dependence when an instruction writes a register or memory location before a preceding instruction reads it, requiring order preservation to ensure correct reads.
+- **Basic Block** — A straight-line sequence of instructions with no branches in except to the entry and no branches out except at the exit.
+- **Branch Prediction** — Hardware or software technique to guess the outcome of a branch to reduce control stalls.
+- **Branch Hazards/Stalls** — Pipeline delays caused by dependency on the resolution of branch instructions.
+- **Bypassing (Forwarding)** — Hardware technique that routes data directly between pipeline stages to avoid stalls.
+- **Common Data Bus (CDB)** — A broadcast bus used in Tomasulo’s algorithm to forward computed results from functional units to reservation stations.
+- **Compiler Scheduling** — The process by which a compiler rearranges instructions to minimize pipeline hazards and increase instruction-level parallelism.
+- **Control Dependence** — A dependence where execution of an instruction depends on the outcome of a preceding branch.
+- **Data Dependence (True Dependence, RAW hazard)** — A dependence when an instruction requires a result produced by a previous instruction.
+- **Data Hazard** — Situations where the overlap of instructions leads to incorrect data ordering or usage, including RAW, WAR, and WAW hazards.
+- **Delayed Branch** — A technique that schedules instructions in a slot immediately after a branch to reduce branch penalty.
+- **Dynamic Scheduling** — Hardware technique where instruction issue and execution ordering is determined dynamically to reduce stalls.
+- **Exception Behavior (Precise Exception)** — Guarantee that exceptions arise as if the program executed sequentially, allowing easy restart.
+- **Forwarding (Bypassing)** — Technique of sending operands directly from producing to consuming functional units without going through registers.
+- **Hardware Speculation** — Executing instructions based on predicted branch outcomes before the branch is resolved, with mechanisms to undo changes if mispredicted.
+- **Ideal Pipeline CPI** — The base cycles per instruction assuming no stalls and perfect utilization.
+- **Instruction Commitment** — The stage where speculative instructions update registers or memory after correctness is ensured.
+- **Instruction-Level Parallelism (ILP)** — The ability to execute multiple instructions concurrently in a single program.
+- **Loop Unrolling** — Compiler technique that replicates the body of a loop multiple times to expose parallelism and amortize loop overhead.
+- **Mispeculation Recovery** — Mechanism to cancel and restart execution upon a branch misprediction.
+- **Name Dependence** — Register or memory name conflicts without actual data flow, including antidependences (WAR) and output dependences (WAW).
+- **Out-of-Order Execution** — Execution of instructions in an order different from program order to exploit available resources and reduce stalls.
+- **Pipeline CPI** — The actual average cycles per instruction accounting for structural, data, and control stalls.
+- **Pipeline Structural Hazard** — Stall caused when hardware resources required for instruction execution are unavailable.
+- **Register Renaming** — Hardware or compiler technique that uses a larger set of registers to eliminate name dependences (WAR, WAW).
+- **Reservation Station** — Hardware buffer that holds instructions waiting to execute along with their operands or tags identifying pending operands.
+- **Scoreboarding** — Early dynamic scheduling technique to detect hazards and allow out-of-order execution without register renaming.
+- **Speculation** — Execution of instructions based on assumptions (like predicted branches), with mechanisms to rollback if assumptions are wrong.
+- **Static Scheduling** — Compiler-based assignment of instruction issue order and hazard avoidance before runtime.
+- **Structural Stall** — Pipeline stall caused by resource conflicts preventing instruction execution.
+- **Superscalar Processor** — Processor that can issue multiple instructions per cycle, either statically or dynamically scheduled.
+- **Tournament Predictor** — Branch predictor that adaptively selects among local and global predictors for improved accuracy.
+- **True Data Dependence (RAW hazard)** — Data flow dependence where an instruction uses a value produced by a preceding instruction.
+- **VLIW (Very Long Instruction Word)** — Processor architecture where multiple operations are encoded in a wide instruction word and scheduled statically by the compiler.
+- **WAR Hazard (Write After Read)** — A name hazard where a write is reordered before a read, potentially changing program results.
+- **WAW Hazard (Write After Write)** — A name hazard where writes to the same register/memory location are reordered, resulting in incorrect data.

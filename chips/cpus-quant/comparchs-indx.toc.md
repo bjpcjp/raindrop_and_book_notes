@@ -1,0 +1,156 @@
+```markdown
+# Table of Contents
+
+- AMD Processors
+  - AMD Barcelona microprocessor
+  - AMD Fusion
+  - AMD K-5
+  - AMD Opteron
+- Antialiasing
+- Application Binary Interface (ABI)
+- Arbitration Algorithms
+- Architecturally Visible Registers
+- Architecture and ISA
+  - ISA Architectures
+  - Compiler-Architect Relationship
+- Arithmetic/Logical Instructions
+- ARM Architecture
+  - ARM Cortex-A8
+  - ARM Cortex-A9
+- Arithmetic Intensity
+- Atomic Operations and Instructions
+- Attributes and Descriptor Tables
+- Autoincrement Addressing
+- Availability in Computing Systems
+- Average Memory Access Time (AMAT)
+- Balanced Systems and Trees
+- Barriers and Synchronization
+- Batch Processing Workloads
+- Benchmarking
+  - Desktop and Server Benchmarks
+  - Embedded Benchmark Suites
+- Bisection Bandwidth and Traffic
+- Bit Error Rate (BER)
+- Block Memory Concepts
+  - Block Addressing and Replacement
+  - Block Size and Placement
+- Buses and Bus-Based Multiprocessors
+- Cache Design and Performance
+  - Cache Coherence Protocols
+  - Cache Misses and Hit Rates
+  - Cache Optimizations
+  - Cache Size and Organization
+- Carry-Propagate Adders and Variants
+- Circuits and Switching Technologies
+- Clocks and Clock Rate Impact
+- Cluster Architectures and Networks
+- Code Generation and Scheduling
+- Compiler Technology and Optimizations
+- Congestion Management and Control
+- Consistency Models and Memory
+- Connectivity and Network Topologies
+  - Mesh, Torus, Hypercube
+  - Direct and Switched Networks
+- Control Hazards and Flow Control Instructions
+- Cooperative Computing and CPU Time
+- Crossbar and Multistage Switch Fabrics
+- CUDA and GPU Architectures
+  - CUDA Programming Model
+  - GPU Memory and SIMD Operations
+- Data Dependences and Hazards
+- Data-Level Parallelism (DLP)
+- Data Transfers and Memory Operations
+- Decoders and Demodulators (Wireless)
+- Disk Storage Systems and RAID
+- Directory-Based Cache Coherence
+- Distributed Memory and Shared Memory Multiprocessors
+- DMA and I/O Subsystems
+- Dynamic Scheduling and Tomasulo’s Algorithm
+- Dynamic Voltage-Frequency Scaling (DVFS)
+- Early Vector and Supercomputer Architectures
+- EEMBC Embedded Benchmarks
+- Elastic Block Storage (EBS)
+- Energy Efficiency and Power Consumption
+- FPGA and Integrated Circuit Technology
+- Floating-Point Arithmetic and Pipelines
+- Forwarding and Bypassing in Pipelines
+- Functional Units and Microarchitecture
+- GTX and Fermi GPUs
+- Hardware Prefetching and Speculation
+- Heterogeneous Architectures
+- High-Level Language Architectures
+- HPC and Cloud Computing
+- HTTP and Internet Technologies
+- IA-32 and IA-64 Architectures
+- I/O System Design and Networking
+- Instruction-Level Parallelism (ILP)
+- Instruction Sets and ISA Classifications
+- Intel Architectures
+  - Intel Core i7
+  - Intel Atom and Pentium Variants
+  - Intel Nehalem and Xeon
+- Interrupts and Exceptions
+- Interconnection Networks and Protocols
+- Interprocessor Communication
+- In-Order and Out-of-Order Execution
+- Java and JVM
+- L1, L2, L3 Caches and Multilevel Hierarchies
+- Large-Scale Multiprocessors and Synchronization
+- Latency and Bandwidth in Memory Systems
+- Link Bandwidth and Network Switches
+- Linux and Operating System Architecture
+- Load/Store Architectures
+- Locality and Memory Addressing
+- Locking and Synchronization Mechanisms
+- LRU and Cache Replacement Policies
+- LU Decomposition and Matrix Kernels
+- Memory Architecture and Hierarchy
+- Memory Consistency and Protection
+- Memory-Mapped I/O and Virtual Memory
+- MIMD and SIMD Architectures
+- Mini and Microcomputer History
+- Multicore and Multithreaded Architectures
+- Multimedia Extensions and SIMD
+- Multiprocessor Programming and Consistency
+- Networking and Ethernet Protocols
+- NUMA and Cache Coherence Extensions
+- Object-Oriented Architectures and JVM
+- Open Source Software and Cloud Providers
+- Out-of-Order Processors and Pipelines
+- Parallel Computing Models and APIs
+- Paging, Segmentation, and Virtual Memory
+- Pipelines and Pipeline Hazards
+- Power and Thermal Considerations
+- Processor Performance Metrics and Models
+- Protection and Security Mechanisms
+- Queueing Theory and I/O Performance
+- RAID Storage Architectures
+- RISC vs CISC Architectures
+- Roofline Model and Performance Analysis
+- Routing Algorithms and Network Topologies
+- Scalability and Parallelism
+- SIMD and Vector Architectures
+- Simultaneous Multithreading (SMT)
+- Software Pipelining and Scheduling
+- SPEC Benchmarks and Malady of Averages
+- Storage Systems and Data Reliability
+- Switch Microarchitectures and Network Fabrics
+- Synchronization Primitives and Barriers
+- System Area Networks (SAN)
+- TLB and Virtual Memory Mechanisms
+- Tomasulo’s Algorithm and Dynamic Scheduling
+- Transaction Processing and Database Systems
+- Trace Scheduling and Superblocks
+- Transistor Technology and Moore’s Law
+- Translation Lookaside Buffers (TLB)
+- Trap Handling and Exception Recovery
+- Vector Processors and Vectorization
+- Virtual Machines and Hypervisors
+- Virtual Memory and Cache Interaction
+- VMIPS Vector Processor Simulator
+- WAN History and Internet Evolution
+- Wireless Networks and Cellular Systems
+- Write Policies and Cache Coherence
+- Xen Virtual Machines
+```
+

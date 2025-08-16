@@ -1,0 +1,29 @@
+- **ALU (Arithmetic Logic Unit)** — Hardware component that performs arithmetic and logical operations in the CPU.  
+- **Branch Hazard** — A pipeline hazard caused by instructions that change the program counter (PC), requiring special handling to avoid incorrect instruction execution.  
+- **Branch Delay (Branch Delay Slot)** — A pipeline stage or instruction cycle after a branch during which an instruction must be executed regardless of whether the branch is taken.  
+- **Branch Prediction** — Techniques used to guess the outcome of a branch instruction to reduce pipeline stalls.  
+- **Branch Prediction Buffer** — A small memory storing recent branch outcomes used to dynamically predict future branches.  
+- **Condition Code** — A status flag set by instructions indicating certain conditions (e.g., zero or overflow) used for conditional branching.  
+- **Control Hazard** — A pipeline hazard that arises due to branching and other control transfer instructions that affect the PC.  
+- **Data Hazard** — A pipeline hazard caused when an instruction depends on the result of a previous instruction that has not yet completed.  
+- **Delayed Branch** — A branch handling technique where one instruction after a branch is always executed before the branch takes effect.  
+- **Exception** — An event that causes a change in the normal sequential flow of execution, such as interrupts, faults, or traps.  
+- **Forwarding (Bypassing)** — A technique that routes data from pipeline stages producing outputs directly to stages that need the inputs, reducing stalls in data hazards.  
+- **Hazard** — A situation in pipelining that prevents the next instruction from executing in its designated clock cycle, classified as structural, data, or control hazards.  
+- **Imprecise Exception** — An exception where the processor state does not clearly indicate which instruction caused the exception or the state of incomplete instructions.  
+- **Load Interlock** — A pipeline stall introduced when an instruction depends on data from a preceding load instruction that has not yet completed.  
+- **Latency** — The total time required to complete an instruction or a pipeline stage.  
+- **Pipeline Bubble (Stall)** — A delay cycle inserted in the pipeline to resolve hazards, resulting in no instruction progressing through that cycle.  
+- **Pipeline Depth** — The number of stages in a pipeline.  
+- **Pipeline Hazard** — Conditions that cause pipeline stalls or require special handling to maintain correct execution order in pipelining.  
+- **Pipeline Interlock** — Hardware that detects hazards and stalls the pipeline to prevent incorrect instruction execution.  
+- **Pipeline Register (Pipeline Latch)** — Registers placed between pipeline stages to hold intermediate data and control information.  
+- **Precise Exception** — An exception in a pipelined processor where the state can be perfectly restored and resumed as if instructions completed in order.  
+- **Register Forwarding** — Forwarding specifically from pipeline registers holding ALU or memory output to inputs of the ALU or memory units.  
+- **Register File** — A set of hardware registers used for storing operands that instructions operate on.  
+- **Scoreboarding** — A dynamic scheduling technique managing instruction execution order in pipelines (introduced in later chapters).  
+- **Structural Hazard** — A hazard that occurs due to insufficient hardware resources to support all simultaneous operations in the pipeline.  
+- **Stall Cycle** — A clock cycle inserted to pause pipeline progress in order to resolve hazards or resource conflicts.  
+- **Throughput** — The number of instructions completed per unit time in a CPU.  
+- **Tomasulo’s Algorithm** — A dynamic scheduling algorithm that handles instruction dependencies and hazards in out-of-order execution (introduced later).  
+- **Unpipelined Processor** — A processor design where instructions are executed one at a time, without overlapping stages.

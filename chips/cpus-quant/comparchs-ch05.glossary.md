@@ -1,0 +1,29 @@
+- **Cache coherence** — The property ensuring that all processors see the most recently written value for any data item in a multiprocessor’s cache hierarchy.
+- **Cache coherence protocol** — Hardware or software mechanism used to maintain coherence among cached copies of data in multiprocessors.
+- **Capacity miss** — A cache miss caused by having insufficient cache size to hold all needed data.
+- **Consistency (memory)** — Defines when a written value by one processor will be seen by reads from other processors.
+- **Directory-based protocol** — Cache coherence protocol where a centralized or distributed directory keeps track of cached blocks and their sharing status to avoid broadcasting coherence messages.
+- **False sharing** — Cache coherence misses caused by invalidations when different processors modify distinct words within the same cache block that are not actually shared.
+- **Fetch** — A message from a directory to a remote cache requesting the data value of a block and changing its state to shared.
+- **Fetch/invalidate** — A directory message to a remote cache to retrieve a block and invalidate it on the remote cache.
+- **Grain size** — The amount of computation assigned to one thread in thread-level parallelism.
+- **Invalidate protocol** — A common write protocol in cache coherence that invalidates other cached copies before a write is committed.
+- **Load linked (LL)** — A special instruction paired with store conditional; it loads a value and monitors it for changes to support atomic update operations.
+- **Memory consistency model** — Defines the ordering guarantees for memory accesses (reads/writes) among multiple processors.
+- **Multiprocessor (multiprocessing system)** — A computer system with multiple tightly coupled processors sharing a memory address space and operating under one OS.
+- **Multicore processor** — A single chip containing multiple processor cores sharing memory and possibly caches.
+- **Parallel processing** — Execution of multiple collaborating threads working on a single task concurrently.
+- **Processor consistency** — A weaker memory model than sequential consistency, allowing more relaxed ordering of memory accesses.
+- **Read miss** — A cache miss triggered when reading a block not present or invalid in the cache.
+- **Request-level parallelism (RLP)** — Parallelism exploited by executing multiple independent processes (requests) concurrently.
+- **Snooping protocol** — Cache coherence protocol where all caches monitor (snoop) a common broadcast medium to track sharing status.
+- **Spin lock** — A synchronization lock where a processor continuously attempts to acquire the lock, typically by testing a cache variable.
+- **Synchronization primitive** — Basic hardware-supported atomic memory operations (e.g., atomic exchange, test-and-set) used to implement synchronization.
+- **Test-and-set** — Atomic instruction that tests a memory value and sets it if a condition is met, used for synchronization.
+- **Thread-level parallelism (TLP)** — Parallelism arising from the concurrent execution of multiple threads each with its program counter, mainly exploited on multiprocessors.
+- **True sharing** — Cache coherence misses caused by actual sharing and modification of the same data word by multiple processors.
+- **Uniform memory access (UMA)** — Memory architecture where all processors experience equal latency to access any memory location.
+- **Write serialization** — Guarantee that all writes to the same memory location are seen in the same order by all processors.
+- **Write-back cache** — Cache that updates main memory only when a modified block is replaced.
+- **Write miss** — A cache miss triggered by a write to a block not present or invalid in the cache.
+- **Write invalidate** — A cache coherence operation invalidating other cached copies when a cache line is to be written exclusively.

@@ -1,0 +1,29 @@
+- **Active low power modes** — Processor power states where the CPU runs at reduced power and frequency, allowing quick return to full performance, suitable for variable workloads.  
+- **Amortization** — Accounting method spreading the capital expenses (CAPEX) over the useful life of assets like servers, networking equipment, and facilities.  
+- **Array** — A group of multiple racks (about 30) connected by array switches inside a WSC; larger than a rack but smaller than the entire datacenter.  
+- **Batch processing** — Large-scale, offline computation jobs (e.g., MapReduce) running on WSCs, often converting raw data into processed forms like search indices.  
+- **Capital expenditures (CAPEX)** — The upfront cost of building and acquiring hardware, networking, facilities, and infrastructure for a WSC.  
+- **Cloud computing** — Utility computing offering scalable, on-demand computing resources over the Internet, exemplified by services like AWS, allowing pay-as-you-go and abstraction of underlying hardware.  
+- **Cloud provider** — A company offering cloud computing services and infrastructure, such as Amazon Web Services (AWS), Google, or Microsoft Azure.  
+- **Data-level parallelism** — Parallel processing of independent datasets, such as billions of web pages, often exploited in batch processing jobs in WSCs.  
+- **Dependability via redundancy** — Achieving high system availability in WSCs by having multiple inexpensive servers and software-managed redundancy instead of expensive hardware fault tolerance.  
+- **Distributed UPS (Uninterruptible Power Supply)** — A design where each server uses local batteries for power backup, improving power efficiency over centralized battery rooms.  
+- **Dynamo** — Amazon’s distributed key-value storage system designed for high availability and eventual consistency in WSCs.  
+- **Energy proportionality** — The ideal property of servers consuming energy roughly proportional to workload, important for WSC power efficiency.  
+- **Eventual consistency** — A relaxed consistency model used in WSC storage systems where multiple data replicas converge over time rather than always being strictly consistent.  
+- **Facility power utilization effectiveness (PUE)** — A metric measuring datacenter efficiency as the ratio of total facility power to IT equipment power; closer to 1.0 is better.  
+- **MapReduce** — A programming framework that allows easy parallelization of batch jobs by mapping input data to key-value pairs and reducing those pairs to results, widely used in WSCs.  
+- **Operational expenditures (OPEX)** — The ongoing operational costs of running a WSC, including power, cooling, personnel, and maintenance expenses.  
+- **Oversubscription** — The ratio of internal network bandwidth to external uplink bandwidth, affecting performance and task placement in WSC networking.  
+- **Rack** — A standard 19-inch equipment frame used in datacenters housing servers and a 48-port rack switch, forming the basic unit of WSC operational infrastructure.  
+- **Rack switch** — Commodity 48-port Ethernet switch connecting servers within a rack, with uplinks to higher-tier switches.  
+- **Request-level parallelism** — Parallelism in WSCs arising from millions of independent user requests, allowing minimal synchronization and high scalability.  
+- **Reserved Instances (AWS)** — Amazon EC2 pricing model with upfront annual fees plus reduced hourly usage fees, suitable for predictable, long-term workloads.  
+- **Scale and economies of scale** — Cost advantages achieved by building and operating very large WSCs (e.g., 50,000+ servers), reducing per-unit costs of hardware and operations.  
+- **Server utilization** — The fraction of time a server spends performing useful work; WSC servers typically run at 10-50% utilization most of the time.  
+- **Spot Instances (AWS)** — Amazon EC2 instances that can be run at variable market-driven prices, allowing cost savings but with the risk of termination if the spot price rises.  
+- **Storage node** — A server configuration equipped with multiple disks and additional network interfaces to handle storage-intensive workloads in a WSC.  
+- **Total cost of ownership (TCO)** — The sum of capital expenditures and operational expenditures representing the full cost of building and operating a WSC.  
+- **Traffic locality** — The placement strategy in WSCs to reduce network oversubscription effects by keeping communicating tasks close, typically within the same rack or array.  
+- **Virtual Machine (VM)** — A software abstraction emulating a physical computer, used in cloud computing to isolate users, facilitate deployment, and control resource usage.  
+- **Warehouse-Scale Computer (WSC)** — A very large datacenter designed to operate as a single giant computer with tens of thousands of servers optimized for parallelism, efficiency, and high availability.

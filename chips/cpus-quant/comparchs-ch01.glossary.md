@@ -1,0 +1,31 @@
+- **Availability** — The measure of service accomplishment with respect to alternation between functioning and interrupted states, typically expressed as a ratio involving mean time to failure and mean time to repair.  
+- **Benchmarks** — Programs or suite of programs used to evaluate the performance of computers consistently and reproducibly.  
+- **Benchmark suite** — A collection of benchmark programs intended to represent various applications, to reduce bias from any single test.  
+- **Clock cycle (or clock period)** — The duration of one tick of the processor’s clock; inversely related to clock rate.  
+- **Clock rate** — The frequency at which a processor’s clock oscillates, often measured in MHz or GHz.  
+- **CPI (Cycles Per Instruction)** — The average number of clock cycles each instruction takes to execute; a key metric in processor performance.  
+- **Data-Level Parallelism (DLP)** — Parallelism arising from the ability to operate simultaneously on multiple data items.  
+- **Dependability** — The extent to which a computer system delivers service as expected, encompassing reliability and availability.  
+- **Dynamic Energy** — Energy consumed during transistor switching, proportional to capacitive load and the square of voltage.  
+- **Dynamic Voltage-Frequency Scaling (DVFS)** — Technique to reduce power consumption by lowering processor frequency and voltage during periods of low activity.  
+- **Energy** — The total electrical energy consumed for a task, typically measured in joules; product of average power and execution time.  
+- **Fault tolerance / Redundancy** — Technique of including duplicate components or repeated execution to improve dependability and reduce failures.  
+- **Floating Point Operations** — Arithmetic operations on data types representing real numbers with fractional parts; often measured separately in benchmarks.  
+- **Horizontal Scaling (Scalability)** — The ability to increase system capacity by adding more processors or nodes.  
+- **Instruction Count (IC)** — The total number of instructions executed to complete a given program or task.  
+- **Instruction Set Architecture (ISA)** — The programmer-visible part of a processor design, including the instruction formats, addressing modes, and operations.  
+- **Latency (Response Time)** — The time elapsed between initiating and completing a task or event.  
+- **Mean Time Between Failures (MTBF)** — Sum of mean time to failure and mean time to repair; average time between system failures.  
+- **Mean Time to Failure (MTTF)** — The average time a component or system operates before failing.  
+- **Mean Time to Repair (MTTR)** — The average time taken to repair a failed component or restore service.  
+- **Performance** — The efficiency or speed of a computer, often measured as inverse execution time or throughput.  
+- **Power** — Rate of energy consumption in watts; instantaneous or average power can impact heat dissipation and energy efficiency.  
+- **Processor Performance Equation** — CPU time = Instruction Count × CPI × Clock Cycle Time; connects clock speed, instruction efficiency, and workload size.  
+- **Reduced Instruction Set Computer (RISC)** — A type of ISA with a small, highly optimized set of instructions focusing on load-store architecture.  
+- **Reliability** — The probability or measure of uninterrupted service during a time interval; often associated with MTTF.  
+- **Response Time** — See Latency; time taken from submitting a request to its completion.  
+- **SPEC (Standard Performance Evaluation Corporation)** — A consortium that develops benchmark suites for measuring processor and system performance.  
+- **Throughput (Bandwidth)** — The total amount of work done or data processed per unit time.  
+- **Thread-Level Parallelism (TLP)** — Parallelism exploiting concurrent execution of independent or loosely coupled threads or tasks.  
+- **Virtual Machine (VM)** — Software-based emulation that runs a complete operating system environment, often used in servers and warehouse-scale computers.  
+- **Warehouse-Scale Computer (WSC)** — A very large cluster of servers designed to act as a single computing resource with millions of cores.

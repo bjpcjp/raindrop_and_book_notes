@@ -1,0 +1,36 @@
+- **ABI (Application Binary Interface)** — Defines conventions for control flow instructions, data types, and calling conventions between software components.  
+- **ACID (Atomicity-Consistency-Isolation-Durability)** — A set of properties ensuring reliable transaction processing in databases and storage systems.  
+- **ALU (Arithmetic-Logical Unit)** — Processor component that performs arithmetic and logical operations, integral to CPU pipelines and ILP.  
+- **AMAT (Average Memory Access Time)** — The average time to access memory including caches; a key metric in memory hierarchy performance.  
+- **Associativity** — Cache organization feature determining how blocks are mapped; affects cache performance and design.  
+- **Branch Prediction** — Techniques to guess the outcome of branches to reduce pipeline stalls and improve instruction flow.  
+- **Cache** — A small, fast memory layer that stores frequently accessed data to speed up memory access; includes organization in blocks, sets, and ways.  
+- **Cache Coherence** — Mechanisms ensuring consistency of cached data in multiprocessor systems, including snooping and directory-based protocols.  
+- **Clock Cycle/Clock Rate** — The basic timing unit for processor instruction execution; influences performance and pipelining efficiency.  
+- **DLP (Data-Level Parallelism)** — Parallelism extracted by operating simultaneously over multiple data elements in SIMD or GPU architectures.  
+- **DRAM (Dynamic Random-Access Memory)** — Main memory technology characterized by periodic refresh; used in most modern computing systems.  
+- **FFT (Fast Fourier Transform)** — An algorithm for computing the discrete Fourier transform efficiently; common in signal processing and HPC benchmarks.  
+- **GPU (Graphics Processing Unit)** — Specialized processor optimized for highly parallel, data-parallel workloads, widely used in graphics and general-purpose computing.  
+- **ILP (Instruction-Level Parallelism)** — Overlapping execution of instructions in pipelines to improve performance; exploited via dynamic scheduling and speculation.  
+- **ISA (Instruction Set Architecture)** — Defines the set of machine instructions, data types, registers, and addressing modes understood by a processor.  
+- **Latency** — Time delay in system response, such as memory access or network packet delivery, impacting overall performance.  
+- **Lipid Cache** (likely misread; possibly **L1 Cache**) — First-level cache closest to the processor, critical for reducing instruction and data access latency.  
+- **Load-Store Architecture** — Instruction set design where memory only accessed via explicit load and store instructions; common in RISC processors.  
+- **Lock** — Synchronization mechanism used in multiprogramming and multiprocessor systems to control access to shared resources.  
+- **Memory Hierarchy** — Organization of storage in layers (registers, caches, main memory, disk) to balance speed, cost, and size.  
+- **Multithreading** — Technique of interleaving multiple threads of execution to improve processor resource utilization and throughput.  
+- **Multicore Processor** — A single chip containing multiple CPU cores capable of parallel execution of multiple threads or processes.  
+- **Multiprocessor System** — Computing system with multiple CPUs or cores sharing memory or interconnected via networks; requires cache coherence and synchronization.  
+- **Pipeline** — Technique in CPU design where instruction processing is divided into stages to improve throughput.  
+- **Prefetching** — Technique to load data or instructions into cache before they are requested, to hide memory latency.  
+- **RAID (Redundant Array of Independent Disks)** — Storage technology combining multiple disks to improve reliability and performance.  
+- **RISC (Reduced Instruction Set Computer)** — Processor architecture with simpler instructions aiming at higher performance through pipelining and ILP.  
+- **SIMD (Single Instruction Multiple Data)** — Parallel execution model where one instruction operates on multiple data elements simultaneously, utilized in vector and GPU architectures.  
+- **SLI (Scalable Link Interface)** — Not directly referenced; possibly related to multi-GPU configurations.  
+- **Speculation** — Hardware or software techniques to predict and execute instructions ahead of time to increase parallelism.  
+- **Synchronization** — Mechanisms ensuring coordinated access to shared data among multiple processors or threads, including barriers and locks.  
+- **TLB (Translation Lookaside Buffer)** — Cache of recent virtual to physical address translations to speed up virtual memory access.  
+- **Vector Processor** — Processor design optimized for executing operations on entire vectors of data, supporting data-level parallelism.  
+- **Virtual Machine (VM)** — Software abstraction allowing multiple OS environments on a single hardware platform with isolated execution contexts.  
+- **Virtual Memory** — Memory management technique allowing programs to use more memory space than physically available by swapping data to disk.  
+- **Write Buffer** — Temporary storage used in caching and memory systems to improve write performance and reduce stalls.

@@ -1,0 +1,49 @@
+```markdown
+# Table of Contents
+
+- 1 Fundamentals of Quantitative Design and Analysis
+  - 1.1 Introduction
+  - 1.2 Classes of Computers
+    - Personal Mobile Device (PMD)
+    - Desktop Computing
+    - Servers
+    - Clusters/Warehouse-Scale Computers
+    - Embedded Computers
+    - Classes of Parallelism and Parallel Architectures
+  - 1.3 Defining Computer Architecture
+    - Instruction Set Architecture: The Myopic View of Computer Architecture
+    - Genuine Computer Architecture: Designing the Organization and Hardware to Meet Goals and Functional Requirements
+  - 1.4 Trends in Technology
+    - Integrated Circuit Logic Technology
+    - Semiconductor DRAM
+    - Semiconductor Flash
+    - Magnetic Disk Technology
+    - Network Technology
+    - Performance Trends: Bandwidth over Latency
+    - Scaling of Transistor Performance and Wires
+  - 1.5 Trends in Power and Energy in Integrated Circuits
+    - Power and Energy: A Systems Perspective
+    - Energy and Power within a Microprocessor
+    - Dynamic Voltage-Frequency Scaling (DVFS)
+    - Static Power and Leakage
+  - 1.6 Trends in Cost
+    - Impact of Time, Volume, and Commoditization
+    - Cost of an Integrated Circuit
+    - Cost versus Price
+    - Cost of Manufacturing versus Cost of Operation
+  - 1.7 Dependability
+    - Concepts of Reliability and Availability
+    - Redundancy and Fault Tolerance
+  - 1.8 Measuring, Reporting, and Summarizing Performance
+    - Benchmarks and Benchmark Suites
+      - Desktop Benchmarks
+      - Server Benchmarks
+    - Reporting Performance Results
+    - Summarizing Performance Results
+  - 1.9 Quantitative Principles of Computer Design
+    - Take Advantage of Parallelism
+    - Principle of Locality
+    - Focus on the Common Case
+    - Amdahl’s Law
+    - The Processor Performance Equation
+```

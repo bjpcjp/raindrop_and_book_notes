@@ -1,0 +1,39 @@
+- **Address trace** — A record of instruction and data memory references used for cache simulation.  
+- **Address translation** — The process of mapping a virtual address to a physical address.  
+- **Alias (Synonym)** — Multiple virtual addresses that map to the same physical address, causing potential cache consistency issues.  
+- **Associativity** — The number of places a block can be placed in the cache; includes direct mapped (1-way), n-way set associative, and fully associative caches.  
+- **Average memory access time** — The average time to access memory, calculated as hit time plus miss rate multiplied by miss penalty.  
+- **Block (Line)** — A fixed-size collection of data transferred between memory and cache.  
+- **Block address** — The higher portion of an address used to identify blocks in memory or cache.  
+- **Block offset** — The portion of a memory address identifying the exact data within a block.  
+- **Cache** — A smaller, faster memory located nearer to the processor to store copies of frequently accessed data.  
+- **Cache hit** — When the processor finds the requested data in the cache.  
+- **Cache miss** — When the requested data is not in the cache, requiring access to lower memory levels.  
+- **Cache miss rate** — The fraction of memory accesses that result in cache misses.  
+- **Cache replacement policy** — The method to select which cache block to replace on a miss (e.g., Least Recently Used, Random, FIFO).  
+- **Cache stall cycles (Memory stall cycles)** — Processor cycles lost waiting for memory due to cache misses.  
+- **Capacity miss** — Misses caused when the cache cannot contain all needed blocks, leading to evictions.  
+- **Compulsory miss** — The first access miss to a block that has never been loaded into cache.  
+- **Conflict miss** — Misses caused by limited associativity where multiple blocks compete for the same cache location.  
+- **Dirty bit** — A status bit indicating if a cache block has been modified (written) since being loaded.  
+- **Direct mapped cache** — A cache organization where each block maps to exactly one cache line.  
+- **Dirty block** — A cache block modified after being loaded and must be written back to memory on eviction.  
+- **Hit time** — The time to access data in the cache on a cache hit.  
+- **Index field** — The portion of an address used to select the cache set.  
+- **Least Recently Used (LRU)** — A cache replacement policy that discards the block unused for the longest time.  
+- **Miss penalty** — The extra time required to service a cache miss, including block fetch from the next memory level.  
+- **No-write allocate** — Write-miss policy where blocks are not loaded into cache on a write miss; the write goes directly to lower memory.  
+- **Page** — A fixed-size block of virtual memory addressed through virtual memory systems.  
+- **Page fault** — An event when a virtual memory page is not in main memory, triggering a load from disk.  
+- **Random replacement** — Cache replacement policy that selects a victim block at random on a miss.  
+- **Set** — A group of blocks in a set-associative cache where a block can be placed.  
+- **Set associative cache** — A cache organization allowing a block to be placed in any of several blocks within a set.  
+- **Tag field** — Portion of the block address stored in cache to verify block identity.  
+- **Translation Lookaside Buffer (TLB)** — A cache for virtual-to-physical address translations in virtual memory systems.  
+- **Unified cache** — A cache that can store both data and instructions.  
+- **Valid bit** — A bit indicating whether the data in a cache block is valid.  
+- **Write allocate** — Write-miss policy whereby the block is loaded into cache before performing the write.  
+- **Write-back** — A write policy where data is written to cache only and written to lower memory only when replaced.  
+- **Write buffer** — A buffer that holds write data temporarily to reduce write stall times.  
+- **Write stall** — Processor stall cycles caused by waiting for writes to complete.  
+- **Write-through** — A write policy where data is written simultaneously to cache and to the next memory level.
