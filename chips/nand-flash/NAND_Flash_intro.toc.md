@@ -1,0 +1,61 @@
+---
+title: "NAND_Flash_intro"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NAND_Flash_intro]
+---
+
+- Introduction to NAND Flash Memory
+- What is NAND Flash Memory?
+- NAND Flash Memory Structure
+  - Metal-Oxide Semiconductor and Floating-Gate Transistor
+  - NAND Cell Gates: Control and Floating Gates
+- NAND Flash Memory Applications
+- NAND Flash Architecture
+  - Block and Page Organization
+  - Erase and Program Operations
+  - Read-While-Write and Shadowing
+- NAND vs. NOR Flash Memory
+  - Speed and Performance Comparison
+  - Pin Count and Packaging Advantages
+- Basic NAND Operations
+  - Device Organization (2-Gbit Example)
+  - Control Signals and Their Functions
+- NAND Command Set and Addressing
+  - Command Cycles Overview
+  - Addressing Scheme for 2Gb NAND Devices
+- Common NAND Commands
+  - Reset Operation
+  - Read ID Operation
+  - Read Status Operation
+  - Block Erase Operation
+- Programming NAND Flash
+  - Program Page Command
+  - Random Data Input Command
+  - Partial Page Programming Methods
+  - Data and Spare Area Storage Methods
+- Read Operations
+  - Normal Read Sequence
+  - Random Data Access
+  - Page Read Cache Mode
+- Cache Mode Programming
+  - Program Page Cache Mode
+  - Read for Internal Data Move (Copy Back)
+- Connecting NAND Flash to a Processor
+  - Glueless Interface Technique
+  - CLE and ALE Signal Usage
+- Multi-Level Cell (MLC) vs Single-Level Cell (SLC)
+- Error Correcting Code (ECC)
+  - ECC Storage and Algorithms
+  - Hardware vs Software ECC
+- NAND Flash Block Management
+  - Bad Block Management and Marking
+  - Software Responsibilities
+- Third-Party NAND Management Software
+- Pros and Cons of NAND Flash Memory
+- NAND Flash Memory Industry and Top Manufacturers
+- Applications of Flash Memory
+  - Consumer Devices
+  - Industrial Computing
+  - Enterprise Storage Systems
+- References
