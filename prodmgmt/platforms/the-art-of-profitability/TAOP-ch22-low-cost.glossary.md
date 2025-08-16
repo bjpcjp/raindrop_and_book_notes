@@ -1,0 +1,15 @@
+- **Anticipation** — The ability to foresee changes and prepare in advance, reducing surprises and enabling smoother transitions in business design.  
+- **Blank-sheet-of-paper gang** — A group or organization focused on creating entirely new business models from scratch, enabling breakthrough cost structures and innovation outside existing paradigms.  
+- **Experience curve** — A graphical representation showing the decline in cost per unit as cumulative experience and production volume increase over time.  
+- **Experience curve danger** — The risk of excessive focus on cost reduction through experience curve management, leading to loss of peripheral vision and vulnerability to disruptive innovations.  
+- **Focus** — Concentrated attention on a specific objective, such as cost management, which may reduce awareness of external changes or threats.  
+- **Forecasting** — Predicting the future, often confused with anticipation, but less about prediction and more about preparedness.  
+- **Low-cost business design** — A business model centered on achieving dramatically lower costs rather than dominating market share, enabling profitability with smaller scale.  
+- **Market share** — The proportion of total sales in a market controlled by a business; still relevant but plays different roles in low-cost business strategies.  
+- **Microscope (metaphor)** — Symbolizes intense focus on detailed, internal cost management.  
+- **Peripheral vision** — Awareness of external or less obvious factors that can influence business success, opposite to intense focus.  
+- **Profit Patterns** — A conceptual toolkit or encyclopedia that explains recurrent patterns of business change and profitability.  
+- **Radar screen (metaphor)** — Symbolizes broad situational awareness and scanning for external threats or opportunities.  
+- **Two organizations** — The need for maintaining both a focus-oriented group managing current operations and a separate group innovating new business designs to ensure long-term success.  
+- **Value Migration** — The process by which the sources of value in an industry shift from one business design to another, typically requiring businesses to adapt or reinvent themselves every few years.  
+- **Vision trade-off** — The inverse relationship where increased focus (microscope) reduces peripheral vision (radar screen), and vice versa.

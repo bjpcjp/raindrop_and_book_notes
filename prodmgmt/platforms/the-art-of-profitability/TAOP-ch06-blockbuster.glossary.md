@@ -1,0 +1,21 @@
+- **Antiprofit R&D** — Research and development projects that have no clear or wrong target, or trivial value, resulting in returns far less than the investment.  
+- **Blockbuster Profit** — A profit model focused on creating a few extremely profitable “blockbuster” products through prioritizing and managing R&D efforts effectively.  
+- **Compensation Plan** — The system used to pay salespeople, which in Marc's case shifted from 15% variable to 50% variable to incentivize top performers.  
+- **Delmore** — The parent company of DelCom, involved in telecommunications.  
+- **DelCom** — A division of Delmore specializing in telecom equipment and services.  
+- **Field Force Morale** — A profit model focusing on improving the motivation and effectiveness of the salesforce through reorganization and incentive changes.  
+- **Front-end Loading** — The technique of immersing oneself in maximum reading and knowledge gathering at the beginning of a project to build a strong knowledge foundation.  
+- **James Webb Young** — Author of *A Technique for Producing Ideas*, notable for advocating front-end loading.  
+- **Manufacturing Process** — A series of steps producing goods, in this context comprising 27 steps that needed quality improvements upstream to save costs downstream.  
+- **Marc Geron** — A manager who developed and perfected the Blockbuster Profit model through manufacturing, salesforce, and R&D transformations.  
+- **Market Research Reports** — Documents used to assess the commercial potential and customer needs relevant to R&D projects.  
+- **Product Development** — The process of developing new products, which Marc found was poorly managed initially at Agri-Chem.  
+- **Project Molecule** — The individual R&D project viewed as a unit for attention and resource allocation.  
+- **Research and Development (R&D)** — The organizational function responsible for innovation and new product creation, subject to management and prioritization.  
+- **Risk Management** — Strategies to anticipate and mitigate uncertainties in R&D, including role-plays and external expert consultations.  
+- **Role-drawer** — A person who asserts authority through symbolic changes to meetings, procedures, and expectations.  
+- **Self-confidence (Organizational)** — The collective belief in the ability to achieve high goals, crucial to implementing the Blockbuster model.  
+- **Switchboard Idea** — Steve’s concept to provide integrated telecom solutions directly to customers, competing with traditional dealers.  
+- **Variable Compensation** — Portion of pay dependent on sales performance, used to incentivize sales personnel.  
+- **We Can / We Probably Will** — The shift in organizational mindset from doubt to confidence in achieving blockbuster successes.  
+- **Yielding to History** — The tendency of business people to rely on past experience and established ways, affecting acceptance of new ideas.

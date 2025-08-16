@@ -1,0 +1,31 @@
+- **Athletic shoes** — An industry example where radical control shifts occurred from integrated systems to specialists controlling the value chain.  
+- **Bottleneck** — A restrictive point in the value chain where control and profit can be captured by recognizing and exploiting scarcity or limitation.  
+- **Bridge** — A geographic or metaphorical control point in value chains signifying critical access or connection.  
+- **Channel** — A narrow passage or control point in geography or business (e.g., Gibraltar, Suez) that offers strategic advantage in controlling flow and profit.  
+- **Control point** — A critical position in the value chain or landscape offering disproportionate profit, power, and control.  
+- **Creation of scarcity** — A circumstance enabling control point formation by limiting availability to increase value and power.  
+- **Customer connection** — The relationship or proximity to customers which, when superior to others in the value chain, creates a control advantage.  
+- **Integrated system** — A traditionally unified business structure controlling multiple steps in a value chain before shifts to specialist control.  
+- **Isthmus** — A narrow strip of land acting as a critical geographic or metaphorical control point in business value chains.  
+- **Lumpy distribution** — The uneven allocation of power and profit in a value chain, concentrated heavily in certain positions or companies.  
+- **Marketing and design** — Key functions within value chains where power can be concentrated, as exemplified by companies like Nike.  
+- **Mountain pass** — A geographic control point offering strategic advantage, analogous to business control points.  
+- **Natural disasters** — Events that can shift the location and value of control points within a business value chain.  
+- **New control points** — Emerging strategic positions in the value chain that have potential to create future profit and power.  
+- **PC box business** — The manufacturing segment of the personal computer industry characterized by low profitability.  
+- **Predictability** — The ability of the control point owner to set the pace and define the business future, leading to profit.  
+- **Pre-existing control points** — Control points believed to exist inherently before business or environmental changes, subject to debate.  
+- **Profit** — The financial gain made possible by ownership or control of key positions in the value chain.  
+- **Radical shifts in control points** — Significant changes in which parts of a value chain hold dominant power, often from integrated to specialized control.  
+- **Relative value added** — The comparative value each part of the value chain contributes, affecting control point positions.  
+- **Retailing** — An industry example illustrating control point power, where retailers like Wal-Mart hold more power than their suppliers.  
+- **Road** — A metaphorical or literal connection facilitating control and access within business landscapes.  
+- **Specialists** — Companies or entities focusing on specific parts of the value chain, often emerging as new control points.  
+- **Supply chain power** — The dominance or influence certain firms possess in their value chain segment.  
+- **Tom Clancy/Stephen King** — Examples of value creation and control point ownership in publishing, with authors holding more power than publishers.  
+- **Trajectory of relative value added** — The evolving trend of which activities in the value chain increase or decrease in importance and profit.  
+- **Valley** — Lower ground or less valuable areas within the metaphorical business landscape.  
+- **Value chain** — The sequence of activities and participants that create and deliver a product or service.  
+- **Value chain position profit** — The disproportionate profit and power derived from holding key positions in the value chain.  
+- **Wal-Mart** — A retail example where the company holds significant power over suppliers due to its control point status.  
+- **Zhao’s landscape drawing** — A visual metaphor describing the business value chain as a geographical terrain with strategic points.

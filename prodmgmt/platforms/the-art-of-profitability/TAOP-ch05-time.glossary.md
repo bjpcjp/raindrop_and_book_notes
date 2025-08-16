@@ -1,0 +1,24 @@
+- **Creative process** — The initial phase of innovation beginning with a brilliant idea.
+- **Customer Solutions model** — A business approach focusing on customized solutions tailored to each customer's specific needs.
+- **Diffusion** — The process of spreading new products or innovations rapidly to customers.
+- **Drudgery** — The tedious, detailed work required to turn an idea into a practical and manufacturable product.
+- **Financial instrument innovation** — New and creative financial products developed to gain a competitive edge.
+- **Innumeracy** — Difficulty with understanding and using numbers effectively to solve real-world problems.
+- **Instant diffusion** — A system designed to accelerate the spread of new products to maximize early profits before competitors react.
+- **Investment banking** — A sector of banking that focuses on helping companies raise capital, innovate financial products, and manage investments.
+- **Jungle rules** — The competitive environment in which financial service innovations cannot be patented or copyrighted and are open to imitation.
+- **Mount Fuji puzzle** — A numerical exercise estimating the time required to move Mount Fuji's volume using dump trucks to illustrate measurement and estimation skills.
+- **New product launch** — The introduction of a new product to the market, often involving preparation, training, and marketing efforts.
+- **Patents** — Legal protections granted to inventors to exclude others from making, using, or selling their inventions.
+- **Profit margin** — The difference between the cost of producing a product and the price it is sold for, reflecting profitability.
+- **Prototype testing** — The phase after idea generation involving the practical development and evaluation of a product.
+- **Retail business model** — A business approach focused on selling products directly to consumers, often with standardized offerings.
+- **Semiconductor industry** — The sector producing semiconductor devices, known for fast innovation but limited adoption of varied business models.
+- **Service supplier** — An individual or company providing specialized services like acting, writing, or software development.
+- **Switchboard pattern** — A business model connecting multiple service suppliers with clients needing customized combinations of services or products.
+- **Telecommunications equipment** — Hardware and software used to enable communication over distances.
+- **Time Profit model** — A business strategy emphasizing rapid product innovation, diffusion, and operational efficiency to maximize profits.
+- **Tedium** — The monotony and repetition involved in refining and scaling innovations into market-ready products.
+- **Top-flight experts** — Highly skilled professionals who customize and integrate products or services according to customer needs.
+- **Waterstone Brothers** — A small but innovative investment banking firm known for financial instrument innovations and rapid product diffusion.
+- **Waterstone’s instant diffusion system** — A systematic approach to rapidly educate sales teams and alert clients to new financial products, accelerating adoption and profits.

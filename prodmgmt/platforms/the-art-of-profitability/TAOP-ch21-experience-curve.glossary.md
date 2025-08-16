@@ -1,0 +1,15 @@
+- **Experience curve** — A concept describing how costs decline as cumulative manufacturing experience doubles, typically at a predictable rate.  
+- **Experience curve profit** — Profit derived from reducing costs through learning and efficiencies gained with increased production experience.  
+- **Flat market** — A market condition where revenue remains steady without significant growth or decline.  
+- **Overhead costs** — Indirect costs of running a plant or business, such as administration and management expenses, not directly tied to production volume.  
+- **Portfolio of projects** — A structured set of initiatives spanning short-term, medium-term, and long-term opportunities aimed at cost reduction or improvement.  
+- **Pricing advantage** — The ability of a larger or more dominant firm to set prices favorably compared to smaller competitors.  
+- **Profit paradox** — The phenomenon where profitable concepts or models are underutilized or overlooked despite their effectiveness.  
+- **Product pyramid** — A strategic product structure with different product lines positioned by price and margin, typically from basic to premium offerings.  
+- **Purchasing advantage** — Cost benefits gained by larger firms through bulk buying or negotiating power with suppliers.  
+- **Relative market share profit** — Profit advantage gained by being larger than competitors, leveraging scale-based benefits across costs and marketing.  
+- **Scale** — The size or volume of a company’s operations, influencing cost advantages independent of learning effects.  
+- **Security standards consortium** — A collaborative industry effort to establish uniform security protocols, potentially setting de facto standards.  
+- **Time-structuring projects** — Organizing initiatives by their implementation horizon to maintain continuous improvement and focus.  
+- **Value migration** — The shift of market value from outdated business models to new, innovative models, requiring business design adaptation.  
+- **W. Edwards Deming** — A management thinker known for advocating “constancy of purpose” and continuous improvement practices.

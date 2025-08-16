@@ -1,0 +1,22 @@
+- **After-sale** — The period following the initial product purchase, focusing on consumables and ongoing customer relationship.  
+- **Buyer power** — Influence held by the purchaser during the initial sale, having many choices.  
+- **Consumables** — Products or supplies that are used up and need to be regularly replaced, often with higher profit margins than hardware.  
+- **Customer price sensitivity** — The degree to which customers react to price changes; higher sensitivity on initial hardware purchase, lower on consumables.  
+- **Demand volatility** — The fluctuation in demand; new hardware has high volatility, while consumable demand is more stable.  
+- **Hardware (HW)** — The primary equipment or physical product sold initially, usually with thin profit margins.  
+- **Installed Base** — The existing customers or units already using a product, representing ongoing revenue through consumables and upgrades.  
+- **Installed Base Profit** — Ongoing profit derived from consumables and services sold to the installed base after the initial hardware sale.  
+- **New demand** — Purchases of hardware or primary products by new customers.  
+- **Passive receipt** — Relying on the existing installed base to continue buying without active marketing or stimulation.  
+- **Personal copiers** — Example of products where profit heavily relies on consumables rather than hardware.  
+- **Polaroids** — Example illustrating hardware with low margins and consumables with high margins.  
+- **Price sensitivity (initial purchase)** — The buyer’s high attentiveness to price when purchasing hardware.  
+- **Price sensitivity (consumables)** — Lower buyer sensitivity to prices of consumable products compared to hardware.  
+- **Profit margin** — The percentage of profit earned from sales; low for hardware and higher for consumables.  
+- **Pyramid** — Metaphor for organizing product lines logically to maximize profit in installed base businesses.  
+- **Seller power** — Influence held by the seller post-sale due to customer lock-in on consumables.  
+- **Stimulating usage and growth** — Active efforts such as reminders and multiple-unit sales to increase consumption within the installed base.  
+- **Switching brands** — Customer behavior triggered by dissatisfaction, often due to high prices or poor service, leading to loss of installed base profit.  
+- **Two buckets** — Concept dividing products into hardware (equipment) and consumables (supplies) for strategic profitability analysis.  
+- **Usage reminders** — Communications that encourage customers to replenish consumables, helping to maintain installed base profits.  
+- **Willingness to pay** — The customer's readiness to spend on products or upgrades, guiding profitable decisions.

@@ -1,0 +1,25 @@
+- **Arbitrage** — The strategy of leading price increases by a few quarters and lagging price decreases to generate substantial profits, independent of manufacturing efficiency.  
+- **Breakeven point** — The level of utilization at which a company neither makes nor loses money.  
+- **Building supplies** — One of Delmore’s cyclical businesses, involving products ranging from high-end to low-end, including firewall and no-name store-brand products.  
+- **Capacity** — The maximum output level a business can produce, relevant for pricing and utilization discussions.  
+- **Chemical industry** — A cyclical sector mentioned as part of Delmore’s portfolio, sensitive to market swings.  
+- **Cycle Profit** — Profit derived from effectively managing business cycles by lowering costs and optimizing pricing strategies to remain profitable even during downturns.  
+- **Customer activity** — Data used alongside capacity to guide pricing decisions in cyclical industries.  
+- **Downturn** — A period in the business cycle characterized by decreased volume and often losses.  
+- **Fixed costs** — Business expenses that remain constant regardless of utilization levels; reducing these costs lowers breakeven points.  
+- **Key talents** — A small group of critical individuals (e.g., pricers, project managers, inventors) whose skills heavily influence profitability in large organizations.  
+- **Lag the price down** — Delaying price reductions after market downturns to maintain profitability.  
+- **Lead the price up** — Increasing prices ahead of market upswings to capitalize on demand.  
+- **Market price** — The prevailing price in the market, usually fluctuating with supply and demand cycles.  
+- **Mental picture** — The common but incorrect image that cyclical industries’ volume alone defines their profit cycles.  
+- **No-name product** — Low-price, often store-brand products that can threaten market share if neglected.  
+- **Profit** — The financial gain remaining after costs; varies in cyclical industries depending on utilization and pricing.  
+- **Project managers** — Talented individuals managing complex projects critical to sustained organizational profit.  
+- **Pricing** — A vital, often difficult strategic discipline to manage profit in cyclical industries through informed, confident decisions.  
+- **Prickers** — (Likely typo: Pricers) Specialists who analyze and set optimal prices to maximize profits, especially critical in cyclical markets.  
+- **Scott** — A legendary pricer at Universal Chemicals, known for his data-driven and fearless pricing strategies that generated hundreds of millions in profit.  
+- **Store-brand** — Products manufactured for large retail chains, often competing on price and quality with branded goods.  
+- **Toyota** — An example of a "Cycle Profit" company that maintains profitability by lowering breakeven points through cost reduction.  
+- **Upswing** — The upward phase of a business cycle characterized by increased utilization and potential for high profits.  
+- **Utilization** — The degree to which capacity is used in production; affects costs and profitability in cyclical businesses.  
+- **Volume** — The quantity of products produced or sold; traditionally associated with cycles but insufficient alone to explain profitability.

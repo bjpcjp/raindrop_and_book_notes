@@ -1,0 +1,26 @@
+- **Asimov** — Reference to Isaac Asimov, an author noted for combining storytelling with numerical analysis in his works.
+- **Business Week** — A business magazine suggested for practicing numerical estimation and critical thinking.
+- **Coach (travel class)** — The cheapest class of airplane seating that Jack Sanders uses to save money.
+- **Communication on the cheap** — Efficient, low-cost communication strategies such as meetings in inexpensive venues focused on core business goals.
+- **Contests (performance)** — Competitions held among employees to push boundaries of excellence and innovation.
+- **Enterprise/model: Entrepreneurial Profit** — A profit model emphasizing frugality, experimentation, speed, clear communication, and alignment around profit-seeking behavior.
+- **Experimentation** — Trying new approaches, quickly cutting losses when they fail and scaling up when successful.
+- **Frugality** — A strong commitment to saving money and avoiding unnecessary expenses, practiced zealously by Jack Sanders.
+- **Fundamental arithmetic** — Using rough, quick calculations to estimate and understand business or practical problems without needing precise tools.
+- **Innumeracy** — The lack of comfort or skill with numbers; a concept to be overcome by practicing rapid, rough calculations.
+- **Legacy success** — Past profitable businesses or products that generate cash flow to support less entrepreneurial activities.
+- **Moated castle** — A metaphor for a large, established company with strong defenses but potential foundation weaknesses.
+- **Party (celebration)** — Social events held to recognize and reward star performers within a company.
+- **Planning (hyperorganized)** — Detailed and advanced preparation that benefits both a company and its suppliers.
+- **Profit model** — A conceptual framework describing how a business generates profit, often illustrated by stories or examples.
+- **Refinement (calculation)** — Improving initial rough estimates through more detailed analysis to increase accuracy.
+- **Savings psychology** — The mindset and cultural commitment to saving money as passionately as a religious faith.
+- **Sam Walton** — Founder of Walmart, used as a study model for entrepreneurial profit practices.
+- **Simplification (calculation)** — The process of making rough, fast estimates by rounding and shortcut methods.
+- **Speed** — Moving quickly to implement decisions, learn from failures, and capitalize on successes.
+- **Strategic planning department** — A formal group within larger companies often representing bureaucratic, less entrepreneurial behavior.
+- **Supplier relations** — Managing suppliers with toughness balanced by fairness and mutual benefit to drive innovation and savings.
+- **Tenth Planet** — A hypothetical distant planet discussed in the context of using numbers to understand relationships in astronomy.
+- **Truckloads (volume estimation)** — A method for understanding large volumes by analogy to the number of truckloads required.
+- **Walton, Sam** — See Sam Walton.
+- **Winning (culture)** — Creating a company culture focused on success, engagement, and fun as motivators for performance.

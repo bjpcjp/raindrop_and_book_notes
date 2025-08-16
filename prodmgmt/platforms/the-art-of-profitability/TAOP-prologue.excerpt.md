@@ -1,0 +1,1 @@
+Steve Gardner meets David Zhao, a seasoned consultant with unique insights into profitability, who offers to teach him about making profits through weekly Saturday lessons, emphasizing persistence and honesty. Despite the high fee, Zhao grants Steve deferred payment, signaling a commitment that goes beyond a simple business arrangement.

@@ -1,0 +1,28 @@
+- **Asimov on Astronomy** — A reading assignment referencing chapter eight, used as follow-up study related to exploring profit models.  
+- **Blockbuster model** — A referenced profit model previously discussed, noted for exciting potential but requiring refinement.  
+- **Building supplies company** — Refers to Del-more Supply, a cyclical business dealing in insulation, air filters, and similar products, used as a case study for profit model challenges.  
+- **Character** — An asset such as a Disney character used repeatedly in different forms to multiply profit.  
+- **Commodity industry** — An industry where products are largely undifferentiated and competition is mostly on price.  
+- **Devereau Industries (Del-more Supply)** — The acquired building supplies company facing profit model challenges due to a market slowdown.  
+- **Disney** — Example of a company using the Profit-Multiplier model by spinning off multiple products from a single original asset like The Lion King.  
+- **Einstein’s Dreams** — A book about different kinds of time, used metaphorically to encourage open-mindedness about profit models.  
+- **Henson Productions** — The creators of the Muppets, cited as an example of effective Profit-Multiplier use through characters and stories.  
+- **Lawnmowers** — One of Honda’s diverse products demonstrating the Profit-Multiplier model based on core skills or assets.  
+- **Muppets** — Example of multiple characters serving as assets to create varied revenue streams in a Profit-Multiplier model.  
+- **Multi-Component Profit** — A related but distinct profit model involving selling variations of the same basic product in different packages.  
+- **Odds of success** — The probability that an R&D or development project will produce valuable outputs; an important factor in Profit-Multiplier strategies.  
+- **Outboard motors** — Another diverse product made by Honda illustrating asset reuse to multiply profit.  
+- **Political fallout** — Negative reactions within an organization after proposing new ideas.  
+- **Profit-Multiplier model** — A profit strategy that involves reusing and iterating a core asset (skill, character, story, information) in multiple forms to greatly increase profit and improve development efficiency.  
+- **Profit model** — The overarching method or formula a company uses to generate profit; can become stagnant or require innovation.  
+- **R&D (Research and Development)** — The process of developing new products or ideas, where costs and odds of success are key considerations in profit modeling.  
+- **Skill** — A core competency or capability that can be leveraged repeatedly to generate multiple revenue streams.  
+- **Staff meeting** — An internal organizational forum where ideas and concepts are discussed and evaluated.  
+- **Strategic planning** — Corporate function concerned with planning business approaches, often involving assessing profit models.  
+- **Switchboard concept** — A particular idea or proposal mentioned as favored by a VP despite initial resistance to related proposals.  
+- **Telecom proposal** — A previously shot-down idea related to telecommunications, highlighting the challenges in introducing new profit models.  
+- **Theme park attraction** — A product form derived from an original asset, such as Disney’s characters, to expand profit opportunities.  
+- **Time (various kinds)** — Concepts discussed in Einstein’s Dreams, symbolizing alternative ways to view opportunities such as profit generation.  
+- **Video game, DVD, lunch box** — Examples of different merchandise and product forms derived from one intellectual property in a Profit-Multiplier model.  
+- **Toyota’s diversified products** — By analogy, companies like Honda diversify products based on core skills or assets to multiply profit (implied context).  
+- **VP of strategic planning** — Executive responsible for overseeing strategic initiatives, including reviewing and directing profit model ideas.

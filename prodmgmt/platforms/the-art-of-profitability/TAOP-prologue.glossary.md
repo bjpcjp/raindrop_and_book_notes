@@ -1,0 +1,20 @@
+- **Antitrust law** — Legal regulations aimed at promoting competition and preventing monopolies in business.
+- **Business analysis** — The process of evaluating a company's operations, market position, and financial status.
+- **Consult** — To offer expert advice professionally.
+- **Conglomerate** — A large corporation that owns several different companies in various industries.
+- **Executive committee** — A group of senior managers who make major decisions for a company.
+- **Investing** — The act of allocating money in the expectation of generating a profit.
+- **Law degree** — An academic qualification in legal studies.
+- **Mergers and acquisitions** — Business activities involving the combining or purchasing of companies.
+- **Nest egg** — A sum of money saved or invested for the future.
+- **Profit** — The financial gain realized when revenue exceeds expenses.
+- **Profitability** — The ability of a business to generate profit over time.
+- **Residency** — A period of practical training for medical graduates.
+- **Risk-averse** — A preference for avoiding risk.
+- **Senior partner** — A high-ranking member of a professional firm, often with ownership stake.
+- **Spin-off** — The creation of a new independent company through the sale or distribution of new shares.
+- **Strategic planning** — The process of defining a company's direction and making decisions on allocating resources.
+- **Stock price** — The market value of a company's shares.
+- **Strategic planning department** — A unit within a company focused on developing long-term business strategies.
+- **Tens of millions** — An expression indicating amounts ranging from ten million to just under one hundred million.
+- **Wall Street analysts** — Financial professionals who evaluate companies and provide investment recommendations.

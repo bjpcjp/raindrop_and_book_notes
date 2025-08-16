@@ -1,0 +1,35 @@
+1. **Q:** What is the fundamental reason Relative Market Share (RMS) profit worked historically, and how did it create a self-reinforcing competitive advantage for market leaders?  
+   **A:** RMS profit worked primarily due to economies of scale in manufacturing, purchasing advantages, and lower per-unit costs in manufacturing, overhead, R&D, marketing, and advertising. The biggest player attracted the best R&D and managerial talent, creating an upward spiral of success and competitive dominance. Additionally, leaders had the largest cash flows to outspend rivals and experienced the lowest profit volatility and risk.  
+   **External example:** Apple’s dominance in smartphones allows it to leverage scale, attract top talent, and maintain strong cash flows that sustain its market leadership. https://hbr.org/2018/09/why-apple-is-still-winning-in-smartphones
+
+2. **Q:** According to the text, why did the Relative Market Share (RMS) concept become the classical foundation of strategy during the 1960s-1980s, and who were its main historical proponents?  
+   **A:** RMS became foundational because it explained, predicted, and prescribed actionable strategies: invest to win, build a bigger lead, or cut losses if unsuccessful. It was discovered in the 1960s and fully formulated in the early 1970s, reaching its zenith with Jack Welch in the 1980s. Bruce Henderson was the key innovator (the “Isaac Newton of strategy”), while Michael Porter completed its intellectual framework and provided practical methods.  
+   **External example:** Jack Welch’s focus on market-leading business units at GE exemplified the use of RMS for strategic direction and performance improvement. https://www.investopedia.com/terms/j/jackwelch.asp
+
+3. **Q:** How did the document describe the limitations and evolution of RMS strategy applicability in modern business environments?  
+   **A:** The document states that RMS still matters but its application depends on where and how it is used. In some industries, traditional market share leaders are eclipsed by value chain leaders or owners of de facto standards. The classical RMS formula is no longer sufficient because profit depends on multiple factors like time, location, offering, and localized RMS. There is currently no unifying formula, reflecting a transition period in strategic theory.  
+   **External example:** Amazon’s leadership in ecommerce is based more on value chain control and customer experience than pure market share. https://hbr.org/2020/11/amazons-strategy-behind-its-ecommerce-success
+
+4. **Q:** What role did profit volatility and risk play in the RMS framework, as exemplified by the 1970s automotive industry?  
+   **A:** Profit volatility and risk were critical in RMS analysis: GM, the market leader, enjoyed the lowest profit volatility, Ford moderate, and Chrysler very high volatility and losses in bad years. The market leader thus had the lowest risk, greater ability to control the market, initiate moves, and sustain investment, while others were more reactive and vulnerable.  
+   **External example:** Toyota’s consistent profitability and low volatility during industry downturns illustrate how leadership positions reduce risk. https://www.sciencedirect.com/science/article/abs/pii/S2212827120304489
+
+5. **Q:** How did RMS strategy extend beyond manufacturing and purchasing to impact talent attraction and innovation, according to the document?  
+   **A:** RMS leaders attracted the best technical and managerial talent because they offered superior resources, labs, budgets, and market presence. This created a self-reinforcing cycle where market leadership drove innovation and managerial quality, leading to increased success and profits.  
+   **External example:** Google attracts top engineers and executives by virtue of its market dominance and investment in innovation. https://www.forbes.com/sites/forbescoachescouncil/2020/07/16/how-leaders-attract-the-best-talent-in-the-industry
+
+6. **Q:** What analogy does the document use to describe the modern challenge of understanding profitability beyond RMS, and what mindset does it recommend managers adopt?  
+   **A:** Profitability is likened to “financial energy,” requiring multi-disciplinary thinking similar to cardiologists, neurologists, or physicists. Managers should approach profitability as a puzzle, involving detective work and inquisitive inquiry by repeatedly asking "How does the high profit happen?" until deep insights emerge.  
+   **External example:** The lean startup approach uses iterative questioning and experimentation to understand profitability drivers beyond simple metrics. https://hbr.org/2013/05/why-the-lean-start-up-changes-everything
+
+7. **Q:** Why does the document mention Boeing’s comment on Delmore Aeronautics’ ambitious aircraft security program, and what strategic lesson does it illustrate?  
+   **A:** Boeing’s comment signaled the potential dominance of Delmore if it could deliver the integrated security system as a partner, illustrating the shift from reactive piece-part suppliers to system partners designing entire assemblies. This embodies the RMS principle of creating a unique, comprehensive offering that builds competitive advantage through scale, integration, and customer collaboration.  
+   **External example:** Boeing’s collaboration with suppliers like Spirit AeroSystems to integrate entire fuselage sections demonstrates the strategic shift to system-level partnerships. https://www.boeing.com/commercial/aerospace-suppliers/spirit-aero-systems.page
+
+8. **Q:** How does the document connect Johnson Controls’ strategic evolution to Delmore's efforts in the aeronautics business?  
+   **A:** Johnson Controls moved from making one-off parts to entire assemblies like cockpit interiors, representing a shift toward system integration and partnership rather than commodity parts. Delmore aims to replicate this model in aircraft security systems, leveraging RMS benefits by becoming a system partner and building a sustainable competitive position.  
+   **External example:** Johnson Controls’ growth strategy through integrated automotive interiors exemplifies such strategic evolution. https://www.johnsoncontrols.com/about-us/our-history
+
+9. **Q:** What does the document imply about the future and unification of profit models, particularly contrasting classic RMS with upcoming models like the Experience Curve?  
+   **A:** The document implies that no single unified profit model exists yet; the classic RMS model is still valid but incomplete in many contexts. Managers must master numerous models to handle increasing complexity. Experience Curve profit models, once central to strategy, remain powerful in the right contexts and are part of the remaining models to be learned for comprehensive strategic insight.  
+   **External example:** The experience curve’s role in semiconductor and aerospace industries shows its continued relevance in cost and competitive advantage management. https://hbr.org/1982/11/how-to-use-the-experience-curve-in-your-business-plan

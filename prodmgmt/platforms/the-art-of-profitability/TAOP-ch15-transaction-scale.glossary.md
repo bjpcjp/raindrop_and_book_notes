@@ -1,0 +1,22 @@
+- **Big accounts** — Large, high-value clients or transactions that generate significant profit and require focused effort to secure.  
+- **Big transactions** — Large-scale deals or projects that yield higher profit margins due to economies of scale.  
+- **Bridges** — Metaphorical connections or strategies to link current efforts to larger opportunities.  
+- **Concentrate** — To focus attention and resources on priority tasks or clients to maximize success.  
+- **Fear of success** — Psychological barrier causing hesitation or avoidance of opportunities that could lead to significant achievement or profit.  
+- **Investment banking** — A financial sector focused on large transactions such as mergers, acquisitions, and capital raising, exemplifying transaction scale profit.  
+- **Line in the sand** — A metaphor illustrating mental boundaries or limits that control behavior and decision-making.  
+- **Lure** — A captivating opportunity or distraction that can divert attention from long-term goals, similar to a fishhook’s bait.  
+- **Open door syndrome** — The phenomenon of failing to pursue or act on opportunities despite having gained access to them.  
+- **Persistent** — The quality of continuing effort and perseverance necessary to achieve big transactions.  
+- **Profit per unit** — The monetary gain obtained from each unit of a transaction or service, which can increase with transaction scale.  
+- **Real estate** — A business domain illustrating transaction scale profit through focusing on high-value property sales.  
+- **Reference development** — The process of building and cultivating professional endorsements and networks to access bigger opportunities.  
+- **Risk** — Taking chances to prioritize large, profitable transactions over smaller, less profitable ones.  
+- **Salesman mentality** — The tendency to accept all available business regardless of profitability, limiting focus on larger deals.  
+- **Small business** — Lesser-value deals often requiring disproportionate effort and yielding lower profit margins compared to big transactions.  
+- **Skill** — Competence and expertise necessary to secure and manage large, profitable deals.  
+- **Temporary economic insanity** — A state of losing strategic long-term thinking in favor of immediate distractions or opportunities.  
+- **Transaction scale profit** — The concept that larger transactions yield disproportionately higher profits due to slower cost increases relative to revenue.  
+- **Transportation-type business** — Industries involving movement of goods or people that benefit from transaction scale profit.  
+- **Underdo it** — To approach clients or opportunities with restraint to achieve better long-term results rather than aggressive short-term sales.  
+- **Zero-sum game** — (Implied) A competitive environment where gain for one comes at the loss of another, relevant in chasing big accounts.

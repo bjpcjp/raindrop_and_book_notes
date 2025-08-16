@@ -1,0 +1,27 @@
+- **Blockbuster profit** — Profit model characterized by extremely high development costs or highly influenceable demand requiring major hits with intensive marketing campaigns, typical in pharmaceuticals, movies, books, and pop music.  
+- **Commodity products** — Products with low uniqueness and low profit margins, often facing intense cost and cycle management pressures.  
+- **Cost and cycle management** — A profit model focusing on rigorous control of costs and operational cycles, crucial when margins are thin and competition is based on efficiency.  
+- **Development costs** — The expenses involved in creating new products, especially high in blockbuster industries requiring large hits to recoup investments.  
+- **Joint development agreements** — Collaborative projects between companies to share risk and resources on high-potential but uncertain projects.  
+- **Licensing** — The practice of acquiring or granting rights to use technology or products to better align value and capabilities.  
+- **NetCom** — The company contextually mentioned as a business experiencing internal challenges and industry shifts.  
+- **Patent expirations** — The ending of legal exclusivity for specialty products, leading to increased competition and falling specialty product ratios.  
+- **Portfolio review** — A systematic process of regularly evaluating R&D projects based on value, risk, and timing to prioritize investments.  
+- **Portfolio structure** — The composition and balance of projects within a company's R&D pipeline, important for managing risk and return profiles.  
+- **Project-swapping** — Exchanging projects between companies to align value creation with the best capabilities and strategic fit.  
+- **Specialty product business** — A business model centered on unique, patented, high-margin niche products that rely on continual new discoveries for profitability.  
+- **Specialty product profit** — Profit derived from a portfolio of unique, patented specialty products with large gross margins, typically in fine chemicals, dyestuffs, specialty papers, and foods.  
+- **Specialty product ratio** — The proportion of a company's revenue generated from specialty products relative to commodity products, indicating the health of the specialty product model.  
+- **Technology depletion** — The gradual decline of new discoveries and innovations within a technology domain, leading to reduced specialty product profitability.  
+- **Technology domain** — The specific area of technology in which a company operates, influencing its potential for specialty product development.  
+- **Top ten projects** — The highest-value R&D projects receiving prioritized resources and management attention to maximize returns.  
+- **Typical specialty product fields** — Examples include fine chemicals, dyestuffs, specialty papers, and specialty foods, usually involving niche markets with unique product variations.  
+- **Value assessment** — The process of determining a project's potential financial and strategic worth during portfolio reviews.  
+- **R&D portfolio** — The collection of all research and development projects being managed and evaluated within a company.  
+- **Risk coverage** — Strategies implemented in portfolio management to balance high-value projects with their associated uncertainties.  
+- **Samuel B. Griffith translation (The Art of War)** — Recommended reading emphasizing strategic thinking and insight applicable to business and portfolio management.  
+- **Marc Geron** — An archetype of an aggressive, all-out leader needed for managing blockbuster businesses.  
+- **Ann Linen** — Head of R&D at the specialty chemicals company who led the turnaround of a troubled portfolio through disciplined review and resource reallocation.  
+- **Product pipeline management** — The strategic tracking and shaping of product development projects to sustain or grow specialty product ratios.  
+- **Single-digit margins** — Low gross profit margins typical in commodity product businesses requiring strict cost management.  
+- **Swapping projects** — Reallocating projects to entities best suited to capitalize on their value, enhancing overall portfolio quality.

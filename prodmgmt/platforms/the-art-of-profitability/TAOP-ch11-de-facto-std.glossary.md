@@ -1,0 +1,11 @@
+- **De Facto Standard Profit** — Profit model based on creating a widely adopted standard that shapes industry direction, enabling planning advantages and marketing efficiencies.
+- **Installed Base Profit** — Profit model where customers are locked into proprietary systems, paying premium prices over time due to system incompatibility.
+- **Marketing Expenses** — Costs incurred to promote and sell products, which can be reduced when customers do marketing through standard adoption.
+- **Minicomputer Industry** — Industry exemplifying Installed Base Profit, characterized by proprietary systems causing high customer costs in time, energy, and irritation.
+- **NetCom** — A fast-growing telecom company that launched a telecom Switchboard with major players signed up as suppliers.
+- **Plannability** — Advantage held by owners of de facto standards to plan industry evolution, reducing surprises and reactive costs.
+- **Proprietary Systems** — Systems owned and controlled by a single company, often incompatible with others, leading to customer lock-in.
+- **Standard** — A widely accepted industry norm or technology used by many companies, which can create significant market influence.
+- **Switchboard** — A telecom service platform that major players agreed to supply, launched by NetCom.
+- **Windows (Microsoft)** — Example of a de facto standard in operating systems, generating revenue from upgrades and applications.
+- **Zeal (Drive)** — Intense motivation and impatience described as normal for success but cautioned against letting setbacks be taken too personally.

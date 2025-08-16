@@ -1,0 +1,29 @@
+- **Assimilation** — The fourth level of learning where new knowledge and skills become integrated and automatic in practice.  
+- **Awareness** — The first level of learning involving recognition and understanding of new concepts.  
+- **Awkwardness** — The second learning stage characterized by initial difficulty in applying new knowledge or skills.  
+- **Category-focused retailers** — Retailers specializing in a specific product category to gain deeper customer and market knowledge.  
+- **Cost advantage** — The benefit specialists gain from superior understanding of customer systems, leading to lower delivery costs.  
+- **Generalist** — A business or individual with broad, less specialized knowledge, typically resulting in lower profitability.  
+- **Menu pricing** — A pricing strategy where services or products are priced à la carte based on detailed knowledge of delivery costs.  
+- **Profitability differential** — The margin difference (typically 10 to 15 percentage points) between specialists and generalists.  
+- **Replication** — The ability to sell a developed solution multiple times with high margins due to low operating costs.  
+- **Reputation** — Recognition within a market segment as the expert or specialist, enabling premium pricing and customer trust.  
+- **Sequential specialization** — Learning and mastering one discipline or market segment deeply before moving to the next, creating mastery in series.  
+- **Selling cycle** — The time it takes to sell a product or service, which is shorter for specialists due to better knowledge and reputation.  
+- **Specialist** — A business or individual focused on deep knowledge of one market segment or discipline, achieving higher margins and profitability.  
+- **Specialization profit** — The increased margins and business advantages enjoyed by organizations deeply knowledgeable in a specific area.  
+- **Structured pricing algorithms** — Mathematical or systematic methods that specialists use to price services accurately and flexibly.  
+- **Wired effect** — The advantage specialists have due to their strong network connections within an industry or customer base.  
+- **Windfall profits** — Unexpected or extraordinary profits arising from replicable, high-margin solutions sold multiple times.  
+- **EDS** — Example of a specialist company applying sequential specialization in systems integration with high profit margins.  
+- **Hilbert’s strategy** — A learning method of sequential specialization named after mathematician David Hilbert involving mastering one area before moving to the next.  
+- **Industry segments** — Specific markets or sectors such as health care, banking, manufacturing, or telecommunications that specialists focus on.  
+- **Menu of services** — The varied offerings a specialist builds and prices precisely to match customer needs and costs.  
+- **Price premium** — The additional amount customers are willing to pay to specialists due to their superior expertise and reputation.  
+- **Quality advantage** — Higher service or product quality resulting from specialist expertise, which supports pricing and utilization benefits.  
+- **Shorter selling cycle** — Reduced time to close sales that specialists enjoy, improving business utilization and profitability.  
+- **Solutions** — Developed, often innovative answers to customer problems that specialists replicate for profit.  
+- **Specialized construction companies** — Firms focusing on specific construction areas to leverage deep knowledge and gain market advantages.  
+- **Storm and Fellows** — Example of great antitrust lawyers illustrating specialization profit in professional services.  
+- **Wallace** — A business forms company specializing in telecommunications, achieving exceptional profitability through focus.  
+- **Zhao’s four levels of learning** — Awareness, Awkwardness, Application, and Assimilation, stages describing learning progression.

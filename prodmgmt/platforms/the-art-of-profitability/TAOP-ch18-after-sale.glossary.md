@@ -1,0 +1,22 @@
+- **After-Sale Profit model** — Business approach focusing on profitable follow-up sales after a high-ticket initial purchase, typically involving services, parts, or accessories with lower price sensitivity and higher margins.  
+- **Buyer price sensitivity** — The degree to which a buyer's purchase decision is affected by changes in price; varies based on ticket price, market variability, and purchase frequency.  
+- **Customer relationship** — Ongoing interactions between a business and its customers, especially important in after-sale service and recurring revenue models.  
+- **Installed Base model** — A profit model where the original product maker benefits from selling additional products or services to the existing installed customer base.  
+- **Large-ticket sale** — A purchase involving a high-priced product or service that typically triggers higher buyer price sensitivity and market variability.  
+- **Market variability** — The extent to which prices fluctuate in a market, affecting buyer price sensitivity and negotiation behaviors.  
+- **Max price sensitivity zone** — The period or context surrounding the original purchase when buyers are highly motivated to find the lowest price.  
+- **Mini-market** — A secondary, often smaller market created by the need for follow-up products or services after an initial sale.  
+- **OEM (Original Equipment Manufacturer)** — Companies that produce the original hardware or equipment in a product ecosystem.  
+- **Partial scope** — Incomplete business design where companies focus only on the initial sale and do not capitalize on after-sale opportunities.  
+- **Price sensitivity** — Variation in customers’ responsiveness to price changes, influenced by product value, necessity, and alternatives.  
+- **Profit indifference** — A state where individuals or divisions have little focus or incentive on profitability, often hindering business model expansion.  
+- **Profit passion** — Intense focus on profitability typically found among entrepreneurs and firms specializing in after-sale services.  
+- **Profit opportunity** — Potential for higher margins and recurring revenue found especially in after-sale products and services.  
+- **Psychology of business** — The influence of human motivations, perceptions, and cultural factors on business decisions and models.  
+- **Recurring revenue** — Income generated from repeated sales of products or services, often seen in after-sale contracts or subscriptions.  
+- **Scope expansion** — Business strategy of extending the range of products or services to include after-sale opportunities for increased profitability.  
+- **Secondary market** — The market for products and services that emerge following the original sale, such as parts, accessories, insurance, or maintenance.  
+- **Service contract** — An agreement sold after the initial purchase to provide future maintenance or repair services.  
+- **Ticket price** — The monetary amount paid for a product or service, typically higher prices correlate with higher buyer price sensitivity.  
+- **Unrealized profit** — Potential earnings lost due to incomplete business models or failure to capitalize on after-sale opportunities.  
+- **Variation in market** — Differences in pricing and competition intensity that influence buyer behavior and profit margins.

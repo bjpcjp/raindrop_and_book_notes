@@ -1,0 +1,1 @@
+The Customer Solution Profit model emphasizes investing significant time to deeply understand customers and develop tailored solutions, initially accepting short-term losses to achieve sustained profitability. The example of Factset illustrates how this approach, focused on customized integration and long-term value, can yield high margins even in competitive markets.

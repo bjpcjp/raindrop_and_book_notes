@@ -1,0 +1,15 @@
+- **After-Sale Profit** — Profit derived from activities and services following the initial sale of a product.  
+- **Gold Rush** — The early, high-growth phase of a new product cycle characterized by skyrocketing volume and fat margins.  
+- **Marketing Curve** — A term misnamed by George Hawkins to describe the profit parabola in product lifecycles.  
+- **Mindshare** — The degree to which a product is recognized and remembered by customers, especially important in the early phase of a product cycle.  
+- **New Product Profit** — Profit realized primarily during the initial rapid growth phase of a new product; characterized by high margins and volume but challenged by short-term thinking.  
+- **No Profit Zone** — The late phase in a product lifecycle when total profit drops to zero due to excessive competition and declining demand.  
+- **Parabola (Profit Parabola)** — A curve depicting total profit for a market over time, rising to a peak and then declining back to zero.  
+- **Pike’s Peak** — The peak point on the profit parabola where total profit reaches its maximum before declining.  
+- **Profit Parabola** — The graphical representation of total profit over a product's lifecycle, shaped like a parabola showing growth, peak, and subsequent decline.  
+- **Shift Resources** — The strategic reallocation of company resources in response to changing phases of the product lifecycle, especially crucial in New Product Profit management.  
+- **Specialty Product Profit** — Profit achieved over an extended product lifecycle, characterized by selecting highly specific markets with favorable conditions.  
+- **S-curve** — A curve representing the cumulative volume or adoption of a product over time, starting slow, growing rapidly, and leveling off.  
+- **Time Profit** — Profit gained by speeding up the product lifecycle, reducing time to market, and accelerating growth; often associated with fast cycles.  
+- **Three First Cousins** — The comparison among Time Profit, New Product Profit, and Specialty Product Profit as related but distinct profit concepts.  
+- **Volume** — The quantity of product sold, which, when combined with margin, determines total profit in a product cycle.  

@@ -1,0 +1,22 @@
+- **After-Sale** — Profit generated from services and products sold following the initial sale, enhancing customer retention and revenue.  
+- **Blockbuster** — A product or service with exceptionally high sales, significantly impacting company profitability.  
+- **Choiceboard** — A digital interface allowing customers to design and customize products or services according to their preferences.  
+- **Conventional to Digital** — A pattern describing the transformative shift from traditional business models to digital-enabled ones, significantly impacting profitability.  
+- **Cycle Profit** — Profit patterns influenced by business cycles, including phases of growth and recession.  
+- **De Facto Standard** — A product or technology widely accepted and used as the default or norm within an industry or market.  
+- **Experience Curve** — The decline in unit costs as cumulative production volume increases, reflecting gained efficiencies and learning.  
+- **Installed Base** — The existing group of customers or users of a product or service, serving as a foundation for future sales or services.  
+- **Local Leadership** — A profit model focused on dominance or strong market presence within a localized geographic area.  
+- **Multi-Component** — A profit model involving multiple interrelated products or services that jointly enhance profitability.  
+- **New Product Profit** — Profit derived specifically from recently launched products, often with different dynamics than established products.  
+- **Profit Multiplier** — Mechanisms or strategies that amplify profits beyond basic operational gains.  
+- **Relative Market Share (RMS)** — A metric comparing a company's market share to that of its largest competitor, influencing profitability and strategy.  
+- **S-Curve** — A model describing growth stages of products or technologies, characterized by slow start, rapid growth, and eventual maturity.  
+- **Specialist** — A business or product focused on a narrow segment or niche, potentially achieving high profitability without large scale.  
+- **Transaction Scale** — The volume or size of transactions affecting profit margins and operational efficiency.  
+- **Digital Profit** — Additional profit achieved through digital transformation, including higher productivity, customer empowerment, and process reversal from push to pull.  
+- **Digital Productivity** — Dramatic improvements (up to tenfold) in efficiency and cost reduction enabled by digital technologies.  
+- **Pull Model** — A business approach where production or service delivery is driven by actual customer demand rather than forecasts.  
+- **Push Model** — Traditional business approach where products are produced based on anticipated demand and pushed through distribution channels.  
+- **Bad Information** — Incorrect, incomplete, or delayed data that negatively affects business decisions and profitability.  
+- **Independent Thought** — The practice of thinking critically and correctly, beyond accepting conventional wisdom or surface-level knowledge.

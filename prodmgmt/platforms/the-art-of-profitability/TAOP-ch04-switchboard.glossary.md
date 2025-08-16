@@ -1,0 +1,30 @@
+- **Assumptions** — Presumptions made to build and test a profit model or business strategy.  
+- **Bargaining power** — The ability to influence terms and pricing due to a strong market position.  
+- **Business model** — A conceptual framework for how a company creates, delivers, and captures value.  
+- **Calculations** — Mathematical processes used to quantify profitability or probabilities in business models.  
+- **Critical mass** — A sufficient number or percentage of participants (talent, clients) required to trigger growth or dominance in a market.  
+- **Deal** — An agreement between parties, such as talent and studios, defining terms for a project.  
+- **Efficiency** — The ability to maximize output with minimal wasted effort or expense.  
+- **Entertainment press** — Media focused on reporting about the entertainment industry, important for gathering information.  
+- **Hollywood agent** — A professional who represents talent in film and television, negotiating deals on their behalf.  
+- **Innumeracy** — A lack of skill in working with numbers or basic arithmetic; also the title of John Allen Paulos’s book referenced here.  
+- **Leverage** — The strategic advantage gained by controlling key resources or relationships.  
+- **Margin** — The difference between revenue and the cost of producing a product or service.  
+- **Market share** — The percentage of an industry's sales controlled by a particular company or agent.  
+- **Math of profitability** — The precise use of mathematical logic and calculations to analyze profit potential.  
+- **Netflix model** — (Not explicitly mentioned but analogously related to packaging and aggregation in business.)  
+- **Obvious Adams** — A book referenced for its principle that some facts seem obvious only with prior knowledge.  
+- **Packaging** — The practice of assembling a group of talent and/or content elements into a single marketable unit.  
+- **Packaged talent** — A collection of actors, directors, writers, and other creatives represented together to enhance bargaining power.  
+- **Profit model** — A strategy or formula explaining how a business generates profit.  
+- **Profitability per unit of effort** — The amount of profit generated relative to the time and energy invested.  
+- **Screen artist** — Actors, directors, writers, and others involved in film and television production.  
+- **Source of stories** — The origin or supply of content ideas, such as novels, scripts, or articles, essential for entertainment projects.  
+- **Step one, two, three (in switchboard model)** — The sequential approach: packaging talent, securing a source of stories, and achieving critical mass (number).  
+- **Studios** — Companies producing films or TV content, key stakeholders in entertainment deals.  
+- **Switchboard** — A profit model where control over multiple complementary resources (stories, talent, studios) creates concentrated market power.  
+- **Switchboard profit** — Enhanced profit realized through assembling and controlling a critical mass of interdependent assets or parties.  
+- **Talent agent** — A representative who manages the careers and negotiations for actors, writers, and directors.  
+- **Talent packaging** — Grouping talent strategically to create more attractive and marketable entertainment projects.  
+- **Upward spiral** — The self-reinforcing growth in market influence and profitability once a critical mass is reached.  
+- **Volume** — The total number of deals or transactions completed within a given period.

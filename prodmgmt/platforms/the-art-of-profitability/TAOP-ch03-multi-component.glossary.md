@@ -1,0 +1,29 @@
+- **Account managers** — Individuals assigned to build and maintain business relationships with corporate clients, book groups, and high-purchase individuals to increase sales.
+- **American Express cards** — Example of a product pyramid with tiers like green, gold, and platinum cards representing different customer segments.
+- **Assets** — Resources owned by a business, used here to measure the asset base of bookstores before and after applying Multi-Component Profit strategy.
+- **Base business** — The primary or core part of a business operation before adding component businesses.
+- **Book-group business** — A business component targeting organized groups of readers to increase sales.
+- **Bookstore components** — Different profit centers within a bookstore such as foot traffic, book groups, online sales, and corporate purchasing.
+- **Burton** — A perceptive consultant who applied Multi-Component Profit principles to independent bookstores, helping them become highly profitable.
+- **Carole Woodward** — Bookstore owner and organizer who initiated and supported Burton’s consultancy and ensured his compensation.
+- **Components** — Distinct parts or segments of a business, each with its own profitability profile.
+- **Cost** — The expenses incurred in running the business, including labor and assets, compared between traditional and outbound models.
+- **Customer** — The purchaser whose behavior and price sensitivity vary across different business components and buying occasions.
+- **Customer categories** — Groups of customers distinguished by their price sensitivity and purchasing behavior.
+- **Customer Solution Profit** — A business model focused on offering complete customer solutions that command higher prices.
+- **Different purchase occasions** — Situations in which the same customer may buy the same product at varying prices depending on the context or channel.
+- **Division** — A separate business unit within a company that can have its own profit and loss structure.
+- **Multi-Component Profit** — A profit model recognizing that a business consists of multiple components, each with differing profitability, often selling the same product to customers in different ways.
+- **No-profit zone** — A business condition where pricing and cost structures prevent profitability, risking business viability.
+- **Outbound selling activities** — Proactive sales efforts targeting specific customer segments like corporate accounts and book groups to increase revenue.
+- **Pyramid Profit** — A profit and marketing model based on tiered product lines targeted at distinct customer groups with different price points.
+- **Price sensitivity** — The degree to which customers’ buying decisions are affected by price changes.
+- **Product pyramids** — Tiered product line strategies exemplified by companies like Nokia (phones), GM (cars), and Amex (cards) offering variations at different prices.
+- **Profit** — Financial gain calculated as revenue minus cost.
+- **Profitability** — The capability of a business or component to generate profit.
+- **Return on Assets (ROA)** — A measure of profitability relative to total assets.
+- **Return on Sales (ROS)** — A profitability metric expressed as profit divided by revenue.
+- **Sales channels** — Different ways or venues through which a product is sold, such as vending machines, grocery stores, and restaurants.
+- **Strategy** — A plan of action designed to achieve long-term profitability and competitive advantage.
+- **Traditional model** — The existing or conventional business approach prior to implementing Multi-Component Profit strategies.
+- **Vending machine business** — A high-profit component example where products like Coke command higher prices than in grocery channels.

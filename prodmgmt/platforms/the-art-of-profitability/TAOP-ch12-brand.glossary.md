@@ -1,0 +1,22 @@
+- **Agassiz** — A preeminent 19th-century American naturalist, known for emphasizing direct observation in scientific study.  
+- **Brand Profit** — Economic value or price premium that a brand name adds to a product or service beyond its functional benefits.  
+- **Cumulative Investment** — Total, ongoing expenditure in areas like advertising that builds brand value and market share over time.  
+- **Differentiated Benefit** — A unique advantage or feature of a product or brand that sets it apart and leverages marketing efficiency.  
+- **Focus Groups** — Research tool involving small groups discussing products or services to gain consumer insights, less effective than direct customer interaction.  
+- **Ichthus Heliodiplodokus** — A fictitious scientific name used as an example illustrating rote knowledge versus direct observation.  
+- **Market Share** — The portion of total sales in a market captured by a particular product or company.  
+- **Nonstandard Marketing** — Innovative or unique marketing approaches that deviate from traditional methods to gain competitive advantage.  
+- **Observation** — Direct, unfiltered study and analysis of real-world phenomena or customer behavior.  
+- **Price Premium** — Additional amount customers are willing to pay for a product based on its brand or perceived value.  
+- **Profit and Loss (P&L)** — Financial statement summarizing revenues, costs, and expenses incurred during a specific period.  
+- **Share Determining Segment (SDS)** — The most influential customer segment whose preference determines long-term market share success.  
+- **Shopper Interviews** — In-depth conversations with customers to understand their needs, preferences, and buying behaviors.  
+- **Specialists** — Key influencers (e.g., cardiologists in pharmaceuticals, architects in building supplies) whose choices impact wider consumer markets.  
+- **Survey Results** — Data collected from broader customer samples, useful but less insightful than direct customer engagement.  
+- **Textbooks** — Represent rote, secondhand knowledge, often insufficient for deep understanding.  
+- **The Economist** — A magazine source cited for an example of brand profit related to the NUMMI joint venture.  
+- **The Profit Zone** — A business literature reference containing case study examples such as Nicolas Hayek’s watch branding test.  
+- **Value of Brand** — The tangible and intangible benefits a brand contributes, including trust, recognition, and emotional connection.  
+- **Watch Market Branding** — An example illustrating price differences based solely on the country-of-origin inscription on identical watches.  
+- **Worked Examples** — Real-world cases that demonstrate and clarify abstract business concepts like brand profit and market dynamics.  
+- **Zhao** — A character who mentors Steve, explaining concepts of observation, brand profit, and effective marketing strategies.

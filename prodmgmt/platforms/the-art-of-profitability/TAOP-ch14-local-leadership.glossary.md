@@ -1,0 +1,28 @@
+- **Advertising** — Promotional activities aimed at attracting customers, with fixed costs that do not significantly increase with additional store locations.
+- **Breakeven** — The business point where total revenues equal total costs, resulting in zero profit.
+- **City-by-city growth** — Expansion strategy where stores open gradually in selected cities; less effective than localized saturation.
+- **Competition** — Rival businesses that challenge profitability and market share, impacted by local leadership strategies.
+- **County-by-county growth** — Expansion pattern where market penetration covers an entire county before moving outward, exemplified by Wal-Mart.
+- **Customer traffic** — The flow or number of potential buyers visiting a store, critical for location profitability.
+- **Fixed costs** — Expenses that remain constant regardless of the number of locations or sales volume, such as recruiting and advertising.
+- **Foot traffic** — The physical presence of customers near a store location, influencing sales and pricing power.
+- **Local Leadership Profit** — A business model emphasizing deep market penetration and saturation in local areas to maximize profitability and outcompete rivals.
+- **Local leadership** — A strategy of dominating a specific geographic market with a high store density to secure advantageous locations and customer loyalty.
+- **Marketing plan** — A formulated approach to promote products and grow sales, including product positioning, advertising, and customer outreach.
+- **Natural phenomenon** — Metaphor describing an unstoppable, organic expansion pattern that disrupts competitors.
+- **Profit margin** — The percentage of sales revenue remaining after costs, indicating profitability.
+- **Product Pyramid** — A tiered product assortment strategy offering multiple levels (e.g., low, medium, high-end) within each product category.
+- **Purchasing costs** — Expenses related to acquiring inventory, which can be reduced through scale and volume advantages.
+- **Recruiting costs** — Fixed expenses associated with attracting and hiring staff, mitigated by scale economies.
+- **Regional growth** — Expansion focused on larger areas than cities but less targeted than saturating individual markets.
+- **Sales incrementality** — Additional revenue or margin gained from factors like better location, pricing, or advertising efficiency.
+- **Saturation strategy** — The tactic of fully occupying a market area to prevent competitors from gaining footholds.
+- **Scaling advantage** — Benefits achieved by increasing the number of locations or sales volume, such as lower unit costs.
+- **Selective product lines** — Specific categories within a business where targeted strategies like the Product Pyramid are implemented.
+- **Store growth pattern** — The strategic method of opening new locations over time and geography.
+- **Strategic pricing** — Setting prices higher due to strong brand presence, customer traffic, and market dominance.
+- **Supply chain efficiency** — Optimizing procurement and distribution to lower costs and improve margins.
+- **Territorial expansion** — The process of broadening market presence across defined geographic areas.
+- **Traffic locations** — High-customer-traffic spots that significantly influence store sales and profitability.
+- **Wal-Mart wave** — The rapid, concentric expansion strategy employed by Wal-Mart, significantly impacting competitors.
+- **Yield** — The effectiveness or return on investment from recruiting, advertising, or other fixed-cost activities.

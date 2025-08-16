@@ -1,0 +1,27 @@
+- **Break-even line** — A line on a profit graph indicating the point where revenues equal costs, resulting in neither profit nor loss.  
+- **Conflict** — Disagreement and discord within an organization that can hinder decision-making and progress.  
+- **Customer** — The company or individual that purchases and uses a business’s products or services.  
+- **Customer Solution Profit** — A profit model where a company invests time and resources upfront to deeply understand a customer’s needs and crafts customized solutions, initially at a loss, to generate sustained long-term profits.  
+- **Economic research** — The study of economic data and trends to inform business strategies or policies.  
+- **Information products** — Data-based goods or services tailored to meet specific customer needs, often involving customized content or software.  
+- **Information services** — Services providing specialized data and insights to support customers’ operations and decision-making.  
+- **Profit** — The financial gain achieved when revenues exceed costs.  
+- **Profit margin** — The percentage of revenue remaining after all expenses have been deducted, indicating profitability.  
+- **Profit model** — A conceptual framework describing how a company generates profit through specific business strategies or approaches.  
+- **Revenue** — The total income generated from the sale of goods or services before any expenses are deducted.  
+- **Sales growth** — The increase in revenue from sales over a period of time.  
+- **Strategy** — A plan of action designed to achieve long-term business objectives and competitive advantage.  
+- **Warring factions** — Groups within an organization that are in conflict, preventing effective collaboration and decision-making.  
+- **Working capital** — Funds used to cover the day-to-day operational expenses of a business (implied by context but not directly defined).  
+- **Overhead** — Indirect business costs not directly tied to producing a product or service, such as rent and utilities.  
+- **Churn** — The loss of customers over a given period, often signifying declining business health.  
+- **Customized solution** — A product or service specifically tailored to meet the unique needs and conditions of a particular customer.  
+- **Debugged** — The process of identifying and fixing errors in software to ensure it operates correctly.  
+- **Integration** — The process of incorporating a product or service into a customer’s existing systems and workflows.  
+- **Operating margin** — The ratio of operating profit to revenue, measuring the efficiency of a company’s core business operations.  
+- **Payroll costs** — Total expenses related to employee compensation, including salaries and benefits.  
+- **Psychological resistance to change** — The tendency of people to resist alterations in habits or processes, which can impede organizational transformation.  
+- **Revenue wall** — A point where sales growth stagnates and cannot increase further under current conditions.  
+- **Staff productivity** — The output or business results generated per employee.  
+- **Tailored products** — Goods or services adapted to the specific requirements of an individual client or account.  
+- **Time and profit axes** — Graphical axes representing the passage of time and corresponding profit levels.
