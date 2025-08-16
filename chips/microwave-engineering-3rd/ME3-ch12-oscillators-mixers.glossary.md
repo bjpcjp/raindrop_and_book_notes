@@ -1,0 +1,55 @@
+---
+title: "ME3-ch12-oscillators-mixers — Glossary"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch12-oscillators-mixers]
+---
+
+- **AM Noise** — Amplitude modulation noise causing fluctuations in the magnitude of an oscillator signal.
+- **Balanced Amplifier** — An amplifier configuration using hybrid couplers to improve performance and stability.
+- **Balanced Mixer** — A mixer configuration using two or more nonlinear elements to improve isolation and spurious-free operation.
+- **Bias Voltage** — A DC voltage applied to a device to set its operating point.
+- **Capacitance (C)** — The ability of a component to store electric charge, measured in farads.
+- **Carrier Frequency** — The main signal frequency onto which information is modulated.
+- **Colpitts Oscillator** — A type of oscillator using capacitive voltage division in the feedback network.
+- **Conversion Efficiency** — The ratio of output power at the desired harmonic to the input power in frequency multipliers.
+- **Conversion Gain/Loss** — The ratio of output IF power to input RF power in a mixer, expressed in dB.
+- **Crossed-Field Amplifier (CFA)** — A microwave tube amplifier that uses crossed electric and magnetic fields to amplify signals.
+- **DC Blocking Capacitor** — A capacitor that blocks DC signals but passes AC components.
+- **Dielectric Resonator Oscillator (DRO)** — A microwave oscillator using a high-Q dielectric resonator for stability.
+- **Diode Mixer** — A mixer using a nonlinear diode for frequency conversion.
+- **Diplexer** — A device or network used to combine or separate signals at different frequencies.
+- **Discriminant** — A value used in stability analysis of microwave transistors.
+- **Distortion (Intermodulation)** — The generation of unwanted frequencies arising from nonlinearities in mixers or amplifiers.
+- **Frequency Conversion** — The process of shifting signal frequency up or down via mixing.
+- **Frequency Multiplier** — A nonlinear device or circuit that generates output frequencies that are harmonics of the input frequency.
+- **Gain Circle** — A graphical representation in the Smith chart of constant gain conditions for amplifier design.
+- **Gunn Diode** — A bulk semiconductor diode used as a microwave oscillator based on negative resistance.
+- **Harmonic** — An integer multiple of a fundamental frequency.
+- **Hartley Oscillator** — An oscillator configuration using inductive voltage division in the feedback path.
+- **Image Frequency** — An undesired frequency that produces the same IF frequency as the desired signal in a mixer.
+- **IMPATT Diode** — A diode oscillator based on avalanche and transit-time effects producing microwave frequencies.
+- **Injection Locking** — A method of synchronizing oscillators by injecting a signal close in frequency.
+- **Intermodulation Products** — Frequencies generated in a nonlinear device from mixing of signals.
+- **Klystron** — A microwave tube amplifier or oscillator using resonant cavities and electron beam bunching.
+- **Leeson's Model** — A mathematical model describing oscillator phase noise considering flicker and thermal noise.
+- **Local Oscillator (LO)** — A stable signal source used in a mixer for frequency conversion.
+- **Manley-Rowe Relations** — Fundamental power conservation equations for nonlinear reactive elements in frequency conversion.
+- **Magnetron** — A crossed-field microwave tube oscillator used for high power generation.
+- **Mixer** — A nonlinear device with three ports used to generate products of two input frequencies.
+- **Negative Resistance** — A device property where increasing voltage results in decreasing current, enabling oscillation.
+- **Phase Noise** — Short-term random fluctuations in the phase of an oscillator signal, degrading system performance.
+- **Pinhch-Off Voltage** — The voltage at which a FET transistor channel closes and significantly changes transconductance.
+- **Power Added Efficiency (PAE)** — The efficiency measure of a power amplifier considering input and output powers.
+- **Power Combining** — Technique to increase output power by coherently combining multiple sources.
+- **Reflection Coefficient** — A measure of how much power is reflected from a device due to impedance mismatch.
+- **Resonator Q (Quality Factor)** — A measure of the sharpness of resonance of a reactive circuit or cavity.
+- **S-Parameters** — Scattering parameters used to describe microwave network behavior in terms of incident and reflected waves.
+- **Single-Ended Mixer** — A mixer using a single diode or transistor as the nonlinear element.
+- **Stability Circle** — A geometric representation in the Smith chart showing regions of transistor stability or instability.
+- **Step-Recovery Diode** — A diode used for frequency multiplication exploiting abrupt changes in conductivity.
+- **Transconductance (g_m)** — The ratio of output current to input voltage in a transistor, indicating gain.
+- **Traveling Wave Tube (TWT)** — A broadband microwave tube amplifier with an electron beam interacting with a slow-wave structure.
+- **Unilateral Device** — A device with negligible reverse transmission (S12 ~ 0), simplifying amplifier design.
+- **Voltage-Controlled Oscillator (VCO)** — An oscillator whose output frequency is tuned by an applied voltage.
+- **Yttrium Iron Garnet (YIG) Oscillator** — A tunable microwave oscillator using a YIG sphere controlled by magnetic bias.

@@ -1,0 +1,79 @@
+---
+title: "ME3-ch08-microwave-filters"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch08-microwave-filters]
+---
+
+- Chapter 7: Power Dividers and Directional Couplers
+  - 7.8 Resistive Divider Design for Arbitrary Power Ratio
+  - 7.9 Wilkinson Power Divider Design for Unequal Power Split
+  - 7.10 Design Equations for Unequal-Split Wilkinson Divider
+  - 7.11 Bethe Hole Coupler Design for Isolation of Port 3
+  - 7.12 Bethe Hole Coupler Design for Ku-Band at 11 GHz, 20 dB Coupling
+  - 7.13 Bethe Hole Coupler Design for Ku-Band at 17 GHz, 30 dB Coupling
+  - 7.14 Five-Hole Directional Coupler Design with Binomial Response at 17.5 GHz
+  - 7.15 Chebyshev Response Five-Hole Directional Coupler Design with 30 dB Directivity
+  - 7.16 Equations for Two-Hole Directional Coupler Using Common Sidewall Apertures
+  - 7.17 Branch-Line Coupler Design for Arbitrary Power Division Ratio
+  - 7.18 Edge-Coupled Stripline Design for Given Even/Odd Mode Impedances
+  - 7.19 Coupled Microstrip Line Even/Odd Mode Impedance Calculation
+  - 7.20 Coupled Line Coupler Design using Reflection and Transmission Coefficients
+  - 7.21 Single-Section Coupled Line Coupler Design for 19.1 dB Coupling in Stripline
+  - 7.22 Coupled Line Coupler Design for 5 dB Coupling: Practicality Analysis
+  - 7.23 Derivation of Key Coupled Line Equations (7.83) and (7.84)
+  - 7.24 Design of 20 dB Three-Section Coupled Line Coupler with Maximally Flat Response
+  - 7.25 Equal-Ripple Coupling Response Coupler Design with 1 dB Passband Ripple
+  - 7.26 Lange Coupler: Derivation of Design Equations for Even/Odd Mode Impedances
+  - 7.27 Lange Coupler Design at 5 GHz on Alumina Substrate: Dimensions and Impedances
+  - 7.28 Four-Port Hybrid Transformer Scattering Matrix Derivation
+  - 7.29 Signal Outputs for 180° Hybrid Sum and Difference Port Inputs
+  - 7.30 Characteristic Impedances Calculation for Tapered Coupled Line 180° Hybrid
+  - 7.31 S-Parameters Calculation for Bagley Polygon Power Divider
+  - 7.32 Output Voltages Calculation for Symmetric Hybrid with Incident Wave
+  - 7.33 Bailey Unequal-Split Power Divider Design and Return Loss vs Frequency Analysis
+
+- Chapter 8: Microwave Filters
+  - 8.1 Periodic Structures
+    - Examples and Equivalent Circuits of Periodic Structures
+    - Analysis of Infinite Periodic Structures
+    - Propagation Constants and Bloch Impedance
+    - Terminated Periodic Structures and Load Matching
+    - k-B Diagrams and Wave Velocities
+    - Example 8.1: Analysis of a Periodic Capacitively Loaded Line
+  - 8.2 Filter Design by the Image Parameter Method
+    - Image Impedances and Transfer Functions
+    - Constant-k Filter Sections (Low-Pass and High-Pass)
+    - m-Derived Filter Sections and Sharp Cutoff Response
+    - Composite Filter Design Combining Constant-k and m-Derived Sections
+    - Example 8.2: Low-Pass Composite Filter Design
+  - 8.3 Filter Design by the Insertion Loss Method
+    - Characterization by Power Loss Ratio and Insertion Loss
+    - Maximally Flat (Butterworth) Low-Pass Filters
+    - Equal Ripple (Chebyshev) Low-Pass Filters
+    - Elliptic Function Filters Overview
+    - Linear Phase Low-Pass Filters
+    - Filter Design Process and Prototype Normalization
+    - Maximally Flat Low-Pass Filter Prototype Design
+    - Equal Ripple Low-Pass Filter Prototype Design
+    - Linear Phase Low-Pass Filter Prototypes
+    - Example 8.3: Low-Pass Filter Design Comparison
+  - 8.4 Filter Transformations
+    - Impedance and Frequency Scaling
+    - Low-Pass to High-Pass Transformation
+    - Bandpass and Bandstop Frequency Transformations
+    - Example 8.4: Bandpass Filter Design
+  - 8.5 Filter Implementation
+    - Richard's Transformation: Lumped Elements to Transmission Line Stubs
+    - Kuroda's Identities for Filter Realization and Stub Placement
+    - Example 8.5: Low-Pass Filter Design Using Stubs
+    - Impedance and Admittance Inverters
+  - 8.6 Stepped-Impedance Low-Pass Filters
+    - Approximate Equivalent Circuits for Short Transmission Line Sections
+    - Design of High- and Low-Impedance Sections to Replace Inductors and Capacitors
+    - Design Equations for Electrical Lengths and Impedances
+    - Example 8.6: Stepped-Impedance Low-Pass Filter Design
+  - 8.7 Coupled Line Filters
+    - Filter Properties of a Coupled Line Section
+    - Even and Odd Mode Analysis of Parallel Coupled Lines
+    - Open Circuit Impedance Matrix and Port Voltages/Currents

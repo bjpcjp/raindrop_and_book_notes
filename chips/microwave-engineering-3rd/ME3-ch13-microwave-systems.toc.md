@@ -1,0 +1,92 @@
+---
+title: "ME3-ch13-microwave-systems"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch13-microwave-systems]
+---
+
+- Chapter 12: Oscillators and Mixers (p. 630)
+  - Differential FET Mixer
+  - Subharmonically Pumped Mixer Using Antiparallel Diode Pair
+  - Mixer Characteristics (Table 12.1)
+  - References
+  - Problems
+
+- Chapter 13: Introduction to Microwave Systems (p. 633)
+  - 13.1 System Aspects of Antennas
+    - Antenna Types and Photographs (Figure 13.1)
+    - Antenna Operation and Basic Concepts (Figure 13.2)
+    - Antenna Categories
+      - Wire Antennas
+      - Aperture Antennas
+      - Printed Antennas
+      - Array Antennas
+    - Far-Field Electromagnetic Fields (Equation 13.1 - 13.5)
+    - Examples
+      - Example 13.1: Far-Field Distance of an Antenna
+    - Radiation Intensity and Power (Equations 13.6 - 13.7)
+    - Antenna Pattern Characteristics
+      - Main Beam, Sidelobes, Beamwidth (Figure 13.3)
+      - Directivity (Equations 13.8 - 13.9)
+      - Example 13.2: Pattern Characteristics of a Dipole Antenna
+    - Antenna Gain and Efficiency (Equations 13.10 - 13.11)
+    - Aperture Efficiency and Effective Area (Equations 13.12 - 13.15)
+    - Background and Brightness Temperature (Figures 13.4 - 13.6)
+    - Antenna Noise Temperature and G/T Ratio (Equations 13.17 - 13.21)
+    - Example 13.3: Antenna Noise Temperature
+    - General System Noise Temperature with Lossy Transmission Line and Mismatch (Equation 13.19)
+  - 13.2 Wireless Communication Systems
+    - Wireless System Types and User Placement
+    - Directionality Modes: Simplex, Half-Duplex, Full-Duplex
+    - Satellite Systems Overview (LEO, GEO)
+    - Friis Formula and Link Budget (Equations 13.22 - 13.26)
+    - Example 13.4: Analysis of DBS System
+    - Radio Receiver Architectures
+      - Tuned Radio Frequency Receiver (Figure 13.11)
+      - Direct Conversion Receiver (Figure 13.12)
+      - Superheterodyne Receiver (Figure 13.13)
+    - Noise Characterization of Microwave Receiver Front End (Equations 13.27 - 13.34)
+    - Example 13.5: Signal-to-Noise Ratio of a Microwave Receiver
+    - Overview of Selected Wireless Systems and Frequencies (Table 13.1)
+      - Cellular telephone systems
+      - Satellite systems for wireless voice and data
+      - Global Positioning Satellite (GPS)
+      - Wireless Local Area Networks (WLANs)
+      - Direct Broadcast Satellite (DBS)
+      - Point-to-Point Radio Systems
+  - 13.3 Radar Systems
+    - Applications: Civilian, Military, Scientific
+    - Radar Equation Derivation (Equations 13.35 - 13.39)
+    - Example 13.6: Application of the Radar Range Equation
+    - Pulse Radar Overview (Figure 13.18)
+    - Doppler Radar (Figure 13.19; Equation 13.40)
+    - Radar Cross Section (Figure 13.20; Table 13.2)
+  - 13.4 Radiometer Systems
+    - Theory and Applications of Radiometry
+    - Environmental, Military, Astronomy Applications
+    - Example Radiometer System (Figure 13.22)
+    - Total Power Radiometer
+      - Block Diagram (Figure 13.23)
+      - Noise and Gain Errors (Equations 13.43 - 13.45)
+      - Typical Performance Example
+    - Dicke Radiometer
+      - Block Diagram (Figure 13.24)
+      - Operation and Variations
+  - 13.5 Microwave Propagation
+    - Atmospheric Effects
+      - Refractive Index Variation (Equation 13.46), Refraction (Figure 13.25)
+      - Effective Earth Radius Concept
+      - Atmospheric Attenuation and Resonances (Figure 13.26)
+    - Ground Effects
+      - Reflection, Fading, and Diversity
+      - Diffraction and Clutter (Figure 13.27)
+    - Plasma Effects
+      - Plasma Frequency and Propagation (Equations 13.48 - 13.49)
+      - Ionosphere Layers and Effects
+      - Spacecraft Plasma Blackout
+  - 13.6 Other Applications and Topics
+    - Microwave Heating (Figure 13.28)
+    - Microwave Power Transfer
+    - Biological Effects and Safety Standards
+      - IEEE Exposure Limits (Figure 13.29)
+      - Example 13.7: Power Density Near Microwave Radio Link

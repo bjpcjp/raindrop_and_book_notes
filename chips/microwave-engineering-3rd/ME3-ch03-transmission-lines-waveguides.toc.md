@@ -1,0 +1,71 @@
+---
+title: "ME3-ch03-transmission-lines-waveguides"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch03-transmission-lines-waveguides]
+---
+
+- Chapter 2: Transmission Line Theory  
+  - 2.9 Characteristic Impedance from SWR and Load  
+  - 2.10 Input Impedance of Short- and Open-Circuited Coaxial Lines  
+  - 2.11 Open-Circuited Line Equivalent Capacitance and Inductance  
+  - 2.12 Power Delivered to an Antenna with Mismatched Coaxial Cable  
+  - 2.13 Input Impedance, Reflection Coefficients, and SWR on a Coaxial Line  
+  - 2.14 Calculation of SWR, Reflection Coefficient, and Return Loss Table  
+  - 2.15 Power Delivered to Load Using Multiple Techniques  
+  - 2.16 Reflection Coefficient of Purely Reactive Load  
+  - 2.17 Power Conservation in Transmission Line Circuit  
+  - 2.18 Voltage Distribution Along a Transmission Line with Given Load  
+  - 2.19 Smith Chart Calculations for Load and Line Parameters  
+  - 2.20–2.21 Repeated Smith Chart Applications with Different Loads  
+  - 2.22–2.23 Smith Chart for Short- and Open-Circuited Line Lengths  
+  - 2.24 Slotted-Line Experiment: Load Impedance Calculation  
+  - 2.25 Quarter-Wave Matching Transformer Design  
+  - 2.26 Expressions for Forward and Reverse Waves in Quarter-Wave Transformer  
+  - 2.27 Derivation of Equation (2.71) from (2.70)  
+  - 2.28 Minimizing Attenuation in Coaxial Lines; Optimal Radii and Characteristic Impedance  
+  - 2.29 Attenuation Increase due to Surface Roughness in Copper Conductors  
+  - 2.30 Power Calculations for Attenuated Transmission Line Feeding Load  
+  - 2.31 Reflection Coefficient and Input Impedance in Nonreciprocal Transmission Lines  
+
+- Chapter 3: Transmission Lines and Waveguides  
+  - 3.1 General Solutions for TEM, TE, and TM Waves  
+    - TEM Wave Properties and Laplace's Equation  
+    - TE Wave Properties and Wave Equation  
+    - TM Wave Properties and Wave Equation  
+    - Attenuation Due to Dielectric Loss  
+  - 3.2 Parallel Plate Waveguide  
+    - TEM Mode Analysis  
+    - TM Modes and Cutoff Frequencies  
+    - TE Modes and Cutoff Frequencies  
+    - Attenuation Due to Conductor and Dielectric Loss  
+    - Summary of Parallel Plate Waveguide Modes and Properties  
+  - 3.3 Rectangular Waveguide  
+    - TE Mode Solutions and Field Components  
+    - TM Mode Solutions and Field Components  
+    - Cutoff Frequencies, Propagation Constants, and Wavelengths  
+    - Attenuation Due to Conductor and Dielectric Loss  
+    - Example: Characteristics of a Rectangular Waveguide  
+    - TE11 Mode of a Partially Loaded Waveguide  
+  - 3.4 Circular Waveguide  
+    - TE Mode Analysis Using Bessel Functions  
+    - TM Mode Analysis Using Bessel Functions  
+    - Cutoff Frequencies and Dominant Modes  
+    - Field Components and Wave Impedances  
+    - Attenuation Due to Conductor Loss  
+    - Example: Characteristics of a Circular Waveguide  
+  - 3.5 Coaxial Line  
+    - TEM Mode Derivation from Laplace's Equation  
+    - Higher Order Waveguide Modes: TE11 Mode  
+    - Cutoff Frequency and Propagation Conditions  
+    - Example: Higher Order Mode in RG-142 Coaxial Cable  
+  - 3.6 Surface Waves on a Grounded Dielectric Slab  
+    - TM Mode Analysis and Boundary Conditions  
+    - TE Mode Analysis and Boundary Conditions  
+    - Cutoff Frequencies and Mode Propagation  
+    - Numerical Solution of Propagation Constants  
+    - Example: Surface Wave Propagation Constants  
+  - 3.7 Stripline  
+    - Geometry and Construction  
+    - TEM Mode Characteristics  
+    - Higher Order Modes and Suppression Methods

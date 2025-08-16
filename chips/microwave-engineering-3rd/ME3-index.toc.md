@@ -1,0 +1,115 @@
+---
+title: "ME3-index"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-index]
+---
+
+- Appendix J Standard Coaxial Cable Data  
+- Answers to Selected Problems  
+- Index  
+  - A  
+    - Antenna  
+    - Aperture coupling  
+    - Attenuation  
+    - Amplifier design  
+  - B  
+    - Bandpass filters  
+    - Bandstop filters  
+    - Biological effects  
+    - Bipolar transistors  
+  - C  
+    - Cavity resonators  
+    - Coaxial connectors  
+    - Coaxial line  
+    - Coupled lines  
+    - Circulator  
+    - Conjugate matching  
+  - D  
+    - Decibel notation  
+    - Detector  
+    - Dielectric constant  
+    - Dielectric loss  
+    - Diode  
+    - Directional couplers  
+  - E  
+    - Electric field  
+    - Emissivity  
+    - Energy  
+    - Equivalent voltages and currents  
+  - F  
+    - Fabricated filters  
+    - Ferrites  
+    - Filters  
+    - Field effect transistors  
+    - Frequency multipliers  
+    - Friis power transmission formula  
+  - G  
+    - Gain  
+    - Global Positioning System (GPS)  
+    - Gyromagnetic ratio  
+  - H  
+    - Hybrid junctions  
+    - Helmholtz equations  
+    - High pass filters  
+    - History of microwave engineering  
+  - I  
+    - Impedance  
+    - Image theory  
+    - IMPATT diode  
+    - Isolators  
+  - J  
+    - Junction circulator  
+  - K  
+    - Klystron  
+    - Klopfenstein tapered line  
+  - L  
+    - Line parameters  
+    - Load pull contours  
+    - Loss and attenuation  
+    - Low pass filters  
+  - M  
+    - Microstrip  
+    - Microwave integrated circuits (MIC)  
+    - Microwavesources  
+    - Magnetic field  
+    - Magneticsusceptibility  
+  - N  
+    - Noise figure  
+    - Network analyzer  
+    - Negative resistance oscillators  
+  - O  
+    - Ohm’s law for fields  
+    - Open circuit stub  
+    - Oscillators  
+  - P  
+    - Parallel plate waveguide  
+    - Permittivity and permeability  
+    - Phase noise  
+    - Phase shifters  
+    - Plasma  
+    - Polarization  
+  - Q  
+    - Quarter wave transformer  
+  - R  
+    - Radiometer  
+    - Reflection  
+    - Resonators  
+  - S  
+    - Scattering matrix  
+    - Stripline  
+    - Signal distortion  
+  - T  
+    - Transmission line parameters  
+    - Tapered line  
+    - Tube sources  
+  - U  
+    - UHF and microwave bands  
+  - V  
+    - Voltage standing wave ratio (VSWR)  
+  - W  
+    - Waveguide  
+    - Wireless communication systems  
+  - Z  
+    - Impedance matching  
+    - Zeroes of Bessel functions

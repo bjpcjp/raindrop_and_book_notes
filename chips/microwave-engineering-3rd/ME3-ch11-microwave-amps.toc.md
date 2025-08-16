@@ -1,0 +1,65 @@
+---
+title: "ME3-ch11-microwave-amps"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch11-microwave-amps]
+---
+
+- Chapter 10: Noise and Active RF Components
+  - 10.8 WLAN Receiver Front-End Noise Figure and SNR
+  - 10.9 Noise Figure of Two-Way Power Dividers
+  - 10.10 Noise Figure of Mismatched Lossy Lines
+  - 10.11 Noise Figure of Lossy Line Feeding an Amplifier
+  - 10.12 Noise Figure of Balanced Amplifier Circuit
+  - 10.13 Receiver Subsystem Noise Figure and Dynamic Range
+  - 10.14 Third-Order Intercept Point Extrapolation
+  - 10.15 Third-Order Intermodulation Product Power Ratios
+  - 10.16 Third-Order Intercept Point with Reversed Amplifier and Mixer
+  - 10.17 Diode Parameters and Sensitivity at 10 GHz
+  - 10.18 PIN Diode Switch Design at 4 GHz
+  - 10.19 Two-Diode SPST Switch Insertion Loss Calculation
+  - 10.20 Loaded-line Phase Shifter Design and Insertion Loss
+  - 10.21 Bipolar Transistor Short-Circuit Current Gain Derivation
+  - 10.22 FET y Parameters and Conversion to S Parameters at 5 GHz
+
+- Chapter 11: Microwave Amplifier Design
+  - 11.1 Two-Port Power Gains
+    - Definitions of Power Gain, Available Gain, Transducer Power Gain
+    - Derivation of Gain Expressions Using S Parameters
+    - Example 11.1: Comparison of Power Gain Definitions
+  - 11.2 Stability
+    - Definitions of Unconditional and Conditional Stability
+    - Stability Circles and Their Derivation
+    - Tests for Unconditional Stability (K-Δ Test and p-test)
+    - Example 11.2: Stability Analysis with S Parameters
+  - 11.3 Single-Stage Transistor Amplifier Design
+    - Design for Maximum Gain (Conjugate Matching)
+      - Equations for Maximum Gain and Matching Conditions
+      - Example 11.3: Maximum Gain Amplifier at 4 GHz
+    - Constant Gain Circles and Design for Specified Gain
+      - Unilateral Device Approximation and Gain Circle Equations
+      - Example 11.4: Amplifier Design for Specified Gain
+    - Low-Noise Amplifier Design
+      - Noise Figure Expressions and Noise Circles
+      - Example 11.5: Low-Noise Amplifier Design at 4 GHz
+  - 11.4 Broadband Transistor Amplifier Design
+    - Challenges of Broadband Amplifier Design
+    - Techniques for Broadbanding:
+      - Compensated Matching Networks
+      - Resistive Matching Networks
+      - Negative Feedback
+      - Balanced Amplifiers
+        - Circuit Operation and Analysis
+        - Example 11.6: Balanced Amplifier Optimization
+      - Distributed Amplifiers
+        - Configuration and Equivalent Circuit
+        - Gain Expression and Analysis
+        - Example 11.7: Distributed Amplifier Performance
+  - 11.5 Power Amplifiers
+    - Characteristics and Amplifier Classes (A, B, C, D, E, F, S)
+    - Large-Signal Characterization of Transistors
+      - Large-Signal S Parameters and Load-Pull Contours
+      - Nonlinear Equivalent Circuit Models
+    - Design of Class A Power Amplifiers
+      - Stability and Matching Considerations
+      - Example 11.8: Class A Power Amplifier Design at 900 MHz

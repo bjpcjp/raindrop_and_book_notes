@@ -1,0 +1,71 @@
+---
+title: "ME3-ch02-transmission-lines"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch02-transmission-lines]
+---
+
+- 2. Transmission Line Theory  
+  - 2.1 The Lumped-Element Circuit Model for a Transmission Line  
+    - Kirchhoff's Voltage and Current Laws for Incremental Line  
+    - Telegraphers Equations (Time Domain and Frequency Domain)  
+    - Wave Propagation on a Transmission Line  
+    - Characteristic Impedance and Voltage/Current Relations  
+    - Lossless Transmission Line Special Case  
+  - 2.2 Field Analysis of Transmission Lines  
+    - Transmission Line Parameters in terms of Fields (L, C, R, G)  
+    - Example 2.1: Parameters of a Coaxial Line  
+    - Relationship between Circuit and Field Quantities  
+    - Telegrapher Equations from Maxwell's Equations (Coaxial Line Case)  
+    - Propagation Constant, Impedance, and Power Flow for Lossless Coaxial Line  
+  - 2.3 The Terminated Lossless Transmission Line  
+    - Voltage and Current on the Line with Incident and Reflected Waves  
+    - Reflection Coefficient, Transmission Coefficient, and Standing Waves  
+    - Power Flow and Return Loss  
+    - Standing Wave Ratio (SWR) and Voltage Magnitude along the Line  
+    - Input Impedance of a Length of Transmission Line  
+    - Special Cases: Short Circuit, Open Circuit, Quarter- and Half-Wavelength Lines  
+    - Junction of Two Transmission Lines with Different Impedances  
+    - Decibel and Neper Units in Transmission Line Analysis  
+  - 2.4 The Smith Chart  
+    - Basics of the Smith Chart and Polar Plot of Reflection Coefficient  
+    - Normalized Impedance and Admittance Relations  
+    - Impedance and Reactance Circles on the Smith Chart  
+    - Rotations and Transmission Line Length Transformations on the Smith Chart  
+    - Example 2.2: Basic Smith Chart Operations  
+    - Combined Impedance-Admittance Smith Chart  
+    - Example 2.3: Admittance Calculations with Smith Chart  
+    - Slotted Line Technique for Measuring SWR and Load Impedance  
+    - Example 2.4: Impedance Measurement with Slotted Line  
+  - 2.5 The Quarter-Wave Transformer  
+    - Impedance Matching Using Quarter-Wavelength Line  
+    - Impedance Viewpoint and Characteristic Impedance for Matching  
+    - Example 2.5: Frequency Response of Quarter-Wave Transformer  
+    - Multiple Reflection Viewpoint of Quarter-Wave Transformer  
+    - Infinite Series of Partial Reflections and Total Reflection Coefficient  
+  - 2.6 Generator and Load Mismatches  
+    - Transmission Line with Arbitrary Generator and Load Impedances  
+    - Input Impedance Looking Into the Line  
+    - Voltage and Current on the Line Including Reflections  
+    - Power Delivered to Load and Matching Conditions  
+    - Conjugate Matching for Maximum Power Transfer  
+  - 2.7 Lossy Transmission Lines  
+    - General Complex Propagation Constant and Approximations  
+    - Low-Loss Line Approximations for Propagation Constant and Impedance  
+    - Example 2.6: Attenuation Constant of Coaxial Line  
+    - Distortionless Line Condition and Heaviside's Theory  
+    - Terminated Lossy Line: Voltage, Current, and Power Flow  
+    - Perturbation Method for Calculating Attenuation  
+    - Example 2.7: Perturbation Method for Coaxial Line Attenuation  
+    - Wheeler Incremental Inductance Rule for Conductor Loss  
+    - Example 2.8: Using Wheeler Rule for Coaxial Line Attenuation  
+  - References  
+  - Problems  
+    - Problem 2.1: Characteristics of Current on Transmission Line  
+    - Problem 2.2: Calculation of Propagation Constant and Impedance  
+    - Problem 2.3: Derivation of Telegraphers Equations for l-Model  
+    - Problem 2.4: Parameters for Parallel Plate Line  
+    - Problem 2.5: Field-Theory Derivation of Telegraphers Equations (Parallel Plate)  
+    - Problem 2.6: Parameters and Attenuation for RG-402U Coaxial Cable  
+    - Problem 2.7: Frequency Dependent Attenuation Plot for Coaxial Line  
+    - Problem 2.8: Reflection and Input Impedance for Complex Load on Lossless Line

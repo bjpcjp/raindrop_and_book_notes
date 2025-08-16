@@ -1,0 +1,77 @@
+---
+title: "ME3-ch07-power-dividers-directional-couplers"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch07-power-dividers-directional-couplers]
+---
+
+- Chapter 6: Microwave Resonators
+  - 6.12 Resonant Frequencies of a Rectangular Cavity
+  - 6.13 Q for the TMn.6 Resonant Mode of a Circular Cavity
+  - 6.14 Design of a Circular Cavity Resonator in TE111 Mode at 6 GHz
+  - 6.15 Dimensions of an Air-Filled Rectangular Cavity from Resonant Modes
+  - 6.16 Frequency Equation for the Microstrip Ring Resonator
+  - 6.17 TM1.6 Modes of Circular Microstrip Disk Resonators
+  - 6.18 Resonant Frequency of a Cylindrical Dielectric Resonator
+  - 6.19 Next Resonant Mode of Cylindrical Dielectric Resonator (Hr odd in z)
+  - 6.20 Resonant Frequency Equation for Rectangular Dielectric Resonator
+  - 6.21 Fabry-Perot Resonator Analysis
+    - (a) Expression for Resonant Frequency
+    - (b) Q with Conductivity
+    - (c) Example Calculation for Copper Plates
+  - 6.22 Critical Coupling of a Parallel RLC Circuit via Series Capacitor
+  - 6.23 Normalized Aperture Reactance for Critical Coupling in Waveguide Cavity
+  - 6.24 Resonant Properties from Power Absorption and Reflection Coefficient
+  - 6.25 Transmission Resonator Power Transmission Analysis
+  - 6.26 Perturbation of Resonant Frequency by Magnetic Material in Rectangular Cavity
+  - 6.27 Frequency Change Expression for Screw-Tuned Rectangular Cavity
+  
+- Chapter 7: Power Dividers and Directional Couplers
+  - 7.1 Basic Properties of Dividers and Couplers
+    - Three-Port Networks (T-Junctions)
+      - Lossless, Reciprocal, Matched Conditions
+      - Nonreciprocal Circulators
+      - Matched Two-Port Lines and One-Port Mismatched Network
+    - Four-Port Networks (Directional Couplers)
+      - Reciprocal and Lossless Conditions
+      - Directional Coupler Definition
+      - Coupling, Directivity, and Isolation Definitions
+      - Hybrid Couplers: Quadrature (90°) and Magic-T (180°)
+    - Measuring Coupler Directivity
+  - 7.2 The T-Junction Power Divider
+    - Lossless T-Junction Model and Matching Conditions
+    - Example 7.1: Power Division Ratio and Reflection Coefficients
+    - Resistive Divider and Critical Coupling
+  - 7.3 The Wilkinson Power Divider
+    - Circuit Description and Even-Odd Mode Analysis
+    - Derivation of Matching and Isolation Conditions
+    - Example 7.2: Design and Frequency Response
+    - Unequal Power Division Wilkinson Dividers
+    - N-Way Wilkinson Dividers
+  - 7.4 Waveguide Directional Couplers
+    - Bethe Hole Coupler Theory and Design
+    - Example 7.3: Single Hole Bethe Coupler Design and Performance
+    - Design of Multihole Couplers
+    - Example 7.4: Four-Hole Chebyshev Coupler Design and Performance
+  - 7.5 The Quadrature (90°) Hybrid
+    - Branch-Line Coupler Geometry and Properties
+    - Even-Odd Mode Analysis and S-Matrix Derivation
+    - Example 7.5: Quadrature Hybrid Design and Frequency Response
+  - 7.6 Coupled Line Directional Couplers
+    - Coupled Line Theory: Even and Odd Modes
+    - Design Data for Stripline and Microstrip Coupled Lines
+    - Example 7.6: Impedance Calculation for Broadside Coupled Lines
+    - Single-Section Coupler Design and Analysis
+      - Equations for Matching and Coupling
+      - Example 7.7: Single-Section Coupler Design and Performance
+    - Multisection Coupler Design and Synthesis
+      - Fourier Series Synthesis of Coupling Response
+      - Example 7.8: Three-Section Binomial Coupler Design and Performance
+  - 7.7 The Lange Coupler
+    - Coupler Layout and Operation
+    - Equivalent Circuit Models: Four-Wire and Two-Wire Approximations
+    - Capacitance and Impedance Relations
+  - 7.8 The 180° Hybrid
+    - Function and S-Matrix
+    - Implementations: Ring (Rat-Race), Tapered Line, Magic-T
+    - Even-Odd Mode Analysis of Ring Hybrid

@@ -1,0 +1,171 @@
+---
+title: "ME3-solutions-manual"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-solutions-manual]
+---
+
+- Power  
+  - Overview, 24-27  
+  - Power Added Efficiency (PAE), 570  
+  - Power Amplifiers, 570-574  
+  - Power Capacity of Transmission Line, 156-157  
+  - Power Divider  
+    - Resistive, 317-318  
+    - T-junction, 315-317  
+    - Wilkinson, 318-324  
+  - Power Gain, 537-542  
+  - Power Loss, 25-27, 32-33, 83  
+- Poynting's Theorem and Vector, 24-25  
+- Precession, Magnetic Dipole, 443-446  
+- Probe Coupling, 208-209  
+- Propagation  
+  - Atmospheric Effects, 670-672  
+  - Ground Effects, 672-673  
+  - Plasma Effects, 673-674  
+  - Propagation Constant  
+    - Circular Waveguide, 120-124  
+    - Coaxial Line, 57  
+    - Microstrip Line, 144  
+    - Parallel Plate Guide, 99-104  
+    - Planewaves in Conductors and Dielectrics, 15-19  
+    - Rectangular Waveguide, 108,111,113  
+    - Stripline, 139  
+    - TEM, TM, TE Modes, 94-97  
+- Quality Factor (Q)  
+  - Circular Cavity, 284-286  
+  - Dielectric Resonator, 290  
+  - Rectangular Cavity, 279-281  
+  - RLC Circuit, 268, 270-272  
+  - Transmission Line Resonator, 274-277  
+- Quadrature Hybrid, 333-336  
+- Quarter-Wave Transformers  
+  - Multiple Reflection Viewpoint, 75-76  
+  - Multisection, 245-255  
+  - Single Section, 73-76, 240-243  
+- Radar  
+  - Radar Cross Section, 664-665  
+  - Radar Systems, 659-664  
+- Radiation  
+  - Conditions, 14  
+  - Efficiency, 639  
+  - Hazards, 675-677  
+  - Patterns, 637-638  
+- Reciprocity Theorem, 40-41  
+- Rectangular Cavity and Waveguide  
+  - Cavity Resonators (see Rectangular Cavity)  
+  - Waveguide Attenuation and Cutoff, 106-117  
+  - Group and Phase Velocity, 109-115, 153-154  
+- Rectification, 509-512  
+- Reflection Coefficient, 35, 58  
+- Reflectometer, 363-365  
+- Remanent Magnetization, 472  
+- Resonant Circuits, 266-272  
+- Return Loss, 59  
+- Richard's Transformation, 406  
+- Ridge Waveguide, 154-155  
+- Root-Finding Algorithms, 136-137  
+- Saturation Magnetization, 444  
+- Scattering Matrix, 174-182  
+  - Circulator, 310, 476-477  
+  - Directional Coupler, 312-314  
+  - Gyrator, 475  
+  - Quadrature Hybrid, 333  
+  - Ring Hybrid, 352  
+- Separation of Variables, 19-20, 106-108, 118-127  
+- Short Circuit Stub Impedance, 60-61  
+- Signal Flow Graphs, 189-192  
+- Single Sideband Modulation, 627  
+- Skin Depth, 18-19  
+- Slot and Slotted Lines, 69-73, 155-156  
+- Small Reflection Theory, 244-246  
+- Smith Chart, 64-69  
+- Snell's Law, 36  
+- Stability  
+  - Amplifier, 542-548  
+  - Stability Circles, 543-545  
+- Standing Wave Ratio (SWR), 59  
+- Stepped Impedance Filters, 412-416  
+- Stripline, 137-143  
+  - Attenuation, 139-140  
+  - Characteristic Impedance, 139  
+  - Coupled Lines, 339  
+  - Propagation Constant, 139  
+- Surface Currents and Impedances, 8-13, 27, 32-34  
+- Surface Waves  
+  - Dielectric Interface, 38-40  
+  - Dielectric Slab, 131-136  
+- Switches, PIN Diode, 515-517  
+- Tapered Coupled-Line Hybrid, 357-360  
+- Tapered Transmission Lines  
+  - Exponential and Klopfenstein Tapers, 257-261  
+  - Triangular Taper  
+- Telegrapher Equations, 50, 56  
+- TE, TM Modes  
+  - Attenuation and Propagation Constants, 96-97  
+  - Wave Impedance, 96-97  
+- TEM Waves and Modes  
+  - Attenuation, 98  
+  - Plane Waves, Transmission Lines, 15-22, 55-57  
+  - Wave Impedance, 16-17, 57, 95  
+- Terminated Transmission Line  
+  - Input Impedance, 60  
+  - Reflection Coefficient, 58  
+  - Voltage Maxima and Minima, 59  
+- Third-Order Intercept, 504-505  
+- T-Junction, 315-317  
+- Total Reflection, Planewave, 38-40  
+- Transducer Power Gain, 537-539  
+- Transistor  
+  - Amplifier, 548-574  
+  - Characteristics and Models, 522-526  
+  - Mixer, 622-624  
+  - Multipliers, 604-608  
+  - Oscillator, 578-590  
+- Transmission Coefficient, 63  
+- Transmission Lines  
+  - Equations, 50-51  
+  - Coaxial, 54-57, 126-129  
+  - Microstrip, 143-149  
+  - Parallel Plate, 55, 98-106  
+  - Stripline, 137-143  
+  - Two-Wire, 55  
+- Transverse Resonance Method, 149-150  
+- Traveling Wave Amplifier (see Amplifier Design)  
+- Traveling Waves  
+  - Plane Waves, 15  
+  - On Transmission Lines, 51  
+- TRL Calibration, 193-196  
+- Two-Port Networks, Equivalent Circuits, 186-189  
+- Unilateral Device and Figure of Merit, 524, 554  
+- Unilateral Transducer Power Gain, 537-539  
+- Unit Element and Unit Matrix, 177-178  
+- Varactor Diode, 520-521  
+- Velocity (see Wave Velocities)  
+- Voltage Standing Wave Ratio (see Standing Wave Ratio)  
+- Wave Equation, 15, 17, 19  
+- Wave Velocities  
+  - Group, 151-154, 376  
+  - Phase, 15, 52, 100-105, 109, 376  
+- Waveguide  
+  - Rectangular, Circular, Loaded, Parallel Plate (see respective entries)  
+  - Components, 107  
+    - Directional Couplers, 324-332  
+    - Discontinuities, 198  
+    - Isolators, 465-471  
+    - Magic-T, 361  
+    - Phase Shifters, 471-475  
+    - T-Junctions, 315  
+  - Excitation by Apertures and Sources, 204-215  
+  - Flanges, 116-117  
+  - Impedance, 96-97  
+- Wilkinson Power Divider, 318-324  
+- Wireless Systems, 646-647, 655-659  
+- Wavelength  
+  - Free-Space, 15-16  
+  - Waveguide, 101, 105, 109, 113, 124  
+  - Transmission Line, 52  
+- Wheeler Incremental Inductance Rule, 84-86  
+- YIG-Tuned Oscillator, 610-612  
+- Y-Parameters (see Admittance Matrix)  
+- Z-Parameters (see Impedance Matrix)

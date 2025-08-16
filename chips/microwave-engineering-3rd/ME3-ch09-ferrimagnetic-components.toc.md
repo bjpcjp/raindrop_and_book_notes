@@ -1,0 +1,79 @@
+---
+title: "ME3-ch09-ferrimagnetic-components"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch09-ferrimagnetic-components]
+---
+
+- Chapter 8: Microwave Filters
+  - References
+  - Problems
+    - 8.1 Voltage along a transmission line with resistors
+    - 8.2 k-p diagram for infinite periodic structure
+    - 8.3 Image impedance of a z-network
+    - 8.4 Compute image impedances and propagation factor
+    - 8.5 Design composite low-pass filter (image parameter method)
+    - 8.6 Design composite high-pass filter (image parameter method)
+    - 8.7 Design N=2 equal-ripple filter with 1.0 dB ripple
+    - 8.8 Design low-pass maximally flat lumped-element filter
+    - 8.9 Design five-section high-pass lumped-element filter
+    - 8.10 Design four-section bandpass lumped-element filter
+    - 8.11 Design three-section bandstop lumped-element filter
+    - 8.12 Verify second Kuroda identity
+    - 8.13 Design third-order low-pass maximally flat filter (series stubs)
+    - 8.14 Design fourth-order low-pass maximally flat filter (shunt stubs)
+    - 8.15 Verify admittance inverter from quarter-wave line
+    - 8.16 Equivalent circuits for short transmission line length
+    - 8.17 Design stepped-impedance low-pass filter (fifth-order equal-ripple)
+    - 8.18 Design stepped-impedance low-pass filter (maximally flat)
+    - 8.19 Design four-section coupled line bandpass filter
+    - 8.20 Design maximally flat bandstop filter using quarter-wave stubs
+    - 8.21 Design bandpass filter using quarter-wave short-circuited stub resonators
+    - 8.22 Derive bandpass filter design equations (quarter-wave shorted stub resonators)
+    - 8.23 Design bandpass filter using capacitive-gap coupled resonators
+    - 8.24 Design 1 dB equal-ripple bandpass filter for PCS receiver
+    - 8.25 Derive design equations for capacitively coupled shunt stub bandpass filter
+
+- Chapter 9: Theory and Design of Ferrimagnetic Components
+  - 9.1 Basic Properties of Ferrimagnetic Materials
+    - Magnetic dipole moment and spin angular momentum
+    - Torque and precession of magnetic dipoles
+    - Saturation magnetization and effect of bias field
+    - Permeability tensor of ferrimagnetic materials
+    - Circularly polarized fields interaction
+    - Effect of loss on permeability (gyromagnetic resonance)
+    - Demagnetization factors and internal magnetic fields
+    - Permanent magnets: properties and operating point
+  - 9.2 Plane Wave Propagation in a Ferrite Medium
+    - Propagation in direction of bias field (Faraday rotation)
+    - Eigenmodes: RHCP and LHCP waves and effective permeabilities
+    - Polarization rotation and nonreciprocity
+    - Propagation transverse to bias (birefringence)
+    - Ordinary and extraordinary waves
+  - 9.3 Propagation in a Ferrite-Loaded Rectangular Waveguide
+    - TE modes with single ferrite slab (transversely biased)
+    - Wave equations and boundary conditions
+    - Transcendental equation for propagation constants
+    - Approximate expressions for differential phase shift and attenuation
+    - TE modes with two symmetrical ferrite slabs
+  - 9.4 Ferrite Isolators
+    - Definition and ideal isolator scattering matrix
+    - Resonance isolators: operating near gyromagnetic resonance
+      - E-plane full-height slab isolators
+      - H-plane slab isolators and perturbation method
+    - Field displacement isolators: principle and design conditions
+  - 9.5 Ferrite Phase Shifters
+    - Application in phased-array antennas and other systems
+    - Nonreciprocal latching phase shifters using ferrite toroid
+    - Design equations and example for remanent phase shifter
+    - Other types of ferrite phase shifters (Faraday rotation, Reggia-Spencer)
+    - Gyrator: definition and use in nonreciprocal components
+  - 9.6 Ferrite Circulators
+    - Ideal circulator scattering matrix and nonreciprocity
+    - Properties of mismatched circulators and effects on isolation
+    - Stripline junction circulator: geometry and field analysis
+    - Resonant modes and design equations
+    - Power flow analysis between ports and mode superposition
+    - Bandwidth and dielectric loading considerations
+
+- References

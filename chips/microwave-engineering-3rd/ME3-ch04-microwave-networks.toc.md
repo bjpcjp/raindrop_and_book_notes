@@ -1,0 +1,77 @@
+---
+title: "ME3-ch04-microwave-networks"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ME3-ch04-microwave-networks]
+---
+
+- Chapter 3: Transmission Lines and Waveguides  
+  - 3.3 Cutoff frequencies and bandwidth of K-band waveguide  
+  - 3.4 TE10 mode attenuation in brass waveguide with dielectric  
+  - 3.5 Attenuator design using below-cutoff waveguide section  
+  - 3.6 Electric surface current densities for TE16 mode  
+  - 3.7 Attenuation expression for TM modes due to wall conductivity  
+  - 3.8 Cutoff frequency of TE16 mode in partially loaded rectangular waveguide  
+  - 3.9 TE mode fields and cutoff frequency in partially filled parallel plate waveguide  
+  - 3.10 TE modes in partially filled parallel plate waveguide, no x-dependence  
+  - 3.11 Transverse field components in cylindrical coordinates  
+  - 3.12 Attenuation of TM modes in circular waveguide with finite conductivity  
+  - 3.13 Cutoff frequencies and first four modes in dielectric filled circular waveguide  
+  - 3.14 Derivation of E and H fields, voltage, current, and impedance in coaxial line  
+  - 3.15 Transcendental equation for TM modes cutoff frequency in coaxial waveguide  
+  - 3.16 Attenuation of TE surface waves on grounded dielectric slab with finite conductivity ground  
+  - 3.17 TM surface waves on grounded magnetic slab  
+  - 3.18 TEM wave existence and TM modes in partially filled coaxial line  
+  - 3.19 Stripline design for 70 Ω impedance and guide wavelength at 3 GHz  
+  - 3.20 Microstrip design for 100 Ω impedance and guide wavelength at 4 GHz  
+  - 3.21 Microstrip line capacitance and inductance effects at 2.5 GHz, including loss effects  
+  - 3.22 Comparison of copper microstrip and stripline for minimum attenuation at 5 GHz  
+  - 3.23 Poynting vector and power flow direction in arbitrary uniform waveguiding structure  
+  - 3.24 Reflection and transmission at dielectric interface in rectangular waveguide for TE modes  
+  - 3.25 Transverse resonance for TM modes in partially filled rectangular waveguide  
+  - 3.26 Transverse resonance for TE surface waves on grounded magnetic slab  
+  - 3.27 Phase and group velocities in Teflon-filled X-band waveguide at 9.5 GHz  
+  - 3.28 Maximum power capacity of coaxial line and optimal geometry  
+
+- Chapter 4: Microwave Network Analysis  
+  - 4.1 Impedance and Equivalent Voltages and Currents  
+    - Equivalent voltages and currents in TEM and non-TEM lines  
+    - Relation of waveguide fields to equivalent voltages and currents  
+    - Example 4.1: Equivalent voltage and current for TE10 rectangular waveguide mode  
+    - Concept and types of impedance  
+    - Example 4.2: Waveguide impedance reflection coefficient at dielectric interface  
+    - Power relations and input impedance of arbitrary one-port networks  
+    - Even and odd frequency properties of impedance and reflection coefficients  
+  - 4.2 Impedance and Admittance Matrices  
+    - Definition and properties of impedance [Z] and admittance [Y] matrices for N-port networks  
+    - Reciprocity and lossless network conditions on [Z], [Y] matrices  
+    - Example 4.3: Evaluation of impedance parameters for a two-port T-network  
+  - 4.3 The Scattering Matrix  
+    - Definition and physical interpretation of scattering [S] matrix  
+    - Example 4.4: S-parameters of a 3 dB attenuator  
+    - Conversion formulas between [Z] and [S] matrices  
+    - Properties of [S] matrix for reciprocal (symmetric) and lossless (unitary) networks  
+    - Example 4.5: S-matrix analysis for nonreciprocal, lossy two-port network  
+    - Shift of reference planes and effect on S parameters  
+    - Generalized scattering parameters for unequal port characteristic impedances  
+    - Point of Interest: Vector Network Analyzer description and error correction  
+  - 4.4 The Transmission (ABCD) Matrix  
+    - Definition and sign conventions of ABCD matrix for two-port networks  
+    - Cascade connection of two-port networks via ABCD matrix multiplication  
+    - Example 4.6: ABCD parameters of series impedance two-port  
+    - Relation between ABCD and impedance matrices  
+    - Equivalent circuits for two-port networks (T and π equivalents)  
+    - Point of Interest: Computer-Aided Design (CAD) for microwave circuits  
+  - 4.5 Signal Flow Graphs  
+    - Nodes, branches, and representation for two-port networks  
+    - Decomposition rules: series, parallel, self-loop, splitting  
+    - Example 4.7: Use of flow graphs for terminated two-port network  
+    - Application: TRL Network Analyzer Calibration using flow graphs  
+  - 4.6 Discontinuities and Modal Analysis  
+    - Common waveguide and microstrip discontinuities and their equivalent circuits  
+    - Modal analysis technique for a /-plane step (change in width) in rectangular waveguide  
+    - Modal excitation and truncation to solve for reflection coefficients and equivalent reactance  
+    - Point of Interest: Microstrip discontinuity compensation via mitered bends  
+  - 4.7 Excitation of Waveguides—Electric and Magnetic Currents  
+    - Excitation of single waveguide modes by specific electric or magnetic current sheets  
+    - Mode excitation by arbitrary electric or magnetic currents using Lorentz reciprocity and modal expansions
