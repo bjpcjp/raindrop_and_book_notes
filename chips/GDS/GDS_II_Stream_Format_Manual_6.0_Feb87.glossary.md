@@ -1,0 +1,54 @@
+---
+title: "GDS_II_Stream_Format_Manual_6.0_Feb87 — Glossary"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [GDS_II_Stream_Format_Manual_6.0_Feb87]
+---
+
+- **Access Control List (ACL)** — A list specifying user groups, user numbers, and access rights for library security.  
+- **AREF** — Array reference element marking a repeated pattern arranged in a lattice.  
+- **BGNLIB** — Record marking the beginning of a library, containing modification and access dates.  
+- **BGNEXTN** — Record specifying a path outline extension beyond the first point (CustomPlus only).  
+- **BGNSTR** — Record marking the beginning of a structure, containing creation and modification times.  
+- **BOX** — Element defining a rectangular area with five coordinate points.  
+- **BOxtype** — Specifies the box type number (0 to 63).  
+- **COLROW** — Record specifying the number of columns and rows in an array reference.  
+- **DATATYPE** — Indicates the datatype number (0 to 63) of an element.  
+- **ELFLAGS** — Bit flags indicating if element data is template or external.  
+- **ENDEL** — Record marking the end of an element.  
+- **ENDLIB** — Record marking the end of a library.  
+- **ENDMASKS** — Record terminating MASK records in filtered Stream files.  
+- **ENDSTR** — Record marking the end of a structure.  
+- **FORMAT** — Record defining the Stream file format type (Archive or Filtered).  
+- **GDSII version number** — Number identifying the format release, e.g., 600 for Release 6.0.  
+- **HEADER** — First record in a Stream file indicating the format version.  
+- **LIBDIRSIZE** — Record indicating the size of the library directory (number of pages).  
+- **LIBNAME** — Record holding the library name as an ASCII string.  
+- **LIBSECUR** — Record containing Access Control List data for library security.  
+- **LINKKEYS** — Unreleased record type related to linking elements.  
+- **LINKTYPE** — Unreleased record type specifying the linking type.  
+- **LAYER** — Record defining the layer number (0 to 63) for an element.  
+- **MAG** — Record specifying a magnification factor as an eight-byte real number.  
+- **NODE** — Element marking a single coordinate node with a node type.  
+- **NODETYPE** — Record specifying the node type number (0 to 63).  
+- **PATHTYPE** — Record indicating path end style: square, round, or extended square.  
+- **PATH** — Element representing a geometric path with width and coordinates.  
+- **PLEX** — Record identifying an element's membership in a plex group.  
+- **PRESENTATION** — Bit flags defining font and text justification in a text element.  
+- **PROPATTR** — Record naming a property attribute number (1 to 127).  
+- **PROPVALUE** — Record containing the ASCII string value of a property attribute.  
+- **RECLength** — Total length of a record in bytes, found in the first two header bytes.  
+- **REFLIBS** — Record listing names of reference libraries bound to the current library.  
+- **SNAME** — Record containing the name of a referenced structure.  
+- **SREF** — Element referencing another structure by name and position.  
+- **STRANS** — Bit flags indicating reflection and whether magnification or angle are absolute.  
+- **STRCLASS** — Internal-use record classifying structures (CustomPlus only).  
+- **STRNAME** — Record containing the structure name as an ASCII string.  
+- **STRING** — Record containing ASCII strings, usually for text elements.  
+- **STREAM FORMAT** — Standard file format for GDSII data, supporting version compatibility.  
+- **TEXT** — Element containing text with associated layer, type, and presentation info.  
+- **TEXTNODE** — Element type marking a text node (not currently used).  
+- **TEXTTYPE** — Record specifying the text type number (0 to 63).  
+- **TAPENUM** — Record indicating the reel number in multi-reel Stream files.  
+- **TAPECODE** — Record containing a unique code identifying a multi-reel Stream file set.  
+- **UNITS** — Record containing the database unit size in user units and meters as eight-byte reals.
