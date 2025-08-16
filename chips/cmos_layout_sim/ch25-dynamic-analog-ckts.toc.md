@@ -1,0 +1,51 @@
+---
+title: "ch25-dynamic-analog-ckts"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ch25-dynamic-analog-ckts]
+---
+
+- Chapter 25 Dynamic Analog Circuits
+  - 25.1 The MOSFET Switch
+    - Charge Injection
+    - Capacitive Feedthrough
+    - Reduction of Charge Injection and Clock Feedthrough
+    - kT/C Noise
+    - 25.1.1 Sample-and-Hold Circuits
+      - Basic Sample-and-Hold
+      - Improved Sample-and-Hold Topologies
+      - Transconductance Amplifier S/H
+      - Feedback Path S/H
+  - 25.2 Fully-Differential Circuits
+    - Gain of Fully-Differential Op-Amps
+    - Common-Mode Feedback (CMFB)
+    - Coupled Noise Rejection
+    - Other Benefits of Fully-Differential Op-Amps
+    - 25.2.1 A Fully-Differential Sample-and-Hold
+      - Operation Explanation
+      - Connecting Inputs to Bottom Plate
+      - Bottom Plate Sampling
+      - SPICE Simulation of Fully-Differential S/H
+  - 25.3 Switched-Capacitor Circuits
+    - Switched-Capacitor Resistor
+      - Theory and Equivalent Resistance
+      - Example 25.1
+    - Switched-Capacitor Integrator
+      - Parasitic Insensitive Design
+      - Other Integrator Configurations
+      - Lossy Integrator and Filter Design
+      - Example 25.2
+      - Exact Frequency Response
+    - Capacitor Layout Considerations
+    - Op-Amp Settling Time in SC Circuits
+  - 25.4 Circuits
+    - Reducing Offset Voltage of an Op-Amp
+    - Dynamic Comparator
+      - Basic Concept
+      - Inverter-Based Dynamic Comparator
+      - Offset Cancellation Techniques (IOS & OOS)
+    - Dynamic Current Mirrors
+    - Dynamic Amplifiers
+  - Additional Reading
+  - Problems
+    - 25.1 to 25.14 (topics include MOSFET switches, charge injection, sample-and-hold circuits, fully-differential op-amps, switched-capacitor resistors/integrators, dynamic comparators, and more)

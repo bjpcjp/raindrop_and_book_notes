@@ -1,0 +1,62 @@
+---
+title: "ch24-op-amps"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ch24-op-amps]
+---
+
+- Chapter 24: Operational Amplifiers I
+  - 24.1 The Two-Stage Op-Amp
+    - Low-Frequency, Open Loop Gain, AOLDC
+    - Input Common-Mode Range
+    - Power Dissipation
+    - Output Swing and Current Sourcing/Sinking Capability
+    - Offsets
+    - Compensating the Op-Amp
+      - Block Diagram and Feedback Concept
+      - Open-Loop Frequency Response Estimation
+      - Simulating Open-Loop Response
+      - Effect of Compensation Capacitor
+      - Zero-Nulling Resistor and Step Response
+    - Gain and Phase Margins
+    - Removing the Zero
+      - Using Zero-Nulling Resistor (MOSFET Implementation)
+      - Using an Amplifier in Series with Compensation Capacitor
+    - Compensation for High-Speed Operation
+      - Indirect Current Feedback through Common-Gate Amplifier
+      - Implementing Indirect Compensation without Additional Power Dissipation
+    - Slew-Rate Limitations
+    - Common-Mode Rejection Ratio (CMRR)
+    - Power Supply Rejection Ratio (PSRR)
+    - Increasing the Input Common-Mode Voltage Range
+    - Estimating Bandwidth in Op-Amp Circuits
+  - 24.2 An Op-Amp with Output Buffer
+    - Limitations of Second-Stage Gain and Loading
+    - Increasing First-Stage Gain with Cascode Diff-Amp
+    - Output Buffer Topologies: source-follower and push-pull
+    - Open-Loop Response and Step Response
+    - Effect of Device Channel Length on Gain and Speed
+  - 24.3 The Operational Transconductance Amplifier (OTA)
+    - Basic OTA Structure and Transconductance
+    - Simulation of Unity-Gain Frequency
+    - Increasing OTA Output Resistance (Cascode OTA)
+    - Bandwidth and Stability Considerations with Load Capacitance
+    - OTA with Output Buffer for High Slew-Rate
+    - Comparisons between OTA-based and two-stage Op-Amps
+  - 24.4 Gain-Enhancement
+    - Using Additional Amplifiers to Regulate Cascode Nodes
+    - Effect on Open-Loop Gain
+    - Frequency Response and Compensation of Gain-Enhanced Amplifiers
+  - 24.5 Some Examples and Discussions
+    - A Voltage Regulator
+      - Basic Voltage Regulator Topology and Analysis
+      - Practical Design of On-Chip Voltage Regulator with Large Output Transistor
+      - Compensation Challenges and Load Capacitance Considerations
+    - Bad Output Stage Design Examples
+      - Uncontrolled Current in Push-Pull Output Stage
+      - Improved Designs with Level Shifters and Current Control
+      - Issues with Multiple High-Impedance Nodes and Compensation
+    - Three-Stage Op-Amp Design
+      - Nested Miller Compensation and Indirect Compensation
+      - Pole-Splitting and Zero Considerations
+      - Effect of Load Capacitance on Frequency Response and Phase Margin

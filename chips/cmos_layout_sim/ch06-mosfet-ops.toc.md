@@ -1,0 +1,52 @@
+---
+title: "ch06-mosfet-ops"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ch06-mosfet-ops]
+---
+
+- Chapter 6 MOSFET Operation  
+  - 6.1 MOSFET Capacitance Overview/Review  
+    - Case I: Accumulation  
+    - Case II: Depletion  
+    - Case III: Strong Inversion  
+    - Example 6.1: MOSFET Used as Capacitor  
+  - 6.2 The Threshold Voltage  
+    - Calculation of Depletion Region and Charge  
+    - Contact Potentials and Surface States  
+    - Threshold Voltage Equations  
+    - Example 6.2: Electrostatic Potentials and Charge  
+    - Example 6.3: Body Effect Coefficient  
+    - Example 6.4: Zero-Bias Threshold Voltage and Contamination  
+    - Threshold Voltage Adjustment by Implant Dose  
+    - Example 6.5: Implant Dose Estimation  
+  - 6.3 IV Characteristics of MOSFETs  
+    - 6.3.1 MOSFET Operation in the Triode Region  
+    - 6.3.2 The Saturation Region  
+    - Channel Length Modulation  
+    - Gate-Source Capacitance in Saturation  
+  - 6.4 SPICE Modeling of the MOSFET  
+    - Model Parameters Related to Threshold Voltage  
+    - Long-Channel MOSFET Models (Level 1, 2, 3)  
+    - Model Parameters Related to Drain Current  
+    - SPICE Modeling of Source and Drain Implants  
+    - Summary of Device Characteristics for Long-Channel Process  
+    - SPICE Simulation Examples  
+      - Threshold Voltage and Body Effect  
+      - The Subthreshold Current  
+  - 6.5 Short-Channel MOSFETs  
+    - Hot Carriers and Velocity Saturation  
+    - Lightly-Doped Drain (LDD)  
+    - 6.5.1 MOSFET Scaling  
+    - 6.5.2 Short-Channel Effects  
+      - Velocity Saturation Effects  
+      - Negative Bias Temperature Instability (NBTI)  
+      - Oxide Breakdown  
+      - Drain-Induced Barrier Lowering (DIBL)  
+      - Gate-Induced Drain Leakage (GIDL)  
+      - Gate Tunnel Current  
+    - 6.5.3 SPICE Models for Short-Channel CMOS Process (BSIM4)  
+    - Simulation Results Summary  
+  - Additional Reading  
+  - Problems  
+    - Problem 6.1 to 6.15

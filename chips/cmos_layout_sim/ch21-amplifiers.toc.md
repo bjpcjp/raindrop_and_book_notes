@@ -1,0 +1,62 @@
+---
+title: "ch21-amplifiers"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ch21-amplifiers]
+---
+
+- Chapter 21 Amplifiers  
+  - 21.1 Gate-Drain-Connected Loads  
+    - 21.1.1 Common-Source (CS) Amplifiers  
+      - Example 21.1  
+      - Miller's Theorem  
+      - Frequency Response  
+      - The Right-Half Plane Zero  
+      - Example 21.2  
+      - Example 21.3  
+    - A Common-Source Current Amplifier  
+    - Common-Source Amplifier with Source Degeneration  
+      - Example 21.4  
+    - Noise Performance of the CS Amplifier with Gate-Drain Load  
+    - 21.1.2 The Source Follower (Common-Drain Amplifier)  
+    - 21.1.3 Common Gate Amplifier  
+  - 21.2 Current Source Loads  
+    - 21.2.1 Common-Source Amplifier  
+      - Class A Operation  
+      - Example 21.5  
+      - Small-Signal Gain  
+      - Open Circuit Gain  
+      - High-Impedance and Low-Impedance Nodes  
+      - Frequency Response  
+      - Example 21.6  
+      - Pole Splitting  
+      - Pole Splitting Summary  
+      - Example 21.7  
+      - Example 21.8  
+      - Example 21.9  
+      - Example 21.10  
+      - Canceling the RHP Zero  
+      - Example 21.11  
+      - Noise Performance of the CS Amplifier with Current Source Load  
+    - 21.2.2 The Cascode Amplifier  
+      - Frequency Response  
+      - Example 21.12  
+      - Class A Operation  
+      - Noise Performance of the Cascode Amplifier  
+      - Operation as a Transimpedance Amplifier  
+    - 21.2.3 The Common-Gate Amplifier  
+    - 21.2.4 The Source Follower (Common-Drain Amplifier)  
+      - Body Effect and Gain  
+      - Level Shifting  
+      - Input Capacitance  
+      - Noise Performance of the SF Amplifier  
+      - Frequency Behavior  
+      - SF as an Output Buffer  
+      - Example 21.13  
+  - 21.3 The Push-Pull Amplifier  
+    - 21.3.1 DC Operation and Biasing  
+      - Power Conversion Efficiency  
+      - Example 21.14  
+    - 21.3.2 Small-Signal Analysis  
+    - 21.3.3 Distortion  
+      - Modeling Distortion with SPICE

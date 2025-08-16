@@ -1,0 +1,1 @@
+This chapter introduces the CMOS integrated circuit design process, emphasizing digital and analog CMOS circuit design, simulation using SPICE, and key concepts such as layout, fabrication, and parasitics. It also provides detailed examples of SPICE simulations, circuit analysis, and considerations for ensuring accurate and convergent results.

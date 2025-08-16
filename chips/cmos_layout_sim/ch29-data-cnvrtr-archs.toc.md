@@ -1,0 +1,58 @@
+---
+title: "ch29-data-cnvrtr-archs"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [ch29-data-cnvrtr-archs]
+---
+
+- Chapter 29 Data Converter Architectures
+  - 29.1 DAC Architectures
+    - 29.1.1 Digital Input Code
+    - 29.1.2 Resistor String
+      - Example 29.1: 3-bit resistor-string ladder design
+      - Mismatch Errors Related to the Resistor-String DAC
+      - Integral Nonlinearity of the Resistor-String DAC
+      - Example 29.2: Effective number of bits for resistor-string DAC
+      - Differential Nonlinearity of the Worst-Case Resistor-String DAC
+    - 29.1.3 R-2R Ladder Networks
+      - Example 29.3: 3-bit R-2R DAC design
+    - 29.1.4 Current Steering
+      - Example 29.4: Thermometer code for 3-bit current-steering DAC
+      - Mismatch Errors Related to Current-Steering DACs
+      - Example 29.5: MSB current source tolerance for 10-bit DAC
+    - 29.1.5 Charge-Scaling DACs
+      - Example 29.6: 3-bit charge-scaling DAC output voltage
+      - Layout Considerations for Binary-Weighted Capacitor Array
+      - The Split Array
+      - Example 29.7: Output voltage of 6-bit split-array charge-scaling DAC
+    - 29.1.6 Cyclic DAC
+      - Example 29.8: Output voltage values for 6-bit cyclic DAC
+    - 29.1.7 Pipeline DAC
+      - Example 29.9: Output voltage and conversion timing for 3-bit pipeline DAC
+  - 29.2 ADC Architectures
+    - 29.2.1 Flash
+      - Example 29.10: 3-bit Flash converter design and transfer curve
+      - Accuracy Issues for the Flash ADC
+      - Example 29.11: Maximum comparator offset voltage for 10-bit Flash ADC
+    - 29.2.2 The Two-Step Flash ADC
+      - Example 29.12: Two-step ADC output codes for selected inputs
+      - Accuracy Issues for Two-Step Flash Converters
+      - Accuracy Issues Related to Operational Amplifiers
+    - 29.2.3 The Pipeline ADC
+      - Example 29.13: Conversion process of 3-bit pipeline ADC
+      - Accuracy Issues Related to the Pipeline Converter
+    - 29.2.4 Integrating ADCs
+      - Single-Slope Architecture
+        - Example 29.14: Clock frequency for 8-bit single-slope converter
+        - Accuracy Issues Related to Single-Slope ADC
+      - Dual-Slope Architecture
+        - Accuracy Issues Related to Dual-Slope ADC
+    - 29.2.5 The Successive Approximation ADC
+      - Example 29.15: 3-bit SAR ADC example with digital output
+      - The Charge-Redistribution Successive Approximation ADC
+        - Accuracy Issues Related to Charge-Redistribution SAR ADC
+    - 29.2.6 The Oversampling ADC
+      - Differences between Nyquist and Oversampling ADCs
+      - The First-Order Sigma-Delta Modulator
+        - Example 29.16: Operation of first-order sigma-delta modulator
+      - The Higher Order Sigma-Delta Modulators

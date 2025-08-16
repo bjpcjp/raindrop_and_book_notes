@@ -1,0 +1,132 @@
+---
+title: "CMOS Circuit Design, Layout, and Simulation, 3rd Edition (IEEE Press Series on Microelectronic Systems)"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [cmos_sim]
+---
+
+- Chapter 1 Introduction to CMOS Design  
+  - 1.1 The CMOS IC Design Process  
+    - 1.1.1 Fabrication  
+  - 1.2 CMOS Background  
+    - The CMOS Acronym  
+    - CMOS Inverter  
+    - The First CMOS Circuits  
+    - Analog Design in CMOS  
+  - 1.3 An Introduction to SPICE  
+    - Generating a Netlist File  
+    - Operating Point  
+    - Transfer Function Analysis  
+    - The Voltage-Controlled Voltage Source  
+    - An Ideal Op-Amp  
+    - The Subcircuit  
+    - DC Analysis  
+
+- Chapter 2 The Well  
+  - The Substrate (The Unprocessed Wafer)  
+  - A Parasitic Diode  
+  - Using the N-well as a Resistor  
+  - 2.1 Patterning  
+    - 2.1.1 Patterning the N-well  
+  - 2.2 Laying Out the N-well  
+    - 2.2.1 Design Rules for the N-well  
+  - 2.3 Resistance Calculation  
+    - 2.3.1 The N-well Resistor  
+  - 2.4 The N-well/Substrate Diode  
+    - 2.4.1 A Brief Introduction to PN Junction Physics  
+    - 2.4.2 Depletion Layer Capacitance  
+    - 2.4.3 Storage or Diffusion Capacitance  
+    - 2.4.4 SPICE Modeling  
+  - 2.5 The RC Delay through the N-well  
+  - 2.6 Twin Well Processes  
+
+- Chapter 3 The Metal Layers  
+  - 3.1 The Bonding Pad  
+    - 3.1.1 Laying Out the Pad I  
+  - 3.2 Design and Layout Using the Metal Layers  
+    - 3.2.1 Metal and Via  
+    - 3.2.2 Parasitics Associated with the Metal Layers  
+    - 3.2.3 Current-Carrying Limitations  
+    - 3.2.4 Design Rules for the Metal Layers  
+    - 3.2.5 Contact Resistance  
+  - 3.3 Crosstalk and Ground Bounce  
+  - 3.4 Layout Examples  
+
+- Chapter 4 The Active and Poly Layers  
+  - 4.1 Layout Using the Active and Poly Layers  
+    - 4.1.1 Process Flow  
+  - 4.2 Connecting Wires to Poly and Active  
+  - 4.3 Electrostatic Discharge (ESD) Protection  
+
+- Chapter 5 Resistors, Capacitors, MOSFETs  
+  - 5.1 Resistors  
+  - 5.2 Capacitors  
+  - 5.3 MOSFETs  
+  - 5.4 Layout Examples  
+
+- Chapter 6 MOSFET Operation  
+  - 6.1 MOSFET Capacitance Overview/Review  
+  - 6.2 The Threshold Voltage  
+  - 6.3 IV Characteristics of MOSFETs  
+  - 6.4 SPICE Modeling of the MOSFET  
+  - 6.5 Short-Channel MOSFETs  
+
+- Chapter 7 CMOS Fabrication  
+  - 7.1 CMOS Unit Processes  
+  - 7.2 CMOS Process Integration  
+  - 7.3 Backend Processes  
+  - 7.4 Summary  
+
+- Chapter 8 Electrical Noise: An Overview  
+  - 8.1 Signals  
+  - 8.2 Circuit Noise  
+  - 8.3 Discussion  
+
+- Chapter 9 Models for Analog Design  
+  - 9.1 Long-Channel MOSFETs  
+  - 9.2 Short-Channel MOSFETs  
+  - 9.3 MOSFET Noise Modeling  
+
+- Chapter 10 Models for Digital Design  
+
+- Chapter 11 The Inverter  
+
+- Chapter 12 Static Logic Gates  
+
+- Chapter 13 Clocked Circuits  
+
+- Chapter 14 Dynamic Logic Gates  
+
+- Chapter 15 VLSI Layout Examples  
+
+- Chapter 16 Memory Circuits  
+
+- Chapter 17 Sensing Using AX Modulation  
+
+- Chapter 18 Special Purpose CMOS Circuits  
+
+- Chapter 19 Digital Phase-Locked Loops  
+
+- Chapter 20 Current Mirrors  
+
+- Chapter 21 Amplifiers  
+
+- Chapter 22 Differential Amplifiers  
+
+- Chapter 23 Voltage References  
+
+- Chapter 24 Operational Amplifiers I  
+
+- Chapter 25 Dynamic Analog Circuits  
+
+- Chapter 26 Operational Amplifiers II  
+
+- Chapter 27 Nonlinear Analog Circuits  
+
+- Chapter 28 Data Converter Fundamentals  
+
+- Chapter 29 Data Converter Architectures  
+
+- Chapter 30 Implementing Data Converters  
+
+- Chapter 31 Feedback Amplifiers

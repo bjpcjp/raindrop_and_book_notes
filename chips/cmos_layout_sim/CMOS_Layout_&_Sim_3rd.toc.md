@@ -1,0 +1,159 @@
+---
+title: "CMOS Circuit Design, Layout, and Simulation, 3rd Edition (IEEE Press Series on Microelectronic Systems)"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [CMOS_Layout_&_Sim_3rd]
+---
+
+- Preface  
+- Chapter 1 Introduction to CMOS Design  
+  - 1.1 The CMOS IC Design Process  
+    - 1.1.1 Fabrication  
+  - 1.2 CMOS Background  
+    - The CMOS Acronym  
+    - CMOS Inverter  
+    - The First CMOS Circuits  
+    - Analog Design in CMOS  
+  - 1.3 An Introduction to SPICE  
+    - Generating a Netlist File  
+    - Operating Point  
+    - Transfer Function Analysis  
+    - The Voltage-Controlled Voltage Source  
+    - An Ideal Op-Amp  
+    - The Subcircuit  
+    - DC Analysis  
+- Chapter 2 The Well  
+  - Patterning  
+    - Patterning the N-well  
+  - Laying Out the N-well  
+    - Design Rules for the N-well  
+  - Resistance Calculation  
+    - Layout of Corners  
+    - The N-well Resistor  
+  - The N-well/Substrate Diode  
+    - Introduction to PN Junction Physics  
+    - Carrier Concentrations  
+    - Fermi Energy Level  
+    - Depletion Layer Capacitance  
+    - Storage or Diffusion Capacitance  
+    - SPICE Modeling  
+  - RC Delay through the N-well  
+    - RC Circuit Review  
+    - Distributed RC Delay  
+    - Distributed RC Rise Time  
+  - Twin Well Processes  
+    - Design Rules for the Well  
+    - SEM Views of Wells  
+- Chapter 3 The Metal Layers  
+  - The Bonding Pad  
+    - Laying Out the Pad I  
+    - Capacitance of Metal-to-Substrate  
+    - Passivation  
+  - Design and Layout Using the Metal Layers  
+    - Metal and Via  
+    - Parasitics Associated with Metal Layers  
+    - Current-Carrying Limitations  
+    - Design Rules for the Metal Layers  
+    - Contact Resistance  
+  - Crosstalk and Ground Bounce  
+    - Crosstalk  
+    - Ground Bounce  
+      - DC Problems  
+      - AC Problems  
+  - Layout Examples  
+    - Laying Out the Pad II  
+    - Laying Out Metal Test Structures  
+    - SEM View of Metal  
+- Chapter 4 The Active and Poly Layers  
+  - Layout Using the Active and Poly Layers  
+    - The Active Layer  
+    - The P- and N-Select Layers  
+    - The Poly Layer  
+    - Self-Aligned Gate  
+    - Poly Wire  
+    - Suicide Block  
+    - Process Flow  
+    - Damascene Process Steps  
+  - Connecting Wires to Poly and Active  
+    - Connecting the P-Substrate to Ground  
+    - Layout of an N-Well Resistor  
+    - Layout of an NMOS Device  
+    - Layout of a PMOS Device  
+    - MOSFET Symbols  
+    - Standard Cell Frame  
+    - Design Rules  
+  - Electrostatic Discharge (ESD) Protection  
+    - Layout of the Diodes  
+- Chapter 5 Resistors, Capacitors, MOSFETs  
+  - Resistors  
+    - Temperature Coefficient  
+    - Voltage Coefficient  
+    - Using Unit Elements  
+    - Guard Rings  
+    - Interdigitated Layout  
+    - Common-Centroid Layout  
+    - Dummy Elements  
+  - Capacitors  
+    - Layout of Poly-Poly Capacitor  
+    - Parasitics  
+    - Temperature and Voltage Coefficients  
+  - MOSFETs  
+    - Lateral Diffusion  
+    - Oxide Encroachment  
+    - Source/Drain Depletion Capacitance  
+    - Source/Drain Parasitic Resistance  
+    - Layout of Long-Length MOSFETs  
+    - Layout of Large-Width MOSFETs  
+    - Qualitative Description of MOSFET Capacitances  
+  - Layout Examples  
+    - Metal Capacitors  
+    - Polysilicon Resistors  
+- Chapter 6 MOSFET Operation  
+  - MOSFET Capacitance Overview  
+  - The Threshold Voltage  
+    - Contact Potentials  
+    - Threshold Voltage Adjust  
+  - IV Characteristics of MOSFETs  
+    - Triode Region  
+    - Saturation Region  
+    - Cgs Calculation in Saturation  
+  - SPICE Modeling of the MOSFET  
+    - Model Parameters Related to VTHN  
+    - Long-Channel Models  
+    - Drain Current Parameters  
+    - Source and Drain Implants  
+  - SPICE Simulation Examples  
+    - Threshold Voltage and Body Effect  
+    - Subthreshold Current  
+  - Short-Channel MOSFETs  
+    - Hot Carriers  
+    - Lightly Doped Drain (LDD)  
+    - MOSFET Scaling  
+    - Short-Channel Effects (NBTI, Oxide Breakdown, DIBL, Gate Leakage)  
+    - BSIM4 Models (NMOS and PMOS)  
+    - Simulation Results  
+- Chapter 7 CMOS Fabrication  
+- Chapter 8 Electrical Noise: An Overview  
+- Chapter 9 Models for Analog Design  
+- Chapter 10 Models for Digital Design  
+- Chapter 11 The Inverter  
+- Chapter 12 Static Logic Gates  
+- Chapter 13 Clocked Circuits  
+- Chapter 14 Dynamic Logic Gates  
+- Chapter 15 VLSI Layout Examples  
+- Chapter 16 Memory Circuits  
+- Chapter 17 Sensing Using AX Modulation  
+- Chapter 18 Special Purpose CMOS Circuits  
+- Chapter 19 Digital Phase-Locked Loops  
+- Chapter 20 Current Mirrors  
+- Chapter 21 Amplifiers  
+- Chapter 22 Differential Amplifiers  
+- Chapter 23 Voltage References  
+- Chapter 24 Operational Amplifiers I  
+- Chapter 25 Dynamic Analog Circuits  
+- Chapter 26 Operational Amplifiers II  
+- Chapter 27 Nonlinear Analog Circuits  
+- Chapter 28 Data Converter Fundamentals  
+- Chapter 29 Data Converter Architectures  
+- Chapter 30 Implementing Data Converters  
+- Chapter 31 Feedback Amplifiers
