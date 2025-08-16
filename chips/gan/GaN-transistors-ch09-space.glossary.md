@@ -1,0 +1,26 @@
+- **2DEG** — Two-dimensional electron gas generated at the AlGaN/GaN barrier interface in GaN transistors.  
+- **Dose (Total Ionizing Dose, TID)** — The total amount of radiation energy absorbed per unit mass, measured in Rad(Si) for silicon.  
+- **Drain-to-Source Bias (VDS)** — Voltage applied between the drain and source terminals of a transistor during testing or operation.  
+- **Electron–Hole Pairs** — Pairs of electrons and holes created by radiation, which may cause momentary conduction in a semiconductor.  
+- **Enhancement-Mode (eGaN) Transistor** — A GaN transistor that is normally off and requires a positive gate voltage for conduction, often using pGaN gate technology.  
+- **Gamma Radiation** — High-energy electromagnetic radiation, typically tested using Cobalt-60 sources in semiconductor radiation testing.  
+- **Gate-to-Source Bias (VGS)** — Voltage applied between the gate and source terminals of a transistor during testing or operation.  
+- **Gate Oxide** — The insulating layer between the gate and channel in MOS devices that can trap charge and shift threshold voltage under radiation.  
+- **Hard-Switching Figure of Merit (FOM)** — A performance metric defined as RDS(on) × QGD representing switching losses during hard transitions.  
+- **Heavy Ion** — Energetic ions with high LET used in testing to simulate space radiation effects on semiconductor devices.  
+- **LET (Linear Energy Transfer)** — Measure of energy deposited by radiation per unit length of its track through a material; higher for heavier ions.  
+- **MOS Gate HEMT** — Metal-oxide-semiconductor gated high electron mobility transistor combining GaN materials with MOS structures.  
+- **Rad (Radiation Absorbed Dose)** — Unit of absorbed radiation energy; 1 Rad = 100 ergs/gram.  
+- **Rad-Hard Device** — Semiconductor device designed to tolerate high total ionizing doses and single-event effects in radiation environments.  
+- **RDS(on)** — On-state resistance of a transistor between drain and source, impacting conduction losses.  
+- **Schottky Gate HEMT** — GaN transistor using a Schottky barrier gate, typically depletion-mode with high radiation tolerance due to absence of oxide.  
+- **SEE (Single Event Effects)** — Radiation effects caused by a single energetic particle causing transient or permanent electrical disruptions in devices.  
+- **SEB (Single Event Burnout)** — Catastrophic failure mode due to a single event that causes device burnout under high voltage stress.  
+- **SEGR (Single Event Gate Rupture)** — Failure mode where gate oxide is physically ruptured by high LET radiation; unlikely in GaN devices without gate oxide.  
+- **SEU (Single Event Upset)** — Temporary change or disruption in a device’s state due to a single energetic particle.  
+- **Soft-Switching Figure of Merit (FOM)** — Performance metric defined as RDS(on) × (QG + QOSS) representing losses during soft switching.  
+- **Threshold Voltage (VTH)** — Gate voltage at which a transistor begins to conduct; can shift due to trapped charges from radiation.  
+- **Total Ionizing Dose (TID)** — Accumulated radiation damage measured in kRad(Si) or MRad(Si), indicating device tolerance limits.  
+- **Trap** — Defect site in insulating or semiconductor layers that capture charge carriers and affect device performance under radiation.  
+- **Two-Dimensional Electron Gas (2DEG)** — High mobility electron channel formed at the AlGaN/GaN interface in HEMTs.  
+- **Xenon (Xe), Bromine (Br), Gold (Au) ions** — Examples of ions used in heavy ion radiation testing with high LET values.

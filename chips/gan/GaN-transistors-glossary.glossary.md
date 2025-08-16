@@ -1,0 +1,1 @@
+- **Appendix** — supplementary material located at the end of a document, providing additional information or references.

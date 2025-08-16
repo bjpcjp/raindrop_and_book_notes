@@ -1,0 +1,1 @@
+The appendix and glossary of terms are presented across pages 240 to 245, serving as supplementary material to the main document. This section provides definitions and clarifications to support understanding of the content.

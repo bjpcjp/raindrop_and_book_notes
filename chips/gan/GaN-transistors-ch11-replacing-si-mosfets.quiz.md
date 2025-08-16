@@ -1,0 +1,27 @@
+1. **Q:** What are the four key variables that control the adoption rate of a disruptive power management technology like GaN transistors replacing silicon power MOSFETs?
+   **A:** The four key variables are: (1) Does it enable significant new capabilities? (2) Is it easy to use? (3) Is it very cost effective for the user? (4) Is it reliable?
+   **External example:** Adoption of wide-bandgap devices depends on performance, usability, cost-effectiveness, and reliability, as highlighted in IEEE Transactions on Power Electronics https://ieeexplore.ieee.org/document/8376428
+
+2. **Q:** How do GaN transistors enable significant new capabilities compared to silicon power MOSFETs, and what practical impacts do these capabilities have on power conversion systems?
+   **A:** GaN transistors have much higher critical electric field capabilities allowing greater drain-to-source voltage tolerance with lower on-resistance, along with higher electron mobility and advanced packaging. This leads to faster switching speeds (up to hundreds of MHz) and smaller device size, enabling improved efficiency, reduced system size, and increased power density in power conversion systems.
+   **External example:** GaN devices enable high-frequency, high-efficiency power converters as described by Infineon Technologies: https://www.infineon.com/cms/en/product/power/mosfet/gan-transistors/
+
+3. **Q:** In what ways are GaN transistors easier or more challenging to use compared to silicon MOSFETs, and what tools assist designers in applying GaN technology?
+   **A:** GaN transistors behave similarly to silicon MOSFETs, allowing designers to leverage existing experience; however, their higher frequency response introduces challenges such as susceptibility to stray parasitic inductances causing gate voltage overshoot. Advantages include threshold voltage stability over temperature and a smaller temperature coefficient of on-resistance. Designers are supported by available SPICE and thermal models, pre-assembled kits, and specialized GaN driver ICs that optimize switching speed and minimize overshoot.
+   **External example:** ON Semiconductor provides comprehensive GaN design kits and models that simplify GaN transistor applications: https://www.onsemi.com/products/power-management/gan-transistors
+
+4. **Q:** What are the main cost components compared between GaN transistors and silicon power MOSFETs, and how are these costs expected to evolve over time?
+   **A:** The main cost components are starting material, epitaxial growth, wafer fabrication, and test & assembly. Starting material costs are similar due to standard silicon substrates. Currently, GaN epitaxial growth costs are higher than silicon but are expected to approach silicon costs as automation and maturity improve. Wafer fabrication is comparable or lower for monolithic GaN but potentially higher for cascode devices. Assembly costs favor GaN monolithic devices due to simpler packaging, but cascode devices may cost more. Overall, GaN monolithic devices were costlier in 2013 but anticipated to be cheaper by 2016, while cascode devices remain more expensive.
+   **External example:** The evolving cost competitiveness of GaN devices is discussed by Cree/Wolfspeed in their market analysis: https://www.wolfspeed.com/knowledge-center/why-gan/
+
+5. **Q:** How does GaN transistor reliability compare with silicon power MOSFETs, and what evidence supports the current understanding of GaN device robustness?
+   **A:** While silicon MOSFET reliability is well-established due to decades of development, GaN transistor reliability is relatively new but shows excellent early results from qualification tests and applications in RF and power systems, including resistance to harsh radiation exposure. Accelerated life tests indicate GaN technology is robust across a range of conditions.
+   **External example:** Reliability assessments for GaN devices are published by EPC in technical reports: https://epc-co.com/epc/Technology/Reliability.aspx
+
+6. **Q:** What future directions and technological opportunities are anticipated for GaN transistors beyond current performance, according to the document?
+   **A:** There is potential for at least twofold improvements in key figures of merit like Miller ratio and RDS(on) × area every two to four years. A major future opportunity lies in monolithic integration of both power-level and signal-level devices on the same GaN substrate, enabling complex power systems on single chips with minimal parasitic interactions.
+   **External example:** Monolithic integration of GaN power ICs is explored by Texas Instruments: https://www.ti.com/lit/wp/slyy196/slyy196.pdf
+
+7. **Q:** Summarize the document’s conclusion regarding the trajectory and market potential of GaN transistors relative to silicon power MOSFETs.
+   **A:** The document concludes that while the power MOSFET revolutionized power conversion, it is now nearing performance and cost limits. GaN transistors are at the start of a similar transformational journey with rapidly advancing performance and cost advantages. As GaN on silicon epitaxy matures and designs proliferate, GaN technology is poised to become dominant over the next decade, significantly widening the performance and cost gap over silicon MOSFETs.
+   **External example:** Market forecasts for GaN device adoption show rapid growth and displacement of silicon devices: https://www.idtechex.com/en/research-report/gan-power-electronics-forecasts-2020-2030/731

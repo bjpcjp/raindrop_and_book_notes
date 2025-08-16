@@ -1,0 +1,48 @@
+- **CGS** — Gate-to-source capacitance of the transistor.  
+- **CISS** — Input capacitance, the sum of gate-drain capacitance (CGD) and gate-source capacitance (CGS).  
+- **COSS** — Output capacitance, the sum of gate-drain capacitance (CGD) and source-drain capacitance (CSD).  
+- **CRSS** — Reverse transfer capacitance (also CGD), a function of drain-to-source voltage affecting Miller charge.  
+- **D (Duty Cycle)** — Ratio of output voltage to input voltage in a buck converter.  
+- **fSW (Switching Frequency)** — Frequency at which the transistor is switched on and off.  
+- **FOMHS (Hard-Switching Figure of Merit)** — A figure of merit proportional to switching losses: \(FOMHS = (Q_{GD} + Q_{GS2}) \times R_{DS(on)}\).  
+- **GM (Transconductance)** — The rate of change of drain current with gate voltage in a transistor.  
+- **IG (Gate Current)** — Current supplied to the gate during switching transitions; influences switching speed.  
+- **IDS (Drain-to-Source Current)** — Current flowing through the transistor channel when on.  
+- **ITurn-on** — Inductor current at the instant the switch turns on during a switching cycle.  
+- **ITurn-off** — Inductor current at the instant the switch turns off during a switching cycle.  
+- **LDCR (DC Resistance)** — Resistance of an inductor’s winding measured under DC conditions.  
+- **LLoop (Loop Inductance)** — The inductance encompassing the power loop formed by supply, switches, and connections.  
+- **LS (Source Inductance / Common-Source Inductance, CSI)** — Inductance between the transistor source terminal and reference ground affecting gate drive.  
+- **PG (Gate Charge Losses)** — Power losses associated with charging and discharging the gate capacitance during switching.  
+- **PL (Inductor Losses)** — Total losses in the inductor including DC and AC resistance and core losses.  
+- **PConduction (Conduction Losses)** — Power loss due to current flow through the device's channel resistance when on.  
+- **PDYN (Dynamic Losses)** — Power losses related to charge and discharge of the transistor’s parasitic capacitances and switching transitions.  
+- **POSS (Output Capacitance Losses)** — Power losses due to charging and discharging of the transistor output capacitance during voltage transitions.  
+- **Pon (Turn-On Switching Losses)** — Power losses during the transistor turn-on switching event.  
+- **Poff (Turn-Off Switching Losses)** — Power losses during the transistor turn-off switching event.  
+- **PSD (Reverse Conduction Losses)** — Power losses occurring when current flows through the transistor’s body diode before the transistor channel conducts.  
+- **PRR (Reverse Recovery Losses)** — Losses associated with stored charge removal in body diodes, significant in MOSFETs and cascode GaN devices but zero for enhancement-mode GaN transistors.  
+- **QGD (Miller Charge)** — Gate charge required to transition the drain-to-source voltage (Miller plateau region).  
+- **QG (Total Gate Charge)** — Total charge needed to drive the gate from zero to the rated gate voltage (fully enhanced).  
+- **QGS (Gate-to-Source Charge)** — Charge required to increase gate voltage to the plateau voltage; \(Q_{GS} = Q_{GS1} + Q_{GS2}\).  
+- **QGS1** — Charge required to raise gate voltage from zero to the threshold voltage.  
+- **QGS2** — Charge required to transition the current conduction interval after threshold voltage is reached.  
+- **QG(op)** — Total gate charge at the operating conditions.  
+- **QGS(op)** — Gate-to-source charge at operating plateau voltage.  
+- **QOSS (Output Charge)** — Charge associated with the output capacitance COSS during voltage transitions.  
+- **QRR (Reverse Recovery Charge)** — Charge needed to turn off the body diode in MOSFET or cascode devices.  
+- **RDS(on) (On-Resistance)** — Static channel resistance of a transistor when fully on.  
+- **tCF (Current Fall Time)** — Time for the transistor current to fall during turn-off.  
+- **tCR (Current Rise Time)** — Time for the transistor current to rise during turn-on.  
+- **tDiode (Reverse Conduction Time, tSD)** — Time during which the body diode conducts current during switching dead-time.  
+- **teff (Effective Dead-Time)** — Interval between transistor switching when one device is off and the other is turning on; impacts diode conduction losses.  
+- **tVR (Voltage Rise Time)** — Time for the voltage across the transistor to rise during turn-off.  
+- **tVF (Voltage Fall Time)** — Time for the voltage across the transistor to fall during turn-on.  
+- **tZVS (Zero Voltage Switching Transition Time)** — Time interval enabling zero voltage switching, avoiding diode conduction losses.  
+- **VDR (Gate Driver Output Voltage)** — Voltage level output by the gate driver.  
+- **VDS (Drain-to-Source Voltage)** — Voltage across the transistor terminals; swings between zero and bus voltage in switching.  
+- **VGS (Gate-to-Source Voltage)** — Voltage applied to the transistor gate relative to the source, controlling conduction state.  
+- **Vpl (Gate Plateau Voltage)** — Voltage level during Miller plateau in gate charging during switching.  
+- **Vpl(op) (Operating Plateau Voltage)** — Plateau voltage at specific operating conditions.  
+- **VSD (Source-to-Drain Voltage)** — Voltage drop across the body diode during reverse conduction.  
+- **Vth (Threshold Voltage)** — Gate voltage at which the transistor begins to conduct.

@@ -1,0 +1,43 @@
+```markdown
+# Table of Contents
+
+- 6 Hard-Switching Topologies  
+  - 6.1 Introduction  
+  - 6.2 Hard-Switching Loss Analysis  
+    - 6.2.1 Switching Losses  
+      - 6.2.1.1 Miller Charge (QGD): The Voltage Transition Period  
+      - 6.2.1.2 Gate Charge (QGS2): The Current Transition Period  
+    - 6.2.2 Output Capacitance (COSS) Losses  
+    - 6.2.3 Gate Charge (QG) Losses  
+    - 6.2.4 Reverse Conduction Losses (PSD)  
+    - 6.2.5 Reverse Recovery (QRR) Losses  
+    - 6.2.6 Total Hard-Switching Losses  
+    - 6.2.7 Hard-Switching Figure of Merit  
+  - 6.3 External Factors Impacting Hard-Switching Losses  
+    - 6.3.1 Impact of Common-Source Inductance  
+    - 6.3.2 Impact of High Frequency Power-Loop Inductance on Device Losses  
+  - 6.4 Reducing Body Diode Conduction Losses in GaN Transistors  
+  - 6.5 Frequency Impact on Magnetics  
+    - 6.5.1 Transformers  
+    - 6.5.2 Inductors  
+  - 6.6 Buck Converter Example  
+    - 6.6.1 Output Capacitance Losses  
+    - 6.6.2 Gate Losses (PG)  
+    - 6.6.3 Body Diode Conduction Losses (PSD)  
+      - 6.6.3.1 Turn-Off Transient Diode Conduction Losses  
+      - 6.6.3.2 Turn-On Transient Diode Conduction Losses  
+    - 6.6.4 Switching Losses (Psw)  
+      - 6.6.4.1 Control Switch Dynamic Losses  
+      - 6.6.4.2 Synchronous Rectifier Dynamic Losses  
+    - 6.6.5 Total Dynamic Losses (PDynamic)  
+    - 6.6.6 Conduction Losses (PConduction)  
+    - 6.6.7 Total Device Hard-Switching Losses (PHS)  
+    - 6.6.8 Inductor Losses (PL)  
+    - 6.6.9 Total Buck Converter Estimated Losses (PTotal)  
+    - 6.6.10 Buck Converter Loss Analysis Accounting for Common Source Inductance  
+      - 6.6.10.1 Control Switch Dynamic Losses Including the Effect of CSI  
+      - 6.6.10.2 Synchronous Rectifier Dynamic Losses Including the Effect of CSI  
+    - 6.6.11 Experimental Results for the Buck Converter  
+  - 6.7 Summary  
+- References
+```

@@ -1,0 +1,19 @@
+- **BCD MOS** — Bipolar-CMOS-DMOS, a silicon process technology for power and analog ICs.  
+- **Cascode GaN transistor** — A device combining a GaN transistor and a silicon MOSFET in a traditional power package.  
+- **Critical electric field** — The maximum electric field a semiconductor can withstand before breakdown.  
+- **Epitaxial growth** — Layering of crystalline material (such as GaN or silicon) on a substrate during semiconductor fabrication.  
+- **Flip chip** — A method of device assembly where the chip is mounted face down to minimize parasitics.  
+- **GaN transistor** — Gallium Nitride-based transistor offering higher switching speeds and voltage capability than silicon MOSFETs.  
+- **LGA (Land Grid Array)** — A package format, often WLCSP, used for low-voltage GaN transistors allowing direct mounting with low inductance.  
+- **MOCVD** — Metal Organic Chemical Vapor Deposition, a process used to grow GaN epitaxial layers.  
+- **Monolithic full-bridge power device** — A power device integrating all components of a full bridge on a single GaN chip.  
+- **Monolithic enhancement-mode transistor** — A GaN device with built-in normally-off characteristics fabricated on a single chip.  
+- **Parasitic inductance** — Unwanted inductance in device interconnections causing switching challenges.  
+- **Power MOSFET** — Silicon-based power transistor widely used in power conversion, known for mature technology and reliability.  
+- **Power loop inductance** — Inductance present in the main current path, affecting switching performance.  
+- **RDS(on)** — On-resistance of a transistor when fully turned on, impacting conduction losses.  
+- **SPICE device models** — Simulation models used to predict transistor and circuit behavior during design.  
+- **Starting material** — Substrate material (such as silicon) upon which devices are fabricated.  
+- **Threshold voltage** — The gate voltage at which a transistor begins to conduct significantly.  
+- **WLCSP (Wafer-Level Chip-Scale Package)** — Packaging technique that allows GaN transistors to be used as flip chips with minimal parasitic effects.  
+- **Wafer fabrication** — Semiconductor process steps that convert epitaxial wafers into finished devices.

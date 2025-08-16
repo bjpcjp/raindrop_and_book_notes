@@ -1,0 +1,34 @@
+- **2DEG** — Two-dimensional electron gas, the channel layer in GaN transistors responsible for conduction.  
+- **AC characteristics** — Device behavior related to alternating current, influenced by parasitic capacitors.  
+- **Back surface (case)** — The non-PCB mounting surface of an LGA GaN transistor, used for thermal dissipation.  
+- **Body diode** — Conventional diode in silicon MOSFETs; enhancement-mode GaN transistors do not have a conventional one but exhibit similar behavior via channel enhancement.  
+- **Capacitive elements** — Parasitic capacitances in GaN transistors that affect frequency-dependent behavior (e.g., CGS, CGD, CDS).  
+- **Capacitors (CGD, CGS, CDS)** — Gate-drain, gate-source, and output capacitances that are nonlinear and voltage-dependent in GaN transistors.  
+- **Cascode structure** — A combination of two devices requiring high-frequency models including parasitic interconnects.  
+- **Circuit modeling** — Simulation approach using equivalent circuits to represent devices and parasitics.  
+- **Convection and radiation** — Heat transfer methods important in thermal dissipation from the device case to ambient.  
+- **Electrically equivalent thermal circuit** — A model representing thermal resistances and heat flow paths analogously to electrical circuits.  
+- **Enhancement-mode devices** — GaN transistors that operate similarly to MOSFETs but with distinct physics.  
+- **Equivalent circuit** — A combination of resistors, capacitors, current sources, and inductors used in SPICE models to simulate device behavior.  
+- **Gate-drive losses** — Power losses originating from driving the gate of a transistor during switching.  
+- **Gate termination resistance (RG)** — Resistance associated with the gate terminal, dependent on device and package.  
+- **Heat spreading** — Lateral distribution of heat through PCB copper layers or internal metal layers.  
+- **Heat sink** — Thermal interface device designed to remove heat from the transistor’s case surface efficiently.  
+- **Layout inductance** — Parasitic inductance introduced by PCB layout and interconnections, significant in GaN transistors.  
+- **LGA GaN transistors** — Gallium Nitride power transistors with land grid array packaging, typically package-less with dual-sided heat flow.  
+- **Loss breakdown** — Separation of power losses into device, gate driver, core, and other components for thermal modeling.  
+- **Normalized on-resistance (RDS(on))** — On-state resistance of the transistor normalized against temperature, used for temperature calibration.  
+- **Parasitic capacitors** — Unintended capacitive elements formed by device geometry and materials affecting AC performance.  
+- **Parasitic inductance** — Unwanted inductance from device packaging and layout affecting switching behavior.  
+- **Package termination resistors (RD, RS, RG)** — Constant resistances associated with drain, source, and gate terminals respectively, influenced by device packaging.  
+- **Passive probes** — Voltage measurement devices with limited bandwidth and voltage range, used for high-speed waveform measurements.  
+- **Power loop inductance** — Total inductance of the current path in a switching circuit, including layout and packaging inductances.  
+- **SPICE model** — Simulation model using equivalent electrical components to emulate transistor behavior under various conditions.  
+- **Thermal interface material (TIM)** — Material applied between the transistor and heatsink to improve thermal conductivity.  
+- **Thermal resistance (RθJC, RθJB, RθBA, RθSA, RθTIM, etc.)** — Quantitative measure of resistance to heat flow between junction-case, junction-board, board-ambient, sink-ambient, and through TIM.  
+- **Thermal vias** — Conductive pathways through PCB layers enhancing heat dissipation from the device to the board.  
+- **Thermal spreading resistance (RθSP)** — Resistance related to heat spreading within the PCB and device vicinity.  
+- **Two parallel current sources** — Model element representing forward and reverse conduction paths in GaN transistors replacing the body diode.  
+- **Voltage measurement bandwidth** — Required oscilloscope and probe bandwidth to accurately capture fast transient voltages in switching circuits.  
+- **Voltage overshoot damping** — Reduction of voltage spike amplitude caused by parasitic inductance through resistive losses like skin and proximity effects.  
+- **Voltage-controlled current source (ID)** — Model representation of the transistor’s drain current dependent on gate-source and drain-source voltages.

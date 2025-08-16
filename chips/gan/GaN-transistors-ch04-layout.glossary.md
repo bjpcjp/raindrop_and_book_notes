@@ -1,0 +1,26 @@
+- **AC conduction losses** — Losses due to eddy currents and proximity effects in conductors carrying alternating current.  
+- **Bus capacitor** — High-frequency capacitor connected to the power loop to stabilize voltage and reduce switching noise.  
+- **Common source inductance (CSI)** — Inductance shared by both the gate drive loop and power loop, critical to minimize for high-speed switching performance.  
+- **Drain** — The output terminal of a transistor through which current flows out of the device.  
+- **ESL (Equivalent Series Inductance)** — Inductance component of a capacitor that affects high-frequency performance of the power loop.  
+- **Gate drive loop** — Circuit loop formed by the gate driver, GaN transistor, and gate drive capacitor, influencing switching speed and stability.  
+- **Gate loop inductance** — Inductance in the gate drive loop, impacting gate transition times and switching performance.  
+- **GaN transistor** — Gallium Nitride-based transistor offering high-speed switching capabilities and lower parasitics compared to Si MOSFETs.  
+- **Inductance** — Property of a conductor to oppose changes in current, contributing to parasitic effects in power circuits.  
+- **Interleaved vias** — Arranged vias with alternating current directions in PCB layers that reduce loop inductance through magnetic field cancellation.  
+- **Lateral power loop** — PCB layout in which input capacitors and devices are on the same PCB side, minimizing loop size laterally.  
+- **LGA (Land Grid Array)** — Package type with terminals arranged in a grid of solder bars, facilitating low inductance connections for GaN devices.  
+- **Magnetic field self-cancellation** — Technique of routing currents in adjacent conductors in opposite directions to reduce net inductance.  
+- **Parallel power loops** — Multiple complete half-bridge loops placed in parallel to share current evenly and reduce inductance asymmetries.  
+- **Parallel transistors** — Multiple transistors connected to operate as a single device to increase current capacity in power circuits.  
+- **PCB interconnect inductance** — Inductance contributed by PCB traces and vias, affecting overall loop inductance.  
+- **Power loop** — High-frequency current path formed by the switching devices and bus capacitors in a converter circuit.  
+- **Power loop inductance** — Total inductance within the power loop affecting switching losses and efficiency.  
+- **PQFN package** — Power Quad Flat No-Lead package type used for high-voltage GaN transistors, often featuring a separate gate-return source pin.  
+- **Shield layer** — PCB layer used to reduce parasitic inductance by opposing magnetic fields generated from power loops.  
+- **Switch node (VSW)** — The node between the high-side and low-side switching elements in a half-bridge circuit.  
+- **Switching element** — Single power switch device or group of parallel devices acting together in a converter circuit.  
+- **Thermal modeling** — Simulation method to analyze heat dissipation and temperature impact on transistor performance.  
+- **Via** — Vertical electrical connection between PCB layers, essential for multi-layer power loop designs.  
+- **Vertical power loop** — PCB layout with input capacitors and devices on opposite sides connected through vias, enabling magnetic field cancellation vertically.  
+- **WLCSP (Wafer Level Chip Scale Package)** — Packaging style where the chip is packaged at wafer level with a land grid array arrangement.

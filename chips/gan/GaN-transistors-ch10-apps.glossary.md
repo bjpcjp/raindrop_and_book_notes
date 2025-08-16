@@ -1,0 +1,34 @@
+- **Bootstrapping** — A method to supply voltage to the high-side gate driver in half-bridge circuits using a capacitor charged during low-side conduction.
+- **Buck Converter** — A DC-DC converter topology that steps down voltage from input to output.
+- **Class-D Amplifier** — A switching audio amplifier using pulse-width modulation for high efficiency.
+- **Common Source Inductance (LS)** — The inductance seen at the common source terminal of parallel transistors affecting switching performance.
+- **Dead-Time** — A short interval during switching when both high-side and low-side devices are off to prevent shoot-through.
+- **Damping Factor (DF)** — The ratio of load impedance to amplifier output impedance affecting audio distortion.
+- **Differential-Mode Class-E (DMCE)** — A wireless power transfer topology using differential Class-E amplifiers.
+- **Dynamic Current Difference** — Unequal current sharing between parallel devices due to parasitic imbalances.
+- **Efficiency (%)** — The ratio of output power to input power in a converter.
+- **Envelope Tracking (ET)** — A technique for RF power amplifiers where the PA supply voltage tracks the envelope of the RF signal to improve efficiency.
+- **FOM (Figure of Merit)** — A metric combining device parameters like gate charge and on-resistance to quantify switching performance.
+- **Gate Drive Losses** — Power losses associated with charging and discharging the gate capacitance of a transistor.
+- **Gate-to-Drain Charge (QGD)** — Part of a transistor’s gate charge linked to the Miller effect influencing switching losses.
+- **Gate-to-Source Charge (QGS)** — The gate charge associated with the gate-to-source capacitance.
+- **GaN Transistor** — Gallium Nitride transistor with superior hard- and soft-switching performance over silicon MOSFETs.
+- **High-Frequency Power Loop** — PCB layout loop comprising power devices and their interconnections critical in switching performance.
+- **Isolated DC-DC Converter** — A converter that provides galvanic isolation between input and output using a transformer.
+- **LLC Resonant Converter** — A resonant converter topology with soft switching suitable for high voltage and high frequency.
+- **Loop Inductance** — Parasitic inductance in the power loop affecting voltage overshoot and switching losses.
+- **Non-Isolated DC-DC Converter** — A converter without galvanic isolation, typically used in point-of-load designs.
+- **Parasitic Inductance** — Unwanted inductance from PCB layout and device packaging impacting switching performance.
+- **Phase-Shifted Full-Bridge (PSFB)** — A hard-switching converter topology using phase shift control for zero voltage switching.
+- **Point of Load (POL) Converter** — A localized converter stepping down voltage for use in electronics like computers.
+- **Power Density** — Power output per unit volume or area of a power converter.
+- **Power Factor Correction (PFC)** — Circuit techniques used to improve power factor and reduce harmonics from AC mains.
+- **Reverse Recovery Charge (QRR)** — Charge involved when a diode turns off, resulting in switching losses in silicon devices.
+- **Soft Switching** — Switching technique (ZVS or ZCS) to reduce switching losses and stress on a device.
+- **Synchronous Rectifier** — A MOSFET or GaN transistor used to replace diodes for synchronous conduction in converters.
+- **Switching Frequency (fsw)** — The frequency at which power devices turn on and off in a converter.
+- **Switching Speed (dv/dt)** — Rate of change of voltage across a transistor during switching events.
+- **Totem Pole PFC** — A bridgeless power factor correction topology eliminating diode conduction losses.
+- **Total Harmonic Distortion (THD)** — Measurement of distortion in output waveform, important in audio amplifier quality.
+- **Traditional Conventional Layouts (Lateral or Vertical Power Loops)** — PCB layouts for power loops affecting inductances and performance.
+- **Wireless Energy Transfer** — Transmission of power without wires using magnetic coupling at resonant frequencies.

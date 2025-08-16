@@ -1,0 +1,30 @@
+- **1 dB Compression Point** — The input power level at which the output power gain drops by 1 dB from the ideal linear gain, marking the limit of linear amplification.
+- **2-Port Network** — A circuit representation with two ports, each having incident and reflected waves, used to model transistor behavior.
+- **Available Gain (GA)** — The ratio of power available from the amplifier to the power available from the source.
+- **Bias Pulse** — A timed voltage pulse applied to a transistor’s bias circuit during pulsed RF testing to reduce average power dissipation.
+- **Constant Available Gain Circle** — A locus on a Smith chart representing possible input reflection coefficients that yield a specific available gain.
+- **Depletion-mode Transistor** — A transistor requiring a negative gate voltage for current regulation, typically used in RF power amplifiers.
+- **Drain Bias Current (IDQ)** — The steady-state current through the transistor at the quiescent operating point.
+- **Drain Efficiency (ηD)** — Ratio of output RF power to DC power supplied, indicating amplifier efficiency.
+- **Drain Losses at Quiescent Point (PDQ)** — Power dissipated in the transistor at the quiescent bias to maintain a stable operating point.
+- **Enhancement-mode Transistor** — A transistor normally off at zero gate voltage, requiring positive gate voltage to conduct, preferred for switching and RF applications.
+- **Forward Gain (s21)** — The ratio of output incident wave reflected to the output port to the input incident wave, representing transmission gain.
+- **Gain (G)** — The ratio of output power to input power in an RF amplifier, usually expressed linearly or in decibels (dB).
+- **Input Reflection Coefficient (Γin)** — The reflection coefficient seen looking into the transistor’s input port, accounting for loading effects.
+- **Maximum Stable Gain (GMSG)** — The highest gain achievable without oscillation in a transistor.
+- **Measurement Reference Plane** — The physical interface used during s-parameter measurement that defines the boundary for device characterization.
+- **Output Reflection Coefficient (Γout)** — The reflection coefficient seen looking into the transistor’s output port, considering source loading.
+- **Pulsed RF Testing** — An RF test method that applies pulsed bias and RF signals to limit device heating during high-power measurements.
+- **Reference Plane** — A defined physical plane in measurement setups from which s-parameters or impedances are referenced.
+- **Rollett Stability Factor (K)** — A scalar value used to assess unconditional stability of a transistor; K > 1 and |Δ| < 1 indicate unconditional stability.
+- **Reverse Gain (s12)** — The ratio of the input port incident wave reflected back from the output port, indicating device feedback level.
+- **Small-Signal s-Parameters** — S-parameters measured under low-power conditions to characterize linear transistor behavior.
+- **Source Reflection Coefficient (ΓS)** — The reflection coefficient representing the input-side matching network impedance.
+- **Stability Circles (CS, CL)** — Circles plotted on a Smith chart indicating boundaries of stable and unstable impedance regions for source and load.
+- **Transducer Power Gain (GT)** — Ratio of power delivered to load to power available from the source, incorporating device and matching network gains.
+- **Unilateral Figure of Merit (U)** — Parameter quantifying how close a transistor is to being unilateral (low reverse gain).
+- **Unilateral Transducer Gain (GTU)** — Transducer gain calculated assuming zero reverse gain, simplifying amplifier design.
+- **Unilateral/Bilateral Transistor** — Classification based on the significance of reverse gain; unilateral devices have negligible s12.
+- **VGSQ** — Quiescent gate-to-source voltage bias for RF transistor operation.
+- **VSWR** — Voltage Standing Wave Ratio, indicating reflection magnitude; high values can cause device stress or failure.
+- **ZIN, ZOUT** — Input and output impedance of a two-port network or transistor at its respective ports.

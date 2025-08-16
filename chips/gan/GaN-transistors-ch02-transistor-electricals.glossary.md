@@ -1,0 +1,27 @@
+- **Avalanche Capability** — The ability of a transistor to withstand full drain-source breakdown with a specified energy without catastrophic failure.  
+- **BVDSS (Breakdown Voltage)** — Maximum voltage between drain and source electrodes before device breaks down.  
+- **Capacitance (C)** — The ability of a transistor to store charge between terminals; major types include gate-to-source (CGS), gate-to-drain (CGD), and drain-to-source (CDS).  
+- **Cascode Transistor** — A combination of a depletion-mode GaN HEMT and a low-voltage silicon MOSFET connected in series to achieve normally-off operation.  
+- **Channel Resistance (R2DEG)** — Resistance of the two-dimensional electron gas in the GaN device, dependent on electron mobility, concentration, and geometry.  
+- **Contact Resistance (RC)** — Resistance between metal contacts and the 2DEG through the AlGaN barrier in a GaN HEMT.  
+- **Depletion-Mode Device** — A transistor type that normally conducts at zero gate bias and requires a negative gate voltage to turn off.  
+- **Drain-Source Capacitance (CDS)** — Capacitance between drain and source terminals of a transistor.  
+- **Drain-Gate Capacitance (CGD)** — Capacitance between drain and gate terminals, also called reverse transfer capacitance (CRSS).  
+- **Drain-Source Leakage Current (IDSS)** — Small leakage current flowing between drain and source when the device is in blocking/off state.  
+- **Enhancement-Mode Device** — A transistor type that is normally off at zero gate bias and requires a positive gate voltage to turn on.  
+- **Gate Charge (QG)** — The total charge required to drive the gate voltage from off to on state.  
+- **Gate-to-Source Capacitance (CGS)** — Capacitance between gate and source terminals of a transistor.  
+- **Miller Ratio (QGD/QGS)** — Ratio of gate-to-drain charge to gate-to-source charge, important in switching transient behavior.  
+- **On-Resistance (RDS(on))** — The total resistance between drain and source when the transistor is fully on, including channel, contact, and parasitic resistances.  
+- **Parasitic Resistance** — Additional resistances from metal traces and interconnects that add to the total on-resistance.  
+- **Piezoelectric Strain** — Internal mechanical strain in AlGaN/GaN causing polarization charges and formation of 2DEG.  
+- **QGD (Gate-to-Drain Charge)** — Charge related to gate-to-drain capacitance affecting voltage switching times.  
+- **QGS (Gate-to-Source Charge)** — Charge related to gate-to-source capacitance affecting current switching times.  
+- **QRR (Reverse Recovery Charge)** — Charge removed from the device during reverse conduction turn-off; zero in enhancement-mode GaN HEMTs.  
+- **Reverse Conduction (VSD)** — Voltage drop across the device during source-to-drain conduction opposite normal forward conduction.  
+- **RθJA (Junction-to-Ambient Thermal Resistance)** — Thermal resistance between device junction and ambient environment.  
+- **RθJB (Junction-to-Board Thermal Resistance)** — Thermal resistance from device junction through solder and board to PCB copper.  
+- **RθJC (Junction-to-Case Thermal Resistance)** — Thermal resistance from device junction to its package or case surface.  
+- **Threshold Voltage (VGS(th) or Vth)** — The gate-to-source voltage at which the device begins to conduct; positive for enhancement-mode, negative for depletion-mode devices.  
+- **Time-Dependent Dielectric Failure** — Progressive breakdown of insulating layers when electric field approaches critical values over time.  
+- **Two-Dimensional Electron Gas (2DEG)** — High electron mobility layer formed at the AlGaN/GaN interface enabling conduction in HEMTs.

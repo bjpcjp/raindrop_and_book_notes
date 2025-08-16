@@ -1,0 +1,26 @@
+- **2DEG (Two-Dimensional Electron Gas)** — A high-mobility layer of electrons confined at the interface of a GaN/AlGaN heterostructure, enabling high conductivity in GaN transistors.  
+- **AlGaN (Aluminum Gallium Nitride)** — A semiconductor compound used as a barrier layer on GaN to induce strain and form the 2DEG.  
+- **Avalanche Energy** — The energy a device can withstand during avalanche breakdown without damage.  
+- **Band Gap (Eg)** — The energy gap between the valence and conduction bands of a semiconductor; determines leakage current and operating temperature.  
+- **Body Diode** — The intrinsic diode formed in silicon MOSFETs due to the p-n junction; in GaN HEMTs, reverse conduction occurs differently without minority carriers.  
+- **Breakdown Voltage (BVDSS)** — The maximum drain-to-source voltage a transistor can withstand without undergoing destructive avalanche breakdown.  
+- **Cascode Hybrid Structure** — A device topology combining a low-voltage enhancement-mode silicon MOSFET in series with a depletion-mode GaN HEMT to achieve enhancement-mode operation.  
+- **Charge (Q)** — The amount of electric charge stored or required to change a device terminal voltage, related to capacitance by Q = C × V.  
+- **Critical Field (Ecrit)** — The maximum electric field a semiconductor material can withstand before avalanche breakdown occurs.  
+- **Depletion-Mode (d-mode) Transistor** — A GaN HEMT that is normally ON at zero gate bias and requires a negative gate voltage to turn OFF.  
+- **Drain-to-Source Capacitance (CDS)** — Capacitance between the drain and source terminals in a transistor.  
+- **Drain-to-Source Leakage Current (IDSS)** — Small current flowing between drain and source when the transistor is off or reverse biased.  
+- **Gate Charge (QG)** — The total charge required to switch a transistor’s gate voltage from off to on state.  
+- **Gate-to-Drain Capacitance (CGD)** — The capacitance between gate and drain terminals, also known as the Miller capacitance.  
+- **Gate-to-Source Capacitance (CGS)** — The capacitance between gate and source terminals.  
+- **Hard Switching** — A switching technique where devices switch while voltage and current overlap, causing switching losses.  
+- **Heteroepitaxy** — The growth of a crystalline layer on a dissimilar substrate crystal structure.  
+- **Heterostructure** — A layered semiconductor structure with different materials to create unique electronic properties like 2DEG.  
+- **Miller Ratio (QGD/QGS)** — The ratio of gate-to-drain charge to gate-to-source charge, influencing device switching behavior and susceptibility to false turn-on.  
+- **On-Resistance (RDS(on))** — The resistance between drain and source terminals when the device is fully turned on.  
+- **P-Type GaN (pGaN) Gate** — A GaN layer doped with acceptors providing positive charge, used to create enhancement-mode GaN transistors.  
+- **Reverse Conduction** — The ability of a transistor to conduct current in reverse direction, relevant in GaN devices due to 2DEG channel formation rather than a body diode.  
+- **Reverse Recovery Charge (QRR)** — Stored charge in the body diode of silicon MOSFETs requiring time to remove during switching; negligible in enhancement-mode GaN HEMTs.  
+- **Threshold Voltage (Vth or VGS(th))** — Gate-to-source voltage at which the transistor starts to conduct current; positive for enhancement-mode devices.  
+- **Two-Dimensional Electron Gas (2DEG)** — See 2DEG above.  
+- **Wire Bonding** — Traditional technique of connecting device pads to external leads using thin wires; introduces parasitic inductance detrimental to GaN device performance.

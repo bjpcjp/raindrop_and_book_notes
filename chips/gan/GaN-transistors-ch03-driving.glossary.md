@@ -1,0 +1,32 @@
+- **Bootstrap capacitor (CBoot)** — Capacitor charged during low-side on-state to supply floating high-side gate drive voltage in half-bridge circuits.  
+- **Bootstrap diode (DBoot)** — High-speed diode used to charge the bootstrap capacitor from the low-side supply.  
+- **Cascode device** — A hybrid GaN transistor design consisting of a depletion-mode GaN transistor in series with a low-voltage MOSFET.  
+- **Common-source inductance (CSI)** — Inductance shared by both the power loop and gate drive loop on the source side of a device, impacting di/dt immunity.  
+- **Common mode current** — Current flowing through level-shifters or isolators caused by high dv/dt events, potentially causing logic glitches.  
+- **Dead-time** — The brief interval between the turn-off of one switch and the turn-on of another in a half-bridge, critical for minimizing diode conduction.  
+- **Depletion-mode GaN transistor** — GaN transistor type normally-on device used in cascode configurations.  
+- **Di/dt immunity** — The ability of a transistor and its drive circuit to avoid unintended turn-on caused by rising current-induced voltages.  
+- **Drain-to-source capacitance (CDS)** — Intrinsic transistor capacitance between the drain and source terminals.  
+- **Gate charge (QG)** — Total charge required to drive a device from zero to its rated gate voltage, including commutation and steady-state charges.  
+- **Gate charge components (QGS, QGD, QGS1, QGS2)** — Specific portions of gate charge for threshold voltage, current commutation, voltage commutation, and steady-state.  
+- **Gate driver power loop** — Circuit loop including gate driver, gate resistor, gate driver supply capacitor, and associated inductances affecting switching speed.  
+- **Gate loop inductance (LG)** — Inductance in the series resonant loop between the gate driver and the transistor gate, critical for damping and reducing overshoot.  
+- **Gate-to-source voltage (VGS)** — Voltage applied between the gate and source terminals of a transistor controlling its on/off state.  
+- **Ground bounce** — Voltage fluctuations on the ground reference caused by high slew-rate switching currents through parasitic inductances.  
+- **High-side floating supply** — Isolated power supply used to drive the gate of a high-side transistor in half-bridge circuits.  
+- **High dv/dt event** — Rapid voltage change at the drain terminal causing capacitive coupling effects that can lead to unintended device turn-on.  
+- **Miller turn-on** — Unintended transistor switching caused by gate driving capacitances charging beyond the threshold voltage during high dv/dt.  
+- **Miller charge ratio (QGD/QGS1)** — Ratio used to evaluate dv/dt susceptibility; values less than one indicate immunity to Miller-induced turn-on.  
+- **Level-shifter** — Circuit block used to translate or isolate control signals between different voltage domains, especially for high-side drivers.  
+- **Load current (IL)** — Current flowing through the transistor load path during conduction.  
+- **On-resistance (RDS(on))** — Resistance between drain and source terminals when the transistor is turned on; key performance parameter.  
+- **Pull-up resistance (RSource)** — Resistance in the gate drive circuit controlling the turn-on speed and damping of the gate voltage transition.  
+- **Pull-down resistance (RSink)** — Resistance controlling the gate voltage fall and preventing dv/dt-induced unintended turn-on.  
+- **Soft-switching** — Switching method reducing switching losses and voltage/current stress by transitioning device states under controlled conditions.  
+- **Switch-node voltage (VSD)** — Voltage at the node connecting high-side and low-side transistors, influencing bootstrap supply behavior.  
+- **Total gate charge (QG)** — The sum of all gate charge components necessary to fully switch the transistor gate voltage.  
+- **Turn-on transition time (tCR)** — Time taken during the gate voltage rise to reach the plateau voltage during transistor switching.  
+- **Turn-off transition time (tVF)** — Time taken during the gate voltage fall in transistor switching.  
+- **Undershoot** — Brief negative voltage excursion below ground at the transistor gate during turn-off, which can be used beneficially to improve dv/dt immunity.  
+- **Vth (Threshold Voltage)** — Minimum gate-to-source voltage at which the transistor begins to conduct.  
+- **Voltage commutation charge (QGD)** — Gate charge component required to switch device voltage and enter the linear region.
