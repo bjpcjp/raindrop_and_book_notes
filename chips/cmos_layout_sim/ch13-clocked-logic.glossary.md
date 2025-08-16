@@ -1,31 +1,22 @@
----
-title: "ch13-clocked-logic — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch13-clocked-logic]
----
-
-- **Arbiter** — A circuit that decides which of two nearly simultaneous inputs occurred first, ensuring only one output goes high at a time.  
-- **Clear input** — A control signal used to asynchronously reset a flip-flop output to zero.  
-- **Clock signal** — A timing signal used to control synchronization in digital circuits like latches and flip-flops.  
-- **Cross-coupled inverters** — Two inverters connected in a loop providing bistable storage used in latches and flip-flops.  
-- **DEMUX (Demultiplexer)** — A circuit that routes a single input line to one of many output lines based on control signals.  
-- **Edge-triggered flip-flop (FF)** — A storage element that captures input data on a specific clock edge (rising or falling).  
-- **Enable signal** — A control input that enables or disables transmission gates or other logic elements.  
-- **Flip-flop (FF)** — A bistable storage device that can hold one bit of data, changing state on clock edges.  
-- **Hold time** — The minimum time the input data must remain stable after the clock edge for correct flip-flop operation.  
-- **Level-sensitive latch** — A storage element that transparently passes data when the clock is at a certain level and holds data otherwise.  
-- **Multiplexer (MUX)** — A circuit that selects one of several input signals based on control signals and forwards it to the output.  
-- **Metastability** — An unstable state in cross-coupled inverters where outputs are at intermediate voltages, causing long delays or errors.  
-- **NMOS pass transistor (PG)** — A transistor that passes logic low signals well but degrades logic high signals due to threshold voltage drop.  
-- **Output load capacitance** — The capacitance that the output of a circuit must drive, impacting delay.  
-- **Propagation delay (tpHL, tpLH)** — The time taken for a signal to transition through a circuit from input to output, often measured low-to-high or high-to-low.  
-- **Recover time (trec)** — The time required after an asynchronous set or clear input before the clock input of a flip-flop can be valid again.  
-- **Setup time (ts)** — The minimum time the input data must be stable before the clock edge in a flip-flop for proper operation.  
-- **Set input** — A control signal used to asynchronously set a flip-flop output to one.  
-- **Series connection of transmission gates** — Multiple transmission gates connected end-to-end, increasing delay due to added resistances and capacitances.  
-- **Static gate** — A logic gate built using transmission gates that can implement logical functions like OR or XOR.  
-- **Transmission gate (TG)** — A bidirectional switch made from parallel NMOS and PMOS transistors, passing both logic high and low efficiently.  
-- **Transmission line effects** — Delay effects due to distributed resistance and capacitance in series-connected gates.  
-- **Triode operation** — The condition where MOSFET transistors act like resistors, relevant for transmission gate resistance estimations.  
-- **XOR gate using TGs** — An exclusive OR logic gate implemented using transmission gates for improved performance.
+- **Arbiter** — A circuit used in asynchronous and clock synchronization designs to determine which of multiple inputs arrives first, ensuring only one output is high at a time.
+- **Capacitance on S input (TG)** — Input capacitance of the transmission gate’s NMOS or PMOS devices affecting the select line delay.
+- **Clear time** — Time related to asynchronous input in flip-flops to forcibly reset the output.
+- **Cross-coupled inverters** — A pair of inverters connected in a loop, used as the basic memory element in latches and flip-flops.
+- **D flip-flop (D-FF)** — A storage circuit that captures the input data on a clock edge and holds it until the next clock edge.
+- **Delay (propagation delay)** — The time it takes for a signal to propagate from input to output in a circuit element.
+- **Edge-triggered flip-flop** — A flip-flop that changes state only on the rising or falling edge of a clock signal.
+- **Enable TG (Transmission Gate)** — The control select line that enables or disables signal passage through the TG.
+- **Flow-through latch** — A level-sensitive storage element whose output follows the input when enabled by a clock signal.
+- **Hold time (th)** — The minimum duration after the clock edge during which input data must remain stable.
+- **Input capacitance** — The capacitance seen at the input node of a transistor or logic gate, affecting input signal rise/fall times.
+- **Load capacitance (Cload)** — The total capacitance a circuit stage must drive, including device and wiring capacitances.
+- **Metastability** — A condition where a latch or flip-flop is temporarily unstable, causing long delays before resolving to a valid logic state.
+- **Minimum pulse width (tn)** — The shortest pulse duration of clock, set, or clear inputs that a flip-flop can reliably detect.
+- **Multiplexer (MUX)** — A circuit that selects one input out of many based on control signals and passes it to the output.
+- **NMOS pass gate (PG)** — An NMOS transistor used to pass a signal, good at passing logic low but not high.
+- **Recovery time (trec)** — The minimum time interval between removing set or clear inputs and applying the next valid clock input.
+- **Resistance of TG (Rn || Rp)** — The effective resistance of parallel NMOS and PMOS within a transmission gate controlling delay.
+- **Setup time (ts)** — The minimum time before the clock edge that data input must be stable to guarantee correct flip-flop operation.
+- **Set-reset (SR) latch** — A bistable device implemented using NAND or NOR gates to store a single bit with separate set and reset signals.
+- **Static gate using TG** — Logic gates designed with transmission gates to implement functions like OR, XOR with improved signal levels.
+- **Switching resistance (effective)** — The equivalent resistance of a transistor when on,

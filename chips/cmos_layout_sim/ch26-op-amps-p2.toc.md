@@ -1,9 +1,5 @@
----
-title: "ch26-op-amps-p2"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch26-op-amps-p2]
----
+```markdown
+# Table of Contents
 
 - Chapter 26 Operational Amplifiers II
   - 26.1 Biasing for Power and Speed
@@ -17,34 +13,64 @@ tags: [ch26-op-amps-p2]
     - A Single Bias Input Diff-Amp
     - The Diff-Amp's Tail Current Source
     - Using a CMFB Amplifier
+    - Implementation of the CMFB Amplifier
+    - Simulated Operation of CMFB Circuits
     - Compensating the CMFB Loop
+    - Reducing CMFB Loop Forward Gain
     - Extending the CMFB Amplifier Input Range
     - Dynamic CMFB
   - 26.3 Basic Op-Amp Design
+    - Device Characteristics Review
     - The Differential Amplifier
     - Adding a Second Stage (Making an Op-Amp)
     - Step Response
     - Adding CMFB
     - CMFB Amplifier
     - The Two-Stage Op-Amp with CMFB
-    - Simulation Results
+    - Origin of Current and Output Swing Problems
+    - Output Buffer Modifications
+    - Simulation Results with Modified Output Buffer
     - Using MOSFETs Operating in the Triode Region
     - Start-up Problems
     - Lowering Input Capacitance
     - Making the Op-Amp More Practical
     - Increasing the Op-Amp's Open-Loop Gain
-    - Offsets
+    - Managing Multiple Feedback Loops
+    - Op-Amp Design with CMFB in Output Buffer
+    - Offsets and Compensation
     - Op-Amp Offset Effects on Outputs
-    - Single-Ended to Differential Conversion
+    - Single-Ended to Differential Conversion Issues
     - CMFB Settling Time
-    - CMFB in the Output Buffer or the Diff-Amp?
+    - CMFB in Output Buffer vs. Diff-Amp
   - 26.4 Op-Amp Design Using Switched-Capacitor CMFB
     - Clock Signals
-    - Switched-Capacitor CMFB
-    - The Op-Amp's First Stage
-    - The Output Buffer
-    - Simulation Results
-    - A Final Note Concerning Biasing
-  - Additional Reading
-  - Problems
-    - Problems 26.1 to 26.19
+    - Switched-Capacitor CMFB Circuit
+    - Simulation of SC CMFB Circuit
+    - Biasing Circuit for SC Op-Amp
+    - The Op-Amp's First Stage with SC CMFB
+    - Output Buffer with SC CMFB
+    - Simulation Results and Performance
+    - Effect of Increasing Diff-Pair Widths
+    - Final Notes on Biasing
+- Additional Reading
+- Problems
+  - 26.1 Device Transition Frequency Simulation
+  - 26.2 Two-Stage Op-Amp Output Buffer Current
+  - 26.3 Reference Current vs Resistor Value
+  - 26.4 CMFB Input Connection Benefits and Concerns
+  - 26.5 Verify CMFB Amplifier Operation
+  - 26.6 Simulate CMFB Circuit Operation
+  - 26.7 VDD Voltage Division in Diff-Amp
+  - 26.8 Step Response Speedup Suggestions
+  - 26.9 Alternative Output Buffer Current Control
+  - 26.10 Stability of CMFB Loop in Fig. 26.40 Op-Amp
+  - 26.11 Stability of CMFB Loop in Fig. 26.43 Op-Amp
+  - 26.12 Op-Amp Input Common-Mode Voltage Effects (Fig. 26.39)
+  - 26.13 Repeat 26.12 for Fig. 26.40 Op-Amp
+  - 26.14 Repeat 26.12 for Fig. 26.43 Op-Amp
+  - 26.15 Design Gain-Enhanced Op-Amp with Gain > 2000
+  - 26.16 Low VDD Operation Biasing Design (Fig. 26.62)
+  - 26.17 Repeat 26.16 for Fig. 26.43 Op-Amp
+  - 26.18 Regenerate Waveforms with Modified Diff-Amp (Fig. 26.63)
+  - 26.19 SC Integrator Op-Amp Operation without Output Shorting
+```

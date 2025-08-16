@@ -1,35 +1,31 @@
----
-title: "ch31-feedback-amps — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch31-feedback-amps]
----
-
-- **A0L** — The open-loop gain of an amplifier, representing gain without feedback applied.  
-- **ACL** — Closed-loop gain of an amplifier when feedback is applied, typically more stable and less sensitive to component variations.  
-- **Beta (β)** — The feedback factor; the portion of the output fed back to the input, determining feedback strength and topology.  
-- **Bandwidth Extension** — The increase in amplifier bandwidth achieved through negative feedback, trading off some gain.  
-- **Closed-Loop Gain** — The amplifier gain when the feedback loop is closed, influenced by open-loop gain and feedback factor.  
-- **Current Amplifier** — A feedback amplifier topology where input and output signals are currents, employing shunt-series feedback.  
-- **Feedback** — The process of returning a portion of an amplifier’s output back to its input to control gain and stability.  
-- **Feedback Amplifier** — An amplifier using feedback to improve performance characteristics like gain stability and bandwidth.  
-- **Feedback Network (β Network)** — Circuit elements that sample the amplifier output and provide feedback signal to the input.  
-- **Frequency Response** — How an amplifier's gain and phase vary with signal frequency, critical for stability analysis.  
-- **Gain Margin** — The difference in gain at the frequency where phase shift is 180°, indicating stability margin.  
-- **Gain Desensitivity** — Property whereby feedback reduces the effect of open-loop gain variation on the closed-loop gain.  
-- **Input Mixing** — The method of combining input and feedback signals; can be series (voltage) or shunt (current).  
-- **Loop Gain (T)** — The product of open-loop gain and feedback factor, used to analyze amplifier stability.  
-- **Negative Feedback** — A feedback type where the output signal is subtracted from the input, stabilizing the system.  
-- **Open-Loop Gain** — Amplifier gain without any feedback applied, often very high but sensitive to variations.  
-- **Output Sampling** — How the output signal is sensed for feedback; can be series (current) or shunt (voltage).  
-- **Phase Margin** — The difference between actual phase and -180° at the unity gain frequency, indicating stability.  
-- **Return Ratio (RR)** — A method of determining loop gain by breaking the feedback loop and measuring returned signal.  
-- **Series Mixing** — Input signal and feedback signal combined by voltage subtraction (series connection).  
-- **Shunt Mixing** — Input signal and feedback signal combined by current subtraction (parallel connection).  
-- **Shunt Sampling** — Output signal for feedback taken as voltage at a node common to amplifier output and feedback network.  
-- **Series Sampling** — Output signal for feedback taken as current in series with load and feedback network.  
-- **Tansconductance Amplifier** — An amplifier with voltage input and current output using series-series feedback topology.  
-- **Transimpedance Amplifier** — An amplifier with current input and voltage output using shunt-shunt feedback topology.  
-- **Stability** — The property of a feedback amplifier to avoid oscillations, ensured by proper phase and gain margins.  
-- **Total Loop Gain** — The combined gain and phase of the feedback loop, crucial for determining feedback amplifier behavior.  
-- **Voltage Amplifier** — An amplifier with voltage input and output, typified by series-shunt feedback configuration.
+- **A0L (Open-loop gain)** — The gain of the basic amplifier without feedback, frequency dependent and ideally very large to achieve gain desensitivity.
+- **ACL (Closed-loop gain)** — The gain of the amplifier with feedback applied; depends on A0L and the feedback factor ß, making gain stable and independent of device variations.
+- **Active device** — A transistor or component providing gain; in feedback analysis, devices can be "taken out-of-socket" to determine loading.
+- **Body effect** — The influence of the substrate bias on the transistor threshold voltage, affecting gain and linearity.
+- **Feedback** — The process of combining the output of a system with its input, either positively or negatively.
+- **Feedback amplifier** — The overall circuit formed by the combination of the basic amplifier and the feedback network.
+- **Feedback factor (ß)** — The portion of the output fed back to the input; defined by the feedback network, it is unitless and critical for determining closed-loop performance.
+- **Forward path** — The signal path from the input through the basic amplifier to the output in a feedback system.
+- **Gain desensitivity** — A property whereby the closed-loop gain becomes insensitive to variations in open-loop gain due to feedback.
+- **Gain margin** — The difference in gain at the frequency where the loop phase is 180°, indicating how close the system is to instability.
+- **Input mixing** — The manner in which input signals combine at the amplifier input: either series (voltage) or shunt (current).
+- **Input impedance (Ri)** — The resistance seen looking into the input of the amplifier or feedback amplifier; affected by feedback.
+- **Loop gain** — The product of the open-loop gain and the feedback factor (A0Lß); used to assess stability.
+- **Negative feedback** — Feedback where the output is subtracted from the input, stabilizing gain and reducing distortion and noise.
+- **Open-loop analysis** — Analyzing the amplifier without the feedback loop closed to determine parameters like A0L, Ri, Ro, and ß.
+- **Output sampling** — The method of extracting the output signal for feedback, either as a voltage (shunt) or current (series).
+- **Output impedance (Ro)** — The resistance seen looking into the output of the amplifier or feedback amplifier; affected by feedback.
+- **Phase margin** — The amount of additional phase shift at the gain crossover frequency required to bring the loop phase to -180°, used to quantify stability.
+- **Positive feedback** — Feedback where the output is added to the input, potentially causing instability and oscillation.
+- **Reference resistance (Rp/ Rβi, Rβo)** — Equivalent resistances representing feedback network loading at the input or output.
+- **Return ratio (RR)** — A method of determining loop gain by breaking the feedback loop and injecting a test signal to measure returned gain.
+- **Series mixing** — Input mixing where voltages are summed (subtracted) in series.
+- **Shunt mixing** — Input mixing where currents are summed (subtracted) in parallel.
+- **Shunt sampling** — Output sampling where voltage is sensed at a node shared by feedback and load (parallel connection).
+- **Source-follower** — A transistor configuration often used at amplifier output for buffering and bias control.
+- **Stability** — The attribute of an amplifier system to avoid oscillations; determined by loop gain magnitude and phase.
+- **Transconductance amplifier** — An amplifier with input voltage signal and output current (I/V gain).
+- **Transimpedance amplifier (TIA)** — An amplifier with input current signal and output voltage (V/I gain), often used for sensing currents like photodiodes.
+- **Two-port theory** — A method of analyzing amplifier and feedback networks via input-output impedance relations, used to find feedback loading.
+- **Voltage amplifier** — An amplifier with voltage as both input and output variables, typically with series-shunt feedback.
+- **Voltage gain** — The ratio of output voltage to input voltage; can be controlled and stabilized via feedback.

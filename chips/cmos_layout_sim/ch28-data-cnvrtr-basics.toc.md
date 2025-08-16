@@ -1,58 +1,51 @@
----
-title: "ch28-data-cnvrtr-basics"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch28-data-cnvrtr-basics]
----
+```markdown
+# Table of Contents
 
-- Chapter 28 Data Converter Fundamentals  
-  - 28.1 Analog Versus Discrete Time Signals  
-  - 28.2 Converting Analog Signals to Digital Signals  
-  - 28.3 Sample-and-Hold (S/H) Characteristics  
-    - Sample Mode  
-    - Hold Mode  
-    - Aperture Error  
-    - Example 28.1  
-  - 28.4 Digital-to-Analog Converter (DAC) Specifications  
-    - Basic DAC Operation and Transfer Curve  
-    - Least Significant Bit (LSB) and Most Significant Bit (MSB)  
-    - Resolution of DACs  
-    - Examples 28.2 and 28.3  
-    - Differential Nonlinearity (DNL)  
-    - Example 28.4  
-    - Integral Nonlinearity (INL)  
-    - Example 28.5  
-    - Offset and Gain Error  
-    - Latency  
-    - Signal-to-Noise Ratio (SNR)  
-    - Dynamic Range  
-  - 28.5 Analog-to-Digital Converter (ADC) Specifications  
-    - ADC Transfer Curve and Quantization Error  
-    - Ideal Quantization and Error Shifting  
-    - Differential Nonlinearity (DNL) for ADC  
-    - Example 28.6  
-    - Missing Codes  
-    - Integral Nonlinearity (INL) for ADC  
-    - Example 28.7  
-    - Offset and Gain Error for ADC  
-    - Aliasing  
-      - Nyquist Criterion  
-      - Frequency Domain Explanation  
-    - Signal-to-Noise Ratio (SNR) for ADC  
-    - Aperture Error and Sampling Error  
-    - Example 28.8  
-  - 28.6 Mixed-Signal Layout Issues  
-    - Floor-planning  
-    - Power Supply and Grounding Issues  
-      - Shared Power and Ground  
-      - Separate Routing  
-      - Separate Pins and Pads  
-    - Fully Differential Design  
-    - Guard Rings  
-    - Shielding Techniques  
-      - Metal Layer Shielding  
-      - Dummy Metal Strips  
-      - N-Well Shielding  
-    - Other Interconnect Considerations  
-  - Additional Reading  
-  - Problems
+- Chapter 28 Data Converter Fundamentals
+  - 28.1 Analog Versus Discrete Time Signals
+  - 28.2 Converting Analog Signals to Digital Signals
+  - 28.3 Sample-and-Hold (S/H) Characteristics
+    - Sample Mode
+    - Hold Mode
+    - Aperture Error
+    - Example 28.1
+  - 28.4 Digital-to-Analog Converter (DAC) Specifications
+    - DAC Block Diagram
+    - Input Combinations and Resolution
+    - Least Significant Bit (LSB) and Most Significant Bit (MSB)
+    - Examples
+      - Example 28.2
+      - Example 28.3
+    - Differential Nonlinearity (DNL)
+      - Example 28.4
+    - Integral Nonlinearity (INL)
+      - Example 28.5
+    - Offset
+    - Gain Error
+    - Latency
+    - Signal-to-Noise Ratio (SNR)
+    - Dynamic Range
+  - 28.5 Analog-to-Digital Converter (ADC) Specifications
+    - ADC Block Diagram
+    - Transfer Curve and Quantization Error
+    - Differential Nonlinearity (DNL)
+      - Example 28.6
+    - Missing Codes
+    - Integral Nonlinearity (INL)
+      - Example 28.7
+    - Offset and Gain Error
+    - Aliasing
+    - Signal-to-Noise Ratio (SNR)
+    - Aperture Error
+      - Example 28.8
+  - 28.6 Mixed-Signal Layout Issues
+    - Floor-planning
+    - Power Supply and Grounding Issues
+    - Fully Differential Design
+    - Guard Rings
+    - Shielding
+    - Other Interconnect Considerations
+- Additional Reading
+- Problems
+  - 28.1 to 28.13
+```

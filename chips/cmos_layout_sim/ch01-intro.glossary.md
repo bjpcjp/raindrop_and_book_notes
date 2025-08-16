@@ -1,38 +1,34 @@
----
-title: "ch01-intro — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch01-intro]
----
-
-- **AC Analysis** — A simulation that determines a circuit's frequency response by sweeping input frequency and measuring output.
-- **BJT (Bipolar Junction Transistor)** — A type of transistor with bipolar current flow, historically important before CMOS dominance.
-- **Capacitor (C)** — A passive electronic component that stores energy in an electric field, affecting a circuit's frequency response.
-- **CMOS (Complementary Metal Oxide Semiconductor)** — A technology that uses both NMOS and PMOS transistors to create low-power, high-density integrated circuits.
-- **Cross-Sectional View** — A diagram showing a vertical slice through a chip, illustrating layers and device structures.
-- **DC Analysis** — A simulation that sweeps input voltage or current to analyze node voltages and currents under steady-state conditions.
-- **Die** — An individual semiconductor chip fabricated on a silicon wafer.
-- **IFT (Insulated-Gate Field Effect Transistor)** — A generic term for MOSFET devices with insulated gates.
-- **Inverter** — A basic logic gate in CMOS which outputs the logical complement of its input.
-- **MOSFET (Metal Oxide Semiconductor Field Effect Transistor)** — A transistor type widely used in CMOS technology, controlled by voltage on its gate terminal.
-- **Netlist** — A text file describing an electrical circuit used as input for SPICE simulation.
-- **NMOS (N-Channel MOSFET)** — A MOSFET that conducts when a positive voltage is applied to its gate.
-- **Operating Point (.op) Analysis** — A SPICE simulation that calculates the steady-state voltages and currents in a circuit.
-- **OP Amp (Operational Amplifier)** — A high-gain amplifier commonly modeled in SPICE as a voltage-controlled source.
-- **Parasitics** — Unwanted electrical effects like capacitance, inductance, or resistances inherent in chip layout.
-- **PCE (Piece-Wise Linear) Source** — A voltage or current source in SPICE that defines an arbitrary waveform by specifying points in time and value.
-- **PMOS (P-Channel MOSFET)** — A MOSFET that conducts when a negative voltage is applied to its gate.
-- **Pulse Source** — A SPICE source generating square or rectangular waveforms for transient simulations.
-- **Quality Factor (Q)** — The ratio of stored to lost energy in a resonant circuit; higher Q indicates lower loss.
-- **RC Circuit** — A circuit composed of resistors and capacitors that filters or delays signals.
-- **Resonant Tank (LC Tank)** — A parallel or series inductor-capacitor circuit that resonates at a particular frequency.
-- **SPICE (Simulation Program with Integrated Circuit Emphasis)** — A software tool for simulating electronic circuits.
-- **Switch (SPICE model)** — A digital switch element in SPICE modeled with a control voltage and series resistance.
-- **Subcircuit** — A reusable circuit block defined in SPICE that can be instantiated multiple times.
-- **Transient Analysis (.tran)** — A simulation that computes circuit response versus time.
-- **Transfer Function (.tf) Analysis** — A SPICE simulation to determine the ratio of output to input voltage or current at DC.
-- **VCCS (Voltage-Controlled Current Source)** — A SPICE element where output current is linearly controlled by an input voltage.
-- **VCVS (Voltage-Controlled Voltage Source)** — A SPICE element that produces an output voltage proportional to an input voltage.
-- **Voltage Divider** — A simple circuit that produces an output voltage proportional to an input voltage using resistors.
-- **Wafer** — A thin slice of semiconductor material used to fabricate integrated circuits.
-- **Wire Bond** — Thin wires connecting the chip pads to package pins in integrated circuit packaging.
+- **AC Analysis** — Simulation that determines the frequency response of a circuit, plotting magnitude and phase with frequency on the x-axis.  
+- **ABSTOL** — Absolute current tolerance parameter in SPICE that affects convergence accuracy.  
+- **Bonding Pad** — A metal area on a chip used to make wire connections to the package pins.  
+- **Bond Wire** — Wire connecting the chip bonding pad to the package pin.  
+- **CMOS (Complementary Metal Oxide Semiconductor)** — Integrated circuit technology using complementary n-channel and p-channel MOSFETs.  
+- **Convergence** — The numerical process of SPICE simulation reaching an acceptable solution; can be aided by parameters like ABSTOL, VNTOL, and RELTOL.  
+- **Cross-Sectional View** — A side or slice view of a chip or device showing all layers and structures vertically.  
+- **DC Analysis** — Simulation where an input source is varied incrementally to plot node voltages and currents.  
+- **Die** — Individual integrated circuit piece fabricated on a semiconductor wafer.  
+- **Differential Pair** — (Implied by op-amp discussion) Circuit stage amplifying voltage difference between two inputs.  
+- **Display/Plot Commands** — In SPICE, commands like `.plot` or print functions to visualize simulation results.  
+- **FEMTO (f)** — Metric prefix representing 10^-15.  
+- **FPGA (Field-Programmable Gate Array)** — Reprogrammable integrated circuit mainly used for quick, low-volume designs (noncustom IC).  
+- **GMIN (RSHUNT)** — Small resistor value added in parallel across nodes to aid simulation convergence.  
+- **IC (Integrated Circuit)** — A chip containing electronic circuits fabricated on a semiconductor substrate.  
+- **MOSFET (Metal-Oxide-Semiconductor Field-Effect Transistor)** — A transistor used in CMOS technology with insulated gate controlling current flow.  
+- **Netlist** — A text file listing circuit elements, nodes, and commands used as input to SPICE simulators.  
+- **NFET (NMOS)** — N-channel MOS transistor that conducts when gate voltage is positive with respect to the source.  
+- **Operating Point (.op)** — SPICE simulation determining the DC steady-state voltages and currents.  
+- **Parasitics** — Unintended stray capacitances, inductances, and other effects inherent to chip layout and fabrication.  
+- **P-channel MOSFET (PMOS)** — MOS transistor using holes as carriers, conducts when gate voltage is lower than the source.  
+- **Pulse Source** — A SPICE voltage or current source that produces rectangular waveforms with definable delay, rise time, pulse width, and period.  
+- **PWL (Piece-Wise Linear) Source** — A SPICE source specifying arbitrary waveforms through a series of time-amplitude points.  
+- **Quality Factor (Q)** — Ratio of resonant frequency to bandwidth at the -3 dB points of an LC tank circuit.  
+- **RELTOL** — Relative error tolerance parameter in SPICE affecting simulation convergence accuracy.  
+- **SPICE (Simulation Program with Integrated Circuit Emphasis)** — Widely used circuit simulation software for analog and digital circuits.  
+- **Subcircuit** — A reusable block of circuit elements defined inside a SPICE netlist for modular simulation.  
+- **Transient Analysis (.tran)** — Simulation of circuit time-domain response to specified input waveforms.  
+- **TTL (Transistor-Transistor Logic)** — A type of digital logic using bipolar junction transistors, compared to CMOS for speed/power.  
+- **VCCS (Voltage-Controlled Current Source)** — A SPICE element where output current is controlled by a voltage difference.  
+- **VCVS (Voltage-Controlled Voltage Source)** — A SPICE element where output voltage is controlled by a voltage input multiplied by gain.  
+- **VNTOL** — Node voltage tolerance parameter in SPICE affecting the convergence criteria.  
+- **Voltage Divider** — A network of resistors dividing input voltage to produce a desired output voltage.  
+- **Wafer** — Circular slice of silicon on which multiple IC dies are fabricated.

@@ -1,33 +1,26 @@
----
-title: "ch25-dynamic-analog-ckts — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch25-dynamic-analog-ckts]
----
-
-- **Charge Injection** — The transfer of charge from a MOSFET channel to adjacent nodes when a switch turns off, causing voltage errors.
-- **Clock Feedthrough** — Capacitive coupling of the gate drive signal to the output node in MOSFET switches, causing voltage disturbances.
-- **Common-Mode Feedback (CMFB)** — A circuit technique used in fully-differential amplifiers to control and stabilize the common-mode output voltage.
-- **Differential Amplifier (Diff-Amp)** — An amplifier with two inputs and a single or differential output that amplifies the voltage difference between its inputs.
-- **Dynamic Amplifier** — An amplifier which employs switching and capacitive storage to reduce sensitivity to threshold voltage and power supply variations.
-- **Dynamic Comparator** — A comparator that uses switches and storage capacitors to sense and latch input voltages, often operating in discrete time.
-- **Dummy Switch** — A compensating MOSFET switch used in series with the main switch to reduce charge injection.
-- **Fully-Differential Circuit** — A circuit with differential inputs and outputs that helps cancel common-mode noise and offset errors.
-- **Hold Capacitor (CH)** — The capacitor used in sample-and-hold circuits to store the sampled voltage.
-- **kT/C Noise** — Thermal noise associated with a capacitor due to its kT/C noise voltage when sampled; sets the noise floor for dynamic circuits.
-- **Mosfet Switch** — A MOSFET transistor operating as an analog switch controlled by clock signals with no DC gate current.
-- **Nonoverlapping Clocks** — Two clock signals designed such that their high phases do not overlap to prevent shorting paths in switched-capacitor circuits.
-- **Op-Amp Offset Voltage** — The undesired DC voltage difference at the input of an operational amplifier that appears at the output.
-- **Output Common-Mode Voltage (VCM)** — The average voltage around which the outputs of a fully-differential amplifier swing.
-- **Sample-and-Hold (S/H) Circuit** — A circuit that samples an input signal onto a capacitor during a sample phase and holds the voltage constant during hold phase.
-- **Sample Mode** — The phase in a sample-and-hold circuit when the input is connected to the capacitor to track the input signal.
-- **Settlng Time** — The time required for an amplifier output to settle within a specified error band of its final value.
-- **Slew Rate** — The maximum rate at which an amplifier output can change, limiting speed in dynamic circuits.
-- **Signal-Dependent Charge Injection** — Charge injection errors that vary with the input signal level, causing distortion.
-- **Switched-Capacitor (SC) Circuit** — A circuit that uses capacitors and switches clocked at a known frequency to emulate resistors and perform filtering and integration.
-- **Switched-Capacitor Integrator** — An SC circuit implementing integration by charging and discharging capacitors under clock control.
-- **Switching Phases (Φ1, Φ2, Φ3)** — Nonoverlapping clock phases used to control switch timing in dynamic analog circuits.
-- **Track Mode** — The phase in a sample-and-hold circuit when the output follows the input signal.
-- **Transmission Gate (TG)** — A CMOS switch made of parallel NMOS and PMOS transistors that passes both logic high and low levels without threshold loss.
-- **Virtual Ground** — A circuit node held at a constant potential, often zero volts, by an amplifier’s feedback action.
-- **Voltage-Controlled Voltage Source (VCVS)** — A device or model that generates an output voltage proportional to an input voltage, used in SPICE op-amp models.
+- **Charge injection** — The transfer of charge from the MOSFET channel to adjacent nodes when a MOSFET switch turns off, causing voltage errors on capacitors.
+- **CMFB (Common-Mode Feedback)** — A circuit used in fully-differential amplifiers to stabilize and set the common-mode output voltage.
+- **Clock feedthrough (Capacitive feedthrough)** — The coupling of the clock signal through MOSFET gate-to-source/drain capacitances, causing undesired voltage changes on nodes.
+- **Common-mode voltage (VCM)** — The average voltage level shared by the outputs of a fully-differential amplifier.
+- **Differential amplifier** — An amplifier with differential inputs and outputs, used to reject common-mode signals and noise.
+- **Dynamic analog circuits** — Circuits that store and process analog information on capacitors or gate capacitances, making use of switched MOSFETs.
+- **Dynamic comparator** — A clocked comparator that uses capacitive charge sharing to convert input signals to digital outputs with high speed and low offset.
+- **Dynamic current mirror** — A current mirror circuit employing switched capacitors and MOS switches to reduce threshold voltage mismatch errors.
+- **Dynamic amplifier** — An amplifier that is dynamically biased using clock signals to reduce sensitivity to threshold voltage and power supply variations.
+- **Dummy switch** — A MOSFET switch connected in series and controlled by the complementary clock signal to cancel charge injection effects.
+- **kT/C noise** — Thermal noise sampled onto a capacitor during switching, proportional to temperature (kT) divided by capacitance (C).
+- **Nonoverlapping clocks** — Two clock signals that do not overlap in time, preventing switches controlled by them from being on simultaneously.
+- **Op-amp settling time** — The time required for an operational amplifier output to settle within a certain accuracy of its final value after an input change.
+- **Offset voltage cancellation** — A technique using a capacitor to store and inject an offset voltage opposite to the op-amp offset, reducing overall offset errors.
+- **Oversampling** — (Implied) Sampling at a frequency much higher than the signal bandwidth to reduce aliasing and noise.
+- **Parasitic insensitive** — A circuit design attribute where parasitic capacitances do not significantly affect the operation or transfer function.
+- **Sample-and-hold (S/H) circuit** — A circuit that samples an input analog voltage and holds it on a capacitor for subsequent processing.
+- **Signal-dependent charge injection** — Charge injection whose magnitude varies with the input signal level, causing nonlinear distortion.
+- **Switched-capacitor (SC) resistor** — A circuit where a capacitor switched between two nodes mimics the behavior of a resistor with controllable equivalent resistance.
+- **Switched-capacitor integrator** — An integrator circuit using switched capacitors to realize resistor functionality with precise time constants.
+- **Switch feedthrough cancellation** — Methods such as dummy switches and fully-differential configurations to mitigate the undesirable effects of charge injection and clock feedthrough.
+- **Transmission gate (TG)** — A CMOS switch composed of parallel NMOS and PMOS transistors, capable of transmitting full voltage swing without threshold drops.
+- **Unit cell capacitor** — A basic capacitor layout unit replicated multiple times to achieve a larger capacitor with matched characteristics.
+- **Virtual ground** — A node held at a constant potential (usually mid-supply) by an amplifier, used in switched-capacitor circuits to minimize charge injection errors.
+- **Voltage-controlled voltage source (VCVS)** — A circuit element used in simulation to model op-amps with defined gain and common-mode voltage.
+- **Voltage swing (differential)** — The difference between the maximum and minimum output voltages in a fully-differential amplifier, typically double that of a single-ended amplifier.

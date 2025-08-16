@@ -1,38 +1,31 @@
----
-title: "ch16-memory-basics — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch16-memory-basics]
----
+- **Access MOSFET** — The transistor in a memory cell that connects the storage element to the bit line when the word (row) line is activated.
+- **Array Efficiency** — The ratio of the area used for memory cells to the total chip area in a memory circuit.
+- **Bit Line (Digit Line/Column Line)** — The conductive line along columns in a memory array that connects multiple memory cells; acts as a capacitive node loaded by each connected cell.
+- **Capacitive Coupling** — Unwanted capacitive interaction between adjacent metal or poly lines, contributing to noise and signal degradation.
+- **Column Decoder** — Circuit used to select the appropriate bit line(s) corresponding to the column address in a memory.
+- **Contention Current** — Undesired current flowing directly from VDD to ground when two or more transistors conduct simultaneously during sense amplifier switching.
+- **Dynamic Random Access Memory (DRAM)** — Memory where data is stored as charge on a capacitor and requires periodic refreshing due to leakage.
+- **Equilibration** — The process of equalizing bit lines to the same voltage (typically VDD/2) prior to sensing, to provide a known initial condition.
+- **Erase (Memory Cell)** — Operation to remove stored charge from a floating gate to reset the memory bit to a known state, such as via UV light or electrical tunneling.
+- **Fowler-Nordheim Tunneling (FNT)** — Quantum mechanical tunneling of electrons through a thin oxide layer, used for programming and erasing Flash memory.
+- **Floating Gate** — Isolated polysilicon layer in nonvolatile memory devices that stores charge trapped to represent data.
+- **Folded Array Architecture** — Memory array layout where bit lines from two arrays are physically interleaved to improve noise immunity.
+- **Gate-Drain Overlap Capacitance** — Parasitic capacitance at the overlap region between the gate and drain of a MOSFET, contributing to bit line loading.
+- **Kickback Noise** — Voltage disturbance fed back into the input node of a sense amplifier during its switching event.
+- **Line Pitch** — The physical distance between corresponding points of repeating elements in a memory array (e.g., between bit lines).
+- **Local Decoder** — Decoder implemented close to the memory array, decoding address bits locally to select rows or columns.
+- **Metastability** — A condition in sense amplifiers where the circuit fails to resolve to a stable logic level due to insufficient input signal difference.
+- **Memory Cell** — The fundamental storage element in a memory array that holds a bit of data.
+- **NMOS Sense Amplifier (NSA)** — Sense amplifier using NMOS devices for detecting small voltage differences on bit lines.
+- **Open Array Architecture** — Memory array with memory cells at every row-column intersection arranged like an open book, with sense amplifiers connected between two arrays.
+- **Pass Transistor** — Transistor used in column or row decoder outputs to pass signals; typically NMOS that pass a strong '0' but a degraded '1'.
+- **PMOS Sense Amplifier (PSA)** — Sense amplifier using PMOS devices to pull bit lines to full logic '1' levels after sensing.
+- **Precharge-Evaluate (PE) Logic** — Dynamic logic style where outputs are precharged and then conditionally discharged during evaluation phase.
+- **Row Decoder** — Circuit that selects a particular memory word line from the row address inputs.
+- **Row Driver** — Circuit used to drive word (row) lines to a voltage higher than VDD (e.g., pumped voltage) to fully turn on access transistors.
+- **Sense Amplifier** — Circuit that detects and amplifies the small voltage changes on bit lines during read operations.
+- **Static Random Access Memory (SRAM)** — Memory using six-transistor cross-coupled inverters that holds data as long as power is applied without refreshing.
+- **Voltage Threshold (VTH)** — The gate-to-source voltage at which a MOSFET begins to conduct significantly.
+- **Word Line** — A conductor line that enables access transistors in a row of memory cells when activated.
 
-- **1T1C (one-transistor, one-capacitor) DRAM cell** — A memory cell consisting of one access transistor and one capacitor storing the data charge.
-- **Access MOSFET** — A MOS transistor used to connect the memory cell capacitor to the bit line during read or write operations.
-- **Bit line (digit line / column line)** — A vertical conductor in the memory array that carries data to or from memory cells.
-- **Body effect** — A phenomenon where the threshold voltage of a MOSFET changes due to the voltage difference between the body (substrate) and source terminals.
-- **Capacitance (Ccol, Cmbit, Ccoi, Cox, Ctox)** — Electrical storage of charge; in the context includes bit line capacitance, memory bit capacitance, coupling capacitance, oxide capacitance, and tunneling oxide capacitance.
-- **Charge sharing** — The redistribution of charge among connected capacitors, affecting voltage levels in memory sensing.
-- **Column decoder** — Circuitry used to select a specific column (bit line) in the memory array based on the column address.
-- **Contention current** — Current caused by simultaneous conduction paths from VDD to ground, often during sense amplifier switching.
-- **Dynamic RAM (DRAM)** — A volatile memory type that stores data as charge on capacitors and requires periodic refreshing.
-- **Electrically Erasable Programmable Read-Only Memory (EEPROM)** — A memory device that can be electrically programmed and erased via tunneling mechanisms.
-- **Equilibration circuitry (Eq signal)** — Circuitry used to precharge and equalize bit lines to a known voltage before a sensing operation.
-- **Folded array architecture** — Memory array layout where two arrays are placed adjacent for matched noise immunity on bit lines.
-- **Floating gate MOSFET** — A MOS device with a floating (isolated) gate layer that can store charge to alter the transistor threshold voltage, used in nonvolatile memories.
-- **Gate-drain overlap capacitance** — Parasitic capacitance formed where the gate polysilicon overlaps the drain region of a MOSFET.
-- **Hot electron injection (CHE)** — A programming mechanism where high-energy electrons are injected onto the floating gate via channel current.
-- **Kickback noise** — Noise injected back into the input nodes of a sense amplifier during switching, affecting sensing accuracy.
-- **Local decoder** — A decoding circuit situated near the memory array to select specific rows or columns, reducing signal routing complexity.
-- **Long L MOSFET (Long channel transistor)** — A transistor with intentionally increased channel length, often used as a weak driver or resistor.
-- **Memory cell** — The basic storage element of a semiconductor memory, e.g., DRAM or SRAM cell.
-- **Metastability** — An unstable operating point in a sense amplifier or comparator where its output behavior is unpredictable due to minimal input difference.
-- **NMOS Sense Amplifier (NSA)** — A sense amplifier using NMOS transistors, typically faster but only capable of pulling bit lines down.
-- **Open array architecture** — A memory array layout where two separate arrays share a sense amplifier between their bit lines.
-- **Pass transistor** — A MOS transistor used as a switch to pass signals or data in decoders and memory circuits.
-- **PMOS Sense Amplifier (PSA)** — A sense amplifier using PMOS transistors, capable of driving bit lines up to full logic levels.
-- **Precharge-evaluate (PE) logic** — A dynamic logic style that precharges outputs and conditionally evaluates based on inputs.
-- **Refresh operation** — The periodic action in DRAMs to restore charge on storage capacitors to prevent data loss.
-- **Row decoder** — Circuitry used to select a specific row (word line) in the memory array based on the row address.
-- **Row (word) line** — A horizontal conductor in the memory array that controls the access transistors of a row of memory cells.
-- **Sense amplifier** — Circuit that detects and amplifies the small voltage change on a bit line caused by accessing a memory cell.
-- **Threshold voltage (VTHN)** — The minimum gate voltage needed to create a conducting channel in a MOSFET.
-- **Word line driver (row driver)** — Circuit that drives the word (row) line to voltages greater than VDD to fully turn on access transistors.
+

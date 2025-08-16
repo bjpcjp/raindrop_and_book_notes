@@ -1,60 +1,56 @@
----
-title: "ch07-fabrication"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch07-fabrication]
----
+```markdown
+# Table of Contents
 
-- Chapter 7 CMOS Fabrication  
-  - 7.1 CMOS Unit Processes  
-    - 7.1.1 Wafer Manufacture  
-      - Metallurgical Grade Silicon (MGS)  
-      - Electronic Grade Silicon (EGS)  
-      - Czochralski (CZ) Growth and Wafer Formation  
-    - 7.1.2 Thermal Oxidation  
-    - 7.1.3 Doping Processes  
-      - Ion Implantation  
-      - Solid State Diffusion  
-    - 7.1.4 Photolithography  
-      - Exposure Methods  
-      - Resolution  
-      - Depth of Focus (DOF)  
-      - Aligning Masks  
-    - 7.1.5 Thin Film Removal  
-      - Thin Film Etching  
-      - Wet Etching  
-      - Dry Etching  
-        - Sputter Etching  
-        - Plasma Etching  
-        - Reactive Ion Etching (RIE)  
-      - Chemical Mechanical Polishing (CMP)  
-    - 7.1.6 Thin Film Deposition  
-      - Physical Vapor Deposition (PVD)  
-        - Evaporation  
-        - Sputter Deposition  
-      - Chemical Vapor Deposition (CVD)  
-        - APCVD  
-        - LPCVD  
-        - PECVD  
-  - 7.2 CMOS Process Integration  
-    - Frontend-of-the-Line (FEOL)  
-      - Starting Material  
-      - Shallow Trench Isolation Module  
-      - Twin-Tub Module  
-      - Gate Module  
-      - Source/Drain Module  
-    - Backend-of-the-Line (BEOL)  
-      - Self-Aligned Silicide (Salicide) Module  
-      - Pre-Metal Dielectric  
-      - Contact Module  
-      - Metallization 1  
-      - Intra-Metal Dielectric 1 Deposition  
-      - Via 1 Module  
-      - Metallization 2  
-      - Additional Metal/Dielectric Layers  
-      - Final Passivation  
-  - 7.3 Backend Processes  
-    - Wafer Probe  
-    - Die Separation (implied)  
-    - Packaging (implied)  
-    - Final Test/Burn-in (implied)
+- Chapter 7 CMOS Fabrication
+  - 7.1 CMOS Unit Processes
+    - 7.1.1 Wafer Manufacture
+      - Metallurgical Grade Silicon (MGS)
+      - Electronic Grade Silicon (EGS)
+      - Czochralski (CZ) Growth and Wafer Formation
+    - 7.1.2 Thermal Oxidation
+    - 7.1.3 Doping Processes
+      - Ion Implantation
+      - Solid State Diffusion
+    - 7.1.4 Photolithography
+      - Resolution
+      - Depth of Focus (DOF)
+      - Aligning Masks
+    - 7.1.5 Thin Film Removal
+      - Thin Film Etching
+        - Wet Etching
+        - Dry Etching
+          - Sputter Etching
+          - Plasma Etching
+          - Reactive Ion Etching (RIE)
+      - Chemical Mechanical Polishing (CMP)
+    - 7.1.6 Thin Film Deposition
+      - Physical Vapor Deposition (PVD)
+        - Evaporation
+        - Sputter Deposition
+      - Chemical Vapor Deposition (CVD)
+        - Atmospheric Pressure (APCVD)
+        - Low Pressure (LPCVD)
+        - Plasma Enhanced (PECVD)
+  - 7.2 CMOS Process Integration
+    - Frontend-of-the-Line (FEOL)
+      - Starting Material
+      - Shallow Trench Isolation Module
+      - Twin-Tub Module
+      - Gate Module
+      - Source/Drain Module
+    - Backend-of-the-Line (BEOL)
+      - Self-Aligned Silicide (Salicide) Module
+      - Pre-Metal Dielectric
+      - Contact Module
+      - Metallization 1
+      - Intra-Metal Dielectric 1 Deposition
+      - Via 1 Module
+      - Metallization 2
+      - Additional Metal/Dielectric Layers
+      - Final Passivation
+  - 7.3 Backend Processes
+    - Wafer Probe
+    - Die Separation
+    - Packaging
+    - Final Test/Burn-In
+```

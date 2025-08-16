@@ -1,30 +1,23 @@
----
-title: "ch14-dynamic-logic — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch14-dynamic-logic]
----
-
-- **Charge Leakage** — The loss of stored charge from a dynamic node due to MOSFET off currents and diode leakage paths.  
-- **Clocked CMOS Latch** — A memory element where data is stored dynamically on a node controlled by clock signals to enable master and slave stages.  
-- **Dynamic Node (Storage Node)** — A high-impedance node in a dynamic circuit where charge is stored on capacitances to hold a logic value temporarily.  
-- **Dynamic Logic** — Logic circuits that use capacitive charge storage and clocked switches to operate faster and with less power than static logic.  
-- **Evaluate Phase** — The part of a clock cycle when dynamic logic gates compute output based on inputs after precharging.  
-- **Keeper MOSFET** — A weak PMOS transistor added to dynamic logic nodes to maintain their voltage level by compensating for leakage currents.  
-- **Master-Slave Latch** — A clocked latch divided into master (input capture) and slave (output drive) stages controlled by complementary clock signals.  
-- **NMOS Pass Gate (PG)** — A transistor switch used in dynamic logic to charge or discharge a node by passing the input logic level when clocked.  
-- **NP Logic (Zipper Logic)** — Dynamic logic design that alternates NMOS and PMOS stages, eliminating the need for inverters between stages for higher speed.  
-- **Off Current (IOFF)** — The small leakage current flowing through a MOSFET when it is turned off, responsible for charge loss in dynamic nodes.  
-- **PE (Precharge-Evaluate) Logic** — A dynamic logic style where nodes are precharged to high and conditionally discharged during evaluation based on inputs.  
-- **PMOS Drain-Well Diode** — The parasitic diode formed between the PMOS drain and the well that can contribute to leakage currents in dynamic circuits.  
-- **Precharge Phase** — The stage of a clock cycle in dynamic logic during which the output nodes are charged to a known voltage, usually VDD.  
-- **Storage Node Capacitance (Cnode)** — The total capacitance at a dynamic node, including inverter input, interconnect, and junction capacitances.  
-- **Transmission Gate (TG)** — A CMOS switch combining NMOS and PMOS transistors to pass signals with minimal voltage drop in dynamic circuits.  
-- **True Single-Phase Clocked Flip-Flop (TSPC FF)** — A flip-flop circuit using a single clock phase to achieve edge-triggered operation in dynamic logic.  
-- **Vsp (Switching Point Voltage)** — The input voltage at which a logic inverter switches its output state, less relevant in dynamic PE gates.  
-- **Nonoverlapping Clock** — Clock signals with deliberate dead time between phases to prevent simultaneous conduction in adjacent transistor stages.  
-- **Dynamic Shift Register** — A sequence of dynamic logic stages clocked with nonoverlapping clocks to pass data edge-to-edge without contention.  
-- **Leakage Current** — Undesired current through MOSFETs or diodes when transistors are off, causing charge decay on dynamic nodes.  
-- **Domino Logic** — A dynamic logic style that adds an inverter after a precharge-evaluate gate to prevent glitches and enable cascading of gates.  
-- **Pipelining** — A technique to process multiple data words in stages to increase throughput in sequential logic circuits.  
-- **Weak Keeper** — A MOSFET sized to provide minimal current just sufficient to maintain a node's charge without impeding logic operation.
+- **Charge leakage** — The unwanted discharge of stored charge from a dynamic node due to MOSFET off currents and parasitic leakage mechanisms.  
+- **Clocked CMOS latch** — A latch using clock signals to control master and slave stages, where data storage relies on charge storage nodes.  
+- **CMOS transmission gate (TG)** — A bidirectional switch composed of parallel NMOS and PMOS transistors used for charging or discharging nodes in dynamic logic.  
+- **Dead time** — A delay interval between nonoverlapping clock phases during which both clock signals are low to prevent short circuits.  
+- **Domino logic** — A dynamic logic style that adds an inverter after a precharge-evaluate gate to prevent glitches and enable cascading.  
+- **Dynamic node (storage node)** — A high-impedance node in dynamic logic circuits that stores charge representing logic levels but is vulnerable to leakage and noise.  
+- **Dynamic logic** — Logic design technique using clocked gating and charge storage on MOSFET input capacitances to reduce complexity and increase speed.  
+- **Evaluate phase** — The clock phase in precharge-evaluate logic when the logic function is evaluated and the output condition is determined.  
+- **Keeper MOSFET** — A weak PMOS transistor used in domino logic to maintain a dynamic node at a logic high level during hold times.  
+- **Leakage current (off current)** — The small current that flows through a MOSFET when it is turned off, causing gradual discharge of stored charge.  
+- **Level-sensitive latch** — A latch configuration sensitive to the level of the clock signal, typically holding charge on dynamic nodes during clock low phases.  
+- **NMOS pass gate (PG)** — An NMOS transistor used as a switch in dynamic logic to pass logic levels during clock enable phases.  
+- **NP logic (Zipper logic)** — A dynamic logic style that interleaves NMOS and PMOS logic stages to eliminate the inverter delay used in domino logic.  
+- **Nonoverlapping clocks** — Clock signals designed such that two phases never overlap high simultaneously, preventing contention in dynamic logic circuits.  
+- **Off current** — See leakage current; MOSFET current when switched off, contributing to charge loss on dynamic nodes.  
+- **Phase delay** — The intentional delay inserted between clock phases to create nonoverlapping clock signals.  
+- **Precharge phase** — The time during which a dynamic node is charged to a preset voltage (usually VDD) before the evaluation phase begins.  
+- **Precharge-evaluate (PE) logic** — A dynamic logic design style that alternates between precharging the output node and evaluating the logic function each clock cycle.  
+- **Propagation delay (tPHL and tPLH)** — Time intervals for output voltage transitions from high to low or low to high in logic gates.  
+- **Storage capacitance (node capacitance, Cnode)** — The combined capacitance at a dynamic node including inverter input capacitance and parasitic capacitances.  
+- **Switching point voltage (Vsp)** — The input voltage level where an inverter switches output states; irrelevant for PE logic due to output precharge.  
+- **Transmission line effects** — Signal integrity considerations for signals passing through long or high-capacitance interconnects causing delay and distortion.  
+- **Weak keeper device** — A keeper MOSFET sized to provide just enough current to maintain the charge on a storage node without preventing switching.

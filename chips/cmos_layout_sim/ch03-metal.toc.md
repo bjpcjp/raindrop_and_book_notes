@@ -1,47 +1,51 @@
----
-title: "ch03-metal"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch03-metal]
----
+```markdown
+# Table of Contents
 
-- Chapter 3 The Metal Layers  
-  - 3.1 The Bonding Pad  
-    - 3.1.1 Laying Out the Pad I  
-  - Capacitance of Metal-to-Substrate  
-    - Example 3.1: Parasitic capacitance estimation  
-    - Table 3.1 Typical parasitic capacitances  
-    - Example 3.2: Layout scaling and capacitance  
-  - Passivation and Overglass Layer  
-  - 3.2 Design and Layout Using the Metal Layers  
-    - 3.2.1 Metall and Vial  
-      - Examples and layout explanations  
-    - 3.2.2 Parasitics Associated with the Metal Layers  
-      - Example 3.3: Resistance and delay of metal1 line  
-      - Intrinsic Propagation Delay  
-      - Example 3.4: Capacitance between metall and metal2  
-      - Example 3.5: Voltage change on metall due to metal2  
-    - 3.2.3 Current-Carrying Limitations  
-      - Example 3.6: Maximum current on metal1 and pad  
-      - Example 3.7: Voltage drop estimation on metal1 conductor  
-    - 3.2.4 Design Rules for the Metal Layers  
-      - Layout of Two Shapes or a Single Shape  
-      - Layout Trick for the Metal Layers (Vial cell)  
-    - 3.2.5 Contact Resistance  
-      - Example 3.8: Voltage drop across via contact resistance  
-  - 3.3 Crosstalk and Ground Bounce  
-    - 3.3.1 Crosstalk  
-    - 3.3.2 Ground Bounce  
-      - DC Problems  
-      - AC Problems and Decoupling Capacitors  
-      - Example 3.9: Decoupling capacitor size estimation  
-      - Example 3.10: Decoupling capacitor for output buffer load  
-  - 3.4 Layout Examples  
-    - 3.4.1 Laying out the Pad II  
-      - Padframe layout calculations  
-    - 3.4.2 Laying Out Metal Test Structures  
-      - Serpentine and large-area test structures  
-      - SEM View of Metal Layers  
-  - Additional Reading  
-  - Problems  
-    - 3.1–3.12 Various layout, parasitic, and design problems
+- Chapter 3 The Metal Layers
+  - 3.1 The Bonding Pad
+    - 3.1.1 Laying Out the Pad I
+    - Capacitance of Metal-to-Substrate
+    - Passivation
+  - 3.2 Design and Layout Using the Metal Layers
+    - 3.2.1 Metall and Vial
+      - Example Layout
+    - 3.2.2 Parasitics Associated with the Metal Layers
+      - Example 3.3 (Resistance and Delay Estimation)
+      - Intrinsic Propagation Delay
+      - Example 3.4 (Capacitance Estimation Metall to Metal2)
+      - Example 3.5 (Voltage Change on Metall due to Metal2 Potential Change)
+    - 3.2.3 Current-Carrying Limitations
+      - Example 3.6 (Maximum Current Capacity)
+      - Example 3.7 (Voltage Drop in Metall Conductor)
+    - 3.2.4 Design Rules for the Metal Layers
+      - Layout of Two Shapes or a Single Shape
+      - A Layout Trick for the Metal Layers
+    - 3.2.5 Contact Resistance
+      - Example 3.8 (Voltage Drop across Via Contact Resistance)
+  - 3.3 Crosstalk and Ground Bounce
+    - 3.3.1 Crosstalk
+    - 3.3.2 Ground Bounce
+      - DC Problems
+      - AC Problems
+      - Example 3.9 (Decoupling Capacitor Size Estimation)
+      - Example 3.10 (Decoupling Capacitance for Output Buffer)
+      - A Final Comment
+  - 3.4 Layout Examples
+    - 3.4.1 Laying out the Pad II
+    - 3.4.2 Laying Out Metal Test Structures
+      - SEM View of Metal
+- Additional Reading
+- Problems
+  - 3.1 Redraw Pad Layout (50 um x 75 um, scale 100 nm)
+  - 3.2 Estimate Pad Capacitance to Ground (Metall & Metal2)
+  - 3.3 Estimate Capacitance of Parallel Plate Capacitor (Metall to Metal2)
+  - 3.4 Sketch Cross-sectional View (Fig. 3.26)
+  - 3.5 Sketch Cross-sectional View at Dashed Line (Fig. 3.27) and Via Resistance
+  - 3.6 Intrinsic Propagation Delay with ILD (k=1.5)
+  - 3.7 Re-derive Results in Example 3.5 using CV=Q
+  - 3.8 Cross-sectional View and Resistance Estimation (Fig. 3.28)
+  - 3.9 Effect of Cm on Adjacent VDD and Ground Conductors
+  - 3.10 SPICE Simulation of Decoupling Capacitor Effects (Fig. 3.29)
+  - 3.11 Lay Out Padframe (Table 3.2, 3 Metal Process)
+  - 3.12 Design and Layout Test Structure for Metal3 Sheet Resistance
+```

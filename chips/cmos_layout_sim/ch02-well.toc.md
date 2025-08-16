@@ -1,41 +1,31 @@
----
-title: "ch02-well"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch02-well]
----
+```markdown
+# Table of Contents
 
 - Chapter 2 The Well  
-  - The Substrate (The Unprocessed Wafer)  
-  - A Parasitic Diode  
-  - Using the N-well as a Resistor  
-  - 2.1 Patterning  
-    - Oxide Growth and Consumption of Silicon  
-    - Photoresist Application and Masking  
-    - N-well Formation Process  
-  - 2.2 Laying Out the N-well  
-    - Layout Scaling and GDS/CIF Files  
-    - 2.2.1 Design Rules for the N-well  
-  - 2.3 Resistance Calculation  
-    - Sheet Resistance and Resistance of Rectangular Blocks  
-    - Layout of Corners in Resistors  
-    - 2.3.1 The N-well Resistor Cross-Section  
-  - 2.4 The N-well/Substrate Diode  
-    - 2.4.1 A Brief Introduction to PN Junction Physics  
-      - Carrier Concentrations  
-      - Fermi Energy Level  
-    - 2.4.2 Depletion Layer Capacitance  
-    - 2.4.3 Storage or Diffusion Capacitance  
-    - 2.4.4 SPICE Modeling  
-  - 2.5 The RC Delay through an N-well  
-    - RC Circuit Review  
-    - Distributed RC Delay  
-    - Distributed RC Rise Time  
-  - 2.6 Twin Well Processes  
-    - n-well Process vs. p-well Process  
-    - Twin-well and Triple-well Processes  
-    - Design Rules for the Well  
-  - SEM Views of Wells  
-  - Additional Reading  
-  - Problems  
-    - Problem 2.1 to 2.15
+  - The Substrate (The Unprocessed Wafer) .......................................... 32  
+  - A Parasitic Diode .......................................................................... 32  
+  - Using the N-well as a Resistor .......................................................... 32  
+  - 2.1 Patterning ............................................................................... 33  
+    - Patterning the N-well .................................................................. 35  
+  - 2.2 Laying Out the N-well ................................................................ 36  
+    - 2.2.1 Design Rules for the N-well ................................................. 37  
+  - 2.3 Resistance Calculation ............................................................ 37  
+    - Layout of Corners ....................................................................... 38  
+    - 2.3.1 The N-well Resistor ............................................................. 39  
+  - 2.4 The N-well/Substrate Diode ...................................................... 39  
+    - 2.4.1 A Brief Introduction to PN Junction Physics ......................... 40  
+      - Carrier Concentrations .......................................................... 40  
+      - Fermi Energy Level ................................................................... 42  
+    - 2.4.2 Depletion Layer Capacitance ............................................ 43  
+    - 2.4.3 Storage or Diffusion Capacitance ..................................... 45  
+    - 2.4.4 SPICE Modeling ................................................................... 47  
+  - 2.5 The RC Delay through an N-well ............................................... 49  
+    - RC Circuit Review ....................................................................... 50  
+    - Distributed RC Delay .................................................................. 51  
+    - Distributed RC Rise Time .......................................................... 52  
+  - 2.6 Twin Well Processes ................................................................... 52  
+    - Design Rules for the Well ........................................................ 54  
+    - SEM Views of Wells ..................................................................... 55  
+- Additional Reading ............................................................................... 56  
+- Problems .............................................................................................. 56  
+```

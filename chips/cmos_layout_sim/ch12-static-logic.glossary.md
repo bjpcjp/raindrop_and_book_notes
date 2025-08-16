@@ -1,33 +1,25 @@
----
-title: "ch12-static-logic — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch12-static-logic]
----
-
-- **AOI logic (And-Or-Invert)** — A CMOS logic style that implements combinational logic functions by combining AND and OR gates followed by an inverter.  
-- **Cload (Load Capacitance)** — The total capacitance connected to the output node of a logic gate excluding intrinsic device capacitances.  
-- **CMOS (Complementary Metal-Oxide-Semiconductor)** — A technology for constructing integrated circuits using complementary and symmetrical pairs of p-type and n-type MOSFETs.  
-- **CVSL (Cascode Voltage Switch Logic)** — A differential logic style using cross-connected PMOS loads and NMOS logic to improve switching speed.  
-- **Delay (Propagation Delay)** — The time taken for an input change to cause a corresponding output change in a logic gate, often measured as tPLH or tPHL.  
-- **Differential Logic** — A logic style where complementary output signals are employed, often improving noise immunity and speed.  
-- **DSL (Differential Split-Level Logic)** — A logic scheme reducing output voltage swing to speed up switching at the cost of smaller noise margins and increased power.  
-- **Effective Resistance (of MOSFETs)** — Approximate equivalent resistance of MOSFET transistors used to analyze delay or switching characteristics in circuits.  
-- **High-to-Low Delay (tPHL)** — The time delay for an output to transition from a high logic level to a low logic level.  
-- **Input Capacitance** — Capacitance seen at the input terminal of a transistor or logic gate, affecting switching speed.  
-- **Low-to-High Delay (tPLH)** — The time delay for an output to transition from a low logic level to a high logic level.  
-- **MOSFET (Metal-Oxide-Semiconductor Field-Effect Transistor)** — A transistor used in CMOS technology to switch or amplify signals, including NMOS and PMOS types.  
-- **NAND Gate** — A logic gate producing a low output only when all inputs are high; implemented in CMOS with NMOS devices in series and PMOS in parallel.  
-- **NMOS Transistor** — A type of MOSFET using electrons as charge carriers; typically faster than PMOS due to higher electron mobility.  
-- **Normal Mode Operation (Static Logic)** — Logic operation where outputs are always valid functions of inputs at all times, as opposed to dynamic logic.  
-- **NOR Gate** — A logic gate producing a high output only when all inputs are low; implemented in CMOS with PMOS devices in series and NMOS in parallel.  
-- **Pass Gate** — A transmission gate using NMOS and/or PMOS transistors to pass logic signals, with limited voltage swing depending on transistor type.  
-- **Parallel MOSFET Connection** — MOSFETs connected side-by-side sharing the same gate input, effectively increasing device width and reducing resistance.  
-- **Propagation Delay** — The delay time before an output responds to an input change in a logic gate.  
-- **Series MOSFET Connection** — MOSFETs connected end-to-end which increases the effective channel length and resistance, impacting delay.  
-- **Switching Point Voltage (Vsp)** — The input voltage at which a CMOS gate's output switches logic state; ideal value is near half the supply voltage.  
-- **Tri-State Buffer** — A buffer circuit with an output that can be driven high, low, or placed in a high-impedance state to disconnect from the line.  
-- **VDD** — The positive supply voltage for CMOS circuits.  
-- **VTHN (NMOS Threshold Voltage)** — The minimum gate-to-source voltage required to turn on an NMOS transistor.  
-- **VTHP (PMOS Threshold Voltage)** — The minimum gate-to-source voltage magnitude required to turn on a PMOS transistor.  
-- **Voltage Transfer Curve (VTC)** — A graph showing the output voltage of a gate as a function of input voltage, used to analyze logic gate behavior.
+- **AOI logic (And-Or-Invert logic)** — A CMOS logic style implementing complex functions by combining AND, OR, and inverter gates to reduce delay for complex logic.
+- **Cload** — Load capacitance driven by a logic gate, including external and intrinsic capacitances.
+- **CMOS** — Complementary Metal-Oxide-Semiconductor technology using both NMOS and PMOS transistors to implement logic gates.
+- **CVSL (Cascode Voltage Switch Logic)** — Differential output CMOS logic using PMOS cross-coupled loads and NMOS logic blocks to improve switching speed.
+- **Delay (Propagation Delay)** — The time interval for a logic gate output to change after an input transition, commonly denoted tPLH (low-to-high) and tpHL (high-to-low).
+- **DSL (Differential Split-Level) Logic** — CMOS logic with reduced output voltage swing to improve speed at the cost of noise margin and increased static power.
+- **Dynamic behavior** — The transient switching characteristics of CMOS gates, including delay and rise/fall times.
+- **Intrinsic delay** — Delay associated solely with the gate's internal capacitances and resistances, excluding external loading.
+- **Load capacitance (Cload)** — Capacitance at the output node including connected devices and wiring.
+- **Low-to-high delay (tPLH)** — Propagation delay when output transitions from logic low to logic high.
+- **MOSFET (Metal-Oxide-Semiconductor Field-Effect Transistor)** — A transistor used in CMOS technology; NMOS and PMOS devices form the basis of CMOS logic gates.
+- **N-input NAND gate** — A NAND gate with N inputs; PMOS devices in parallel and NMOS devices in series.
+- **N-input NOR gate** — A NOR gate with N inputs; NMOS devices in parallel and PMOS devices in series.
+- **NMOS devices in parallel** — MOSFET configuration where multiple NMOS transistors share the drain/source node and operate together to pull output low.
+- **NMOS devices in series** — MOSFET configuration with NMOS transistors cascaded, increasing effective channel length and resistance.
+- **Noise margin** — The maximum tolerated noise amplitude before logic level errors occur.
+- **Pass gate (PG)** — A switch consisting typically of NMOS or PMOS that passes logic signals; may reduce voltage swing.
+- **PMOS devices in parallel** — MOSFET configuration with multiple PMOS devices connected side-by-side to pull output high more strongly.
+- **PMOS devices in series** — MOSFET configuration where PMOS transistors are cascaded, increasing channel length and resistance.
+- **Switching characteristics** — The behavior and timing performance of logic gates during input and output transitions.
+- **Switching point voltage (VSP)** — The input voltage at which the output voltage of a gate switches state, typically near VDD/2 for ideal gates.
+- **Static logic** — CMOS logic in which the output continuously reflects the logical function of inputs without requiring clocking or dynamic evaluation.
+- **Tri-state buffer** — A buffer with three output states: high, low, and high impedance (Hi-Z), controlled by an enable input.
+- **Voltage transfer curve (VTC)** — The characteristic curve showing output voltage as a function of input voltage for a logic gate.
+- **Worst-case delay** — The maximum expected propagation delay through a logic gate under specified conditions.

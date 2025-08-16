@@ -1,9 +1,5 @@
----
-title: "ch16-memory-basics"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch16-memory-basics]
----
+```markdown
+# Table of Contents
 
 - Chapter 16 Memory Circuits
   - 16.1 Array Architectures
@@ -14,10 +10,9 @@ tags: [ch16-memory-basics]
       - Refresh Operation
     - 16.1.2 The Folded Array
     - Layout of the DRAM Memory Bit (Mbit)
-    - Chip Organization
+    - 16.1.3 Chip Organization
   - 16.2 Peripheral Circuits
     - 16.2.1 Sense Amplifier Design
-      - Clocked Sense Amplifier
       - Kickback Noise and Clock Feedthrough
       - Memory
       - Current Draw
@@ -39,3 +34,5 @@ tags: [ch16-memory-basics]
       - Flash Memory
   - Additional Reading
   - Problems
+    - Problem 16.1 to 16.20
+```

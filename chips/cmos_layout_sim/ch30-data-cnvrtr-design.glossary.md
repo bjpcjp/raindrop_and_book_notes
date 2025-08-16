@@ -1,33 +1,34 @@
----
-title: "ch30-data-cnvrtr-design — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch30-data-cnvrtr-design]
----
-
-- **1.5 bits per stage** — A pipeline ADC stage resolution using three quantization levels to correct comparator offset errors.  
-- **ADC (Analog-to-Digital Converter)** — A device that converts continuous analog signals into discrete digital codes.  
-- **AAF (Auxiliary Amplifier or Auxiliary Input Port)** — Additional input used in op-amps to trim or null offset voltages dynamically.  
-- **Bottom-plate sampling** — A sampling technique where the capacitor bottom plate is switched last to reduce charge injection errors.  
-- **Capacitor matching** — The precision in maintaining equal or proportional capacitor values to ensure linearity and accuracy in circuits.  
-- **CMFB (Common-Mode Feedback)** — A feedback circuit that stabilizes and controls the common-mode voltage in fully differential amplifier circuits.  
-- **CMRR (Common-Mode Rejection Ratio)** — The ability of an amplifier to reject input signals common to both inputs, critical for DAC linearity.  
-- **Current-steering DAC** — A digital-to-analog converter that produces output currents proportionally steered through switches rather than voltages.  
-- **DNL (Differential Nonlinearity)** — A measurement of the deviation between the actual and ideal step sizes in a DAC or ADC transfer function.  
-- **INL (Integral Nonlinearity)** — The cumulative deviation from the ideal transfer curve in converters, representing overall distortion.  
-- **MSB (Most Significant Bit)** — The bit in a binary number with the highest value and greatest weight.  
-- **Op-amp offset voltage** — An undesired DC voltage at the input of an operational amplifier causing output errors.  
-- **Op-amp unity gain frequency (/un)** — The frequency where an op-amp's gain drops to 1, critical for determining settling time and bandwidth.  
-- **Pipeline ADC** — A multi-stage ADC architecture that processes bits sequentially with error correction for high-speed conversions.  
-- **Power supply rails** — The highest and lowest voltage levels available in a circuit, typically labeled VDD (positive) and ground.  
-- **Rail-to-rail output** — An amplifier or DAC output capability that can swing close to both power supply rails.  
-- **Reference voltage (VREF)** — A stable voltage used as a baseline or scale for DACs and ADCs to define their input and output ranges.  
-- **Resistor mismatch** — Variations between resistor values in a network affecting DAC linearity and accuracy.  
-- **R-2R ladder DAC** — A resistor network consisting of repeating R and 2R resistors used to create binary-weighted output voltages or currents.  
-- **Segmentation (DACs)** — Dividing DAC bits into groups (like MSBs and LSBs) to improve linearity and reduce glitches.  
-- **Settling time** — The time it takes for an output to reach and remain within a specified error band of its final value.  
-- **Switch resistance** — The on-resistance of MOSFET switches in DAC or S/H circuits, ideally much smaller than resistors in the ladder to maintain accuracy.  
-- **Thermometer code** — A unary digital code where each level corresponds to a number of consecutive '1's, used to reduce glitches in segmented DACs.  
-- **Track-and-hold (S/H) circuit** — A circuit that samples an analog input voltage and holds it constant for processing or conversion.  
-- **W-2W current mirror** — A current mirror design using transistor finger sizes to create precise binary-weighted currents for current-steering DACs.  
-- **Wide-swing current-mode DAC** — A current-mode R-2R DAC topology optimized for rail-to-rail output and fixed input common-mode voltage.
+- **1.5 bits/stage** — Pipeline ADC stage with three decision levels (00, 01, 11), enabling digital error correction and relaxing comparator precision requirements.  
+- **A0LDC** — DC open-loop gain of an operational amplifier (op-amp).  
+- **ADC (Analog-to-Digital Converter)** — Circuit that converts an analog input signal into a digital output code.  
+- **Auxiliary input port** — Additional input in an op-amp used for offset trimming by balancing currents or voltages.  
+- **Bottom-plate sampling** — Technique in switched-capacitor circuits where the bottom plate of the sampling capacitor is switched to minimize charge injection and improve accuracy.  
+- **Capacitor mismatch** — Variation in capacitor values affecting linearity and gain accuracy in switched-capacitor circuits.  
+- **CMFB (Common-Mode Feedback)** — Circuit or technique used to maintain the output common-mode voltage of a fully-differential op-amp at a desired level.  
+- **CMOS (Complementary Metal-Oxide-Semiconductor)** — A semiconductor technology widely used for integrated circuits including data converters.  
+- **CMRR (Common-Mode Rejection Ratio)** — Measure of an op-amp's ability to reject common-mode signals, important for DAC linearity.  
+- **DAC (Digital-to-Analog Converter)** — Circuit that converts a digital code into an analog output voltage or current.  
+- **DNL (Differential Nonlinearity)** — Deviation in step size between adjacent output codes of a DAC or ADC from the ideal 1 LSB step.  
+- **Error calibration** — Technique to measure and adjust for errors such as offset, gain, and INL in data converters.  
+- **Glitch** — Transient error in the output of a DAC or ADC caused by non-simultaneous switching among digital inputs.  
+- **INL (Integral Nonlinearity)** — Deviation of the DAC or ADC transfer curve from a straight line, representing cumulative error over the conversion range.  
+- **Latency** — Delay in output data availability in pipelined ADCs reflecting the stages of processing.  
+- **Level shifting** — Adjusting the input or output voltage level in a circuit to achieve desired voltage ranges or subtract references.  
+- **Load capacitance (CL)** — Capacitive load connected to the output of a DAC or S/H, affecting settling time and stability.  
+- **Matched resistor/capacitor** — Components with closely matched electrical values used to improve linearity and reduce offset errors.  
+- **Multiplexer (MUX)** — Digital circuit selecting one of many input signals to pass to output, used in segmenting DACs and stage outputs.  
+- **Noninverting op-amp topology** — Amplifier configuration where the input signal is applied to the noninverting input, offering wider bandwidth for unity gain.  
+- **Offset voltage (VoS)** — Unwanted DC voltage present at the input of an op-amp or comparator, affecting accuracy; can be trimmed or calibrated.  
+- **Op-amp unity gain frequency (fun)** — Frequency at which the gain of an op-amp becomes unity; a key parameter for bandwidth and settling time.  
+- **Pipelined ADC** — ADC architecture dividing conversion into a sequence of stages operating simultaneously, yielding high speed and resolution.  
+- **Rail-to-rail output** — Op-amp ability to swing output voltage close to supply voltages; important for maximizing dynamic range.  
+- **R-2R resistor ladder** — DAC structure using resistors of only two values (R and 2R) to generate binary weighted currents or voltages.  
+- **Sampling switch** — MOSFET operating as a switch in S/H circuits; its on-resistance must be small to avoid degrading linearity.  
+- **Segmentation** — Technique used in DACs where bits are grouped in segments to reduce DNL and switching glitches.  
+- **Shunt-shunt amplifier** — Op-amp configuration with feedback sensing current and voltage, used in inverting amplifiers.  
+- **Switch jitter** — Timing uncertainty in switches causing errors in sampling and conversion.  
+- **Thermometer code** — Digital code where each bit corresponds to a step level, allowing simpler decoding and reduced glitches in DAC segmentation.  
+- **Time-interleaved ADC** — ADC architecture using multiple ADC cores sampling at offset times to increase overall sampling rate.  
+- **Transfer curve** — Relationship between input analog signal and output digital code or DAC output voltage.  
+- **Voltage-mode DAC** — DAC design using voltages and resistor voltage division rather than currents; sensitive to op-amp CMRR and linearity.  
+- **Wide-swing current-mode DAC** — Current-mode DAC design using wide output voltage swing and fixed input common-mode voltage for better dynamic range.

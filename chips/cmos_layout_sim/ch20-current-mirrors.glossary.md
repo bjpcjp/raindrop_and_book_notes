@@ -1,28 +1,26 @@
----
-title: "ch20-current-mirrors — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch20-current-mirrors]
----
-
-- **Beta-multiplier** — A self-biased circuit that uses transistor ratios and a resistor to generate a stable reference current independent of supply voltage.  
-- **Bias current (IREF)** — The reference current set in a current mirror used to bias other transistors or circuits.  
-- **Channel-length modulation (λ)** — The effect causing the MOSFET's drain current to vary with the drain-to-source voltage, reducing output resistance.  
-- **Compliance range** — The output voltage range where a current mirror behaves like an ideal current source.  
-- **Current mirror** — A circuit that copies (mirrors) a reference current to another branch, ideally maintaining a constant output current.  
-- **Drain-to-source voltage (VDS)** — Voltage difference between the drain and source terminals of a MOSFET, critical for current mirror matching.  
-- **Drain saturation voltage (VDS,sat)** — The minimum VDS required for a MOSFET to operate in saturation (active) region.  
-- **Finite output resistance (ro)** — The non-ideal resistance at the output of a MOSFET current source, causing output current variation with output voltage changes.  
-- **Footprint (MOSFET layout)** — The physical arrangement and sizing of a MOS transistor in silicon layout.  
-- **Gate-source voltage (VGS)** — Voltage difference between the gate and source terminals of a MOSFET controlling its conduction.  
-- **Input offset voltage mismatch** — The difference in threshold voltages or other parameters causing current mismatch in matched MOSFET pairs.  
-- **Long-channel MOSFET** — A transistor with channel length large enough that short-channel effects are negligible, resulting in higher output resistance.  
-- **Low-voltage (wide-swing) cascode** — A cascode current mirror designed to minimize the voltage overhead and enable operation at low supply voltages.  
-- **MOSFET output resistance (ro)** — Resistance looking into the drain of a MOSFET in saturation, inversely related to channel-length modulation.  
-- **Output resistance enhancement** — Techniques, such as cascode configurations or feedback amplifiers, used to increase the output resistance of current mirrors.  
-- **Reference current (IREF)** — The known, stable current established in a current mirror circuit used as a baseline for other currents.  
-- **Threshold voltage mismatch (ΔVTH)** — Variations in threshold voltage between matched transistors causing mismatch in mirrored currents.  
-- **Transconductance parameter (KP)** — A process-dependent parameter representing a MOSFET’s gain factor, influencing current and matching.  
-- **Wide-swing cascode** — A current mirror design that allows a reduced voltage drop across the mirror while maintaining transistor saturation conditions.  
-- **Weak inversion (subthreshold) operation** — Mode where a MOSFET operates below threshold voltage, passing very small currents, useful for low-power designs.  
-- **W/L ratio** — The width-to-length ratio of a MOSFET channel, used to scale transistor current capabilities and set current mirror ratios.
+- **Beta-multiplier** — A current reference circuit that uses two MOSFETs and a resistor to generate a bias current independent of power supply variations; named for the ratio of transistor sizes (β).
+- **Channel-length modulation (λ)** — Variation in MOSFET drain current due to changes in drain-to-source voltage, modeled as a finite output resistance.
+- **Compliance range** — The range of output voltages over which a current source maintains a nearly constant current.
+- **Current mirror** — A circuit that copies (mirrors) a reference current from one branch to another, ideally producing a constant output current.
+- **Diode-connected MOSFET** — A transistor with gate and drain connected together, forcing it to operate as a voltage drop element.
+- **Differential amplifier (diff-amp)** — A circuit that amplifies the difference between two input voltages; used to regulate voltages in current mirrors.
+- **Drain-to-source voltage (VDS)** — The voltage difference between the drain and source terminals of a MOSFET.
+- **Drain-source saturation voltage (VDS,sat)** — The minimum VDS required to keep a MOSFET operating in saturation.
+- **Finite output resistance (r0)** — The non-ideal resistance seen at the output of a current source or transistor, limiting current source behavior.
+- **Floating current source** — A current source where the voltage across the device is set by bias voltages, allowing connection without a fixed reference potential.
+- **Gate-source voltage (VGS)** — The voltage difference between the gate and source terminals of a MOSFET.
+- **MOSFET output resistance (ro)** — The small-signal resistance seen looking into the drain of a MOSFET in saturation, related to channel-length modulation.
+- **Output compliance** — The voltage range within which a current source behaves as intended, maintaining constant current output.
+- **Output resistance (Ro)** — The incremental resistance looking into the output terminal of a current mirror or current source.
+- **Parasitic capacitance (Cdb, Csb)** — Capacitances associated with the drain or source junctions to the substrate, proportional to device width.
+- **Positive feedback** — A feedback where the output reinforces the input, which can lead to instability if the loop gain is too high.
+- **Reference current (IREF)** — The current established in the reference side of a current mirror which is copied to other branches.
+- **Self-biased circuit** — A circuit that generates its own bias current or voltage without external reference.
+- **Setup voltage (Vbias)** — The bias voltage at gates or drains established by bias circuits to set operating points.
+- **Short-channel effects** — Non-ideal behaviors in scaled-down MOSFETs, including reduced output resistance and increased sensitivity to VDS.
+- **Start-up circuit** — Additional circuitry used in self-biased circuits to prevent the operating point from settling at zero current.
+- **Subthreshold region** — MOSFET operation region where VGS is below threshold and current conduction is due to weak inversion.
+- **Threshold voltage mismatch (ΔVTH)** — Variability in threshold voltage between nominally identical MOSFETs, causing current mismatch.
+- **Transconductance parameter (KP)** — The process-dependent parameter related to mobility and oxide capacitance affecting MOSFET current.
+- **Trim or Dummy poly strips** — Extra poly gates added alongside devices in layout to minimize undercut effects and improve matching.
+- **Wide-swing cascode** — A cascode current mirror design optimized to minimize voltage headroom allowing operation at lower supply voltages.

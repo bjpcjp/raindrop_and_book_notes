@@ -1,45 +1,55 @@
----
-title: "ch27-nonlinear-analog-ckts"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch27-nonlinear-analog-ckts]
----
+```markdown
+# Table of Contents
 
-- Chapter 27: Nonlinear Analog Circuits  
+- Chapter 27 Nonlinear Analog Circuits  
   - 27.1 Basic CMOS Comparator Design  
     - Comparator Operation (Fig. 27.1)  
     - High-Performance Comparator Block Diagram (Fig. 27.2)  
     - Preamplification Stage (Fig. 27.3)  
-    - Decision Circuit  
-      - Positive Feedback Circuit (Fig. 27.4)  
-      - Switching Points and Hysteresis (Eqs. 27.2–27.7)  
-      - Example 27.1: Switching Point Simulation (Figs. 27.5–27.7)  
+      - Transconductance and Input Capacitance  
+      - Equation (27.1), (27.3)  
+    - Decision Circuit (Fig. 27.4)  
+      - Operation and Positive Feedback  
+      - Switching Point Equations (27.2)–(27.7)  
+      - Example 27.1: Switching Point Voltage Calculations (Fig. 27.5)  
+      - Simulation Results (Figs. 27.6, 27.7)  
     - Output Buffer  
       - Self-Biased Differential Amplifier (Fig. 27.8)  
-      - General-Purpose Comparator (Fig. 27.9)  
+      - General-Purpose Comparator with Rail-to-Rail Input (Fig. 27.9)  
     - Comparator Characterization  
       - DC Performance (Fig. 27.10)  
       - Gain and Offset (Fig. 27.11)  
-      - Transient Response (Figs. 27.12–27.14)  
-      - Propagation Delay and Minimum Input Slew Rate  
-    - Clocked Comparators  
-      - Basic Clocked Comparator (Fig. 27.15)  
-      - Improved Wide-Swing Clocked Comparator (Fig. 27.16)  
-    - Input Buffers Revisited (Fig. 27.17)  
+      - Transient Response (Figs. 27.12, 27.13)  
+      - Input Stage Clamping (Fig. 27.14)  
+      - Propagation Delay and Staging  
+      - Minimum Input Slew Rate and Metastability  
+  - 27.1.2 Clocked Comparators  
+    - Basic Clocked Comparator (Fig. 27.15)  
+    - Wide-Swing Clocked Comparator (Fig. 27.16)  
+  - 27.1.3 Input Buffers Revisited  
+    - Fully-Differential Input Buffer (Fig. 27.17)  
   - 27.2 Adaptive Biasing  
-    - Concept and Block Diagram (Fig. 27.18)  
-    - Current Differential Amplifier Implementation (Fig. 27.19)  
-    - Adaptively Biased Diff-Amp Circuit (Fig. 27.20)  
+    - Concept of Adaptive Biasing (Fig. 27.18)  
+    - Current Differential Amplifier for Adaptive Bias (Fig. 27.19)  
+    - Implementation of Adaptive Biasing (Fig. 27.20)  
     - Adaptive Voltage Follower Amplifier (Fig. 27.21)  
   - 27.3 Analog Multipliers  
-    - Four-Quadrant Multiplier Operation (Fig. 27.22)  
-    - CMOS Multiplying Quad Multiplier  
-      - Basic Circuit (Fig. 27.23)  
-      - Biasing and Output Derivation (Fig. 27.24, Eqs. 27.13–27.22)  
-      - SPICE Simulation Model (Fig. 27.25)  
-      - Differential Input Implementation (Fig. 27.26)  
-      - Multiplier DC Characteristics (Fig. 27.27)  
+    - Four-Quadrant Multiplier Characteristics (Fig. 27.22)  
+    - Multiplying Quad Multiplier  
+      - Circuit Description (Fig. 27.23)  
+      - Biasing of Multiplying Quad (Fig. 27.24)  
+      - Current Equations and Gain (Eqs. 27.13–27.22)  
+      - SPICE Simulation Setup (Figs. 27.25, 27.26)  
+      - DC Characteristics (Fig. 27.27)  
     - Multiplier Design Using Squaring Circuits  
-      - Sum-Squaring and Difference-Squaring Circuits (Fig. 27.28, Eqs. 27.23–27.29)  
+      - Sum-Squaring and Difference-Squaring Circuits (Fig. 27.28)  
+      - Output Voltages and Multiplier Operation (Eqs. 27.23–27.29)  
   - Additional Reading  
-  - Problems (27.1 to 27.6)
+  - Problems  
+    - 27.1 Comparator Performance Comparison  
+    - 27.2 Effect of Balancing Resistor  
+    - 27.3 Operation of Fig. 27.15 Comparator  
+    - 27.4 Operation of Fig. 27.16 Comparator  
+    - 27.5 Simulation of Input Buffer Fig. 27.17  
+    - 27.6 Low Power Clocked Comparator Design for Flash ADC
+```

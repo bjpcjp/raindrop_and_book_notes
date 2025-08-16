@@ -1,29 +1,20 @@
----
-title: "ch10-digital-models — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch10-digital-models]
----
-
-- **Capacitance (Cgd)** — The capacitance between the gate and drain of a MOSFET, important in switching and modeled as Cox/2.  
-- **Charge (Q)** — The product of capacitance and voltage difference, representing stored electrical energy.  
-- **Delay time (tdelay)** — The time interval between an input change and the corresponding output response in a digital circuit.  
-- **Effective Switching Resistance (Rn, Rp)** — An approximate resistance representing the MOSFET channel during switching, used in digital models.  
-- **Gate-Source Voltage (VGS)** — The voltage difference between the gate and source terminals of a MOSFET, controlling its conduction.  
-- **Gate-Drain Capacitance (Cgd)** — The capacitance between the gate and drain terminals of a MOSFET, which affects switching speed.  
-- **Long-Channel MOSFET** — A MOSFET device with channel length large enough to follow square-law characteristics and classical models.  
-- **Miller Effect** — The effective multiplication of capacitance due to voltage gain between input and output nodes in a device.  
-- **Minimum Channel Length (Scale factor)** — The smallest length used in device manufacturing processes, impacting device speed and capacitance.  
-- **NMOS Pass Gate (PG)** — An NMOS transistor configured to pass logic levels, passing logic 0 well but degrading logic 1 by a threshold voltage drop.  
-- **PMOS Pass Gate (PG)** — A PMOS transistor configured to pass logic levels, passing logic 1 well but degrading logic 0 by a threshold voltage drop.  
-- **Process Characteristic Time Constant (τ)** — The intrinsic switching speed of a MOSFET defined by the product of its resistance and oxide capacitance.  
-- **Propagation Delay (tPLH, tPHL)** — The time between input and output transitions, specifically high-to-low or low-to-high output changes.  
-- **Short-Channel MOSFET** — A MOSFET with very small channel length where short-channel effects dominate and classical square-law models do not apply.  
-- **Switching Resistance (Effective Resistance)** — The equivalent resistance a MOSFET exhibits during switching, influencing speed and delay.  
-- **Switching Time (Transition Time)** — The time it takes for the output of a digital circuit to rise or fall between logic levels.  
-- **Transmission Gate (TG)** — A parallel combination of NMOS and PMOS pass gates offering rail-to-rail transmission of logic signals with two control signals.  
-- **Threshold Voltage (VTHN, VTHP)** — The minimum gate-to-source voltage required to turn an NMOS or PMOS transistor on.  
-- **Triode Region** — The MOSFET operating region where it behaves like a resistor, relevant in switching models.  
-- **Total Capacitance (Ctot)** — The sum of load capacitance and device intrinsic capacitances connected to a node, impacting delay.  
-- **Transition Times (tLH, tHL)** — The output signal rise (low-to-high) and fall (high-to-low) times during switching.  
-- **Voltage Swing** — The range between logic high and logic low output voltages; limited in single transistor pass gates.
+- **Effective Switching Resistance** — The average resistance of a MOSFET when it is on, estimated by the reciprocal slope of the MOSFET’s I-V characteristics during switching.
+- **Digital MOSFET Model** — A simplified MOSFET representation as a switch with an effective resistance and capacitances, used for hand calculations in digital circuit analysis.
+- **Miller Capacitance** — The effective capacitance seen at the input or output when a capacitor connects nodes with opposite voltage transitions, effectively doubling the capacitance impact.
+- **NMOS Pass Gate (PG)** — An NMOS transistor used as a switch that passes a logic '0' well but passes a logic '1' with a threshold voltage drop.
+- **Oxide Capacitance (Cox)** — The capacitance between the gate and channel of a MOSFET, proportional to the gate oxide thickness and device geometry.
+- **Pass Gate (PG)** — A MOSFET used as a switch to transfer signals, which can be NMOS or PMOS devices, exhibiting voltage threshold drops when passing certain logic levels.
+- **PMOS Pass Gate (PG)** — A PMOS transistor used as a switch that passes a logic '1' well but passes a logic '0' with a threshold voltage drop.
+- **Process Characteristic Time Constant (\(\tau\))** — The intrinsic switching speed of a MOSFET, approximately RnCox, which decreases with smaller channel length.
+- **Propagation Delay (tPLH / tPHL)** — The delay time between input and output signal reaching 50% of voltage swing during low-to-high or high-to-low transitions.
+- **Rise Time (trise)** — The time it takes for a signal to transition from low to high voltage levels, typically approximated as 2.2 times the RC time constant.
+- **Short-Channel MOSFET** — A MOSFET with channel lengths on the order of tens of nanometers, which exhibits deviations from long-channel square-law models.
+- **Square-Law MOSFET Model** — The traditional long-channel MOSFET model where current varies as the square of the gate overdrive voltage.
+- **Switching Delay** — The time taken for a digital output to respond to an input change, often modeled as 0.7 times the effective MOSFET resistance times the load capacitance.
+- **Switching Resistance (Rn, Rp)** — The effective on-resistance of NMOS and PMOS devices during switching, with PMOS resistance typically three times higher due to lower hole mobility.
+- **Switching Time Constant (\(\tau\))** — Time constant for charging/discharging output nodes via MOSFET switches, key in determining circuit speed.
+- **Transmission Gate (TG)** — A parallel combination of an NMOS and PMOS pass gate, controlled by complementary signals, providing rail-to-rail voltage transmission.
+- **Transition Time (tLH / tHL)** — The duration of the output voltage transitioning from low to high (tLH) or high to low (tHL).
+- **Tristate Output** — A high impedance state of a gate output, used to disconnect the output from a shared bus.
+- **Voltage Threshold Drop** — The reduction in output voltage level when passing a logic '1' through an NMOS or a logic '0' through a PMOS pass gate, equal to the threshold voltage.
+- **Wide Drawn Device Sizes (e.g., 10/1, 30/1)** — Standard device width-to-length ratios used in design to match effective resistances and drive strengths.

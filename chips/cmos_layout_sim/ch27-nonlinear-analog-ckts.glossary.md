@@ -1,34 +1,55 @@
----
-title: "ch27-nonlinear-analog-ckts — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch27-nonlinear-analog-ckts]
----
+- **Adaptive biasing** — Technique that reduces power dissipation in an amplifier by increasing bias current only when input signals demand higher output drive, improving slew rate without constant high power use.
 
-- **Adaptive biasing** — A technique to reduce power dissipation in amplifiers by increasing bias current only when needed for higher output drive.
-- **Analog buffer** — A circuit stage that isolates and amplifies an input signal, often used to convert analog signals to logic levels.
-- **Analog multiplier** — A circuit that produces an output proportional to the product of two input voltages.
-- **Body effect** — The influence of the voltage difference between a MOSFET’s body and source on its threshold voltage.
-- **Clamped input stage** — A comparator input stage that prevents one side of a differential pair from turning off to maintain linear operation.
-- **Common-mode voltage** — The average voltage level common to both inputs of a differential amplifier or comparator.
-- **Current diff-amp** — A differential amplifier designed to produce an output proportional to the difference of two currents.
-- **Decision circuit** — The positive feedback stage in a comparator that amplifies the difference between input signals to a digital output.
-- **Differential amplifier (diff-amp)** — A circuit that amplifies the difference between two input voltages while rejecting common-mode signals.
-- **Four-quadrant multiplier** — An analog multiplier that can handle positive and negative inputs on both signal axes.
-- **Hysteresis** — A deliberate feedback mechanism that creates different switching thresholds to reject noise and prevent rapid toggling.
-- **Input buffer** — A circuit that interfaces an input signal to reduce loading effects and improve signal integrity.
-- **Kickback noise** — Unwanted voltage spikes at the input of a comparator caused by switching in internal feedback or output stages.
-- **Long-channel MOSFET** — A MOS transistor with a channel length long enough that it approximately follows square-law behavior.
-- **Minimum input slew rate** — The slowest input voltage change rate at which a comparator can reliably make a decision without metastability.
-- **NMOS device** — An n-type metal-oxide-semiconductor transistor used in CMOS circuits.
-- **Op-amp (operational amplifier)** — A high-gain amplifier used in analog circuits, sometimes employed as a comparator.
-- **Output buffer** — The stage in a comparator that converts an internal analog output into a full digital logic level.
-- **Positive feedback** — A circuit configuration where a portion of the output is fed back to the input, amplifying differences for faster switching.
-- **Propagation delay** — The time it takes for a comparator’s output to respond to an input voltage crossing the threshold.
-- **Rail-to-rail input** — A circuit input capable of accepting voltages that span from the lowest to the highest supply voltage.
-- **Short-channel MOSFET** — A MOS transistor with a small channel length where short-channel effects alter ideal device behavior.
-- **Square-law characteristic** — The relationship where MOSFET drain current varies as the square of gate-to-source voltage over threshold, valid for long-channel devices.
-- **Switching point voltage (VSPH, VSPL)** — The differential input voltage at which a comparator changes output state, used to characterize hysteresis.
-- **Triode region** — The MOSFET operating region where it acts like a voltage-controlled resistor rather than a transistor.
-- **Voltage comparator** — A circuit that compares two input voltages and outputs a digital logic level indicating which is higher.
-- **Voltage-controlled voltage source (VCVS)** — A circuit element that produces an output voltage proportional to an input voltage, often used in SPICE models.
+- **Analog multiplier** — A circuit that produces an output signal proportional to the product of two input analog voltages, typically used in communication systems.
+
+- **Balancing resistor** — A component added to a differential amplifier input stage to prevent one side from turning off, enhancing speed and linearity.
+
+- **Cascaded gain stages** — Using multiple amplifier stages in series to reduce overall propagation delay in comparators by distributing gain.
+
+- **Clocked comparator** — A comparator whose output changes state synchronously with a clock signal edge, improving controlled timing of output decisions.
+
+- **Common-mode feedback** — A technique used in fully differential amplifiers or buffers to maintain balanced output voltages and improve symmetry.
+
+- **Decision circuit** — Core part of a comparator utilizing positive feedback to amplify the difference between inputs and make a binary output decision, sometimes designed with hysteresis to reject noise.
+
+- **Differential amplifier (diff-amp)** — An amplifier that amplifies the voltage difference between two inputs, fundamental in comparator preamps and output buffers.
+
+- **Differential output voltage** — The voltage difference between the two outputs of a fully differential circuit stage.
+
+- **Four-quadrant multiplier** — An analog multiplier capable of handling positive and negative input voltages on both inputs, producing an output proportional to their product.
+
+- **Gain (comparator gain)** — Derivative of the transfer characteristic, representing the sensitivity of the comparator to input differential voltages.
+
+- **Hysteresis** — Intentional design feature causing input switching thresholds to differ for rising and falling input signals, thereby reducing sensitivity to noise.
+
+- **Input common-mode range** — Range of input voltages over which the comparator or amplifier maintains correct operation.
+
+- **Input buffer** — Circuit that conditions input signals, often fully differential for speed and low skew, preserving signal integrity before the comparator or amplifier.
+
+- **Kickback noise** — Noise generated by comparator switching, which can feed back to the input and affect accuracy; isolated by preamplifier stages.
+
+- **Latch (SR latch)** — A bistable circuit used in clocked comparators to hold output states synchronized with a clock.
+
+- **Minimum input slew rate** — The slowest rate of change of input voltage at which a comparator can make a stable decision without output oscillation or metastability.
+
+- **Multiplying quad** — A set of four MOSFETs arranged to perform the analog multiplication of two input voltages based on their operating region.
+
+- **Offset voltage** — Undesired small voltage errors in input or output that shift comparator switching thresholds away from ideal values.
+
+- **Op-amp (operational amplifier)** — A high-gain voltage amplifier used in comparator preamps and in feedback loops for biasing and signal conditioning.
+
+- **Output buffer** — Post-amplification stage in a comparator that converts the decision circuit output into rail-to-rail digital logic levels.
+
+- **Positive feedback** — A feedback mechanism in decision circuits that enhances gain and sharpens output transitions.
+
+- **Propagation delay** — Time interval between the input signal crossing a threshold and the comparator output changing state.
+
+- **Self-biased diff-amp** — A differential amplifier design employing internal feedback to maintain bias currents and facilitate output swing.
+
+- **Slew rate** — Maximum rate at which an amplifier or comparator output can change voltage, limiting response to fast input changes.
+
+- **Triode region operation** — MOSFET mode where the device behaves like a voltage-controlled resistor, used in multiplying quads for analog multiplication.
+
+- **Voltage comparator** — A nonlinear analog circuit that compares two input voltages and outputs a digital logic level indicating which input is higher.
+
+- **Voltage-controlled voltage source (VCVS)** — A circuit/modeled element where output voltage is proportional to an input voltage, often used to model op-amp behavior in simulations.

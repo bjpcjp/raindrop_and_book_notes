@@ -1,34 +1,33 @@
----
-title: "ch28-data-cnvrtr-basics — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch28-data-cnvrtr-basics]
----
-
-- **Acquisition time** — The time needed for a sample-and-hold circuit to track an input signal to within a specified accuracy during sampling.  
-- **Aperture error (jitter)** — Sampling error caused by uncertainty in the exact time of sampling, leading to voltage errors especially at high signal slew rates.  
-- **Analog signal** — A continuous-time, infinite-valued signal representing physical quantities in a continuous range.  
-- **Anti-aliasing filter** — A low-pass filter used before sampling to remove frequency components above half the sampling rate to prevent aliasing.  
-- **Bit (resolution)** — The number of binary digits in ADC or DAC input or output, defining the number of discrete levels (2^N).  
-- **DAC (Digital-to-Analog Converter)** — A circuit that converts digital (discrete-time, quantized) signals into analog voltages or currents.  
-- **DNL (Differential Nonlinearity)** — The difference between actual and ideal step sizes between adjacent output codes in a converter, measured in LSBs.  
-- **Dynamic range** — The ratio, in decibels, between the largest and smallest output signal levels a converter can handle.  
-- **Effective number of bits (ENOB)** — A measure of the resolution of an ADC as indicated by its actual signal-to-noise ratio.  
-- **Gain error** — A deviation in converter output slope from ideal, representing scale factor error in the transfer function.  
-- **Hold mode** — The phase in sample-and-hold operation where the sampled value is held constant while conversion occurs.  
-- **Increment (LSB)** — The smallest change in analog output corresponding to a 1-bit change in digital input for DACs; one least significant bit voltage step for ADCs.  
-- **Integral Nonlinearity (INL)** — The deviation of converter output values from an ideal straight line fit between end points, indicating cumulative nonlinearity.  
-- **Latency** — Total delay time from digital input change to the stabilized analog output in DACs.  
-- **Matching** — A layout technique to improve component uniformity for reduced offset and nonlinearity errors.  
-- **Monotonicity** — A property where increasing digital input codes produce non-decreasing analog output voltages, essential for correct converter function.  
-- **MSB (Most Significant Bit)** — The highest-order bit in a digital word, representing the largest weighted value.  
-- **Nyquist Criterion** — The minimum sampling frequency must be at least twice the highest frequency of the input signal to avoid aliasing.  
-- **Offset error** — An unwanted constant shift in converter output voltage or code from the ideal zero input or zero code level.  
-- **Quantization error** — The difference between the actual analog input and its nearest quantized digital representation in an ADC.  
-- **Resolution** — The smallest measurable or distinguishable change in analog value represented by the digital converter, typically in bits.  
-- **Sample-and-Hold (S/H)** — A circuit that samples an analog signal at discrete intervals and holds the value steady for conversion.  
-- **Sampling frequency** — The rate at which an analog signal is sampled to create a discrete-time representation.  
-- **Slew rate** — The maximum rate at which an amplifier or buffer can change its output voltage.  
-- **Signal-to-noise ratio (SNR)** — The ratio of signal power to noise power at a converter output, usually expressed in decibels.  
-- **Track-and-Hold (T/H)** — A variation of S/H where the output follows the input during sampling and then holds the last value.  
-- **VLSI (Very Large Scale Integration)** — Integration of thousands to millions of transistors on a single chip, used in mixed analog/digital design.
+- **Acquisition time** — Time required for the sample-and-hold (S/H) circuit to track the input signal within a specified tolerance during sampling mode.  
+- **Aperture error (aperture uncertainty/jitter)** — Transient error caused by the finite time needed to disconnect the sampling capacitor from the input, causing variations in the sampled value.  
+- **Analog signal** — A continuous-time and infinite-valued signal representing physical quantities with any value within a range.  
+- **Anti-aliasing filter** — A low-pass filter used before sampling to remove high-frequency components that could cause aliasing.  
+- **Analog-to-digital converter (ADC)** — Device that converts continuous analog signals into discrete digital representations.  
+- **Bias error** — (Not explicitly defined, similar to offset) An error shifting the output away from the expected zero or ideal reference level.  
+- **Charge injection** — Charge transferred from the channel of a switch onto the sample-and-hold capacitor, causing pedestal error.  
+- **Differential nonlinearity (DNL)** — Deviation between the actual step size and the ideal step size in a DAC or ADC, measured in least significant bits (LSBs).  
+- **Digital-to-analog converter (DAC)** — Device that converts digital signals into continuous analog voltages or currents.  
+- **Dispersion (not explicitly named, related to INL/DNL)** — Variations in output linearity or uniformity in data converters.  
+- **Dynamic range (DR)** — Ratio of the largest to smallest output signal in a data converter, typically expressed in decibels (dB).  
+- **Effective number of bits (ENOB)** — Number of bits of resolution in a data converter approximated from its signal-to-noise ratio (SNR).  
+- **Full-scale voltage (VFS)** — Maximum analog output voltage a DAC can produce, typically (2^N - 1)/2^N times the reference voltage.  
+- **Gain error (scale factor error)** — Difference in slope between actual and ideal transfer characteristics of a DAC or ADC.  
+- **Hold mode** — Period in sample-and-hold operation when the sampled value is held constant for conversion.  
+- **Integral nonlinearity (INL)** — Cumulative deviation of the output values or code transitions from a straight reference line in a data converter.  
+- **Latency** — Total delay between a change in digital input and when the analog output settles within tolerance in a DAC.  
+- **Least significant bit (LSB)** — Smallest change in output voltage corresponding to a 1-bit increment in digital input.  
+- **Missing codes** — Digital output codes of an ADC that never appear at the output due to non-monotonic behavior or large negative DNL.  
+- **Monotonicity** — Property of a data converter where output analog levels never decrease as digital input codes increase.  
+- **Nyquist Criterion** — The sampling rate must be at least twice the highest frequency component of the analog signal to avoid aliasing.  
+- **Offset error** — Constant voltage offset from zero output in a DAC or deviation in the first code transition of an ADC.  
+- **Overshoot** — Transient excursion beyond the final value in a sample-and-hold circuit during acquisition.  
+- **Pedestal error** — Voltage error caused by charge injection and clock feedthrough in a sample-and-hold circuit during hold mode.  
+- **Quantization error** — Error resulting from approximating a continuous analog input signal to the nearest digital value during conversion.  
+- **Resolution** — Number of unique output levels (2^N) a data converter can produce, or smallest voltage change it can resolve.  
+- **Sample-and-hold (S/H) circuit** — Circuit that samples an analog input and holds the voltage constant for conversion.  
+- **Slew rate limitation** — Maximum rate of change of voltage output of an amplifier limiting the acquisition speed of an S/H circuit.  
+- **Signal-to-noise ratio (SNR)** — Ratio of the signal power to noise power at the output of a data converter, expressed in decibels.  
+- **Sampling frequency (fsampling)** — Rate at which the continuous analog signal is sampled for conversion.  
+- **Track-and-hold (T/H) circuit** — Variant of S/H that continuously tracks the input signal during acquisition before holding it.  
+- **VLSI floorplanning** — Strategy to physically organize analog and digital blocks on a chip to minimize noise coupling.  
+- **Worst-case DNL/INL** — Maximum absolute value of differential or integral nonlinearities defining the worst deviation in a data converter.

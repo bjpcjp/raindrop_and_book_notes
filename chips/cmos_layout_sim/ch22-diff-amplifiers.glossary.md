@@ -1,33 +1,27 @@
----
-title: "ch22-diff-amplifiers — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch22-diff-amplifiers]
----
-
-- **AC Gain** — The small-signal voltage gain of a differential amplifier for alternating current signals.  
-- **Body Effect** — Variation in a MOSFET’s threshold voltage caused by changes in voltage between the body and source terminals.  
-- **CMRR (Common-Mode Rejection Ratio)** — A measure of a differential amplifier’s ability to reject signals common to both inputs, usually expressed in decibels.  
-- **Common-Mode Input Voltage** — The average voltage applied simultaneously to both inputs of a differential amplifier.  
-- **Current Differential Amplifier** — A differential amplifier design where input and output signals are currents rather than voltages.  
-- **Current Mirror Load** — An active load for differential pairs using current mirror circuitry to convert current variations to voltage output.  
-- **Differential Amplifier (Diff-Amp)** — A circuit that amplifies the difference between two input signals while rejecting common signals.  
-- **Differential Input Voltage** — The voltage difference applied between the gates of the two transistors in a differential pair.  
-- **Differential Pair (Diff-Pair)** — A pair of matched transistors arranged to amplify the difference between two input signals.  
-- **Differential Mode Gain (Ad)** — The gain of a differential amplifier for differential input signals.  
-- **Input-Referred Offset Voltage** — The equivalent input voltage difference required to produce zero output in the presence of device mismatches.  
-- **Load Resistance** — The resistance connected to the output node of an amplifier affecting gain and output swing.  
-- **Long-Channel Device** — A MOSFET with a channel length long enough so that short-channel effects are negligible.  
-- **Minimum Common-Mode Voltage (VCMMIN)** — The lowest input common-mode voltage at which the differential amplifier maintains proper operation.  
-- **Maximum Common-Mode Voltage (VCMMAX)** — The highest input common-mode voltage at which the differential amplifier maintains proper operation.  
-- **Mismatch** — Differences in device parameters such as threshold voltage and geometry causing offset and gain errors.  
-- **NMOS Differential Pair** — A differential pair constructed using n-channel MOSFET transistors.  
-- **Output Swing** — The range over which the output voltage of an amplifier can vary without distortion or cutoff.  
-- **Rail-to-Rail Input Stage** — A differential amplifier input stage that can accept input voltages ranging from ground to supply voltage.  
-- **Slew Rate** — The maximum rate of change of an amplifier’s output voltage, limited by current and load capacitance.  
-- **Small-Signal Model** — A linearized circuit representation used to analyze amplifier behavior for small AC signals.  
-- **Source-Coupled Pair** — A basic diff-pair where the sources of the two transistors are connected together and biased by a current source.  
-- **Source Cross-Coupled Pair** — A differential amplifier topology with cross-connected sources providing class AB operation and higher output current.  
-- **Transconductance (gm)** — The change in output current per unit change in input voltage of a transistor.  
-- **Triode Region** — The operating region of a MOSFET where it behaves like a voltage-controlled resistor.  
-- **Wide-Swing Differential Amplifier** — A diff-amp designed to maintain performance over a large input voltage range, often using complementary pairs.
+- **AC gain** — The small-signal voltage gain of a differential amplifier under alternating current (AC) operation conditions.
+- **Bias current (Iss)** — The DC current supplied to the tail of a differential pair, setting its operating point.
+- **Body effect** — The change in a MOSFET's threshold voltage due to a voltage difference between its body and source terminals.
+- **CMRR (Common-Mode Rejection Ratio)** — The ratio of differential gain to common-mode gain in a differential amplifier, representing its ability to reject common-mode signals.
+- **Common-mode input voltage (VCM)** — The average voltage applied simultaneously to both inputs of a differential amplifier.
+- **Common-mode gain (Ac)** — The gain of a differential amplifier when the same input is applied to both gates (common input).
+- **Constant transconductance diff-amp** — A rail-to-rail differential amplifier designed to maintain constant overall transconductance regardless of input common-mode voltage.
+- **Current differential amplifier** — A differential amplifier configuration where the output is a current representing the difference between input currents.
+- **Current mirror load** — Use of current mirror devices as load elements in a differential amplifier to convert output currents into output voltages and increase output impedance.
+- **Differential gain (Ad)** — The gain of the differential amplifier in response to the differential input voltage (difference between the two input voltages).
+- **Differential input voltage (vDI)** — The voltage difference between the two inputs of a differential amplifier.
+- **Differential pair (diff-pair)** — A pair of matched MOSFETs sharing a current source, used to amplify the difference between two input signals.
+- **Differential amplifier (diff-amp)** — An amplifier designed to amplify the voltage difference between two inputs while rejecting common signals.
+- **Differential mode gain** — See differential gain; the gain of a differential amplifier to the differential input.
+- **Input-referred offset voltage (Vos)** — The equivalent input voltage difference required to compensate for mismatches causing output voltage offset.
+- **Mismatch** — Differences in device parameters such as threshold voltage or geometry causing performance variations in matched devices.
+- **Noise PSD (Power Spectral Density)** — The frequency-dependent power distribution of noise signals at the output or referred to the input.
+- **Offset voltage** — The unwanted DC voltage difference appearing at the output due to device mismatches or input imbalance.
+- **Output swing** — The range of output voltages a differential amplifier can produce without causing its transistors to leave the saturation region.
+- **Quiescent current** — The MOSFET drain current when both differential inputs are equal and no signal is applied.
+- **Rail-to-rail differential amplifier** — A diff-amp designed to allow input voltages to swing over nearly the entire supply voltage range.
+- **Slew rate** — The maximum rate of change of the output voltage, limited by available current and load capacitance.
+- **Source-coupled pair** — A differential pair where two MOSFET sources are connected to a tail current source.
+- **Source cross-coupled pair** — A differential pair with sources cross-connected, enabling class AB operation and improved slew rates.
+- **Transconductance (gm)** — The change in device drain current divided by the change in gate-source voltage (small-signal gain factor).
+- **Voltage output swing** — The achievable voltage range at the differential amplifier output without degradation of saturation or gain.
+- **Wide-swing diff-amp** — A differential amplifier design that extends the allowable common-mode input voltage range, often by combining complementary devices.

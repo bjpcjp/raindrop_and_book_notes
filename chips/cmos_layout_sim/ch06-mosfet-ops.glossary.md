@@ -1,31 +1,53 @@
----
-title: "ch06-mosfet-ops — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch06-mosfet-ops]
----
+- **Accumulation** — MOSFET operation region when VGS < 0, causing mobile holes to accumulate under the gate oxide, resulting in capacitance predominantly between the gate and bulk through a parasitic resistance.
 
-- **Accumulation** — Condition where mobile charge carriers (holes for NMOS) gather under the gate oxide when VGS is negative.
-- **Body Effect** — Increase in MOSFET threshold voltage caused by a voltage difference between the source and substrate (VSB).
-- **Capacitance (Cox)** — Gate oxide capacitance per unit area, representing the capacitive coupling between gate and channel.
-- **Channel Length Modulation (CLM)** — Variation of the effective channel length with drain voltage, causing an increase in drain current in saturation.
-- **Depletion Region** — Area beneath the gate oxide depleted of free carriers, forming when gate voltage is between accumulation and inversion.
-- **Drain-Induced Barrier Lowering (DIBL)** — Effect where increasing drain voltage reduces the threshold voltage, enhancing drain current.
-- **Drain Current (ID)** — Current flowing from drain to source in a MOSFET, controlled by gate voltage.
-- **Flatband Voltage (VFB)** — Gate voltage at which surface potential equals bulk potential, resulting in zero net charge in the channel.
-- **Gate-to-Drain Overlap Capacitance (Cgd)** — Parasitic capacitance due to gate overlapping the drain region, present regardless of bias.
-- **Gate-to-Source Overlap Capacitance (Cgs)** — Parasitic capacitance due to gate overlapping the source region.
-- **Mobility (μ)** — Measure of how quickly carriers (electrons or holes) move through the channel under an electric field.
-- **NMOS** — NMOS transistor using electrons as majority carriers, with substrate usually connected to ground.
-- **P-MOS** — PMOS transistor using holes as majority carriers, with the well often tied to VDD.
-- **Punchthrough** — Condition where the depletion regions from source and drain merge, causing device failure.
-- **Short-Channel Effects** — Performance degradations arising in MOSFETs with very small channel lengths.
-- **Substrate (Bulk)** — The semiconductor material in which the MOSFET channel is formed.
-- **Subthreshold Current** — Small drain current flowing when gate voltage is below threshold, due to carrier diffusion.
-- **Surface States (Qss)** — Interface traps at the oxide-semiconductor boundary that can alter threshold voltage.
-- **Threshold Voltage (VTHN, VTHP)** — The gate voltage at which a sufficient inversion layer forms, enabling conduction.
-- **Triode Region** — MOSFET operation region where the channel is continuous and behaves like a voltage-controlled resistor.
-- **Velocity Saturation** — Limiting drift velocity of carriers at high electric fields in short-channel devices.
-- **Weak Inversion (Subthreshold)** — Operation region where the channel forms via carrier diffusion rather than drift; current increases exponentially with gate voltage.
-- **Wide Channel (W)** — The width dimension of a MOSFET channel, affecting drive current.
-- **LDD (Lightly Doped Drain)** — Drain structure with a lightly doped region to reduce electric field and hot carrier effects.
+- **Body Effect** — Increase in MOSFET threshold voltage that occurs when the source voltage is higher than the substrate voltage, requiring a larger gate voltage to invert the channel.
+
+- **Body Factor (γ)** — Parameter representing the effect of source-to-substrate voltage on threshold voltage, proportional to the square root of substrate doping divided by oxide capacitance.
+
+- **Capacitance (MOSFET)** — Includes gate-to-bulk capacitance (Cgb), gate-to-source/drain overlap capacitances (Cgs, Cgd), and varies depending on device operation region (accumulation, depletion, strong inversion).
+
+- **Channel Length Modulation (CLM)** — Effect in the saturation region where the effective channel length reduces with increased VDS, causing the drain current to increase slightly beyond saturation.
+
+- **Depletion (Weak Inversion)** — MOSFET region where the surface under the gate is depleted of free carriers but not yet inverted, resulting in oxide capacitance in series with a depletion capacitance.
+
+- **Drain-Induced Barrier Lowering (DIBL)** — Short-channel effect where increased drain voltage lowers the device threshold voltage by attracting electrons under the gate oxide near the drain.
+
+- **Drift Current** — Carrier transport mechanism in strong inversion where the electric field moves carriers from source to drain.
+
+- **Flatband Voltage (V_FB)** — Voltage at which the surface potential equals the bulk potential, indicating no band bending at the oxide-semiconductor interface.
+
+- **Gate-Induced Drain Leakage (GIDL)** — Leakage current component caused by minority carriers swept into the substrate under high drain voltage when the device is in accumulation.
+
+- **Hot Carriers** — High-energy carriers near the drain of a short-channel MOSFET that can cause gate oxide damage and threshold voltage shifts.
+
+- **Lateral Diffusion (L_diff)** — Extension of source/drain regions into the channel, affecting the effective channel length of a MOSFET.
+
+- **Lightly-Doped Drain (LDD)** — Implant structure used to reduce electric field peaks near the drain by adding a lightly doped region between channel and heavily doped source/drain.
+
+- **Mobility (μ)** — Ratio of carrier velocity to electric field; decreases above a critical electric field due to velocity saturation.
+
+- **On-Current (I_on or I_drive)** — The maximum drain current of a MOSFET with gate and drain at VDD, important for determining transistor strength.
+
+- **Oxide Capacitance (C_ox)** — Capacitance per unit area of the gate oxide layer, defined by dielectric constant and oxide thickness.
+
+- **Punchthrough** — Condition where depletion regions extend across the entire channel length, causing large current leakage and device failure.
+
+- **Short-Channel Effects** — Unwanted phenomena in scaled MOSFETs including threshold voltage roll-off, DIBL, velocity saturation, and hot-carrier effects.
+
+- **Source-to-Bulk Voltage (V_SB)** — Potential difference between source and substrate that influences threshold voltage via the body effect.
+
+- **SPICE MOSFET Models** — Circuit simulation models (levels 1,2,3, BSIM) capturing device characteristics including threshold voltage, mobility degradation, and capacitances.
+
+- **Subthreshold Current** — Drain current that flows when VGS is below threshold voltage, dominated by diffusion rather than drift, with an exponential relation to VGS.
+
+- **Subthreshold Slope** — Voltage change needed to change drain current by one decade in the subthreshold region, ideally ~60 mV/decade at room temperature.
+
+- **Surface States / Interface Trapped Charges (Q_ss)** — Charges present at the oxide-semiconductor interface that affect threshold voltage and device behavior.
+
+- **Threshold Voltage (V_TH)** — Gate voltage at which a strong inversion channel forms, enabling significant conduction between source and drain.
+
+- **Triode Region** — MOSFET operating region where V_DS < V_GS - V_TH and the channel extends from source to drain, behaving like a voltage-controlled resistor.
+
+- **Velocity Saturation** — Phenomenon where carrier velocity saturates at high electric fields, limiting the increase of drain current in short-channel devices.
+
+- **Well (Bulk) Connection** — Substrate region tied to a fixed voltage (e.g., ground or VDD), affecting device capacitances and threshold voltage.

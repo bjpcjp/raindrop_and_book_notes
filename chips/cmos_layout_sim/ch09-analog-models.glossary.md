@@ -1,32 +1,28 @@
----
-title: "ch09-analog-models — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch09-analog-models]
----
-
-- **Body Effect** — The increase in MOSFET threshold voltage caused by a non-zero source-to-bulk voltage.
-- **Channel Length Modulation (λ)** — Variation of MOSFET drain current with drain-to-source voltage in saturation, modeled as an output conductance.
-- **Cutoff Region** — MOSFET operating region where gate-source voltage is below threshold, ideally no drain current.
-- **Drain Current (ID)** — The current flowing from the drain terminal of a MOSFET.
-- **Drain-Source Voltage (VDS)** — Voltage difference between the drain and source terminals of a MOSFET.
-- **Gate-Drain Connected MOSFET (Diode-Connected)** — A MOSFET configuration with gate and drain tied together, operating always in saturation with fixed VGS=VDS.
-- **Gate-Source Voltage (VGS)** — Voltage difference between the gate and source terminals of a MOSFET.
-- **Input-Referred Noise** — The equivalent noise voltage or current referred back to the input of a device for comparison with the signal.
-- **Long-Channel MOSFET** — A MOSFET with channel length typically >1 μm that follows square-law behavior.
-- **Mobility (μ)** — The velocity of charge carriers in a semiconductor per unit electric field.
-- **Open-Circuit Gain (gmr0)** — The product of MOSFET transconductance and output resistance, representing voltage gain.
-- **Output Resistance (ro)** — The equivalent small-signal resistance looking into the drain of a MOSFET in saturation.
-- **Overdrive Voltage (Vov or VGS - VTH)** — The difference between gate-source voltage and threshold voltage; also called gate overdrive.
-- **PMOS** — A MOSFET type using p-type channel; positive voltage applied to source relative to bulk.
-- **Small-Signal Transconductance (gm)** — The rate of change of drain current with gate-source voltage for small AC signals.
-- **Short-Channel MOSFET** — A MOSFET with channel length typically <1 μm exhibiting non-square-law behavior and velocity saturation.
-- **Subthreshold Region** — Operating region of a MOSFET where gate voltage is below threshold but weak inversion current flows.
-- **Threshold Voltage (VTH)** — The minimum gate-source voltage required to form a conducting channel in a MOSFET.
-- **Transconductance Parameter (KP)** — A MOSFET device parameter combining mobility and oxide capacitance per unit area.
-- **Transition Frequency (fT)** — The frequency at which a MOSFET's current gain drops to unity; indicates speed of the device.
-- **Triode Region (Linear Region)** — MOSFET operating region where the device behaves like a voltage-controlled resistor.
-- **Velocity Saturation** — Phenomenon in short-channel MOSFETs where carrier velocity saturates at high electric fields, limiting current.
-- **White Noise (Thermal Noise)** — Noise with flat spectral density caused by thermal agitation of charge carriers.
-- **1/f Noise (Flicker Noise)** — Low-frequency noise caused by charge trapping and release at the semiconductor-oxide interface.
-- **Workfunction** — The energy needed to remove an electron from the material surface, relevant for gate material and threshold voltage.
+- **Body effect** — Increase in MOSFET threshold voltage when source-to-bulk voltage (VSB) rises, causing higher threshold compared to source tied to bulk.
+- **Channel length modulation (λ)** — Variation of drain current with drain-source voltage (VDS) in saturation, modeled as a finite output resistance ro = 1/(λID).
+- **Cutoff region** — Region where gate-source voltage (VGS) is below threshold voltage (VTHN), MOSFET is off or operates in subthreshold conduction.
+- **Current source** — Device with constant current output independent of voltage changes, infinite output resistance.
+- **Diode-connected MOSFET** — Gate-drain connected MOSFET, always operating in saturation region with VGS = VDS.
+- **Drain current (ID)** — Current flowing from drain to source in a MOSFET, controlled primarily by gate-source voltage (VGS) and drain-source voltage (VDS).
+- **Drain current noise spectral density (PSD)** — Power spectral density of MOSFET drain current noise; sum of thermal noise (4kTγgm) and flicker noise components.
+- **Drain-source voltage at saturation (VDS,sat or Vovn)** — Voltage defining boundary between triode and saturation regions; for long-channel devices VDS,sat = VGS - VTHN.
+- **Flicker noise (1/f noise)** — Low-frequency noise due to charge trapping at oxide-semiconductor interface, modeled with coefficient KF and exponent AF.
+- **Forward transconductance (gm)** — Small-signal parameter relating AC gate voltage change to AC drain current change; gm = ∂ID/∂VGS.
+- **Gate overdrive voltage (Vovn)** — Excess gate-source voltage above threshold; Vovn = VGS - VTHN = VDS,sat in long-channel devices.
+- **IV plot** — Graph of current (y-axis) versus voltage (x-axis), used to characterize devices (resistor, current source, voltage source, MOSFET).
+- **Long-channel MOSFET** — Device with channel length > 1 μm, described well by square-law models.
+- **Mobility (μ)** — Carrier mobility decreasing with temperature, affecting MOSFET current and transconductance.
+- **MOSFET noise modeling** — Modeling of thermal and flicker noise sources inherent in MOSFET operation.
+- **Open-circuit gain (gmro)** — Product of transconductance and output resistance; measure of intrinsic gain of MOSFET.
+- **Output resistance (ro)** — Small-signal resistance looking into drain in saturation, reciprocal slope of ID vs. VDS curve due to channel length modulation.
+- **PMOS square-law equations** — PMOS analog of NMOS drain current equations with swapped subscripts, e.g., ID depends on VSG and threshold voltage VTHP.
+- **Power spectral density (PSD)** — Frequency-dependent noise power density.
+- **Quadratic (square-law) equations** — Long-channel MOSFET current-voltage equations assuming parabolic current dependence on gate voltage.
+- **Small-signal model** — Linearized MOSFET representation around a DC bias point used for AC analysis, includes parameters gm, ro, gmb.
+- **Source-bulk voltage (VSB)** — Voltage difference between source and body (bulk) of MOSFET, causing body effect.
+- **Subthreshold region** — MOSFET operating region with VGS < VTHN, where drain current exponentially depends on VGS.
+- **Transition frequency (fT)** — Frequency at which MOSFET current gain drops to unity, depends on gm and gate capacitances.
+- **Triode region** — MOSFET operating region with VDS < VDS,sat, device behaves like a voltage-controlled resistor.
+- **Velocity saturation** — Short-channel effect where carrier velocity saturates at high fields, modifying mobility and current models.
+- **Voltage source** — Device with constant voltage independent of current changes, zero output resistance.
+- **Workfunction** — Material property affecting threshold voltage; dual workfunction gates improve PMOS/NMOS characteristics.

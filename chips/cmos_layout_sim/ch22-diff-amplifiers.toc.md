@@ -1,40 +1,54 @@
----
-title: "ch22-diff-amplifiers"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch22-diff-amplifiers]
----
+```markdown
+# Table of Contents
 
-- Chapter 22 Differential Amplifiers  
-  - 22.1 The Source-Coupled Pair  
-    - 22.1.1 DC Operation  
-      - Maximum and Minimum Differential Input Voltage  
-      - Maximum and Minimum Common-Mode Input Voltage  
-      - Current Mirror Load  
-      - Biasing from the Current Mirror Load  
-      - Minimum Power Supply Voltage  
-    - 22.1.2 AC Operation  
-      - AC Gain with a Current Mirror Load  
-    - 22.1.3 Common-Mode Rejection Ratio  
-      - Input-Referred Offset from Finite CMRR  
-    - 22.1.4 Matching Considerations  
-      - Input-Referred Offset Voltage  
-      - Input-Referred Offset with a Current Mirror Load  
-    - 22.1.5 Noise Performance  
-    - 22.1.6 Slew-Rate Limitations  
-  - 22.2 The Source Cross-Coupled Pair  
-    - Operation of the Diff-Amp  
-    - Input Signal Range  
-    - 22.2.1 Current Source Load  
-      - Input Signal Range  
-  - 22.3 Cascode Loads (The Telescopic Diff-Amp)  
-    - Gain and Output Resistance  
-    - Common-Mode Input Range  
-  - 22.4 Wide-Swing Differential Amplifiers  
-    - Parallel Complementary Diff-Amps  
-    - 22.4.1 Current Differential Amplifier  
-    - Constant Transconductance Diff-Amp  
-      - Discussion  
-  - Additional Reading  
-  - Problems  
-    - 22.1–22.15 Various analytical, design, and simulation problems on differential amplifiers
+- Chapter 22 Differential Amplifiers
+  - 22.1 The Source-Coupled Pair
+    - 22.1.1 DC Operation
+    - Maximum and Minimum Differential Input Voltage
+    - Maximum and Minimum Common-Mode Input Voltage
+    - Example 22.1
+    - Example 22.2
+    - Current Mirror Load
+    - Example 22.3
+    - Biasing from the Current Mirror Load
+    - Minimum Power Supply Voltage
+    - 22.1.2 AC Operation
+    - Example 22.4
+    - AC Gain with a Current Mirror Load
+    - Example 22.5
+    - Example 22.6
+    - 22.1.3 Common-Mode Rejection Ratio
+    - Example 22.7
+    - Input-Referred Offset from Finite CMRR
+    - 22.1.4 Matching Considerations
+    - Input-Referred Offset with a Current Mirror Load
+    - 22.1.5 Noise Performance
+    - 22.1.6 Slew-Rate Limitations
+  - 22.2 The Source Cross-Coupled Pair
+    - Operation of the Diff-Amp
+    - Example 22.8
+    - Input Signal Range
+    - 22.2.1 Current Source Load
+  - 22.3 Cascode Loads (The Telescopic Diff-Amp)
+    - Example 22.9
+  - 22.4 Wide-Swing Differential Amplifiers
+    - Constant Transconductance Diff-Amp
+    - Discussion
+- Additional Reading
+- Problems
+  - 22.1 Drain current of Ml as a function of input voltage
+  - 22.2 Width increase effect on transconductance
+  - 22.3 Maximum and minimum CMR for PMOS diff-amp
+  - 22.4 AC currents in Fig. 22.5 circuit
+  - 22.5 Small-signal gain and input CMR for circuits in Fig. 22.37
+  - 22.6 Effect of source capacitance on CMRR frequency response
+  - 22.7 Slew-rate limitations charging/discharging 1 pF capacitor
+  - 22.8 Effect of body effect on AC behavior (Fig. 22.38)
+  - 22.9 Transconductance and gain of fully differential diff-amp (Fig. 22.39)
+  - 22.10 Speed/slew-rate of diff-amp from Fig. 22.24 with current mirror load
+  - 22.11 Mismatch due to body effect in biasing scheme (Fig. 22.26)
+  - 22.12 Operation of cascode diff-amp (Fig. 22.31) simulation
+  - 22.13 Simulation of current differential amplifier (Fig. 22.33)
+  - 22.14 Operation of summing circuit for wide input swing (Fig. 22.40)
+  - 22.15 Small-signal gain of self-biased NMOS diff-amp (Fig. 22.41)
+```

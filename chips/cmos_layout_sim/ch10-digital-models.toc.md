@@ -1,27 +1,46 @@
----
-title: "ch10-digital-models"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch10-digital-models]
----
+```markdown
+# Table of Contents
 
 - Chapter 10 Models for Digital Design
+  - Logical Operation of the Switches (Fig. 10.1)
   - Miller Capacitance
+    - Charge and Equivalent Capacitance (Figs. 10.2, 10.3)
   - 10.1 The Digital MOSFET Model
     - Effective Switching Resistance
-    - Short-Channel MOSFET Effective Switching Resistance
-    - 10.1.1 Capacitive Effects
-    - 10.1.2 Process Characteristic Time Constant
-    - 10.1.3 Delay and Transition Times
-    - 10.1.4 General Digital Design
+      - IV Plot and Resistance Estimation (Figs. 10.4, 10.5)
+      - Digital MOSFET Model Circuit (Fig. 10.6)
+      - Switching Resistance for Long-Channel Devices (Eqs. 10.6–10.9)
+      - Short-Channel MOSFET Switching Resistance (Eqs. 10.10–10.13)
+    - Capacitive Effects
+      - MOSFET Capacitances and Current (Figs. 10.7, 10.8, Eq. 10.14)
+    - Process Characteristic Time Constant
+      - Long-Channel and Short-Channel Models (Eqs. 10.15, 10.16)
+      - Example 10.1: Time Constant Estimation
+      - Table 10.1: Digital Model Parameters
+    - Delay and Transition Times
+      - Definitions and Models (Fig. 10.9, Eqs. 10.17–10.20)
+      - Example 10.2: Delay and Transition Time Estimates (Figs. 10.10, 10.11, 10.12)
+    - General Digital Design
+      - Device Sizing and Parameters
+      - Table 10.2: Design Parameters Summary
   - 10.2 The MOSFET Pass Gate
-    - The PMOS Pass Gate
-    - 10.2.1 Delay through a Pass Gate
-    - The Transmission Gate (The TG)
-    - 10.2.2 Delay through Series-Connected PGs
+    - NMOS Pass Gate Operation and Threshold Effects (Figs. 10.13, 10.14)
+    - PMOS Pass Gate Operation and Threshold Effects (Fig. 10.15)
+    - Example 10.3: Output Voltage Estimation (Fig. 10.16)
+    - Delay through a Pass Gate
+      - Delay Estimation and Model (Fig. 10.17)
+      - Example 10.4: Delay Estimation and Simulation (Fig. 10.18, 10.19)
+    - The Transmission Gate (TG)
+      - Operation and Delay (Fig. 10.20, Eq. 10.27)
+    - Delay through Series-Connected Pass Gates
+      - RC Transmission Line Model (Fig. 10.21)
+      - Example 10.5: Delay Estimation and Simulation (Figs. 10.22, 10.23)
   - 10.3 A Final Comment Concerning Measurements
-  - Additional Reading
-  - Problems
-  - Possible Student Projects
-    - Basic Projects
-    - Advanced Projects
+    - Scope Probe Loading and Compensation (Fig. 10.24)
+- Additional Reading
+- Problems
+  - Problems 10.1 to 10.5 (Fig. 10.25)
+- Possible Student Projects
+  - Basic Projects 1 to 18
+  - Advanced Projects 19 to 22
+```

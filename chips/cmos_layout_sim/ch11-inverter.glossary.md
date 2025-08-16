@@ -1,32 +1,20 @@
----
-title: "ch11-inverter — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch11-inverter]
----
-
-- **Buffer** — A cascade of inverters used to drive large capacitive loads with minimum delay.  
-- **Cascaded Inverters** — A series of inverters where each subsequent inverter is larger by a factor to optimize delay.  
-- **Capacitance (Input/Output)** — Parasitic or intentional charge storage elements seen at the input or output terminals of a gate.  
-- **CMOS Inverter** — A digital logic circuit using complementary NMOS and PMOS transistors to invert an input signal.  
-- **Crossing Current** — The current flowing when both NMOS and PMOS transistors in an inverter are partially on during input transitions.  
-- **Dynamic Power Dissipation** — Power consumed by a CMOS inverter when charging and discharging the output capacitance during switching.  
-- **Inverter Switching Point (Vsp)** — The input voltage where the inverter output voltage equals the input voltage, marking the switching threshold.  
-- **Input Capacitance (Cin)** — The effective capacitance seen looking into the gate of the inverter, including the gate oxide capacitances.  
-- **Latch-Up** — A parasitic condition where unintended bipolar transistors turn on due to layout-induced feedback, causing the circuit to lock in a state.  
-- **Load Capacitance (Cload)** — The effective capacitance that a gate must drive at its output, including parasitic and connected gate capacitances.  
-- **Minimum Delay Buffer Design** — A methodology to choose inverter widths and stage count to minimize total delay driving a large load.  
-- **NMOS Device (Ml)** — The n-channel MOS transistor in the inverter that pulls the output low when turned on.  
-- **NMOS-Only Inverter** — An inverter topology using only NMOS transistors for output drive, often used to avoid latch-up.  
-- **Noise Margin** — The allowable voltage range within which an input or output signal is still recognized as a valid logic level.  
-- **Output Capacitance (Cout)** — The capacitance at the output node of the inverter affected by transistor drains and wiring.  
-- **PMOS Device (M2)** — The p-channel MOS transistor in the inverter that pulls the output high when turned on.  
-- **Propagation Delay (tpHL, tpLH)** — The intrinsic delay times for output transition from high-to-low and low-to-high, respectively.  
-- **Power Delay Product (PDP)** — The product of average power dissipation and propagation delay; a metric to compare energy efficiency of circuits.  
-- **Ring Oscillator** — A circuit made by connecting an odd number of inverters in a loop, used to characterize process speed through oscillation frequency.  
-- **Switching Threshold (Vm)** — The voltage at which the inverter output transitions between logic levels during input voltage sweep.  
-- **Switching Region** — The input voltage range where both NMOS and PMOS transistors are partially on, causing output transition.  
-- **Tri-State Output** — An inverter output that can be driven high, low, or put into a high-impedance state to allow shared communication lines.  
-- **Voltage Transfer Characteristic (VTC)** — The voltage relationship between the inverter input and output during a DC sweep.  
-- **Voltage Swing** — The range of output voltage variation from ground to VDD, ideally full rail-to-rail in a CMOS inverter.  
-- **Well and Substrate Contacts** — Implant regions connected to VDD or ground to minimize parasitic resistances and reduce latch-up risk.
+- **Buffer** — A cascade of inverters designed to drive large capacitive loads with minimum delay by progressively increasing device sizes.  
+- **Capacitance, Input (Cin)** — The effective input capacitance of an inverter, primarily the sum of gate oxide capacitances of the MOSFETs.  
+- **Capacitance, Load (Cload)** — The total capacitance loaded at the output of a gate, including interconnect and input capacitances of subsequent gates.  
+- **Capacitance, Output (Cout)** — The output capacitance of an inverter, including drain-bulk capacitances and device parasitics.  
+- **Dynamic Power Dissipation** — The power dissipated by a CMOS inverter during switching, proportional to the load capacitance, supply voltage squared, and clock frequency.  
+- **Input Logic Thresholds (VIL, VIH)** — Voltages defining the valid logic low (VIL) and logic high (VIH) input levels based on inverter transfer characteristics at slope = -1 points.  
+- **Intrinsic Propagation Delay** — The delay associated with charging or discharging internal parasitic capacitances of an inverter without additional load.  
+- **Latch-up** — A parasitic thyristor effect caused by unintended bipolar transistors formed in CMOS substrates, potentially causing a device to lock in a high-current state.  
+- **Load Buffering** — The process of using multiple inverters (buffers) in a cascade to drive large capacitive loads efficiently by balancing delay and device sizing.  
+- **Noise Margin** — The tolerance of a digital gate to noise on its input or output signals, defined separately for high (NMH) and low (NML) logic levels.  
+- **NMOS-Only Output Driver** — An output buffer using only NMOS devices to avoid latch-up, often with reduced output voltage swing unless boosted by additional circuitry.  
+- **Output Voltage Swing (VOH, VOL)** — The maximum (VOH) and minimum (VOL) output voltages an inverter can produce, ideally equal to VDD and ground, respectively.  
+- **Power Delay Product (PDP)** — A figure of merit for digital circuits defined as the product of average power dissipation and propagation delay, measuring energy efficiency.  
+- **Propagation Delay (tpLH, tpHL)** — The time it takes for an inverter output to transition from low to high (tpLH) or high to low (tpHL) in response to an input change.  
+- **Ring Oscillator** — A circuit formed by an odd number of inverters connected in a loop, used to measure delay and frequency characteristics of a process.  
+- **Switching Point Voltage (Vsp)** — The input voltage at which the inverter output voltage equals the input voltage, typically where both NMOS and PMOS devices conduct equally.  
+- **Switching Threshold** — The voltage level at which an inverter toggles its output state; often adjusted by device sizing to improve noise margins.  
+- **Tri-State Output** — An inverter configuration that can drive the output to logic high, logic low, or high impedance (Hi-Z), enabling data bus sharing.  
+- **Width Ratio (W_p/W_n)** — The relative size scaling between PMOS and NMOS transistors in an inverter to achieve symmetric switching characteristics and balanced drive strength.  
+- **Zero Static Power Dissipation** — A characteristic of CMOS inverters indicating negligible power consumption in steady logic states due to no direct path between VDD and ground.

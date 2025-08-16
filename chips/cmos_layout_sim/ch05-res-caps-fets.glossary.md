@@ -1,34 +1,30 @@
----
-title: "ch05-res-caps-fets — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch05-res-caps-fets]
----
-
-- **Active Area** — The region of the silicon wafer where devices such as transistors are formed and current flows.
-- **Capacitance (Cox)** — The ability of a device to store charge, often between two conductive layers separated by an oxide.
-- **Common-Centroid Layout** — A method of arranging unit elements symmetrically around a center point to improve matching and reduce gradient effects.
-- **Depletion Capacitance** — Capacitance due to the depletion region at a pn junction under reverse bias.
-- **Diffusion Capacitance** — Capacitance that appears when a pn junction is forward biased (commonly misused to describe junction capacitance).
-- **Drain/Source Depletion Capacitance** — Junction capacitance associated with the MOSFET's drain and source regions.
-- **Dummy Elements** — Extra device units added in a layout to minimize edge effects and improve matching.
-- **Interdigitated Layout** — A layout technique where unit cells of two devices are alternated to evenly distribute process variations.
-- **Lateral Diffusion** — The horizontal spreading of dopants beneath the gate oxide during fabrication, affecting device dimensions.
-- **Length (Ldrawn)** — The drawn physical length of a MOSFET channel, often reduced effectively by lateral diffusion.
-- **Metal Capacitor** — A capacitor formed by overlapping metal layers used when poly layers are limited.
-- **Mobility** — A material parameter describing how easily charge carriers move through a semiconductor.
-- **N-Well Resistor** — A resistor formed in the n-well region of a CMOS process, characterized by sheet resistance and temperature/voltage coefficients.
-- **Oxide Capacitance per Area (C'ox)** — Capacitance normalized by area between gate poly layers separated by silicon dioxide.
-- **Oxide Encroachment** — The undesired extension of oxide into the active area, reducing effective transistor width.
-- **Parasitic Capacitance** — Unintended capacitance from device structures to substrate or other terminals.
-- **Polysilicon Resistor** — A resistor made from polysilicon, preferred for precision due to better matching and stability.
-- **Poly-Poly Capacitor** — Capacitor built using two polysilicon layers separated by oxide, used for precision analog designs.
-- **Resistor Temperature Coefficient (TCR)** — A measure of how much a resistor's value changes with temperature.
-- **Resistor Voltage Coefficient (VCR)** — A measure of how much a resistor's value changes with applied voltage.
-- **Sheet Resistance (Rsh)** — Resistance per square unit of a thin resistive layer, used to calculate resistor values.
-- **Source/Drain Series Resistance** — Resistance due to the layout of contacts and diffusion extensions at source/drain terminals.
-- **Temperature Coefficient (Temp Co)** — Rate at which a device parameter changes with temperature, expressed in ppm/°C.
-- **Unit Cell (Resistor)** — A basic resistor layout block used repetitively to form larger resistors while improving matching.
-- **Voltage Coefficient (VCC) of Capacitor** — The change of capacitor value with applied voltage.
-- **Width (W)** — The physical width of a MOSFET channel or resistor, affecting current and resistance.
-- **Winding (Snake) Layout** — Layout technique to create long channels by serpentine patterning of active areas under the gate poly.
+- **Bottom plate capacitance** — Parasitic capacitance from the bottom plate (usually poly1 or metal) of a capacitor to the substrate.  
+- **Capacitance (Cox)** — Capacitance between poly1 and poly2 layers in a poly-poly capacitor, calculated by \( C'_{ox} \times \) overlapping area.  
+- **Depletion capacitance** — The capacitance formed at the depletion region of a pn junction, including bottom and sidewall components.  
+- **Diffusion capacitance** — Incorrect term often used for source/drain junction capacitance; true diffusion capacitance occurs only under forward bias.  
+- **Effective length (Leff)** — MOSFET channel length reduced from drawn length by lateral diffusion under the gate poly.  
+- **Fringe capacitance** — Capacitance contribution from the edges or perimeter of capacitor plates, often significant when metal spacing is close.  
+- **Guard ring** — A p+ implant ring surrounding sensitive devices or resistors to remove substrate noise and hold substrate at a fixed potential.  
+- **Interdigitated layout** — Layout technique where two resistors are interleaved unit cells to average process gradient variations and improve matching.  
+- **Lateral diffusion (Ldiff)** — Lateral spreading of dopants during source/drain implant, reducing effective MOSFET channel length.  
+- **Lateral capacitor** — Capacitor implemented using two metal layers and vias, where fringe capacitance is a major component.  
+- **Length (L)** — Distance between source and drain in a MOSFET channel; determines device switching characteristics.  
+- **Metal-only capacitor** — Capacitor constructed using metal layers instead of polysilicon layers, often with large parasitic bottom plate capacitance.  
+- **Mobility (μ)** — Measure of carriers’ ability to move through semiconductor material under an electric field (cm²/V∙s).  
+- **Number of squares (NRS, NRD)** — Unitless measure used to calculate parasitic source/drain resistances based on the geometry of extensions from the MOSFET.  
+- **Oxide capacitance per unit area (C’ox)** — Capacitance density of the gate oxide or inter-poly oxide, a function of oxide thickness and permittivity.  
+- **Oxide encroachment** — Imperfect patterning of active area causing oxide to invade active regions, reducing effective MOSFET width.  
+- **Parasitic capacitance** — Unwanted capacitances in devices due to layout or process layers, e.g., bottom plate parasitic in capacitors or source/drain junction capacitances.  
+- **Polysilicon resistor** — Resistor formed in polysilicon layer, preferred for precision ratioing due to better matching and lower voltage coefficients compared to diffusion resistors.  
+- **Poly-poly capacitor** — Capacitor formed by overlapping poly1 and poly2 layers separated by a thin oxide to create a precision capacitor.  
+- **Power dissipation** — Loss of electrical power in devices, influenced by resistor values and their temperature coefficients.  
+- **Resistance temperature coefficient (TCR)** — Rate of change of resistor value with temperature, typically given in ppm/°C.  
+- **Resistor voltage coefficient (VCR)** — Change in resistance value as a function of voltage applied, due to depletion layer effects.  
+- **Source/drain depletion capacitance (Cj, Cjsw)** — Capacitance of source/drain junctions proportional to area and perimeter, influenced by doping and bias.  
+- **Source/drain parasitic resistance** — Series resistance from extensions or diffusion regions of MOSFET source and drain, modeled using sheet resistance and squares.  
+- **Temperature coefficient of capacitance (TCC)** — Rate of change of capacitance with temperature, typically a few ppm/°C for poly-poly capacitors.  
+- **Unit resistor cell** — Standardized resistor layout unit used repeatedly to improve matching and reduce edge-related process variations.  
+- **Voltage coefficient of capacitance (VCC)** — Change of capacitor value with applied voltage, typically small for poly-poly capacitors.  
+- **Width (W)** — Dimension of MOSFET channel perpendicular to current flow; wider devices conduct more current and have lower resistance.  
+- **Width-to-length ratio (W/L)** — Design ratio determining the drive strength and current capacity of a MOSFET; used extensively in sizing devices.  
+- **Common-centroid layout** — Layout technique placing unit cells symmetrically about a common center to improve matching by averaging process gradients.

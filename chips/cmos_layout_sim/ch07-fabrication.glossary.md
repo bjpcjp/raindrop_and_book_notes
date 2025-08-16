@@ -1,37 +1,37 @@
----
-title: "ch07-fabrication — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch07-fabrication]
----
-
-- **Annealing** — Heating a material to repair crystal damage and activate dopants after implantation.  
-- **BEOL (Backend of the Line)** — CMOS processes after transistor formation, mainly metal/dielectric interconnect layers.  
-- **CMP (Chemical Mechanical Polishing)** — A planarization process using chemical slurry and mechanical polishing.  
-- **Contact** — Electrical connection between metal layers and underlying silicon or polysilicon.  
-- **Czochralski (CZ) Growth** — Method of growing single crystal silicon boule from molten silicon using a seed crystal.  
-- **Diffusion** — Heat-driven process that spreads dopants in silicon to adjust electrical properties.  
-- **Dry Oxidation** — Thermal oxidation of silicon using oxygen gas to form high-quality silicon dioxide layer.  
-- **Dry Etching** — Material removal using plasma or ion bombardment, often anisotropic for precise pattern transfer.  
-- **Epitaxial (Epi) Wafer** — Silicon wafer with a thin, lightly doped silicon layer grown on heavily doped substrate.  
-- **FEOL (Frontend of the Line)** — CMOS processes to create isolated transistors before metallization.  
-- **Ion Implantation** — Process to inject dopant ions into silicon using accelerated ion beams for controlled doping.  
-- **LDD (Low Doped Drain)** — Lightly doped source/drain extensions reducing hot carrier effects in CMOS devices.  
-- **LOCOS (LOCal Oxidation of Silicon)** — Isolation technique using patterned silicon nitride to grow field oxide, causing bird’s beak encroachment.  
-- **Mask (Photomask)** — Patterned quartz plate used in photolithography to define circuit features on photoresist.  
-- **Numerical Aperture (NA)** — A measure of a lens’s light-gathering ability affecting photolithography resolution.  
-- **Oxidant Concentration** — The amount of reactive species like O2 or H2O at various interfaces during thermal oxidation.  
-- **PECVD (Plasma Enhanced CVD)** — Chemical vapor deposition using plasma to lower deposition temperature.  
-- **Photolithography** — Technique using UV light, masks, and light-sensitive polymers to pattern wafers.  
-- **Photoresist** — Light-sensitive polymer coating used in photolithography to transfer circuit patterns.  
-- **PVD (Physical Vapor Deposition)** — Thin film deposition through physical evaporation or sputtering of source materials.  
-- **RIE (Reactive Ion Etching)** — Dry etch combining chemical and physical ion bombardment for anisotropic etching.  
-- **Shallow Trench Isolation (STI)** — Isolation method using etched trenches filled with dielectric material to separate devices.  
-- **Silicide (Salicide)** — Compound of silicon and metal (e.g., TiSi2, CoSi2) formed on polysilicon and source/drain to reduce resistance.  
-- **Spacer (Sidewall Spacer)** — Dielectric layer around gate edges used to define source/drain implant boundaries.  
-- **Step Coverage** — The ability of deposited films to uniformly coat surface topography including vertical sidewalls.  
-- **Straggle (ΔRp)** — The standard deviation of an ion implant doping profile, indicating spread in depth.  
-- **Via** — Vertical electrical connection between metal layers in multilayer interconnects.  
-- **Wafers** — Thin slices of single crystallline silicon on which integrated circuits are built.  
-- **Wet Oxidation** — Thermal oxidation of silicon using water vapor resulting in faster but less dense oxide growth.  
-- **Wet Etching** — Chemical etching process using liquid solutions, generally isotropic and highly selective.
+- **Active area** — Region of silicon where transistors are fabricated, surrounded by isolation structures.  
+- **Aluminum metallization** — Metal layers used for wiring interconnections in CMOS, typically deposited by sputtering.  
+- **Annealing** — Thermal treatment to repair lattice damage and electrically activate implanted dopants.  
+- **Area selective implant** — Ion implantation restricted to certain wafer regions using masks to control dopant placement.  
+- **Aspect ratio** — Ratio of feature depth to width, important for evaluating step coverage and gap fill in deposition.  
+- **Beam lithography** — Not covered in detail; general term for lithography using electron or ion beams.  
+- **Backend-of-the-line (BEOL)** — Process steps following source/drain formation, involving interconnects and dielectric deposition.  
+- **Bore implant (deep pocket implant)** — Deep, high-dose dopant implant to control punchthrough and junction behavior near the channel.  
+- **Buffer oxidation** — Thin oxide grown to protect silicon surface or to serve as a sacrificial layer during processing.  
+- **Chemical mechanical polishing (CMP)** — Process combining chemical etching and mechanical polishing to planarize wafer surfaces.  
+- **Channel stop implant (p/n walls)** — Shallow implants beneath isolation oxide to increase threshold voltage of parasitic transistors.  
+- **Contact** — Openings in dielectric layers allowing electrical connection between metal and underlying silicon or polysilicon.  
+- **Diffusion** — Thermal-driven redistribution of dopants in silicon, broadening implanted profiles during high temperature steps.  
+- **Diffusion barrier** — Thin film (e.g., TiN) preventing interdiffusion of metals and contaminants in multilayer structures.  
+- **Dielectric** — Insulating material (e.g., SiO2, Si3N4) used to electrically isolate components in an integrated circuit.  
+- **Electron implantation** — Method of doping using accelerated ions implanted into the silicon surface; preferred over diffusion.  
+- **Epitaxial wafer (Epi wafer)** — Silicon wafer with a thin lightly doped silicon layer grown on a heavily doped bulk substrate.  
+- **Gate dielectric** — Thin oxide layer grown on silicon surface beneath the gate electrode, crucial for transistor operation.  
+- **Gate electrode** — Conductive polysilicon or metal layer used to control the channel in a MOSFET.  
+- **Intra-metal dielectric (IMD)** — Dielectric layer isolating different metal interconnection layers.  
+- **Ion implantation** — Process introducing dopants as energetic ions into the silicon substrate with controlled dose and depth.  
+- **Low doped drain (LDD)** — Lightly doped source/drain extension that reduces electric field and improves reliability.  
+- **Metallurgical Grade Silicon (MGS)** — Silicon refined from silica via carbon reduction, typically ~98% pure.  
+- **Metal 1, Metal 2, etc.** — Successive metal interconnection layers separated by dielectric films in CMOS fabrication.  
+- **Photolithography** — Process using ultraviolet light, masks, and photoresist to define patterns on wafers for selective processing.  
+- **Planarization** — Process to make wafer surfaces flat, typically via CMP, important for high-resolution lithography.  
+- **Polysilicon** — Polycrystalline silicon used as gate electrode and local interconnect material.  
+- **Pre-metal dielectric (PMD)** — Dielectric layer isolating metal 1 from the silicon surface and polysilicon gates.  
+- **Rapid thermal processing (RTP)** — Short-duration high-temperature annealing technique using heating lamps.  
+- **Reactive ion etching (RIE)** — Dry etching combining physical ion bombardment and chemical reactions to achieve anisotropic etching.  
+- **Salicide (self-aligned silicide)** — Low resistance metal silicide formed selectively on polysilicon and source/drain regions without photopatterning.  
+- **Shallow trench isolation (STI)** — Isolation technique using trenches etched into silicon then filled with dielectric to separate devices.  
+- **Sidewall spacer** — Dielectric formed on gate sidewalls used for self-aligned source/drain implant masking and silicide blocking.  
+- **Step coverage** — Degree to which a deposited film uniformly coats both horizontal and vertical wafer surfaces.  
+- **Straggle (in implantation)** — Standard deviation describing spread of implanted ion depth profile.  
+- **Twin-tub CMOS** — CMOS formed with separate p-type and n-type wells implanted into bulk silicon substrate.  
+- **Wafer probe** — Electrical testing of devices on wafer level to determine functionality and yield before dicing.

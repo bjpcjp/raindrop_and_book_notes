@@ -1,36 +1,28 @@
----
-title: "ch29-data-cnvrtr-archs — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch29-data-cnvrtr-archs]
----
-
-- **Analog-to-Digital Converter (ADC)** — A device that converts continuous analog signals into discrete digital values.
-- **Binary-Weighted Capacitor Array** — A DAC architecture using capacitors with values in powers of two for converting digital values to analog voltage.
-- **Charge-Redistribution DAC** — A DAC that uses binary-weighted capacitors and switches to convert charge levels corresponding to digital input codes into an analog output.
-- **Charge-Scaling DAC** — A DAC architecture that uses a capacitor array to create a voltage proportional to a charge, representing digital input.
-- **Clock Frequency (f_CLK)** — The speed at which sampling or conversion steps occur in a data converter.
-- **Comparator Offset Voltage (V_os)** — The input voltage difference required to switch a comparator’s output from one state to another, causing errors.
-- **Cyclic DAC/ADC** — A converter using feedback and repeated partial conversions over multiple clock cycles to build up a result.
-- **Differential Nonlinearity (DNL)** — The deviation of an actual step size from the ideal one least significant bit step in a DAC or ADC.
-- **Digital Input Code** — Binary or other code formats (e.g., Gray, thermometer) representing digital words in data converters.
-- **Dynamic Range** — The ratio between the largest and smallest measurable signals of a converter, usually expressed in dB.
-- **Effective Number of Bits (ENOB)** — The actual resolution of a converter, factoring in noise and nonidealities.
-- **Feedback Factor (β)** — The portion of the output signal fed back into an amplifier or converter’s feedback loop.
-- **Flash ADC** — A high-speed ADC architecture using parallel comparators for each quantization threshold, outputting a thermometer code.
-- **Integral Nonlinearity (INL)** — The deviation of an actual converter output from a straight line drawn through the ideal transfer function.
-- **Noise Shaping** — A technique used in oversampling ADCs to push quantization noise to higher frequencies outside the signal bandwidth.
-- **Nyquist Rate** — The minimum sampling rate equal to twice the bandwidth of the input signal to prevent aliasing.
-- **Offset Voltage** — An unwanted fixed voltage added to the input of amplifiers, comparators, or integrators causing conversion errors.
-- **Oversampling ADC** — An ADC that samples the input signal at a far higher rate than the Nyquist frequency and uses digital filtering to improve resolution.
-- **Pipeline ADC** — An ADC architecture where conversion is done in multiple stages, each resolving one or several bits, with high throughput after initial latency.
-- **Power Dissipation** — The amount of power converted to heat within the data converter components, influencing design trade-offs.
-- **Quantization Noise/Error** — The difference between the actual analog input and its quantized digital representation in converters.
-- **R-2R Ladder DAC** — A DAC using resistors arranged in a ladder network alternating values R and 2R for digital-to-analog conversion.
-- **Resistor-String DAC** — A DAC using a string of equal resistors to generate reference voltages at discrete taps corresponding to digital inputs.
-- **Resolution** — The number of discrete levels or bits a data converter can distinguish.
-- **Sample-and-Hold (S/H)** — A circuit that samples and holds the analog input constant during conversion for ADCs.
-- **Sigma-Delta (ΣΔ) Modulator** — An oversampling ADC component that uses noise shaping and feedback to convert analog signals into high-rate bit streams.
-- **Successive Approximation Register (SAR) ADC** — An ADC that performs a binary search using a DAC and comparator for each bit in the digital output, one at a time.
-- **Switch Resistance** — The resistance introduced by switches used in DACs or ADCs, affecting linearity and speed.
-- **Thermometer Code** — A binary format where all bits below a transition point are ones and all above are zeros, used in some DACs and ADCs.
+- **ADC (Analog-to-Digital Converter)** — A device that converts continuous analog signals into discrete digital codes.
+- **Binary-Weighted Current Source** — A current source DAC architecture where currents are weighted in powers of two.
+- **Binary-Weighted Capacitor Array** — A DAC architecture using capacitors weighted in binary fashion for charge scaling.
+- **Charge-Redistribution DAC** — A DAC utilizing a binary-weighted capacitor array with charge redistribution for successive approximation.
+- **Charge-Scaling DAC** — A DAC that maps digital values to analog voltage using a binary-weighted capacitor array.
+- **Comparator Offset Voltage (Vos)** — The voltage difference required at the input of a comparator to switch its output.
+- **DNL (Differential Nonlinearity)** — The difference between an actual and ideal step size in a DAC or ADC transfer function.
+- **Dynamic Range** — The ratio between the largest and smallest measurable signal levels in a converter.
+- **Flash ADC** — A parallel ADC architecture using comparators for each quantization level, enabling very high speed.
+- **Gain Error** — The deviation of an amplifier's or ADC's gain from the ideal on its transfer curve.
+- **Gray Code** — A digital input coding scheme where only one bit changes between successive codes.
+- **Integral Nonlinearity (INL)** — The deviation of actual converter transfer function from a straight line.
+- **Offset Cancellation** — Techniques used to reduce offset errors in amplifiers or comparators.
+- **Oversampling ADC** — A converter that samples at a rate much higher than the Nyquist frequency to improve resolution.
+- **Pipeline ADC** — An ADC architecture with multiple stages converting 1 bit per stage sequentially to increase speed.
+- **Pipeline DAC** — Extension of cyclic DAC with multiple stages operating simultaneously for faster conversion.
+- **Quantization Noise** — The error introduced by quantizing continuous signals to discrete values.
+- **Resistor String DAC** — A DAC formed by a string of resistors and switches to create voltage divisions.
+- **R-2R Ladder DAC** — A DAC using a resistor ladder network with resistors of values R and 2R to form binary weighted voltages.
+- **Sample-and-Hold (S/H)** — A circuit that samples an analog voltage and holds it steady during conversion.
+- **Sigma-Delta (XA) Modulator** — An oversampling ADC modulator combining integration and 1-bit quantization with noise shaping.
+- **Successive Approximation ADC (SAR ADC)** — An ADC that uses a binary search method by comparing input to DAC outputs.
+- **Thermometer Code** — A digital input code where all bits up to the conversion point are one and the rest zero, resembling a thermometer.
+- **Two-Step Flash ADC** — A Flash ADC split into two stages performing coarse and fine conversion to reduce comparator count.
+- **Unity Gain Frequency (fu)** — The frequency at which the gain of an amplifier falls to unity (0 dB).
+- **Voltage Scaling** — Converting digital signals into analog voltages using a DAC.
+- **Voltage-to-Current Conversion** — A technique often used in current-steering DACs to transform voltage inputs into currents.
+- **Worst-Case Error Analysis** — Evaluation of maximum expected nonlinearity or mismatch errors in converters.

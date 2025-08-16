@@ -1,33 +1,24 @@
----
-title: "ch19-digital-plls — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch19-digital-plls]
----
-
-- **Active-PI loop filter** — A loop filter combining proportional and integral actions to reduce static phase error and improve lock performance in DPLLs.  
-- **Charge pump** — A circuit that converts a digital up/down control signal into a current output for the loop filter in a PFD-based DPLL, improving noise immunity.  
-- **Clock recovery** — The process of extracting timing information (clock) synchronized with incoming data in a communication receiver.  
-- **Current-starved VCO** — A voltage-controlled oscillator design where inverter current is limited by controlled current sources for frequency tuning.  
-- **Data encoding** — Methods such as bi-phase or NRZ to modify data for improved timing, clock recovery, or error detection in communication systems.  
-- **Data jitter** — Variation in timing of the recovered clock edges once the loop is locked, often caused by noise or VCO gain.  
-- **Delay-locked loop (DLL)** — A circuit that aligns the phase of an output clock with a reference clock using a voltage-controlled delay line, avoiding oscillator noise.  
-- **Differential voltage-controlled delay line (VCDL)** — A delay line using differential stages controllable by a voltage, used in DLLs to adjust timing delays.  
-- **Damping ratio (ζ)** — A parameter quantifying the damping of the DPLL's loop filter system, affecting how quickly and smoothly it locks.  
-- **Divide-by-N counter** — A circuit in a DPLL feedback path that divides the oscillator frequency to allow lock at harmonics of input frequency.  
-- **Edge detector** — A circuit that converts NRZ data transitions into pulses, enabling clock recovery through phase detection.  
-- **Frequency synthesis** — Generating a clock frequency that is a multiple or fraction of a reference input using a PLL or DPLL.  
-- **Loop filter** — A filtering stage in a DPLL that smooths the phase detector output to control the VCO input voltage.  
-- **Lock range** — The frequency range over which the DPLL can maintain lock quickly and reliably once locked.  
-- **Lock time** — The time it takes for the DPLL to converge and synchronize to an input frequency or phase change.  
-- **Phase detector (PD)** — A component that detects the phase difference between two signals; common types include XOR and phase frequency detector (PFD).  
-- **Phase frequency detector (PFD)** — A phase detector that compares both phase and frequency of input signals, providing edge-aligned outputs with reduced harmonic locking.  
-- **Phase jitter** — Unwanted variations in phase timing of the oscillator or recovered clock due to noise or circuit imperfections.  
-- **Phase-locked loop (PLL)** — A feedback system that locks the output oscillation phase and frequency to an input reference signal.  
-- **Pull-in range** — The broader input frequency range from which the DPLL can eventually lock, though it may take longer than the lock range.  
-- **Ripple (loop filter)** — Oscillations in the loop filter output voltage caused by phase detector output pulses causing clock frequency modulation.  
-- **Self-correcting phase detector (Hogge PD)** — A phase detector design for clock recovery that automatically aligns clock edge with data transitions, reducing static phase error.  
-- **Transfer function** — A mathematical description of the output-to-input ratio of a system as a function of frequency or complex variable s.  
-- **Voltage-controlled oscillator (VCO)** — An oscillator whose output frequency varies with the applied input voltage, key to the DPLL operation.  
-- **Voltage-controlled delay line (VCDL)** — A circuit element whose delay changes in response to an input voltage, used in DLLs for phase alignment.  
-- **XOR phase detector** — A simple phase detector implemented with an exclusive-OR gate, producing a pulse width proportional to phase difference but sensitive to data patterns.
+- **Active-PI Loop Filter** — A loop filter with proportional and integral components that improves DPLL lock performance and reduces static phase error by allowing VCO control voltage to move away from midpoint.
+- **Bi-phase Encoding** — A data encoding scheme where each bit contains at least one transition, providing a 50% duty cycle to ease clock recovery.
+- **Charge Pump** — A current-output device used in PFD-based DPLLs to offer supply-independent control currents and reduce VCO control voltage modulation.
+- **Current-Starved VCO** — A voltage-controlled oscillator where inverter stages are limited by current sources, thereby controlling oscillation frequency through input voltage.
+- **DPLL (Digital Phase-Locked Loop)** — A circuit synchronizing a generated clock to an incoming digital data signal by locking phases using digital phase detectors, loop filters, and a VCO.
+- **DLL (Delay-Locked Loop)** — A timing synchronization system that uses a voltage-controlled delay line instead of a VCO to reduce jitter caused by oscillator noise.
+- **Edge Detector** — Circuit detecting transitions in NRZ digital data, converting data edges to pulses enabling XOR-based DPLL to lock on NRZ data.
+- **Frequency Synthesis** — Generating a clock at a multiple of an input reference frequency by dividing the VCO output frequency in a DPLL.
+- **Gain (Kp or Kvco)** — Sensitivity of phase detector (Kp) or VCO (Kvco) quantified as output change per unit phase difference (volts/radian) or input voltage (radians/sec/V).
+- **Hogge Phase Detector** — A self-correcting phase detector used in clock-recovery DPLLs that aligns clock edge to center of NRZ data bit by comparing delayed data samples.
+- **Jitter** — Variation in timing of clock edges once a loop is locked, caused by ripple on control voltage or noise sources.
+- **Lock Range** — The frequency range around nominal frequency over which a DPLL can maintain phase lock without slipping.
+- **Lock Time** — Time required for a DPLL or DLL to achieve phase lock after frequency or phase changes.
+- **Loop Filter** — Circuit (passive or active) that filters output of phase detector in DPLL/DLL to control dynamics and stability of the loop.
+- **NRZ (Non-Return to Zero)** — A data format where logical levels are represented by steady voltage levels without inherent timing transitions.
+- **Phase Detector (PD)** — Device in DPLL comparing phase (and sometimes frequency) of input data and feedback clock, outputting error signal proportional to phase difference.
+- **Phase Frequency Detector (PFD)** — A PD that detects both phase and frequency differences, outputs up/down pulses and avoids lock on harmonics, usually combined with charge pump.
+- **Pull-in Range** — Range of input frequencies from which a DPLL can achieve lock, typically wider but takes longer than lock range.
+- **Ripple** — Unwanted oscillation or variation in the control voltage of the VCO caused by phase detector output switching or loop filter characteristics.
+- **Tri-state Output** — Phase detector output configuration with high, low, and high-impedance states, used to drive loop filters but sensitive to supply noise.
+- **Voltage-Controlled Delay Line (VCDL)** — A chain of delay elements whose total delay is controlled by input voltage, used in DLLs for fine timing adjustment.
+- **Voltage-Controlled Oscillator (VCO)** — Oscillator whose oscillation frequency is controlled by an input voltage, key component in DPLL.
+- **Voltage-Controlled Resistor Linearization** — A technique to make MOS transistor currents (and thereby VCO gain) more linear with respect to control voltage.
+- **XOR Phase Detector** — Simple phase detector using XOR logic gate whose output average duty cycle is proportional to phase error, but can lock on harmonics and has limitations on data patterns.

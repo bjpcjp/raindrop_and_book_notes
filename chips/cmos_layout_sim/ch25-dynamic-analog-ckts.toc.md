@@ -1,51 +1,57 @@
----
-title: "ch25-dynamic-analog-ckts"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch25-dynamic-analog-ckts]
----
+```markdown
+# Table of Contents
 
 - Chapter 25 Dynamic Analog Circuits
   - 25.1 The MOSFET Switch
+    - Small-Signal Resistance of MOSFET Switches
     - Charge Injection
     - Capacitive Feedthrough
     - Reduction of Charge Injection and Clock Feedthrough
     - kT/C Noise
-    - 25.1.1 Sample-and-Hold Circuits
-      - Basic Sample-and-Hold
-      - Improved Sample-and-Hold Topologies
-      - Transconductance Amplifier S/H
-      - Feedback Path S/H
+  - 25.1.1 Sample-and-Hold Circuits
+    - Basic Sample-and-Hold Circuit
+    - Closed-loop S/H Circuits
+    - Transconductance Amplifier Based S/H
+    - Feedback Sample-and-Hold Circuit
   - 25.2 Fully-Differential Circuits
-    - Gain of Fully-Differential Op-Amps
+    - Gain of Differential Output Op-Amp
     - Common-Mode Feedback (CMFB)
     - Coupled Noise Rejection
     - Other Benefits of Fully-Differential Op-Amps
-    - 25.2.1 A Fully-Differential Sample-and-Hold
-      - Operation Explanation
-      - Connecting Inputs to Bottom Plate
-      - Bottom Plate Sampling
-      - SPICE Simulation of Fully-Differential S/H
+  - 25.2.1 A Fully-Differential Sample-and-Hold
+    - Circuit Operation and Clocking
+    - Connecting Inputs to Bottom Plate
+    - Bottom Plate Sampling
+    - SPICE Simulation
   - 25.3 Switched-Capacitor Circuits
     - Switched-Capacitor Resistor
-      - Theory and Equivalent Resistance
-      - Example 25.1
+    - Example 25.1: Switched-Capacitor Implementation
     - Switched-Capacitor Integrator
-      - Parasitic Insensitive Design
-      - Other Integrator Configurations
-      - Lossy Integrator and Filter Design
-      - Example 25.2
-      - Exact Frequency Response
-    - Capacitor Layout Considerations
-    - Op-Amp Settling Time in SC Circuits
+    - Parasitic Insensitivity
+    - Other Integrator Configurations
+    - Example 25.2: Switched-Capacitor Filter Design
+    - Exact Frequency Response of a Switched-Capacitor Integrator
+    - Capacitor Layout
+    - Op-Amp Settling Time
   - 25.4 Circuits
     - Reducing Offset Voltage of an Op-Amp
     - Dynamic Comparator
-      - Basic Concept
-      - Inverter-Based Dynamic Comparator
-      - Offset Cancellation Techniques (IOS & OOS)
     - Dynamic Current Mirrors
     - Dynamic Amplifiers
-  - Additional Reading
-  - Problems
-    - 25.1 to 25.14 (topics include MOSFET switches, charge injection, sample-and-hold circuits, fully-differential op-amps, switched-capacitor resistors/integrators, dynamic comparators, and more)
+- Additional Reading
+- Problems
+  - 25.1 Clock Feedthrough Effects Simulation
+  - 25.2 Dummy Switch Implementation
+  - 25.3 Track-and-Hold Operation Simulation
+  - 25.4 Differential Output Op-Amp Behavior
+  - 25.5 Common Mode Signal Effects on Sample-and-Hold
+  - 25.6 Alternative Switched-Capacitor Resistor Forms
+  - 25.7 Switched-Capacitor Resistor Simulation
+  - 25.8 Selection of Bottom Plate in Switched-Capacitor Circuits
+  - 25.9 Fully-Differential Switched-Capacitor Integrator Schematic
+  - 25.10 Filter Design with Modified Gain and Zero
+  - 25.11 Frequency Response Plot of SC Integrator
+  - 25.12 Slew-Rate Requirements Estimation
+  - 25.13 Minimum Unity Gain Frequency of Op-Amp
+  - 25.14 Dynamic Comparator Simulation
+```

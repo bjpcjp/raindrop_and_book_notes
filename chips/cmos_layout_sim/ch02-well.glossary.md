@@ -1,35 +1,32 @@
----
-title: "ch02-well — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch02-well]
----
-
-- **AC Component** — The alternating current or varying part of a voltage or current signal.
-- **Carrier Lifetime (τT)** — Average time an electron or hole exists before recombining in a semiconductor.
-- **CMOS** — Complementary Metal-Oxide-Semiconductor, a technology for constructing integrated circuits.
-- **Depletion Region** — Area around a pn junction where mobile charge carriers are depleted, creating a charge region.
-- **Depletion Capacitance** — Parasitic capacitance formed in the depletion region of a pn junction diode.
-- **Design Rules** — Constraints on dimensions and spacing in integrated circuit layout to ensure proper fabrication and function.
-- **Diode** — Semiconductor device formed by a pn junction allowing current to flow primarily in one direction.
-- **Diffusion Capacitance** — Capacitance due to stored minority carriers in a forward-biased diode.
-- **Distributed RC Circuit** — A resistance-capacitance network spread along a material, resembling a transmission line.
-- **DRC Program (Design Rule Checker)** — Software tool used to verify that layouts comply with design rules.
-- **Epitaxial Layer (Epi Layer)** — A layer of silicon grown on the wafer with controlled doping, often used in CMOS fabrication.
-- **Emission Coefficient (n)** — Parameter related to diode doping profiles affecting diode current characteristics.
-- **Fermi Level (EF)** — Energy level with 50% probability of occupancy by an electron, used to describe carrier distributions.
-- **Intrinsic Carrier Concentration (ni)** — Number of electrons or holes in pure (undoped) silicon at thermal equilibrium.
-- **Layout** — The geometric design of layers defining devices and interconnections on an integrated circuit.
-- **Lateral Diffusion** — Sideways extension of dopants under masking layers during diffusion processes.
-- **Mask** — Photolithography stencil used to pattern layers on a semiconductor wafer.
-- **Mass-Action Law** — Principle stating the product of electron and hole concentrations equals intrinsic carrier concentration squared.
-- **n-well Process** — CMOS fabrication process where p-channel devices are formed in an n-type well inside a p-type substrate.
-- **Parasitic Diode** — Unintended diode formed by pn junctions such as between n-well and p-substrate.
-- **P-n Junction** — Interface between p-type and n-type semiconductor materials forming a diode.
-- **Photolithography** — Process using light and photosensitive resist to pattern features on a semiconductor wafer.
-- **Sheet Resistance (Rsquare)** — Resistance of a thin film expressed in ohms per square, independent of size.
-- **Shot Noise** — Fluctuations in current caused by discrete charge carriers (not detailed but implied in diode operation).
-- **SiO2 (Silicon Dioxide)** — Insulating layer grown or deposited on silicon wafers to electrically isolate regions.
-- **Thermal Voltage (VT)** — Voltage term proportional to temperature, appearing in diode current equations (~26mV at room temp).
-- **Twin-Well Process** — CMOS process employing both n-type and p-type wells to reduce doping issues and improve device quality.
-- **Well** — A doped semiconductor region (n-well or p-well) used as body for MOS transistors within a substrate.
+- **AC component** — The alternating current part of a voltage or current signal, often used in small-signal analysis.  
+- **Active layer** — A semiconductor region where devices such as transistors are fabricated.  
+- **Bipolar transistor** — A transistor with layers of both p-type and n-type material; undesired parasitic forms can arise within CMOS wells.  
+- **Body (bulk)** — The substrate or well region that forms the base semiconductor for a MOSFET device.  
+- **Carrier lifetime (xT)** — The average time an electron or hole remains mobile before recombining in a semiconductor.  
+- **CMOS process** — Semiconductor manufacturing sequence for fabricating complementary MOS devices; uses wells and substrate doping.  
+- **Diffusion capacitance (storage capacitance)** — Capacitance in a forward-biased diode due to stored minority carriers near the junction.  
+- **Design rules** — Constraints on minimum size and spacing of layout features set by process engineers to ensure manufacturability and prevent device interaction.  
+- **Depletion capacitance (junction capacitance)** — Capacitance formed at a pn junction due to the depletion region devoid of mobile carriers.  
+- **Diode saturation current (Is)** — The scale current, representing the reverse saturation leakage current in a diode.  
+- **Diode storage time (ts)** — Time required for removing stored charge from a forward-biased diode when switching to reverse bias.  
+- **DRC (Design Rule Checker)** — A software tool that verifies whether a layout adheres to the foundry-specific design rules.  
+- **Epitaxial layer** — A layer of silicon grown on the substrate, often p-type, serving as the starting material for CMOS processing.  
+- **Fermi energy level (Ef)** — The energy level at which the probability of occupation by an electron is 50%, key in determining carrier concentrations.  
+- **Field oxide (FOX)** — Thick oxide used to isolate devices; includes implants like the channel stop implant to improve device isolation.  
+- **Intrinsic carriers (nt)** — Electrons and holes generated thermally in pure, undoped silicon.  
+- **Lateral diffusion** — The sideways spreading of dopants during diffusion, causing features to be larger than mask openings.  
+- **Mass-action law** — Relationship in semiconductors stating that the product of electron and hole concentrations equals the square of intrinsic carrier concentration (pn = nt^2).  
+- **Minimum feature size (lambda, λ)** — The fundamental unit dimension in layout design scaling.  
+- **Mobile carriers** — Free electrons or holes responsible for electrical conduction in semiconductors.  
+- **N-well process** — CMOS process using a p-type substrate with n-type wells for PMOS transistor fabrication.  
+- **Parasitic bipolar transistor** — An unintended bipolar transistor formed in the device structure, potentially causing latchup or other issues.  
+- **Parasitic diode** — A diode formed by the pn junction between the n-well and the p-substrate within CMOS devices.  
+- **Patterning** — The process of selectively removing or adding layers on the wafer using photolithography.  
+- **P-well process** — A CMOS process using an n-type substrate with p-type wells for NMOS transistor fabrication.  
+- **Resistivity (ρ)** — A material property indicating resistance per unit length and cross-sectional area.  
+- **Sheet resistance (Rsquare)** — Resistance of a thin film expressed in ohms per square, independent of size if uniform thickness.  
+- **Shockley diode equation** — Equation describing current through a diode as a function of applied voltage and diode parameters.  
+- **Storage or diffusion charge** — Minority carriers accumulated in a forward-biased diode junction, causing storage capacitance.  
+- **Thermal voltage (VT)** — Voltage equivalent of thermal energy at given temperature, approximately 25.85 mV at room temperature.  
+- **Twin-well process** — CMOS fabrication using both n-wells and p-wells in a lightly doped substrate to improve device performance.  
+- **Well** — A region in the substrate doped opposite to the substrate type, used to fabricate transistors of desired polarity.

@@ -1,29 +1,27 @@
----
-title: "ch03-metal — Glossary"
-layout: default-foundation-20210515
-date: 2025-08-13
-tags: [ch03-metal]
----
-
-- **Bonding Pad** — The metal area on a chip where an external wire is soldered to connect the die to the package or outside world.  
-- **Capacitance (Fringe)** — The parasitic capacitance at the edges of a conductor, influencing signal coupling at conductor perimeters.  
-- **Capacitance (Plate)** — The parasitic capacitance between two parallel conducting surfaces, like metal to substrate or metal-to-metal layers.  
-- **CMOS Process** — A fabrication process for integrated circuits using complementary metal-oxide-semiconductor technology.  
-- **Cross Talk** — Interference caused by capacitive or inductive coupling between adjacent conductors, leading to undesired signal feedthrough.  
-- **Die (Wafer Die)** — The individual semiconductor chip cut from a wafer.  
-- **Electromigration** — The gradual movement of metal atoms in a conductor caused by high current density, which can lead to failure.  
-- **Fringe Capacitance** — Capacitance contributed by electric fields around the edges of a conductor or metal layer.  
-- **Interlayer Dielectric (ILD)** — The insulating material between metal layers in an integrated circuit to prevent electrical shorts.  
-- **Metal1 (Metall)** — The first (bottom) metal layer in a CMOS process, typically connecting devices and vias to upper metal layers.  
-- **Metal2** — The second metal layer in a CMOS process, often the top routing layer or bonding pad layer.  
-- **Padframe** — The arranged set of bonding pads around the perimeter of a chip.  
-- **Passivation** — A protective insulating layer covering the chip surface to protect against contamination and mechanical damage.  
-- **Scale Factor** — The factor used to convert layout drawing units into real physical dimensions during mask generation.  
-- **Sheet Resistance** — The resistance of a thin film of material (like metal layers) expressed in ohms per square.  
-- **Test Structures** — Specialized layout patterns used to characterize electrical properties like resistance and capacitance of materials.  
-- **Thermal Oxide (FOX)** — A layer of silicon dioxide grown on silicon, often used as insulation or isolation in CMOS.  
-- **Timing Delay (RC Delay)** — The time delay in signal propagation through a resistive and capacitive conductor modeled as an RC network.  
-- **Vial (Via)** — A small opening or plug that provides electrical connection between two metal layers through the insulating ILD.  
-- **Voltage Drop** — The reduction in voltage across a conductor caused by its resistance and current flow, impacting circuit operation.  
-- **VDD Droop** — A temporary decrease in power supply voltage on a chip due to current surges and line resistance.  
-- **Ground Bounce** — A temporary increase in ground potential at a circuit node caused by inductive and resistive effects in the ground path.
+- **Bonding Pad** — The interface area on the die where a wire is soldered to connect the chip to the package or external circuitry, typically made with metal2 and sized according to design rules.  
+- **Capacitance** — The ability of a system to store charge; parasitic capacitances occur between metal layers and substrate or between metal layers themselves.  
+- **Crosstalk** — Unwanted electrical interference between neighboring conductors caused by mutual capacitance and inductance, resulting in signal feedthrough.  
+- **Decoupling Capacitor** — A capacitor placed between power (VDD) and ground to supply charge during transient current demands, reducing voltage fluctuations such as ground bounce and VDD droop.  
+- **Design Rules** — Guidelines defining minimum widths, spacings, and sizes for metallization layers, vias, and other layout elements to ensure manufacturability and reliability.  
+- **Dielectric Constant (Relative Dielectric Constant)** — A material property that affects capacitance; lower dielectric constants reduce parasitic capacitances between metal layers.  
+- **Electromigration** — Physical degradation of a metal conductor caused by high current densities, leading to metal erosion and eventual circuit failure.  
+- **Fringe Capacitance** — Parasitic capacitance occurring at the edges (perimeter) of metal structures.  
+- **Interlayer Dielectric (ILD)** — The insulating material (often SiO₂ or low-k dielectric) separating different metal layers to prevent electrical shorts and reduce capacitance.  
+- **Intrinsic Propagation Delay** — The theoretical signal delay in a transmission medium considering only its dielectric properties, neglecting resistance and parasitic effects.  
+- **Metal1 (Metall)** — The bottom metal layer in a two-metal CMOS process, with specific sheet resistance and capacitances associated.  
+- **Metal2** — The second metal layer above metal1 in a CMOS process, often the top metal layer used for bonding pads and routing.  
+- **Mutual Capacitance (Cm)** — Capacitance between two adjacent conductors that causes charge coupling and noise (crosstalk).  
+- **Mutual Inductance (Lm)** — Inductance shared between conductors that causes voltage induction and signal interference (crosstalk).  
+- **Padframe** — An arrangement of bonding pads around the chip perimeter, spaced according to design rules, to facilitate packaging and external connections.  
+- **Passivation** — The protective dielectric layer (insulator) over the chip surface that prevents contamination; openings (cuts) are made for bonding pads.  
+- **Parasitic Capacitance** — Unwanted capacitance between circuit elements or metal layers that can degrade circuit performance.  
+- **RC Delay** — The delay caused by the combined effect of resistance and capacitance in metal lines, dominating signal propagation speed in practical ICs.  
+- **Scale Factor** — The ratio used to convert drawn layout dimensions to actual physical dimensions, e.g., 50 nm per drawing unit.  
+- **Sheet Resistance** — The resistance of a thin film material (like metal or diffusion layers), expressed in ohms per square, used to calculate line resistance.  
+- **Signal Delay** — Time taken for a voltage change to propagate through a conductor, influenced by both intrinsic material properties and parasitic effects.  
+- **Via (Vial)** — A vertical interconnection (plug) that electrically connects two metal layers by filling an opening in the dielectric between them, with finite contact resistance.  
+- **Voltage Drop** — The reduction in voltage along a conductor due to its resistance and current flow, important when sizing metal lines for power or signals.  
+- **VDD Droop** — A temporary drop in the power supply voltage due to transient current loads and wiring resistance.  
+- **Wire Width** — The physical width of a metal line, affecting resistance, current-carrying capacity, and capacitance.  
+- **Wire Length** — The physical length of a metal conductor, affecting resistance and parasitic capacitances.  
+- **Ground Bounce** — A transient increase in the local ground voltage causing undesired voltage fluctuations and potential circuit malfunction.
