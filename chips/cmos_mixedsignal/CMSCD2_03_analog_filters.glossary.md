@@ -1,0 +1,29 @@
+- **AAF (Analog Anti-Aliasing Filter)** — Analog filter used prior to analog-to-digital conversion to prevent aliasing by limiting the input signal bandwidth.
+- **Active-RC filter** — Analog filter using resistors and capacitors combined with active elements like op-amps to implement precise filtering functions.
+- **Biquadratic (Biquad) filter** — A second-order filter whose transfer function is the ratio of two quadratic polynomials, allowing complex conjugate poles and zeros.
+- **Butterworth filter** — A filter with a maximally flat frequency response in the passband, characterized by a specific Q factor for second-order sections.
+- **CAI (Continuous-time Analog Integrator)** — An analog integrator implemented using active components and passive resistors/capacitors, also known as Miller integrator or active-RC integrator.
+- **CMRR (Common-Mode Rejection Ratio)** — The ability of an amplifier or filter to reject input signals common to both inputs, important for linearity and distortion.
+- **DAC (Digital-to-Analog Converter)** — A device that converts digital signals into analog voltages or currents (not directly covered but implied in mixed-signal context).
+- **DAI (Discrete-time Analog Integrator)** — An integrator implemented using switched-capacitor circuits operating with discrete-time sampling.
+- **Differential signaling** — An implementation style using pairs of signals with opposite polarities to improve noise immunity and linearity.
+- **DR (Dynamic Range)** — The ratio between the largest and smallest signal levels a circuit can process accurately, often linked to SNR.
+- **f3dB (3 dB Frequency)** — The frequency at which the output power of the filter drops to half its maximum, defining the filter’s bandwidth.
+- **Finite Op-Amp Gain Bandwidth Product (fun)** — The frequency at which an operational amplifier's open-loop gain falls to unity (0 dB), limiting the filter bandwidth.
+- **Gm-C (Transconductor-Capacitor) filter** — A continuous-time analog filter that uses voltage-controlled current sources (transconductors) and capacitors.
+- **High-Q filter** — A filter with a high quality factor Q, indicating narrow bandwidth and potentially large peaking near the cutoff frequency.
+- **Integrator** — A filter building block that performs mathematical integration of the input signal, key in constructing lowpass filters.
+- **Ladder filter** — Filter structure composed of cascaded biquads arranged in a ladder-like topology often used to implement higher-order responses.
+- **Lowpass filter** — A filter that passes signals below a cutoff frequency and attenuates frequencies above.
+- **MOSFET-C filter** — An active-RC analog filter where resistors are replaced with MOSFETs operating in triode region for tunability.
+- **Nyquist frequency** — Half the sampling frequency; the highest frequency component that can be sampled without aliasing.
+- **Orthogonal tuning** — The ability to adjust one filter parameter (such as Q or gain) independently without affecting others.
+- **Q factor (Quality factor)** — Parameter describing the selectivity or sharpness of the resonance of a filter pole; higher Q means narrower bandwidth.
+- **RC time constant** — Product of resistance and capacitance in an RC circuit determining cutoff frequency.
+- **Sallen-Key topology** — A common single-ended active filter configuration with variable gain and phase response.
+- **SBPF (Switched-Capacitor Biquad Filter)** — A filter implemented with switched-capacitor circuits that realize biquadratic transfer functions.
+- **SNR (Signal-to-Noise Ratio)** — Ratio of signal power to noise power, expressed in dB, indicating filter or system fidelity.
+- **Switched-Capacitor (SC) filter** — Discrete-time filter using capacitors and switches clocked at a defined frequency to realize precise filter characteristics without resistors.
+- **Transconductor (OTA)** — An operational transconductance amplifier that converts voltage differences into output currents, used as tunable elements in gm-C filters.
+- **Unity gain frequency (fun)** — See Finite Op-Amp Gain Bandwidth Product.
+- **Zero (of filter)** — Frequency at which the filter response output is zero, introduced by zeros in the transfer function.

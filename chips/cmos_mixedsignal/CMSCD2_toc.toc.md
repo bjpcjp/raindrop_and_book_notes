@@ -1,0 +1,81 @@
+```markdown
+# Table of Contents
+
+- Preface xv
+- Chapter 1 Signals, Filters, and Tools 1
+  - 1.1 Sinusoidal Signals 1
+    - 1.1.1 The Pendulum Analogy 1
+    - Describing Amplitude in the x-y Plane
+    - In-Phase and Quadrature Signals
+    - 1.1.2 The Complex (z-) Plane 6
+  - 1.2 Comb Filters 8
+    - 1.2.1 The Digital Comb Filter 11
+    - 1.2.2 The Digital Differentiator 14
+    - 1.2.3 An Intuitive Discussion of the z-Plane 15
+    - 1.2.4 Comb Filters with Multiple Delay Elements 17
+    - 1.2.5 The Digital Integrator 19
+  - 1.3 Representing Signals 21
+    - 1.3.1 Exponential Fourier Series 22
+    - 1.3.2 Fourier Transform 23
+- Chapter 2 Sampling and Aliasing 27
+  - 2.1 Sampling 28
+    - 2.1.1 Impulse Sampling 28
+    - 2.1.2 Decimation 33
+    - 2.1.3 The Sample-and-Hold (S/H) 35
+    - 2.1.4 The Track-and-Hold (T/H) 41
+    - 2.1.5 Interpolation 43
+    - 2.1.6 K-Path Sampling 50
+  - 2.2 Circuits 54
+    - 2.2.1 Implementing the S/H 54
+    - 2.2.2 The S/H with Gain 61
+    - 2.2.3 The Discrete Analog Integrator (DAI) 66
+- Chapter 3 Analog Filters 73
+  - 3.1 Integrator Building Blocks 73
+    - 3.1.1 Lowpass Filters 73
+    - 3.1.2 Active-RC Integrators 75
+    - 3.1.3 MOSFET-C Integrators 83
+    - 3.1.4 gm-C (Transconductor-C) Integrators 86
+    - 3.1.5 Discrete-Time Integrators 90
+  - 3.2 Filtering Topologies 95
+    - 3.2.1 The Bilinear Transfer Function 95
+    - 3.2.2 The Biquadratic Transfer Function 99
+- Chapter 4 Digital Filters 119
+  - 4.1 SPICE Models for DACs and ADCs 119
+    - 4.1.1 The Ideal DAC 119
+    - 4.1.2 The Ideal ADC 121
+    - 4.1.3 Number Representation 123
+  - 4.2 Sinc-Shaped Digital Filters 126
+    - 4.2.1 The Counter 126
+    - 4.2.2 Lowpass Sinc Filters 129
+    - 4.2.3 Bandpass and Highpass Sinc Filters 134
+    - 4.2.4 Interpolation using Sinc Filters 139
+    - 4.2.5 Decimation using Sinc Filters 143
+  - 4.3 Filtering Topologies 145
+    - 4.3.1 FIR Filters 145
+    - 4.3.2 Stability and Overflow 146
+    - 4.3.3 The Bilinear Transfer Function 148
+    - 4.3.4 The Biquadratic Transfer Function 155
+- Chapter 5 Data Converter SNR 163
+  - 5.1 Quantization Noise 163
+    - 5.1.1 Viewing the Quantization Noise Spectrum Using Simulations 164
+    - 5.1.2 Quantization Noise Voltage Spectral Density 169
+  - 5.2 Signal-to-Noise Ratio (SNR) 173
+    - 5.2.1 Clock Jitter 178
+  - 5.3 Improving SNR using Averaging 190
+  - 5.4 Using Feedback to Improve SNR 199
+- Chapter 6 Data Converter Design Basics 203
+  - 6.1 Passive Noise-Shaping 205
+  - 6.2 Improving SNR and Linearity 215
+- Chapter 7 Noise-Shaping Data Converters 233
+  - 7.1 First-Order Noise Shaping 233
+  - 7.2 Second-Order Noise-Shaping 253
+  - 7.3 Noise-Shaping Topologies 264
+- Chapter 8 Bandpass Data Converters 285
+  - 8.1 Continuous-Time Bandpass Noise-Shaping 287
+  - 8.2 Switched-Capacitor Bandpass Noise-Shaping 292
+- Chapter 9 A High-Speed Data Converter 301
+  - 9.1 The Topology 301
+  - 9.2 Practical Implementation 316
+  - 9.3 Conclusion 322
+- Index 325
+```

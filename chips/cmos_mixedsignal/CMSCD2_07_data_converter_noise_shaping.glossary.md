@@ -1,0 +1,24 @@
+- **ADC (Analog-to-Digital Converter)** — A device that converts continuous analog signals into discrete digital numbers.
+- **DAI (Discrete Analog Integrator)** — An integrator implemented using switched-capacitor techniques, typically with clocked operation.
+- **DAC (Digital-to-Analog Converter)** — A device that converts digital numbers into continuous analog signals.
+- **Decimation filter** — A digital filter used to remove out-of-band noise and reduce the sampling rate of the modulator output.
+- **Digital filter** — A processing block that shapes, filters, or decimates the digital output of the modulator.
+- **Differentiator (Digital)** — A filter with transfer function \(1 - z^{-1}\), used in noise shaping to push noise to higher frequencies.
+- **Dither** — A purposely added noise source used to randomize quantization errors and reduce tones or limit cycles.
+- **Error Feedback Modulator** — A noise-shaping topology where the quantization error is fed back digitally rather than fed back in analog form.
+- **Forward gain (GF)** — The overall gain of the forward path in a modulator, typically the product of the integrator and comparator gains.
+- **Integrator gain (GI)** — Gain setting of an integrator stage that affects signal swing and stability.
+- **Limit cycle oscillations** — Periodic digital output patterns due to DC input in noise-shaping modulators, producing unwanted tones.
+- **Loop filter** — The filter consisting of integrators and feedback paths defining the modulator’s noise shaping.
+- **Modulation noise** — Quantization noise after being shaped by the noise transfer function (NTF).
+- **Multibit modulator** — A noise-shaping modulator that uses a multibit quantizer and DAC to improve SNR and stability.
+- **Noise transfer function (NTF)** — The transfer function that shapes the quantization noise spectrum in a noise-shaping modulator.
+- **Noise shaping (NS)** — Technique that pushes the quantization noise to higher frequencies to improve in-band SNR.
+- **Oversampling ratio (K)** — Ratio of the sampling frequency to twice the signal bandwidth; higher values reduce in-band noise.
+- **Quantization noise** — Error introduced by quantizing an analog signal into discrete levels.
+- **RMS quantization noise (VQe,RMS)** — Root-mean-square value of the quantization noise within the signal bandwidth.
+- **Signal transfer function (STF)** — The transfer function that passes the input signal through the modulator to output.
+- **Sinc filter** — A digital averaging filter used as a decimation filter after a noise-shaping modulator.
+- **Stability (modulator)** — Condition when poles of the system lie within the unit circle in the z-plane, ensuring bounded output.
+- **Unity gain frequency (fun)** — Frequency at which the gain of an op-amp falls to unity, relevant for integrator settling time.
+- **Z-domain (z-transform)** — Mathematical domain used to analyze discrete-time signals and systems.

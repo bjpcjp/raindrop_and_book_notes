@@ -1,0 +1,46 @@
+```markdown
+# Table of Contents
+
+- Chapter 2 Sampling and Aliasing
+  - 2.1 Sampling
+    - 2.1.1 Impulse Sampling
+      - Example 2.1
+    - 2.1.2 Decimation
+    - 2.1.3 The Sample-and-Hold (S/H)
+      - S/H Spectral Response
+      - Example 2.2
+      - The Reconstruction Filter (RCF)
+      - Circuit Concerns for Implementing the S/H
+        - Example 2.3
+      - Finite Op-Amp Gain-Bandwidth Product
+      - Autozeroing
+      - Correlated Double Sampling (CDS)
+      - Selecting Capacitor Sizes
+    - 2.1.4 The Track-and-Hold (T/H)
+    - 2.1.5 Interpolation
+      - Zero Padding
+      - Hold Register
+      - Linear Interpolation
+    - 2.1.6 K-Path Sampling
+      - Non-Overlapping Clock Generation
+  - 2.2 Circuits
+    - 2.2.1 Implementing the S/H
+      - Example 2.3
+      - Finite Op-Amp Gain-Bandwidth Product
+      - Autozeroing
+      - Correlated Double Sampling (CDS)
+      - Selecting Capacitor Sizes
+    - 2.2.2 The S/H with Gain
+      - Example 2.4
+      - Implementing Subtraction in the S/H
+        - Example 2.5
+      - A Single-Ended to Differential Output S/H
+    - 2.2.3 The Discrete Analog Integrator (DAI)
+      - Example 2.6
+      - A Note Concerning Block Diagrams
+      - Fully-Differential DAI
+      - DAI Noise Performance
+  - Additional Reading
+  - Questions
+    - 2.1 to 2.18
+```

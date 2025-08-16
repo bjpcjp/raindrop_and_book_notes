@@ -1,0 +1,31 @@
+- **AAF (Anti-Aliasing Filter)** — An analog lowpass filter applied before sampling to limit the input signal's spectral content, preventing aliasing by removing frequencies above half the sampling rate.  
+- **Aliasing** — The distortion that occurs when higher frequency signals are indistinguishable from lower frequencies after sampling, caused by insufficient sampling rates or inadequate filtering.  
+- **Biquadratic Transfer Function** — A second-order transfer function form used in filter design to represent lowpass, bandpass, or highpass characteristics.  
+- **Comb Filter** — A filter with a frequency response featuring regularly spaced nulls resembling a comb, implemented by adding a delayed version of a signal to itself.  
+- **DAC (Digital-to-Analog Converter)** — A circuit that converts digital data words into corresponding analog voltage or current signals.  
+- **DAI (Discrete Analog Integrator)** — A discrete-time continuous-amplitude integrator circuit used in analog signal processing and mixed-signal designs.  
+- **Decimation** — The process of reducing the sample rate of a digital signal by passing it through a digital lowpass filter (anti-aliasing filter) and down-sampling the filtered output.  
+- **Digital Filter** — A signal processing element implemented digitally, often described using z-transforms and designed using poles and zeros in the z-plane.  
+- **Digital Integrator** — A digital filter performing cumulative summation of input samples, implemented as either delaying or non-delaying integrators.  
+- **Differentiator (Digital)** — A digital filter producing the difference between consecutive input samples, used as a comb filter with nulls at DC frequency.  
+- **DSP (Digital Signal Processing)** — Processing of signals using digital computation techniques including filtering, modulation, and transformation operations.  
+- **Effective Number of Bits (ENOB)** — A measure of an ADC’s resolution and noise performance, indicating the number of bits that provide meaningful information.  
+- **Euler’s Formula** — The mathematical formula \( e^{j\theta} = \cos \theta + j \sin \theta \) used to represent sinusoidal signals in the complex plane.  
+- **Frequency Domain** — A representation of signals or systems in terms of frequency rather than time, often used to analyze filter responses and signal spectra.  
+- **Frequency Response** — The magnitude and phase characteristics of a system/filter as a function of frequency.  
+- **Fourier Series (Exponential)** — A representation of any periodic function as a sum of sinusoidal components with integer multiple frequencies of the fundamental.  
+- **Fourier Transform** — A mathematical tool that transforms a time-domain signal into a continuous spectrum of frequency components.  
+- **Impulse Sampling** — Sampling an input signal instantaneously with ideally infinitely narrow pulses (Dirac deltas), producing repeated spectral images.  
+- **In-Phase (I) Signal** — The cosine component of an I/Q signal pair, representing the part that is in phase with the reference oscillator.  
+- **Imaginary Number** — A complex number component where \(j=\sqrt{-1}\), crucial for representing phase and sinusoidal signals in the complex (z) plane.  
+- **K-Path Sampling** — A sampling technique using multiple sampling paths shifted in time to improve signal reconstruction and processing.  
+- **Linear Phase** — A property of filters where phase shift is proportional to frequency, resulting in constant delay and no waveform distortion.  
+- **Mixed-Signal Design (MSD)** — Circuit designs combining analog circuits with digital signal processing (DSP) techniques.  
+- **Nyquist Frequency (f_n)** — Half the sampling frequency, representing the highest frequency that can be accurately sampled without aliasing.  
+- **Phase Shift** — The delay or advance of a signal’s phase relative to a reference, often expressed in degrees or radians.  
+- **Quadrature (Q) Signal** — The sine component of an I/Q signal pair, representing the part shifted by 90 degrees relative to the reference oscillator.  
+- **Reconstruction Filter (RCF)** — An analog lowpass filter used to smooth or reconstruct a continuous-time signal from its sampled discrete-time form.  
+- **Sample-and-Hold (S/H)** — A circuit that samples an input voltage and holds it constant for a specified period, enabling conversion by ADCs.  
+- **Sampling Frequency (f_s)** — The rate at which an analog signal is sampled in time, determining the spacing of spectral replicas.  
+- **Switched-Capacitor Circuit** — A circuit topology using capacitors switched by clocks to emulate resistors and perform filtering in discrete time.  
+- **z-Plane** — A complex plane used to analyze discrete-time filter transfer functions, where points correspond to poles and zeros influencing frequency response.

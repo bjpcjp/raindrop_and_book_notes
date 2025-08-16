@@ -1,0 +1,44 @@
+```markdown
+# Table of Contents
+
+- Chapter 6 Data Converter Design Basics
+  - The One-Bit ADC and DAC
+  - 6.1 Passive Noise-Shaping
+    - Example 6.1
+    - 6.1.1 Signal-to-Noise Ratio
+      - Example 6.2
+    - 6.1.2 Decimating and Filtering the Modulator's Output
+      - SNR Calculation using a Sinc Filter
+    - 6.1.3 Offset, Matching, and Linearity
+      - Resistor Mismatch
+      - The Feedback DAC
+      - DAC Offset
+      - Linearity of the First-Order Modulator
+      - Dead Zones
+  - 6.2 Improving SNR and Linearity
+    - 6.2.1 Second-Order Passive Noise-Shaping
+      - Example 6.3
+    - 6.2.2 Passive Noise-Shaping Using Switched-Capacitors
+    - 6.2.3 Increasing SNR using K-Paths
+    - Effects of the Added Amplifier on Linearity
+    - 6.2.4 Improving Linearity Using an Active Circuit
+      - Example 6.4
+      - Second-Order Noise-Shaping
+      - Signal-to-Noise Ratio
+      - Example 6.5
+      - Discussion
+- Additional Reading
+- Questions
+  - 6.1
+  - 6.2
+  - 6.3
+  - 6.4
+  - 6.5
+  - 6.6
+  - 6.7
+  - 6.8
+  - 6.9
+  - 6.10
+  - 6.11
+  - 6.12
+```

@@ -1,0 +1,2 @@
+1. **Q:** Explain the role and limitations of analog continuous-time filters in mixed-signal systems, particularly comparing active-RC, MOSFET-C, gm-C, and discrete-time analog integrators.  
+   **A:** Analog continuous-time filters, including active-RC, MOSFET-C, gm-C, and discrete-time analog integrators (DAIs), are essential in mixed-signal systems as anti-aliasing and reconstruction filters due to their speed and compact area usage compared to discrete-time filters. Active-RC filters use op-amps with resistors and

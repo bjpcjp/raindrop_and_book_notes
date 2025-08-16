@@ -1,0 +1,97 @@
+```markdown
+# Table of Contents
+
+- A  
+  - Averaging ............................................. 13-14, 43-50, 71, 126-134, 139-142, 190-194, 199, 201, 209-211, 220, 223-241, 266-267, 273, 285-292  
+  - Accumulate-and-dump circuit ........................... 19, 129, 132, 134, 235-236  
+  - Accuracy ............................................... 195, 200, 269  
+  - Adaptive filtering ...................................... 93  
+  - ADC (Analog-to-digital converter) ...................... 21, 27, 43, 63, 94, 119-123, 160, 164-224, 225-284, 287-324  
+  - Antialiasing filter (AAF) ............................... 27-40, 73, 93, 139-144, 198-206, 302  
+  - Aperture jitter ......................................... 179, 202, 317  
+  - Autocorrelation function (ACF) .......................... 183  
+  - Average power and value ................................. 10-11, 44, 168, 183-187, 190-194, 198, 200, 212, 244, 315  
+  - Aliasing ................................................ 21, 27-72, 93, 127-129, 140, 143-144, 169, 306, 317  
+- B  
+  - Bandwidth (B) ........................................... 13-14, 129-134, 160, 182, 194-195, 198-199, 208-209, 212, 220, 229, 235, 237-241, 248, 250, 267, 285, 290, 296, 324  
+  - Bandpass filters and modulators ......................... 19, 96-111, 129, 134-139, 160, 263, 275-298, 301, 324  
+  - Binary offset ............................................ 123-125, 204-205, 274  
+  - Biquad filters ........................................... 73, 99-101  
+- C  
+  - Cascade of integrators and combs (CIC filters) .......... 10-21, 25, 129-131, 133-144, 142, 224  
+  - Charge injection and pump ............................... 39-40, 251, 257, 294, 120  
+  - Clock and sampling jitter ............................... 53, 178-189, 198, 316-318  
+  - Comparators ............................................. 163, 204-205, 221-222, 244-247, 259, 262-263, 295, 319-320  
+  - Continuous-time integrators and comb filters ............ 10-11, 73-75, 90-93, 95  
+  - Coherent sampling ....................................... 175-176, 202  
+  - Comb filters ............................................. 8-21, 25, 129-131, 133-143, 224  
+  - Common-mode feedback and voltage ....................... 60-61, 65, 87-89, 252  
+- D  
+  - DAC (Digital-to-analog converter) ....................... 69, 119-123, 204-205, 213-214, 235-236, 272-275  
+  - Decimation and sample frequency reduction ............... 33-34, 127-129, 132, 143-144, 157, 203, 222-223, 306-312, 321-322  
+  - Delta modulation and delta-sigma modulation ............. 199, 233-234  
+  - Digital filters and processing .......................... 19-21, 27, 32, 72-162, 119-162, 133-162, 192-220, 297-298  
+  - Discrete analog integrator (DAI) ......................... 66-70, 90-93, 233, 251, 260  
+  - Distortion and dither .................................... 35, 37, 49, 57-58, 166, 195-198, 206-208, 213-214, 242, 251-252, 269  
+- F  
+  - Filters (overview) ....................................... 8-21, 73-118, 133-162  
+  - Finite impulse response (FIR) filters .................... 133-134, 145-146, 161  
+  - Feedback and gain considerations in integrators .......... 55-57, 113, 176, 244-246, 248, 255, 257-260, 264, 276, 303  
+- G  
+  - Gain error and gm-C (transconductor-C) filters ........... 53, 55, 78-90, 94  
+  - Gaussian probability distribution ........................ 186-187, 197-198  
+- H  
+  - Hanning window and windowing ................................ 175-176  
+  - Harmonics and high-Q filters .......................... 99-114, 117-118, 189  
+  - Hold register and sample-and-hold (S/H) circuits ....... 27, 35-50, 54-66  
+- I  
+  - Interpolation and interpolating filters .................. 32, 43-46, 48-50, 71, 139-142, 235, 273  
+  - Impulse, inverse Fourier transform ...................... 23-31, 36-39, 44-49  
+  - Integrators: analog, digital, discrete ................... 19-21, 66-70, 73-118, 235, 251, 260  
+  - IIR (Infinite impulse response) filter ................... 134-147  
+- J  
+  - Jitter (clock and aperture) .............................. 178-189, 202, 317  
+- K  
+  - Oversampling ratio (K) and K-Delta-1-Sigma .............. 33, 43-53, 220-224, 228, 230, 301-304, 317, 320-324  
+- L  
+  - Linearity and limit cycles ............................... 112, 191-195, 212, 214, 241, 315  
+  - Ladder filters and least significant bit (LSB) .......... 56-57, 73-74, 119, 123-126, 131, 137, 147, 204-205  
+- M  
+  - MASH modulators and multibit modulators ................. 233-234, 269, 275  
+  - Matching and Matlab ...................................... 53, 55, 94, 171, 200, 211, 212, 230, 279, 323  
+  - Mean and mean square .................................... 186  
+- N  
+  - Noise (averaging, clock jitter, modulation, quantization) 59, 163, 190, 198, 206-208, 212, 224, 233, 250, 253-254  
+  - Noise transfer function (NTF) and noise-shaping ........ 199-201, 205-208, 224, 233, 253-254, 258-264, 269, 275  
+  - Nyquist frequency and Nyquist-rate ADC .................. 17, 21, 27, 29, 31, 37-40, 43, 63, 220-225, 241, 306-308  
+- O  
+  - Offset (autozero, comparator, DAC, op-amp) ............... 54-62, 221-222, 224, 246, 247-250  
+- P  
+  - Pipeline ADC ............................................. 38, 122, 176, 220, 307  
+  - PSD (Power spectral density) ............................ 166, 172, 183, 188, 190, 193, 198  
+  - Predictive modulator ..................................... 199-200  
+- Q  
+  - Q factor, peaking, quadrature amplitude modulation ...... 4-6, 99-114, 117-118, 285-290  
+  - Quantization noise, quantizer ................................ 122, 163-196, 224, 233-234, 237, 240, 242-243, 251, 253, 266, 273-279, 312-314  
+- R  
+  - Reconstruction filters (RCF), resolution .................. 27, 29, 31-33, 39, 56-57, 87, 139, 166, 185, 187, 194-195, 199-200, 203, 209-210, 215, 230, 237-241, 253-254, 265, 269, 273, 306-307, 322  
+  - RMS voltage, ripple, root mean square .................. 168, 185-187, 237, 249, 253, 266-267, 282, 288-289  
+  - Random signals and return-to-zero (RZ) .................. 168-169, 185-186, 196, 216, 242  
+- S  
+  - Sample and hold (S/H), samplers ........................ 27, 28-43, 54-66, 63  
+  - Sigma-delta modulation/noise-shaping .................. 199-201, 233, 253  
+  - Stability (filters, digital, modulators) ............... 112, 146-147, 258-264, 269, 275, 293  
+  - SFDR (Spurious free dynamic range) ..................... 177, 242  
+  - Square wave and spectral harmonics .................... 22, 25, 126-128, 166, 175, 189  
+  - Switched-capacitor filters, switches, charge injection 39-40, 51-61, 83-111, 251, 257, 294, 318  
+- T  
+  - Tuning (orthogonal), Taylor series, track-and-hold ..... 6, 41-43, 51, 80, 83, 86, 98, 304  
+  - Time-interleaved ADCs ................................... 220-222, 232, 313, 323  
+- V  
+  - Variance, VCM, VDD ...................................... 168, 186, 252, 320  
+- W  
+  - Wireless and I/Q extraction ............................ 27, 285, 291, 297-298  
+  - White noise ............................................. 169, 172, 269  
+- Z  
+  - z-domain, zero padding, zero-order hold (ZOH) .......... 6-8, 27, 44-45  
+```

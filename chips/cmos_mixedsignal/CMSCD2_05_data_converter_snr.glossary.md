@@ -1,0 +1,27 @@
+- **Aperture jitter** — Variation in the period or timing of the sampling clock around its ideal value, causing uncertainty in the sampled voltage.  
+- **Averaging filter** — A digital lowpass filter used to average multiple ADC output samples, reducing quantization noise and improving effective resolution.  
+- **Bennett's criteria** — Assumptions for characterizing quantization noise: input signal amplitude is within ADC range, input amplitude is much larger than 1 LSB, and the input is "busy" (no consecutive output codes are equal).  
+- **Coherent sampling** — Sampling where the input frequency is an integer submultiple of the sampling frequency, causing repeated sampled points and potentially non-ideal noise behavior.  
+- **DAC (Digital-to-Analog Converter)** — Converts digital output codes back into analog voltages; ideally does not introduce quantization noise.  
+- **Data converter** — Circuit or system that converts signals between analog and digital domains (ADC or DAC).  
+- **Dynamic range (DR)** — Ratio, usually in dB, between the largest output signal change and the smallest output change (1 LSB); can be related to SNDR.  
+- **Effective number of bits (Neff)** — The number of bits corresponding to the measured SNR or SNDR, indicating actual resolution including noise and distortion.  
+- **Jitter** — Same as aperture jitter; timing uncertainty in sampling instant affecting SNR and effective resolution.  
+- **NQSA (Noise-quantization shaped average) filter** — Digital filter designed to average output samples and reduce quantization noise power spectral density.  
+- **Nyquist frequency (fn)** — Half the sampling frequency (fs/2); the maximum frequency that can be uniquely represented without aliasing.  
+- **Quantization noise** — The effective noise added to a signal by the ADC quantization process, modeled as a uniform random variable between ±0.5 LSB.  
+- **Quantization noise spectral density (PSD)** — Power spectral density of quantization noise, ideally flat ("white") and inversely proportional to the sampling frequency.  
+- **RMS quantization noise voltage (VQe,RMS)** — Root mean square value of the quantization noise voltage; equals LSB/√12 under Bennett’s criteria.  
+- **Sampling clock stability** — The precision of the sampling clock period, often specified in ppm or maximum allowed jitter to keep errors below 0.5 LSB.  
+- **Sampling frequency (fs)** — Frequency at which the analog signal is sampled by the ADC.  
+- **Signal-to-noise ratio (SNR)** — Ratio of the input signal amplitude to quantization noise RMS amplitude, expressed in dB, assuming no distortion.  
+- **Signal-to-noise plus distortion ratio (SNDR)** — Ratio of signal amplitude to the combined power of quantization noise plus distortion components; indicates actual converter performance.  
+- **Spectral leakage** — Smearing of signal energy into adjacent frequency bins in an FFT due to non-integer number of input cycles in the sample window; reduced by coherent sampling or windowing.  
+- **Spurious free dynamic range (SFDR)** — Ratio in dBc of the fundamental input power to the largest spurious tone in the output spectrum.  
+- **Spectral density** — Distribution of signal power or amplitude as a function of frequency; includes power spectral density (V²/Hz) and voltage spectral density (V/√Hz).  
+- **Stochastic quantization error** — Modeling quantization noise as a uniformly distributed random variable over ±0.5 LSB with zero mean.  
+- **SNR ideal** — Theoretical SNR of an ideal N-bit ADC with full-scale sinusoidal input; approximately 6.02N + 1.76 dB.  
+- **Transient acceptance window (aperture window)** — The effective period during which the input signal is measured by the ADC sampling instant, affected by clock jitter and transition times.  
+- **Dither** — Small noise added to the ADC input signal to randomize quantization errors, preventing tonal behavior, especially for slow or DC inputs.  
+- **Predictive modulator** — Feedback modulator that attempts to predict and feed back the input signal to reduce quantization noise, requiring precise analog filtering.  
+- **Noise-shaping modulator** — Feedback modulator that shapes the noise spectrum by pushing quantization noise outside the signal bandwidth, improving SNR without precise analog filters.

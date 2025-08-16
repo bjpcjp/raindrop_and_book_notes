@@ -1,0 +1,33 @@
+- **ADC (Analog-to-Digital Converter)** — Circuit converting analog signals to digital form.
+- **Bandpass Data Converter** — Data converter operating on a band of frequencies excluding DC.
+- **Bandpass Filter** — Filter passing signals within a certain frequency band and attenuating others.
+- **Bandpass Modulator** — A modulator with a bandpass signal transfer function, shaping quantization noise away from the center frequency.
+- **Baseband** — Frequency spectrum centered at zero frequency (DC).
+- **Center Frequency (f0)** — The resonant or carrier frequency around which bandpass modulation occurs.
+- **Comparator** — Circuit element that outputs a digital signal indicating whether input is above or below a reference level.
+- **DAC (Digital-to-Analog Converter)** — Circuit converting digital signals to analog form, used in feedback paths.
+- **Data Converter** — Circuit that converts between analog and digital signals.
+- **Digital I/Q Extraction** — Process of digitally recovering in-phase (I) and quadrature (Q) components from bandpass converted signals.
+- **Discrete-Analog Integrator (DAI)** — Basic building block implementing integrators in switched-capacitor lowpass modulators.
+- **Extra Noise/Distortion Term** — Unwanted noise component due to finite integrator gain or passive element nonlinearities in modulator transfer functions.
+- **f s /4 Resonator** — Resonator implemented with switched-capacitor circuits producing poles at one-fourth the sampling frequency.
+- **Feedback DAC** — DAC used in modulator feedback to feed back quantized output and suppress quantization noise.
+- **Forward Path Delay** — Delay in modulator's forward signal path; excessive delay can cause instability.
+- **gm-C Filter** — Active circuit implementing bandpass or lowpass filtering using transconductance and capacitors.
+- **I (In-Phase) Signal** — Component of a modulated signal in phase with the carrier cosine wave.
+- **I/Q (In-Phase/Quadrature) Signals** — Pair of signals with 0° and 90° phase shifts used together for efficient modulation/demodulation.
+- **K-Path Sampling** — Technique employing multiple sampling paths to achieve higher effective sampling rate and reduce signal distortion.
+- **LC Tank Circuit** — Resonant circuit composed of inductors (L) and capacitors (C) with infinite impedance at resonance.
+- **Lowpass Data Converter** — Data converter operating on signals from DC up to a frequency B.
+- **Modulation Noise** — Quantization noise shaped away from the desired signal frequency by noise-shaping modulators.
+- **Noise Transfer Function (NTF)** — Transfer function that describes how quantization noise passes through the modulator.
+- **Oversampling Ratio (K)** — Ratio of the sampling frequency to twice the signal bandwidth.
+- **Passband** — Frequency band passed by the filter or modulator.
+- **Phase Shift** — Delay or advance of a waveform relative to a reference.
+- **Quadrature Amplitude Modulation (QAM)** — Modulation scheme using amplitude variations of I/Q components to transmit data.
+- **Quantization Noise** — Noise introduced by representing continuous values with discrete levels in a data converter.
+- **Resonator** — Circuit element or network with a frequency-selective transfer function creating poles at desired frequencies.
+- **Signal Transfer Function (STF)** — Transfer function describing the passage of the input signal through the modulator.
+- **Switched-Capacitor Resonator** — Implementation of a resonator using switched capacitors and clocking to emulate inductors or delays.
+- **Tone at f0** — Input sinewave applied at the center frequency of the bandpass modulator for accurate conversion.
+- **Two-Path Modulator** — Modulator using two parallel sampling paths with clock phase shifts to achieve higher output data rates or bandpass responses.

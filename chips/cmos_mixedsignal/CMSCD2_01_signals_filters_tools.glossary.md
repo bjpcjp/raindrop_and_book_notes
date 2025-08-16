@@ -1,0 +1,32 @@
+- **Amplitude** — Peak value or magnitude of a sinewave representing the maximum displacement along the arc or axis.  
+- **Angle notation** — Representation of a sinusoid specifying amplitude and phase angle in the x-y plane.  
+- **Average filter (Averager)** — A digital filter that sums input values over time and outputs the average, often implemented by summing consecutive inputs and dividing by the number of samples.  
+- **Comb filter** — A filter constructed by adding an input signal and a delayed version of itself, producing a frequency response with regularly spaced nulls resembling a comb.  
+- **Complex number** — A number composed of a real part and an imaginary part, typically written as x + jy, where j = √-1.  
+- **DC (Direct Current) signal** — A constant amplitude (zero frequency) signal that does not change with time.  
+- **Delay (Time delay)** — A shift in time applied to a signal, often represented in the frequency domain as multiplication by \( e^{-j2\pi f t_{delay}} \).  
+- **Differentiator (Digital differentiator)** — A digital filter that outputs the difference between consecutive input samples.  
+- **Dirac delta function** — A mathematical function with zero width and infinite amplitude whose integral over time equals one, used to model ideal impulses.  
+- **Discrete-time signal** — A signal defined only at discrete time intervals, typically represented in digital systems sampled at a rate \( f_s \).  
+- **Exponential Fourier series** — A representation of a periodic function as a sum of exponentials (sinusoids) with frequencies that are integer multiples of the fundamental frequency.  
+- **Fourier transform** — A mathematical transform that expresses a time-domain signal as an integral of sinusoids over continuous frequencies, applicable to non-periodic signals.  
+- **Frequency domain** — A representation of signals or systems described in terms of frequency components instead of time.  
+- **Harmonics** — Sinusoidal components of a periodic signal at integer multiples of the fundamental frequency.  
+- **In-phase (I) signal** — The cosine component of an IQ signal with zero phase shift relative to a reference.  
+- **Imaginary component** — The part of a complex number multiplied by j, representing the quadrature component in a sinusoidal signal.  
+- **Integrating filter (Digital integrator)** — A filter that sums a sequence of inputs, effectively performing accumulation over time.  
+- **Nyquist frequency** — Half the sampling frequency, representing the highest frequency that can be accurately represented without aliasing.  
+- **Phase shift** — The time displacement between two sinusoidal signals of the same frequency, often expressed in degrees or radians.  
+- **Poles and zeros** — Points on the complex plane that characterize a system’s transfer function; poles correspond to frequencies where the output tends to infinity, zeros where output is nullified.  
+- **Period (T)** — The time taken for one complete cycle of a periodic signal or motion.  
+- **Quadrature (Q) signal** — The sine component of an IQ signal shifted by 90 degrees relative to the in-phase signal.  
+- **Register delay** — A delay element in digital systems implemented by a clocked register that holds and outputs previous input values.  
+- **Radian** — Unit of angular measure equal to \( 2\pi \) radians per full revolution (360 degrees).  
+- **Sampling frequency (\( f_s \))** — The rate at which a continuous-time signal is sampled to convert it into discrete-time.  
+- **Sinusoid (Sinewave)** — A signal or waveform described by the sine function, characterized by amplitude, frequency, and phase.  
+- **Switched-capacitor filter** — A discrete-time, continuous-amplitude analog filter using capacitors and switches, discussed later in the book.  
+- **Transfer function (H(f), H(z))** — Mathematical representation of the input-output relationship of a system as a function of frequency or complex variable z.  
+- **Unit circle (in z-plane)** — The circle in the complex plane where the magnitude of z equals one, used to evaluate frequency response of discrete-time systems.  
+- **Vector representation (of a sinusoid)** — A rotating vector in the complex plane representing amplitude and phase of a sinewave signal.  
+- **Z-plane (complex plane)** — A plotting plane where the horizontal axis is the real part and the vertical axis is the imaginary part of a complex number, used for analyzing discrete-time systems.  
+- **Zero (in transfer function)** — A frequency at which the transfer function’s output is zero, corresponding to roots of the numerator polynomial.

@@ -1,0 +1,29 @@
+- **AAF (Anti-Aliasing Filter)** — A filter used before sampling to limit the bandwidth of the input signal and prevent aliasing.
+- **Accumulator** — A device or register used in digital filters, particularly in accumulate-and-dump operations.
+- **Bilinear Transfer Function** — A mathematical representation of a filter used in both analog and digital domains to describe frequency response.
+- **Biquadratic Transfer Function (Biquad)** — A second-order transfer function filter commonly used in signal processing.
+- **CDS (Correlated Double Sampling)** — A technique to reduce offset and low-frequency noise in sampled signals.
+- **Comb Filter** — A filter with a periodic frequency response characterized by regularly spaced notches.
+- **DAC (Digital-to-Analog Converter)** — A circuit that converts digital signals into analog voltages or currents.
+- **DC Offset** — A constant voltage or current shift from zero in a signal or system.
+- **Decimation** — The process of reducing the sampling rate of a signal by removing samples.
+- **Differentiator (Digital)** — A filter that approximates the derivative of a digital signal.
+- **Discrete Analog Integrator (DAI)** — A circuit implementing integration in discrete time using analog components.
+- **Effective Number of Bits (ENOB)** — A measure of the resolution and noise performance of an ADC or DAC.
+- **FIR Filter (Finite Impulse Response)** — A digital filter with a finite duration impulse response.
+- **Frequency Response** — A filter’s output spectrum across frequencies describing amplitude and phase characteristics.
+- **Integrator** — A circuit or filter that performs mathematical integration, accumulating the input signal over time.
+- **LTI System (Linear Time-Invariant System)** — A system whose output is linear and does not change over time.
+- **Modulator (Noise-Shaping)** — A circuit that shapes quantization noise to improve resolution in data converters.
+- **Nyquist Frequency** — Half the sampling rate, the highest frequency that can be accurately sampled.
+- **Quantization Noise** — The error introduced by quantizing a continuous range of values into a finite set.
+- **RCF (Reconstruction Filter)** — A filter used after digital-to-analog conversion to smooth the output signal.
+- **S/H (Sample-and-Hold)** — A circuit that samples an analog signal and holds its value for processing.
+- **Sinc Filter** — A filter with a sinc-shaped frequency response, often used in interpolation and decimation.
+- **SNDR (Signal-to-Noise and Distortion Ratio)** — A measure of signal quality including noise and distortion components.
+- **SNR (Signal-to-Noise Ratio)** — A measure comparing signal power to noise power in a system.
+- **Switched-Capacitor Circuit** — A circuit that uses capacitors and switches to perform analog signal processing.
+- **Track-and-Hold (T/H)** — Similar to the sample-and-hold; tracks the input signal and then holds it constant.
+- **Two's Complement** — A numerical representation for signed integers in binary arithmetic.
+- **Undersampling** — Sampling a signal below its Nyquist rate causing aliasing.
+- **Z-Plane** — A complex plane representation used in digital signal processing to analyze filter behavior.

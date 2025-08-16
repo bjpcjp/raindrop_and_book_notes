@@ -1,0 +1,46 @@
+```markdown
+# Table of Contents
+
+- Chapter 3 Analog Filters
+  - 3.1 Integrator Building Blocks
+    - 3.1.1 Lowpass Filters
+    - 3.1.2 Active-RC Integrators
+      - Example 3.1
+      - Example 3.2
+      - Effects of Finite Op-Amp Gain Bandwidth Product, fun
+      - Example 3.3
+      - Example 3.4
+      - Active-RC SNR
+    - 3.1.3 MOSFET-C Integrators
+    - 3.1.4 gm-C (Transconductor-C) Integrators
+      - Example 3.5
+      - Common-Mode Feedback Considerations
+      - A High-Frequency Transconductor
+    - 3.1.5 Discrete-Time Integrators
+      - Example 3.6
+      - Example 3.7
+      - An Important Note
+      - Exact Frequency Response of an Ideal Discrete-Time Filter
+  - 3.2 Filtering Topologies
+    - 3.2.1 The Bilinear Transfer Function
+      - Active-RC Implementation
+      - Transconductor-C Implementation
+      - Switched-Capacitor Implementation
+    - 3.2.2 The Biquadratic Transfer Function
+      - Active-RC Implementation
+        - Example 3.8
+        - Example 3.9
+        - Example 3.10
+        - Example 3.11
+        - Example 3.12
+      - Switched-Capacitor Implementation
+      - High Q Considerations
+        - Example 3.13
+        - Example 3.14
+      - Q Peaking and Instability
+        - Example 3.15
+      - Transconductor-C Implementation
+  - Additional Reading
+  - Questions
+    - Q3.1 to Q3.20
+```

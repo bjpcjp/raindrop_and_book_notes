@@ -1,0 +1,35 @@
+- **Accumulator** — A circuit component that sums or integrates input signals over time.  
+- **ADC (Analog-to-digital converter)** — A device converting analog signals into digital data.  
+- **Aliasing** — Distortion that occurs when a signal is undersampled, causing overlapping frequency components.  
+- **Amplitude modulation** — Technique where the amplitude of a carrier wave is varied in proportion to a signal.  
+- **Averaging filter** — A filter that reduces noise by averaging multiple samples, enhancing SNR.  
+- **Biquad filter** — A second-order filter structure used in digital and analog filter implementations.  
+- **Capacitive feedthrough** — Unwanted coupling of signals through parasitic capacitances in switches or circuits.  
+- **Charge injection** — Unintended transfer of charge when switches open or close, affecting accuracy.  
+- **Clock jitter** — Temporal variations in clock timing that degrade signal integrity and resolution.  
+- **Comb filter** — A filter with regularly spaced nulls in its frequency response, often used in decimation.  
+- **Comparator** — A device that compares two voltages and outputs a digital signal indicating which is higher.  
+- **Continuous-time analog integrator (CAI)** — An integrator implemented with continuous-time circuits such as op-amps and capacitors.  
+- **Decimation** — The process of reducing the sampling rate by filtering and downsampling.  
+- **Digital filter** — A filter implemented with digital processing methods, including FIR and IIR types.  
+- **Dither** — Low-level noise added to a signal before quantization to reduce distortion and improve resolution.  
+- **Differentiator** — A circuit or algorithm that approximates the derivative of a signal.  
+- **Dynamic range** — The ratio between the largest and smallest measurable signal levels.  
+- **Finite impulse response (FIR) filter** — A digital filter with a finite-duration impulse response, inherently stable.  
+- **Frequency domain** — Representation of signals or systems in terms of frequency components rather than time.  
+- **Gain error** — A deviation in the amplitude response of a system from its ideal value.  
+- **Hanning window** — A window function used in signal processing to reduce spectral leakage.  
+- **Integrator** — A circuit or algorithm performing mathematical integration of a signal over time.  
+- **Jitter** — Uncertainty or deviation in timing of events, especially clock edges or sampling instants.  
+- **Least significant bit (LSB)** — The smallest bit value in a digital number, defining resolution increments.  
+- **Noise-shaping** — A technique that pushes quantization noise out of the signal band to improve resolution.  
+- **Nyquist frequency** — Half the sampling rate; the highest frequency that can be correctly sampled without aliasing.  
+- **Oversampling ratio (K)** — The factor by which the sampling rate exceeds the Nyquist rate.  
+- **Phase-locked loop (PLL)** — A control system that locks the phase of an output oscillator to an input reference.  
+- **Quantization noise** — The error introduced by rounding or truncating analog values during digitization.  
+- **Resolution** — The smallest detectable change or difference in a measured quantity in a digital system.  
+- **Signal-to-noise ratio (SNR)** — The ratio of signal power to noise power in a measurement or system.  
+- **Spurious free dynamic range (SFDR)** — The ratio between the amplitude of the fundamental signal and the largest spurious signal.  
+- **Switched-capacitor filter** — A filter implementation using capacitors and switches to emulate resistors and achieve accurate filtering.  
+- **Transfer function** — A mathematical representation relating input to output of a system, often in frequency domain.  
+- **Zero-order hold (ZOH)** — A method of digital-to-analog conversion that holds each sampled value constant until the next sample.

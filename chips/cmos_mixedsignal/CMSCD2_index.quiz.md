@@ -1,0 +1,1 @@
+1. **Q:** Explain the role and interrelationship of aliasing, antialiasing filters (AAF), oversampling ratio (K

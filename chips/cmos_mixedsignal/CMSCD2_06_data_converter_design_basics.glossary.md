@@ -1,0 +1,32 @@
+- **1-bit ADC/DAC** — Analog-to-digital or digital-to-analog converter with only two output codes, ensuring linearity with no nonlinearity error, only gain error if offset occurs.  
+- **Active Integrator** — An integrator that uses an amplifier (op-amp) to hold the integrator input voltage constant, improving linearity and reducing distortion in noise-shaping modulators.  
+- **AAF (Anti-aliasing Filter)** — An analog filter used before an ADC to limit input signal bandwidth and prevent aliasing.  
+- **Bennett’s Criteria** — Conditions required for oversampled converters to behave ideally, notably depending on the input being "busy" or varying.  
+- **CC Sinc Filter** — Digital lowpass filter with a Sinc-shaped frequency response used for decimation after oversampling.  
+- **DAC Offset** — Gain error introduced in the feedback DAC when reference voltages deviate from ideal values; does not produce nonlinearity.  
+- **Data Converter** — Circuit that converts analog signals to digital signals (ADC) or vice versa (DAC).  
+- **Decimation Filter** — A filter that reduces the sampling rate of a digital signal by averaging and removing out-of-band noise.  
+- **Delta-Sigma ADC** — A noise-shaping ADC that oversamples the input and uses feedback with a low-resolution quantizer to achieve high resolution.  
+- **Digital Filter** — A filter applied in the digital domain to extract desired signal components and reduce noise in oversampled converters.  
+- **Dead Zones** — Input voltage ranges where the modulator output code does not change, resulting in output stagnation and reduced linearity.  
+- **Differentiator (Noise Transfer Function)** — A filter with transfer function 1−z⁻¹ that shapes quantization noise in delta-sigma modulators toward higher frequencies.  
+- **K-Paths (Parallel Paths)** — Using multiple modulators operating in parallel (time-interleaved or shared integrator) to increase effective sampling rate and SNR.  
+- **Linearity** — The degree to which the output of a converter is a linear function of its input.  
+- **Modulation Noise** — Quantization noise shaped by the noise transfer function of a modulator, often high-pass filtered.  
+- **Multibit NS Modulator** — Noise-shaping modulator using a quantizer with more than one bit resolution for the ADC and DAC.  
+- **Ninc** — Increment in effective number of bits (resolution) achieved by oversampling or noise shaping, e.g. 1.5 bits per doubling of oversampling ratio in first order modulators.  
+- **Noise-Shaping (NS)** — Technique for pushing quantization noise power out of the signal band into higher frequencies, improving in-band SNR.  
+- **NTF (Noise Transfer Function)** — Transfer function shaping how quantization noise is moved in frequency in oversampled converters.  
+- **Oversampling ADC** — ADC that samples the input signal at a frequency much higher than the Nyquist rate to reduce noise and improve resolution.  
+- **Passive Integrator** — An integrator implemented with passive components (resistors, capacitors) that causes variation in integrator input voltage.  
+- **Passive Noise-Shaping Modulator** — Modulator using passive components for integration with inherent trade-offs in delay and distortion.  
+- **Path Filter** — A digital filter that combines outputs from K parallel modulators to form a higher-bit output.  
+- **PSD (Power Spectral Density)** — Distribution of signal power across frequency, used to analyze noise shaping and quantization noise.  
+- **Quantization Noise** — Noise introduced by the finite resolution of the quantizer in an ADC.  
+- **RC Filter** — A simple low-pass filter made from a resistor and capacitor used to extract the averaged signal from 1-bit modulator outputs.  
+- **Sampling Frequency (fs)** — Frequency at which an analog signal is sampled in the ADC.  
+- **Sinc Filter** — A special type of digital low-pass filter used in oversampled ADCs for decimation and noise filtering.  
+- **STF (Signal Transfer Function)** — Transfer function describing how the input signal is transferred through the modulator to the output.  
+- **Switched-Capacitor (SC) Resistor** — Implementing resistors using capacitors and switches clocked at defined frequencies for discrete-time operation and reduced non-idealities.  
+- **Time-Interleaved Converter** — Parallel data converters clocked with staggered timing to increase effective sampling rate, distinct from shared-integrator K-path modulators.  
+- **Vint (Integrator Input Voltage)** — The node voltage at the input of the comparator in noise-shaping modulators, whose variation impacts distortion.

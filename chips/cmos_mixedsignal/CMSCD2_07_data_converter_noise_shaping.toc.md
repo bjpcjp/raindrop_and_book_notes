@@ -1,0 +1,56 @@
+```markdown
+# Table of Contents
+
+- Chapter 7 Noise-Shaping Data Converters
+  - 7.1 First-Order Noise Shaping
+    - Introduction and Basic Equations (7.1 - 7.2)
+    - Circuit Implementation of First-Order NS Modulator (Fig. 7.2)
+    - SPICE Simulation of First-Order NS Modulator (Fig. 7.3)
+    - Digital First-Order NS Demodulator (Fig. 7.4, 7.5)
+    - 7.1.1 Modulation Noise in First-Order NS Modulators
+    - 7.1.2 RMS Quantization Noise in a First-Order Modulator
+      - Example 7.1
+    - 7.1.3 Decimating and Filtering the Output of a NS Modulator
+      - Example 7.2
+    - 7.1.4 Pattern Noise from DC Inputs (Limit Cycle Oscillations)
+    - 7.1.5 Integrator and Forward Modulator Gain
+      - Example 7.3
+    - 7.1.6 Comparator Gain, Offset, Noise, and Hysteresis
+    - 7.1.7 Op-Amp Gain (Integrator Leakage)
+    - 7.1.8 Op-Amp Settling Time
+    - 7.1.9 Op-Amp Offset
+    - 7.1.10 Op-Amp Input-Referred Noise
+    - 7.1.11 Practical Implementation of the First-Order NS Modulator
+      - Fully-Differential Implementation (Fig. 7.20, 7.21, 7.22)
+  - 7.2 Second-Order Noise-Shaping
+    - Modulation Noise and RMS Quantization Noise (7.49 - 7.52)
+    - 7.2.1 Second-Order Modulator Topology
+      - Transfer Functions and Block Diagrams (Fig. 7.25 - 7.28)
+      - Integrator Gain and Stability Considerations
+      - Example 7.4
+      - Stability Analysis and LPF Simulation (Fig. 7.37 - 7.38)
+    - Using Two Delaying Integrators (Fig. 7.39)
+    - 7.2.3 Selecting Modulator (Integrator) Gains
+  - 7.3 Noise-Shaping Topologies
+    - 7.3.1 Higher-Order Modulators
+      - Generalized Transfer Functions (7.71 - 7.78)
+      - Block Diagram (Fig. 7.41)
+    - 7.3.2 Filtering the Output of an Mth-Order NS Modulator
+    - 7.3.3 Implementing Higher-Order, Single-Stage Modulators
+      - Modified NS Topology and Filter Design (Fig. 7.42 - 7.43)
+    - 7.3.4 Multi-Bit Modulators
+      - SPICE Simulation of Multi-bit Modulator (Fig. 7.44 - 7.45)
+      - DAC Implementation and Randomization Techniques (Fig. 7.46)
+    - 7.3.5 Error Feedback
+      - Error Feedback Modulator Topologies (Fig. 7.47 - 7.50)
+      - Implementation and Number Format Issues (Fig. 7.52)
+      - DAC NS Modulators (Fig. 7.51)
+    - 7.3.6 Cascaded Modulators
+      - Introduction to Cascaded (MASH) Topologies
+      - Second-Order (1-1) Modulators (Fig. 7.53)
+      - Third-Order (1-1-1) Modulators (Fig. 7.54)
+      - Third-Order (2-1) Modulators (Fig. 7.55)
+      - Implementing Additional Summing Inputs (Fig. 7.56 - 7.59)
+- Additional Reading
+- Questions (7.1 - 7.21)
+```

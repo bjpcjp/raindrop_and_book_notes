@@ -1,0 +1,58 @@
+```markdown
+# Table of Contents
+
+- Preface
+- Chapter 1 Signals, Filters, and Tools
+  - 1.1 Sinusoidal Signals
+    - 1.1.1 The Pendulum Analogy
+    - Describing Amplitude in the x-y Plane
+    - In-Phase and Quadrature Signals
+  - 1.1.2 The Complex (z-) Plane
+  - 1.2 Comb Filters
+    - 1.2.1 The Digital Comb Filter
+    - 1.2.2 The Digital Differentiator
+    - 1.2.3 An Intuitive Discussion of the z-Plane
+    - 1.2.4 Comb Filters with Multiple Delay Elements
+    - 1.2.5 The Digital Integrator
+  - 1.3 Representing Signals
+    - 1.3.1 Exponential Fourier Series
+    - 1.3.2 Fourier Transform
+    - Dirac Delta Function (Unit Impulse Response)
+- Chapter 2 Sampling and Aliasing
+  - 2.1 Sampling
+    - 2.1.1 Impulse Sampling
+      - A Note Concerning the AAF and the RCF
+      - Time Domain Description of Reconstruction
+    - 2.1.2 Decimation
+    - 2.1.3 The Sample-and-Hold (S/H)
+      - S/H Spectral Response
+    - 2.1.4 The Track-and-Hold (T/H)
+    - 2.1.5 Interpolation
+      - Zero Padding
+      - Hold Register
+      - Linear Interpolation
+    - 2.1.6 K-Path Sampling
+      - Switched-Capacitor Circuits
+      - Non-Overlapping Clock Generation
+  - 2.2 Circuits
+    - 2.2.1 Implementing the S/H
+      - Finite Op-Amp Gain-Bandwidth Product
+      - Autozeroing
+      - Correlated Double Sampling (CDS)
+      - Selecting Capacitor Sizes
+    - 2.2.2 The S/H with Gain
+      - Implementing Subtraction in the S/H
+      - A Single-Ended to Differential Output S/H
+    - 2.2.3 The Discrete Analog Integrator (DAI)
+      - A Note Concerning Block Diagrams
+      - Fully-Differential DAI
+      - DAI Noise Performance
+- Chapter 3 Analog Filters
+- Chapter 4 Digital Filters
+- Chapter 5 Data Converter SNR
+- Chapter 6 Data Converter Design Basics
+- Chapter 7 Noise-Shaping Data Converters
+- Chapter 8 Bandpass Data Converters
+- Chapter 9 A High-Speed Data Converter
+- Index
+```
