@@ -1,0 +1,54 @@
+---
+title: "optical-networking-intro"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [optical-networking-intro]
+---
+
+- Purpose of This Tutorial  
+- The Basics of Fiber Optic Transmission  
+  - What is Fiber, and Why Do We Use It?  
+  - Hold It Down Like I’m Giving Lessons in Physics  
+  - Fiber Works by “Total Internal Reflection”  
+  - Demonstration Using a Laser Pointer  
+- How Do We Actually Use The Fiber?  
+- The Most Basic Distinction in Fiber: Multi-Mode vs Single Mode  
+  - Multi-Mode Fiber (MMF)  
+  - Single Mode Fiber (SMF)  
+  - Single Mode vs Multi-Mode Fiber  
+- Basic Optical Networking Terms and Concepts  
+  - Optical Power  
+  - Optical Power and the Decibel  
+  - Decibel to Power Conversion Table  
+  - Dispersion  
+  - Background: Chromatic Dispersion (CMD)  
+  - Polarization Mode Dispersion (PMD)  
+- Fiber Optic Transmission Bands  
+- Optical Signal to Noise Ratio (OSNR)  
+- Wave Division Multiplexing  
+  - Wave Division Multiplexing (WDM) Overview  
+  - WDM Channels  
+  - Coarse Wave Division Multiplexing (CWDM)  
+  - Dense Wave Division Multiplexing (DWDM)  
+  - Advantages of CWDM vs DWDM  
+  - CWDM vs. DWDM Relative Channel Sizes  
+  - Other Uses of Wave Division Multiplexing  
+  - DWDM Channel Terminology  
+  - WDM Networking Components  
+  - WDM Mux/Demux  
+- The Optical Add/Drop Multiplexer (OADM)  
+  - Passive Optical Filter Technology  
+- Reconfigurable OADM (ROADM)  
+  - The Evolution of the ROADM  
+  - Modern Networking and the CDC ROADM  
+  - What Goes Into a Modern CDC ROADM  
+- DWDM Superchannels  
+- The Evolution of DWDM Channels  
+- Optical Amplification  
+  - Optical Amplifiers Overview  
+  - Erbium Doped Fiber Amplifier (EDFA)  
+  - EDFA Noise  
+  - EDFA Noise – Why Input Power Matters  
+  - Raman Amplification  
+  - EDFA Only Amplification  
+  - Hybrid EDFA + Raman Amplification
