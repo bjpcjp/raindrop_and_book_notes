@@ -1,0 +1,54 @@
+---
+title: "VLSI Physical Design, Springer Verlag"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [VLSI-design-chap1]
+---
+
+- Chapter 1 – Introduction  
+  - 1.1 Electronic Design Automation (EDA)  
+    - Moore’s Law  
+    - Impact of EDA on IC Design Productivity and Cost  
+    - Historical Circuit and Physical Design Process Advancements  
+  - 1.2 VLSI Design Flow  
+    - System Specification  
+    - Architectural Design  
+    - Functional and Logic Design  
+    - Circuit Design  
+    - Physical Design  
+    - Physical Verification and Signoff  
+    - Fabrication, Packaging, and Testing  
+  - 1.3 VLSI Design Styles  
+    - Layout Editor Overview  
+    - Common Digital Cells  
+    - Transistor-Level Layout  
+    - Standard Cell Layout  
+    - Layout with Macro Cells  
+    - Field-Programmable Gate Arrays (FPGA)  
+  - 1.4 Layout Layers and Design Rules  
+    - Inverter Cell Layout Example  
+    - Categories of Design Rules  
+    - Design Rule Parameters and Units  
+  - 1.5 Physical Design Optimizations  
+    - Types of Constraints  
+      - Technology Constraints  
+      - Electrical Constraints  
+      - Geometry (Design Methodology) Constraints  
+  - 1.6 Algorithms and Complexity  
+    - Runtime Complexity and Big-O Notation  
+    - Example: Exhaustive Placement Enumeration  
+    - NP-hard Problems and Heuristic Algorithms  
+    - Types of Heuristic Algorithms  
+      - Deterministic vs. Stochastic  
+      - Constructive vs. Iterative  
+  - 1.7 Graph Theory Terminology  
+    - Graph, Hypergraph, Multigraph  
+    - Directed Graphs and DAGs  
+    - Undirected Graphs and Trees  
+    - Rectilinear Minimum Spanning and Steiner Trees  
+  - 1.8 Common EDA Terminology  
+    - Netlists: Pin-Oriented and Net-Oriented  
+    - Connectivity Graph  
+    - Connectivity Matrix  
+    - Distance Metrics: Euclidean and Manhattan  
+- Summary of Chapter 1

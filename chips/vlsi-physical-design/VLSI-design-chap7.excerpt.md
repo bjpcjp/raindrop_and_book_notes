@@ -1,0 +1,1 @@
+Chapter 7 of the document focuses on specialized routing techniques in VLSI physical design, covering area routing, non-Manhattan routing, and clock network routing. It details methods for optimizing routing paths, including net ordering strategies, octilinear Steiner trees, and clock tree synthesis approaches aimed at minimizing skew and delay in clock distribution networks.

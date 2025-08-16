@@ -1,0 +1,51 @@
+---
+title: "VLSI Physical Design, Springer Verlag"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [VLSI-design-chap7]
+---
+
+- Chapter 7 – Specialized Routing  
+  - 7.1 Introduction to Area Routing  
+    - Minimal wirelength and alternative paths  
+    - Distance metrics: Euclidean vs. Manhattan  
+    - Multiple Manhattan shortest paths  
+    - Path intersections in Manhattan vs. Euclidean geometry  
+    - Manhattan vs. Euclidean distance ratios  
+  - 7.2 Net Ordering in Area Routing  
+    - Effect of net ordering on routability  
+    - Effect of net ordering on total wirelength  
+    - Heuristics for net ordering  
+      - Rule 1: Aspect ratio based ordering  
+      - Rule 2: Pins containment within bounding boxes  
+      - Rule 3: Number of pins within bounding boxes  
+  - 7.3 Non-Manhattan Routing  
+    - 7.3.1 Octilinear Steiner Trees  
+      - Overview and definition  
+      - Algorithm steps  
+        - Triangulation  
+        - Adding routes to existing tree  
+        - Local improvement of OST  
+      - Final OST construction  
+    - 7.3.2 Octilinear Maze Search  
+      - Expansion steps and backtracing  
+  - 7.4 Basic Concepts in Clock Networks  
+    - 7.4.1 Terminology  
+      - Clock net representation and tree topology  
+      - Clock skew definitions: local and global skew  
+    - 7.4.2 Problem Formulations for Clock-Tree Routing  
+      - Zero skew tree (ZST) problem  
+      - Bounded skew tree (BST) problem  
+      - Useful skew and local skew constraints  
+  - 7.5 Modern Clock Tree Synthesis  
+    - 7.5.1 Constructing Trees with Zero Global Skew  
+      - Clock tree goals and synthesis steps  
+      - H-tree method  
+      - Method of Means and Medians (MMM)  
+      - Recursive Geometric Matching (RGM)  
+      - Exact Zero Skew method using Elmore delay model  
+      - Deferred-Merge Embedding (DME)  
+        - Bottom-up phase: possible internal node locations  
+        - Top-down phase: exact embedding selection  
+        - Manhattan arcs and tilted rectangular regions  
+    - 7.5.2 Clock Tree Buffering in the Presence of Variation
