@@ -1,0 +1,96 @@
+---
+title: "NGS-ch30-cider-usermanual"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch30-cider-usermanual]
+---
+
+- 30.1 Specification  
+  - 30.1.1 Examples  
+- 30.2 Boundary, Interface  
+  - 30.2.1 Description  
+  - 30.2.2 Parameters  
+  - 30.2.3 Examples  
+- 30.3 Comment  
+  - 30.3.1 Description  
+  - 30.3.2 Examples  
+- 30.4 Contact  
+  - 30.4.1 Description  
+  - 30.4.2 Parameters  
+  - 30.4.3 Examples  
+  - 30.4.4 See Also  
+- 30.5 Domain, Region  
+  - 30.5.1 Description  
+  - 30.5.2 Parameters  
+  - 30.5.3 Examples  
+  - 30.5.4 See Also  
+- 30.6 Doping  
+  - 30.6.1 Description  
+  - 30.6.2 Parameters  
+  - 30.6.3 Examples  
+  - 30.6.4 See Also  
+- 30.7 Electrode  
+  - 30.7.1 Description  
+  - 30.7.2 Parameters  
+  - 30.7.3 Examples  
+  - 30.7.4 See Also  
+- 30.8 End  
+  - 30.8.1 Description  
+- 30.9 Material  
+  - 30.9.1 Description  
+  - 30.9.2 Parameters  
+  - 30.9.3 Examples  
+  - 30.9.4 See Also  
+- 30.10 Method  
+  - 30.10.1 Description  
+  - 30.10.2 Parameters  
+  - 30.10.3 Examples  
+- 30.11 Mobility  
+  - 30.11.1 Description  
+  - 30.11.2 Parameters  
+  - 30.11.3 Examples  
+  - 30.11.4 See Also  
+  - 30.11.5 Bugs  
+- 30.12 Models  
+  - 30.12.1 Description  
+  - 30.12.2 Parameters  
+  - 30.12.3 Examples  
+  - 30.12.4 See Also  
+  - 30.12.5 Bugs  
+- 30.13 Options  
+  - 30.13.1 Description  
+  - 30.13.2 Parameters  
+  - 30.13.3 Examples  
+  - 30.13.4 See Also  
+- 30.14 Output  
+  - 30.14.1 Description  
+  - 30.14.2 Parameters  
+  - 30.14.3 Examples  
+  - 30.14.4 See Also  
+- 30.15 Title  
+  - 30.15.1 Description  
+  - 30.15.2 Examples  
+  - 30.15.3 Bugs  
+- 30.16 X.Mesh, Y.Mesh  
+  - 30.16.1 Description  
+  - 30.16.2 Parameters  
+  - 30.16.3 Examples  
+  - 30.16.4 See Also  
+- 30.17 NUMD (Numerical Diode)  
+  - 30.17.1 Description  
+  - 30.17.2 Parameters  
+  - 30.17.3 Examples  
+  - 30.17.4 See Also  
+  - 30.17.5 Bugs  
+- 30.18 NBJT (Numerical Bipolar)  
+  - 30.18.1 Description  
+  - 30.18.2 Parameters  
+  - 30.18.3 Examples  
+  - 30.18.4 See Also  
+  - 30.18.5 Bugs  
+- 30.19 NUMOS (Numerical MOSFET)  
+  - 30.19.1 Description  
+  - 30.19.2 Parameters  
+  - 30.19.3 Examples  
+  - 30.19.4 See Also  
+- 30.20 CIDER Examples

@@ -1,0 +1,63 @@
+---
+title: "NGS-ch19-ngspice-as-library"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch19-ngspice-as-library]
+---
+
+- Chapter 19: ngspice as Shared Library or Dynamic Link Library  
+  - 19.1 Compile Options  
+    - 19.1.1 How to Get the Sources  
+    - 19.1.2 Linux, MINGW, CYGWIN  
+    - 19.1.3 MS Visual Studio  
+  - 19.2 Linking Shared ngspice to a Calling Application  
+    - 19.2.1 Linking During Creating the Caller  
+    - 19.2.2 Loading at Runtime  
+  - 19.3 Shared ngspice API  
+    - 19.3.1 Structs and Types Defined for Transporting Data  
+      - vector_info  
+      - vecinfo  
+      - vecinfoall  
+      - vecvalues  
+      - vecvaluesall  
+    - 19.3.2 Exported Functions  
+      - 19.3.2.1 int ngSpice_Init(...)  
+      - 19.3.2.2 int ngSpice_Init_Sync(...)  
+      - 19.3.2.3 int ngSpice_Command(char*)  
+      - 19.3.2.4 bool ngSpice_running(void)  
+      - 19.3.2.5 pvector_info ngGet_Vec_Info(char*)  
+      - 19.3.2.6 int ngSpice_Circ(char**)  
+      - 19.3.2.7 char* ngSpice_CurPlot(void)  
+      - 19.3.2.8 char** ngSpice_AllPlots(void)  
+      - 19.3.2.9 char** ngSpice_AllVecs(char*)  
+      - 19.3.2.10 bool ngSpice_SetBkpt(double)  
+    - 19.3.3 Callback Functions  
+      - 19.3.3.1 typedef int (SendChar)(...)  
+      - 19.3.3.2 typedef int (SendStat)(...)  
+      - 19.3.3.3 typedef int (ControlledExit)(...)  
+      - 19.3.3.4 typedef int (SendData)(...)  
+      - 19.3.3.5 typedef int (SendInitData)(...)  
+      - 19.3.3.6 typedef int (BGThreadRunning)(...)  
+  - 19.4 General Remarks on Using the API  
+    - 19.4.1 Loading a Netlist  
+      - 19.4.1.1 Loading from File  
+      - 19.4.1.2 Loading Line by Line  
+      - 19.4.1.3 Loading as a String Array  
+    - 19.4.2 Running the Simulation  
+    - 19.4.3 Accessing Data  
+      - 19.4.3.1 Synchronous Access  
+      - 19.4.3.2 Asynchronous Access  
+    - 19.4.4 Altering Model or Device Parameters  
+    - 19.4.5 Output  
+    - 19.4.6 Error Handling  
+  - 19.5 Example Applications  
+  - 19.6 ngspice Parallel  
+    - 19.6.1 Go Parallel!  
+    - 19.6.2 Additional Exported Functions  
+      - 19.6.2.1 int ngSpice_Init_Sync(...)  
+      - 19.6.2.2 bool ngSpice_SetBkpt(double)  
+    - 19.6.3 Additional Callback Functions  
+      - 19.6.3.1 typedef int (GetVSRCData)(...)  
+      - 19.6.3.2 typedef int (GetISRCData)(...)  
+      - 19.6.3.3 typedef int (GetSyncData)(...)  
+    - 19.6.4 Parallel ngspice Example

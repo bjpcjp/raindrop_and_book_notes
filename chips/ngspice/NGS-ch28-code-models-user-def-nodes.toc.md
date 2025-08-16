@@ -1,0 +1,75 @@
+---
+title: "NGS-ch28-code-models-user-def-nodes"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch28-code-models-user-def-nodes]
+---
+
+- Chapter 28: Code Models and User-Defined Nodes  
+  - 28.1 Code Model Data Type Definitions  
+  - 28.2 Creating Code Models  
+  - 28.3 Creating User-Defined Nodes  
+  - 28.4 Adding a New Code Model Library  
+  - 28.5 Compiling and Loading the New Code Model (Library)  
+  - 28.6 Interface Specification File  
+    - 28.6.1 The Name Table  
+      - 28.6.1.1 C Function Name  
+      - 28.6.1.2 SPICE Model Name  
+      - Description  
+    - 28.6.2 The Port Table  
+      - 28.6.2.1 Port Name  
+      - 28.6.2.2 Description  
+      - 28.6.2.3 Direction  
+      - 28.6.2.4 Default Type  
+      - 28.6.2.5 Allowed Types  
+      - 28.6.2.6 Vector  
+      - 28.6.2.7 Vector Bounds  
+      - 28.6.2.8 Null Allowed  
+    - 28.6.3 The Parameter Table  
+      - 28.6.3.1 Parameter Name  
+      - 28.6.3.2 Description  
+      - 28.6.3.3 Data Type  
+      - 28.6.3.4 Null Allowed  
+      - 28.6.3.5 Default Value  
+      - 28.6.3.6 Limits  
+      - 28.6.3.7 Vector  
+      - 28.6.3.8 Vector Bounds  
+    - 28.6.4 Static Variable Table  
+      - 28.6.4.1 Name  
+      - 28.6.4.2 Description  
+      - 28.6.4.3 Data Type  
+  - 28.7 Model Definition File  
+    - 28.7.1 Macros  
+      - 28.7.1.1 Macro Definitions  
+      - 28.7.1.2 Circuit Data  
+      - 28.7.1.3 Parameter Data  
+      - 28.7.1.4 Port Data  
+      - 28.7.1.5 Input Data  
+      - 28.7.1.6 Output Data  
+      - 28.7.1.7 Partial Derivatives  
+      - 28.7.1.8 AC Gains  
+      - 28.7.1.9 Static Variables  
+      - 28.7.1.10 Accessor Macros  
+    - 28.7.2 Function Library  
+      - 28.7.2.1 Overview  
+      - 28.7.2.2 Smoothing Functions  
+      - 28.7.2.3 Model State Storage Functions  
+      - 28.7.2.4 Integration and Convergence Functions  
+      - 28.7.2.5 Message Handling Functions  
+      - 28.7.2.6 Breakpoint Handling Functions  
+      - 28.7.2.7 Special Purpose Functions  
+      - 28.7.2.8 Complex Math Functions  
+  - 28.8 User-Defined Node Definition File  
+    - 28.8.1 Macros  
+    - 28.8.2 Function Library  
+      - 28.8.2.1 Function udn_XXX_create  
+      - 28.8.2.2 Function udn_XXX_initialize  
+      - 28.8.2.3 Function udn_XXX_compare  
+      - 28.8.2.4 Function udn_XXX_copy  
+      - 28.8.2.5 Function udn_XXX_dismantle  
+      - 28.8.2.6 Function udn_XXX_invert  
+      - 28.8.2.7 Function udn_XXX_resolve  
+      - 28.8.2.8 Function udn_XXX_plot_val  
+      - 28.8.2.9 Function udn_XXX_print_val  
+      - 28.8.2.10 Function udn_XXX_ipc_val  
+    - 28.8.3 Example UDN Definition File

@@ -1,0 +1,61 @@
+---
+title: "NGS-ch15-batch-analysis-output"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch15-batch-analysis-output]
+---
+
+- Chapter 15: Analyses and Output Control (Batch Mode)  
+  - 15.1 Simulator Variables (.options)  
+    - 15.1.1 General Options  
+    - 15.1.2 DC Solution Options  
+      - 15.1.2.1 Matrix Conditioning Info  
+    - 15.1.3 AC Solution Options  
+    - 15.1.4 Transient Analysis Options  
+    - 15.1.5 Element Specific Options  
+    - 15.1.6 Transmission Lines Specific Options  
+    - 15.1.7 Precedence of option and .options commands  
+  - 15.2 Initial Conditions  
+    - 15.2.1 .NODESET: Specify Initial Node Voltage Guesses  
+    - 15.2.2 .IC: Set Initial Conditions  
+  - 15.3 Analyses  
+    - 15.3.1 .AC: Small-Signal AC Analysis  
+    - 15.3.2 .DC: DC Transfer Function  
+    - 15.3.3 .DISTO: Distortion Analysis  
+    - 15.3.4 .NOISE: Noise Analysis  
+    - 15.3.5 .OP: Operating Point Analysis  
+    - 15.3.6 .PZ: Pole-Zero Analysis  
+    - 15.3.7 .SENS: DC or Small-Signal AC Sensitivity Analysis  
+    - 15.3.8 .TF: Transfer Function Analysis  
+    - 15.3.9 .TRAN: Transient Analysis  
+    - 15.3.10 Transient Noise Analysis (at Low Frequency)  
+    - 15.3.11 .PSS: Periodic Steady State Analysis  
+  - 15.4 Measurements after AC, DC and Transient Analysis  
+    - 15.4.1 .meas(ure)  
+    - 15.4.2 Batch versus Interactive Mode  
+    - 15.4.3 General Remarks  
+    - 15.4.4 Input  
+    - 15.4.5 Trig Targ  
+    - 15.4.6 Find ... When  
+    - 15.4.7 AVG | MIN | MAX | PP | RMS | MIN_AT | MAX_AT  
+    - 15.4.8 Integ  
+    - 15.4.9 param  
+    - 15.4.10 par('expression')  
+    - 15.4.11 Deriv  
+    - 15.4.12 More Examples  
+  - 15.5 Safe Operating Area (SOA) Warning Messages  
+    - 15.5.1 Resistor and Capacitor SOA Model Parameters  
+    - 15.5.2 Diode SOA Model Parameters  
+    - 15.5.3 BJT SOA Model Parameters  
+    - 15.5.4 MOS SOA Model Parameters  
+  - 15.6 Batch Output  
+    - 15.6.1 .SAVE: Name Vector(s) to be Saved in Raw File  
+    - 15.6.2 .PRINT Lines  
+    - 15.6.3 .PLOT Lines  
+    - 15.6.4 .FOUR: Fourier Analysis of Transient Analysis Output  
+    - 15.6.5 .PROBE: Name Vector(s) to be Saved in Raw File  
+    - 15.6.6 par('expression'): Algebraic Expressions for Output  
+    - 15.6.7 .width  
+  - 15.7 Measuring Current through Device Terminals  
+    - 15.7.1 Adding a Voltage Source in Series  
+    - 15.7.2 Using Option 'savecurrents'

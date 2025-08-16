@@ -1,0 +1,105 @@
+---
+title: "NGS-ch17-interpreter"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch17-interpreter]
+---
+
+- Chapter 17: Interactive Interpreter  
+  - 17.1 Introduction  
+  - 17.2 Expressions, Functions, and Constants  
+  - 17.3 Plots  
+  - 17.4 Command Interpretation  
+    - 17.4.1 On the console  
+    - 17.4.2 Scripts  
+    - 17.4.3 Add-on to circuit file  
+  - 17.5 Commands  
+    - 17.5.1 Ac*: Perform AC analysis  
+    - 17.5.2 Alias: Create an alias for a command  
+    - 17.5.3 Alter*: Change a device or model parameter  
+    - 17.5.4 Altermod*: Change model parameter(s)  
+    - 17.5.5 Asciiplot: Old-style character plots  
+    - 17.5.6 Aspice*: Asynchronous ngspice run  
+    - 17.5.7 Bug: Mail a bug report  
+    - 17.5.8 Cd: Change directory  
+    - 17.5.9 Cdump: Dump control flow to screen  
+    - 17.5.10 Circbyline*: Enter circuit line by line  
+    - 17.5.11 Codemodel*: Load XSPICE code model library  
+    - 17.5.12 Compose: Compose a vector  
+    - 17.5.13 Dc*: Perform DC-sweep analysis  
+    - 17.5.14 Define: Define a function  
+    - 17.5.15 Deftype: Define new vector or plot type  
+    - 17.5.16 Delete*: Remove trace or breakpoint  
+    - 17.5.17 Destroy: Delete output data set  
+    - 17.5.18 Devhelp: Information on available devices  
+    - 17.5.19 Diff: Compare vectors  
+    - 17.5.20 Display: List known vectors and types  
+    - 17.5.21 Echo: Print text  
+    - 17.5.22 Edit*: Edit current circuit  
+    - 17.5.23 Edisplay: List event nodes  
+    - 17.5.24 Eprint: Print event driven node  
+    - 17.5.25 Eprvcd: Dump event nodes in VCD format  
+    - 17.5.26 FFT: Fast Fourier transform of vectors  
+    - 17.5.27 Fourier: Perform Fourier transform  
+    - 17.5.28 Gnuplot: Graphics output via gnuplot  
+    - 17.5.29 Hardcopy: Save plot to file  
+    - 17.5.30 Help: Print command summaries  
+    - 17.5.31 History: Review previous commands  
+    - 17.5.32 Inventory: Print circuit inventory  
+    - 17.5.33 Iplot*: Incremental plot  
+    - 17.5.34 Jobs*: List active asynchronous runs  
+    - 17.5.35 Let: Assign value to a vector  
+    - 17.5.36 Linearize*: Interpolate to linear scale  
+    - 17.5.37 Listing*: Print current circuit listing  
+    - 17.5.38 Load: Load rawfile data  
+    - 17.5.39 Meas*: Measurements on simulation data  
+    - 17.5.40 Mdump*: Dump matrix values  
+    - 17.5.41 Mrdump*: Dump matrix RHS values  
+    - 17.5.42 Noise*: Noise analysis  
+    - 17.5.43 Op*: Operating point analysis  
+    - 17.5.44 Option*: Set ngspice option  
+    - 17.5.45 Plot: Plot vectors on display  
+    - 17.5.46 Pre_<command>: Execute commands prior to parsing circuit  
+    - 17.5.47 Print: Print values  
+    - 17.5.48 Psd: Power spectral density of vectors  
+    - 17.5.49 Quit: Leave ngspice or nutmeg  
+    - 17.5.50 Rehash: Reset internal hash tables  
+    - 17.5.51 Remcirc*: Remove current circuit  
+    - 17.5.52 Reset*: Reset an analysis  
+    - 17.5.53 Reshape: Alter vector dimensionality  
+    - 17.5.54 Resume*: Continue simulation after stop  
+    - 17.5.55 Rspice*: Remote ngspice submission  
+    - 17.5.56 Run*: Run analysis from input file  
+    - 17.5.57 Rusage: Resource usage  
+    - 17.5.58 Save*: Save a set of outputs  
+    - 17.5.59 Sens*: Run sensitivity analysis  
+    - 17.5.60 Set: Set value of variable  
+    - 17.5.61 Setcirc*: Change current circuit  
+    - 17.5.62 Setplot: Switch current set of vectors  
+    - 17.5.63 Setscale: Set scale vector for current plot  
+    - 17.5.64 Settype: Set vector type  
+    - 17.5.65 Shell: Call OS command interpreter  
+    - 17.5.66 Shift: Alter a list variable  
+    - 17.5.67 Show*: List device state  
+    - 17.5.68 Showmod*: List model parameter values  
+    - 17.5.69 Snload*: Load snapshot file  
+    - 17.5.70 Snsave*: Save snapshot file  
+    - 17.5.71 Source: Read ngspice input file  
+    - 17.5.72 Spec: Create frequency domain plot  
+    - 17.5.73 Status*: Display breakpoint information  
+    - 17.5.74 Step*: Run fixed number of time-points  
+    - 17.5.75 Stop*: Set a breakpoint  
+    - 17.5.76 Strcmp: Compare two strings  
+    - 17.5.77 Sysinfo*: Print system information  
+    - 17.5.78 Tf*: Run transfer function analysis  
+    - 17.5.79 Trace*: Trace nodes  
+    - 17.5.80 Tran*: Perform transient analysis  
+    - 17.5.81 Transpose: Swap elements in multidimensional data  
+    - 17.5.82 Unalias: Retract an alias  
+    - 17.5.83 Undefine: Retract a definition  
+    - 17.5.84 Unlet: Delete specified vector(s)  
+    - 17.5.85 Unset: Clear variables  
+    - 17.5.86 Version: Print version of ngspice  
+    - 17.5.87 Where*: Identify troublesome node or device  
+    - 17.5.88 Wrdata: Write data to file (simple table)  
+    - 17.5.89 Write: Write data to file (Spice3f5 format)

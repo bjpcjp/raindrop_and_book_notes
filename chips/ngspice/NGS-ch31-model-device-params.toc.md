@@ -1,0 +1,83 @@
+---
+title: "NGS-ch31-model-device-params"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch31-model-device-params]
+---
+
+- Chapter 31: Model and Device Parameters  
+  - 31.1 Accessing internal device parameters  
+  - 31.2 Elementary Devices  
+    - 31.2.1 Resistor  
+      - 31.2.1.1 Resistor instance parameters  
+      - 31.2.1.2 Resistor model parameters  
+    - 31.2.2 Capacitor - Fixed capacitor  
+      - 31.2.2.1 Capacitor instance parameters  
+      - 31.2.2.2 Capacitor model parameters  
+    - 31.2.3 Inductor - Fixed inductor  
+      - 31.2.3.1 Inductor instance parameters  
+      - 31.2.3.2 Inductor model parameters  
+    - 31.2.4 Mutual - Mutual Inductor  
+      - 31.2.4.1 Mutual instance parameters  
+  - 31.3 Voltage and current sources  
+    - 31.3.1 ASRC - Arbitrary source  
+      - 31.3.1.1 ASRC instance parameters  
+    - 31.3.2 Isource - Independent current source  
+      - 31.3.2.1 Isource instance parameters  
+    - 31.3.3 Vsource - Independent voltage source  
+      - 31.3.3.1 Vsource instance parameters  
+    - 31.3.4 CCCS - Current controlled current source  
+      - 31.3.4.1 CCCS instance parameters  
+    - 31.3.5 CCVS - Current controlled voltage source  
+      - 31.3.5.1 CCVS instance parameters  
+    - 31.3.6 VCCS - Voltage controlled current source  
+      - 31.3.6.1 VCCS instance parameters  
+    - 31.3.7 VCVS - Voltage controlled voltage source  
+      - 31.3.7.1 VCVS instance parameters  
+  - 31.4 Transmission Lines  
+    - 31.4.1 CplLines - Simple Coupled Multiconductor Lines  
+      - 31.4.1.1 CplLines instance parameters  
+      - 31.4.1.2 CplLines model parameters  
+    - 31.4.2 LTRA - Lossy transmission line  
+      - 31.4.2.1 LTRA instance parameters  
+      - 31.4.2.2 LTRA model parameters  
+    - 31.4.3 Tranline - Lossless transmission line  
+      - 31.4.3.1 Tranline instance parameters  
+    - 31.4.4 TransLine - Simple Lossy Transmission Line  
+      - 31.4.4.1 TransLine instance parameters  
+      - 31.4.4.2 TransLine model parameters  
+    - 31.4.5 URC - Uniform R.C. line  
+      - 31.4.5.1 URC instance parameters  
+      - 31.4.5.2 URC model parameters  
+  - 31.5 BJTs  
+    - 31.5.1 BJT - Bipolar Junction Transistor  
+      - 31.5.1.1 BJT instance parameters  
+      - 31.5.1.2 BJT model parameters  
+    - 31.5.2 BJT - Bipolar Junction Transistor Level 2  
+      - 31.5.2.1 BJT2 instance parameters  
+      - 31.5.2.2 BJT2 model parameters  
+    - 31.5.3 VBIC - Vertical Bipolar Inter-Company Model  
+      - 31.5.3.1 VBIC instance parameters  
+      - 31.5.3.2 VBIC model parameters  
+  - 31.6 MOSFETs  
+    - 31.6.1 MOS1 - Level 1 MOSFET model with Meyer capacitance model  
+      - 31.6.1.1 MOS1 instance parameters  
+      - 31.6.1.2 MOS1 model parameters  
+    - 31.6.2 MOS2 - Level 2 MOSFET model with Meyer capacitance model  
+      - 31.6.2.1 MOS2 instance parameters  
+      - 31.6.2.2 MOS2 model parameters  
+    - 31.6.3 MOS3 - Level 3 MOSFET model with Meyer capacitance model  
+      - 31.6.3.1 MOS3 instance parameters  
+      - 31.6.3.2 MOS3 model parameters  
+    - 31.6.4 MOS6 - Level 6 MOSFET model with Meyer capacitance model  
+      - 31.6.4.1 MOS6 instance parameters  
+      - 31.6.4.2 MOS6 model parameters  
+    - 31.6.5 MOS9 - Modified Level 3 MOSFET model  
+      - 31.6.5.1 MOS9 instance parameters  
+      - 31.6.5.2 MOS9 model parameters  
+    - 31.6.6 BSIM1 - Berkeley Short Channel IGFET Model  
+      - 31.6.6.1 BSIM1 instance parameters  
+      - 31.6.6.2 BSIM1 model parameters  
+    - 31.6.7 BSIM2 - Berkeley Short Channel IGFET Model  
+      - 31.6.7.1 BSIM2 instance parameters  
+      - 31.6.7.2 BSIM2 model parameters

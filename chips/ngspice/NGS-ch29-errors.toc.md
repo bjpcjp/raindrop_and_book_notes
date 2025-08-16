@@ -1,0 +1,61 @@
+---
+title: "NGS-ch29-errors"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [NGS-ch29-errors]
+---
+
+- Chapter 29: Error Messages  
+  - 29.1 Preprocessor Error Messages  
+    - Usage Errors  
+    - File Not Found and Pathname Errors  
+    - Model and Function Name Conflicts  
+    - Temporary File Access Errors  
+    - File Creation and Parsing Errors  
+    - Port and Parameter Errors  
+    - String and Comment Errors  
+    - Array and Subscript Errors  
+    - Buffer and Syntax Errors  
+  - 29.2 Simulator Error Messages  
+    - Port and Array Connection Errors  
+    - Syntax and Token Errors  
+    - Model Definition and Parameter Errors  
+    - Value Format Errors  
+  - 29.3 Code Model Error Messages  
+    - 29.3.1 Code Model aswitch  
+      - cntl_error  
+    - 29.3.2 Code Model climit  
+      - climit_range_error  
+    - 29.3.3 Code Model core  
+      - allocation_error  
+      - limit_error  
+    - 29.3.4 Code Model d_osc  
+      - d_osc_allocation_error  
+      - d_osc_array_error  
+      - d_osc_negative_freq_error  
+    - 29.3.5 Code Model d_source  
+      - loading_error  
+    - 29.3.6 Code Model d_state  
+      - loading_error  
+      - index_error  
+    - 29.3.7 Code Model oneshot  
+      - oneshot_allocation_error  
+      - oneshot_array_error  
+      - oneshot_pw_clamp  
+    - 29.3.8 Code Model pwl  
+      - allocation_error  
+      - limit_error  
+    - 29.3.9 Code Model s_xfer  
+      - num_size_error  
+    - 29.3.10 Code Model sine  
+      - allocation_error  
+      - sine_freq_clamp  
+      - array_error  
+    - 29.3.11 Code Model square  
+      - square_allocation_error  
+      - square_freq_clamp  
+      - square_array_error  
+    - 29.3.12 Code Model triangle  
+      - triangle_allocation_error  
+      - triangle_freq_clamp  
+      - triangle_array_error
