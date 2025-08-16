@@ -1,0 +1,76 @@
+---
+title: "CMFICD-index"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [CMFICD-index]
+---
+
+- A
+  - Basic features of, 372–374
+  - Basic operation, 374
+- Accumulation charge, 96
+- ACM model, 13
+- Advanced compact MOSFET, 13
+- Advanced thermal noise model, 264–265
+- Ambipolar behavior of TFETs, 345
+- Atoms, donor and acceptor, 27f
+- Auger recombination, 44
+- Avalanche breakdown voltage, 72
+- Avalanche current, low-level, 212
+- Avalanche regime, 141
+
+- B
+  - Back-end process variability, 285
+  - Backward propagation of variance (BPV), 296
+  - Band-bending potential
+    - Formulation of Poisson’s equation, 100–103
+    - Variation of, 107f
+  - Bandgap widening, 114
+  - Band-to-band recombination, 41, 41f
+  - Band-to-band tunneling (BTBT), 3, 175, 218
+  - Barrier height, 52
+  - Basic model, thermal noise, 264
+  - Berkeley Short Channel IGFET Model (BSIM)
+    - First generation, 7
+    - Version 4 (BSIM4), 300t, 301–302, 306t–307t, 423
+    - Measured data of nMOSFET, 429–431f
+    - Parameters used in, 186
+    - Temperature dependence of, 208–209
+  - Bipolar junction transistors (BJTs)
+    - Overview and applications, 1, 371
+    - Advanced model, 372
+    - Basic operation and features, 374
+    - Compact model, 377–415
+      - Components of base charge, 403f
+      - Ebers–Moll (EM) model, 4
+      - EM1 model, 371
+      - EM2 BJT model, 385
+      - Equivalent circuit of SGP, 413f
+      - Invention of, 4
+      - Lateral, 372
+      - Mode of operations, 375–377
+      - Operating regimes, 4
+      - Parasitic circuit elements, 385
+      - Spice Gummel–Poon (SGP) model, 371–372
+      - Summary of compact, 412–415
+      - Vertical, 372
+      - Very-large-scale-integrated (VLSI) circuits, 371
+  - Body effect coefficient, 111, 176
+  - Body factor, 137
+  - Boltzmann
+    - Constant, 86
+    - Distribution, 343, 352
+    - Distribution function, 333
+  - Breakdown condition, 72
+  - Breakdown regime, 141
+  - Breakdown voltage, 71–72
+    - Avalanche, 72
+  - Brews charge-sheet model, 149
+  - Built-in electric field, formation of, 52f
+  - Built-in potential, 52–54
+  - Bulk-charge coefficient, 162
+  - Bulk-charge effect, 201–202
+  - Bulk-charge model, 160–161
+  - Bulk-charge sharing, 183
+    - Short channel effect in MOSFETs caused by, 184f
+  - Bulk mobility, 33

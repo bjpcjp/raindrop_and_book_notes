@@ -1,0 +1,61 @@
+---
+title: "CMFICD-ch10-tunnel-fets"
+layout: default-foundation-20210515
+date: 2025-08-13
+tags: [CMFICD-ch10-tunnel-fets]
+---
+
+- 10 Beyond-CMOS Transistor Models: Tunnel FETs  
+  - 10.1 Introduction ............................................................................... 343  
+  - 10.2 Basic Features of TFETs ......................................................... 344  
+    - TFET Device Structure (Figure 10.1)  
+    - Ambipolar Behavior and Device Symmetry  
+    - Channel Fully Depleted TFET  
+    - Gate Alignment Challenges  
+    - Multi-Gate and Pocket Region Enhancements  
+    - Historical Overview and Development Milestones  
+  - 10.3 Basic Theory of TFET Operation ............................................. 346  
+    - 10.3.1 Energy Band Diagram (Figure 10.2)  
+    - 10.3.2 Tunneling Mechanism  
+      - WKB Approximation and Tunneling Probability (Equations 10.1, 10.2)  
+      - Screening Length λ (Equation 10.3)  
+      - Drain Current from Tunneling (Equation 10.4)  
+    - 10.3.3 Device Characteristics  
+      - Off-state and On-state Behavior (Figures 10.3, 10.4, 10.5)  
+      - Fermi Tail Filtering and Sub-kT Transport  
+    - 10.3.4 Subthreshold Swing  
+      - Approximate Ids Expression (Equation 10.5)  
+      - Subthreshold Swing Derivation and Behavior (Equations 10.6–10.9, Figure 10.6)  
+      - Scaling Rules and Channel Length Independence  
+  - 10.4 TFET Design Considerations .................................................. 355  
+    - Current Drive (Ion), Off-current (Ioff), and Subthreshold Swing Targets  
+    - Factors Affecting Tunneling Probability and Device Performance  
+    - Device Architecture Optimization (Gate Dielectrics, Doping Profiles, Geometry)  
+    - Band Engineering: Heterostructure TFETs and Material Choices  
+    - Examples: Ge-Source and InAs-Source TFETs, III-V Materials, Nanowire TFETs  
+    - Carbon-based TFETs: CNTs and Graphene Nanoribbons  
+  - 10.5 Compact TFET Models ............................................................ 357  
+    - 10.5.1 Threshold Voltage Model (Equations 10.10, 10.11, Figure 10.7)  
+    - 10.5.2 Drain Current Model  
+      - Device Division and Transport Components (Figure 10.8)  
+      - 10.5.2.1 Ideal Drain Current Model  
+        - Surface Potential and Poisson’s Equation (Equations 10.12–10.14)  
+        - Tunneling Distance and Kane’s Model (Equations 10.15–10.21)  
+        - Correction Factors and Final Ideal Ids (Equations 10.22, 10.23)  
+      - 10.5.2.2 Modeling Channel Transport Using Drain MOSFET  
+        - Device Representation with Internal Node (Figure 10.9)  
+        - Drift-Diffusion Current Model (Equations 10.24–10.26)  
+        - Parameter Extraction and Iterative Solution  
+      - 10.5.2.3 Modeling Channel Transport Using Source Resistance  
+        - Series Rs Approach (Figure 10.10)  
+        - Computational Efficiency and Accuracy  
+  - 10.6 Summary ................................................................................... 366  
+  - Exercises ......................................................................................... 367  
+    - 10.1 pTFET Operation and Energy Band Diagrams  
+    - 10.2 Interband Tunneling Mechanism in pTFETs  
+    - 10.3 Derivation of Subthreshold Swing Equation and Optimization  
+    - 10.4 Comparison of Carrier Transport in TFETs and MOSFETs  
+    - 10.5 Energy Band Diagrams at Threshold Voltage and On-State (All-Silicon TFET)  
+    - 10.6 Modeling Leakage Current in Short Channel TFETs  
+    - 10.7 Coupled Equations for TFET Channel Transport Modeling  
+    - 10.8 Viability of TFETs for Beyond-CMOS Technology
