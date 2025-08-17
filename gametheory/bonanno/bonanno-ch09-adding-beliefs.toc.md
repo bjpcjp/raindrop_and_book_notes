@@ -1,0 +1,30 @@
+```markdown
+- 9. Adding Beliefs to Knowledge
+  - 9.1 Sets and probability: brief review
+    - 9.1.1 Sets
+    - 9.1.2 Probability
+  - 9.2 Probabilistic beliefs
+  - 9.3 Conditional probability and Bayes’ rule
+    - 9.3.1 Conditional probability
+  - 9.4 Changing beliefs in response to new information
+    - 9.4.1 Belief updating
+    - 9.4.2 Belief revision
+  - 9.5 Harsanyi consistency of beliefs or like-mindedness
+  - 9.6 Agreeing to disagree
+  - 9.7 Proof of the Agreement Theorem
+  - 9.8 Exercises
+    - 9.8.1 Exercises for Section 9.1: Sets and probability
+    - 9.8.2 Exercises for Section 9.2: Probabilistic beliefs
+    - 9.8.3 Exercises for Section 9.3: Conditional probability and Bayes’ rule
+    - 9.8.4 Exercises for Section 9.4: Changing beliefs in response to new information
+      - Exercises for Section 9.4.1: Belief updating
+      - Exercises for Section 9.4.2: Belief revision
+    - 9.8.5 Exercises for Section 9.5: Harsanyi consistency of beliefs or like-mindedness
+    - 9.8.6 Exercises for Section 9.6: Agreeing to disagree
+  - 9.9 Solutions to Exercises
+    - Solutions to Exercises 9.1 to 9.6
+    - Solutions to Exercises 9.7 to 9.13
+    - Solutions to Exercises 9.14 to 9.20
+    - Solutions to Exercises 9.21 to 9.24
+    - Solutions to Exercises 9.25 to 9.27
+```

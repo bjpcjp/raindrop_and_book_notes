@@ -1,0 +1,42 @@
+```markdown
+# Table of Contents
+
+- 11. Weak Sequential Equilibrium  
+  - 11.1 Assessments and sequential rationality  
+    - Definition 11.1.1: Assessment and system of beliefs  
+    - Example: Game of Figure 11.1  
+    - Definition 11.1.2: Sequential rationality  
+    - Illustration of sequential rationality (Figure 11.2, Figure 11.3)  
+  - 11.2 Bayesian updating at reached information sets  
+    - Definition 11.2.1: Reachable information set  
+    - Definition 11.2.2: Bayesian updating at reached information sets  
+    - Example (Figure 11.4)  
+  - 11.3 A first attempt: Weak sequential equilibrium  
+    - Definition 11.3.1: Weak sequential equilibrium  
+    - Examples and reasoning (Figures 11.5, 11.6, 11.7, 11.8)  
+    - Theorem 11.3.1: Weak sequential equilibrium implies Nash equilibrium  
+    - Counterexamples and relationships among equilibria (Figures 11.9, 11.10)  
+    - Venn diagram illustrating relationships  
+    - Theorem 11.3.2: Existence of weak sequential equilibria  
+- 11.4 Exercises  
+  - 11.4.1 Exercises for Section 11.1: Assessments and sequential rationality  
+    - Exercise 11.1  
+    - Exercise 11.2  
+    - Exercise 11.3  
+  - 11.4.2 Exercises for Section 11.2: Bayesian updating at reached information sets  
+    - Exercise 11.4  
+    - Exercise 11.5  
+  - 11.4.3 Exercises for Section 11.3: Weak sequential equilibrium  
+    - Exercise 11.6  
+    - Exercise 11.7  
+    - Exercise 11.8 (Challenging)  
+- 11.5 Solutions to Exercises  
+  - Solution to Exercise 11.1  
+  - Solution to Exercise 11.2  
+  - Solution to Exercise 11.3  
+  - Solution to Exercise 11.4  
+  - Solution to Exercise 11.5  
+  - Solution to Exercise 11.6  
+  - Solution to Exercise 11.7  
+  - Solution to Exercise 11.8  
+```

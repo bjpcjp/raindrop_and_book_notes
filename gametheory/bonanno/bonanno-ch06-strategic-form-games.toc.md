@@ -1,0 +1,57 @@
+```markdown
+# Table of Contents
+
+- 6. Strategic-form Games
+  - 6.1 Strategic-form games with cardinal payoffs ..... 194
+    - Example 6.1: First-price auction game-frame ..... 194
+    - Definition 6.1.1: Game-frame in strategic form ..... 194
+    - Definition 6.1.2: Game with cardinal payoffs ..... 195
+    - Example: Von Neumann-Morgenstern utilities for auction ..... 196
+  - 6.2 Mixed strategies ..... 196
+    - Definition 6.2.1: Mixed strategy ..... 196
+    - Example: Mixed strategies in auction game ..... 197
+    - Definition 6.2.2: Mixed-strategy extension ..... 198
+    - Definition 6.2.3: Nash equilibrium in mixed strategies ..... 199
+    - Example: Checking mixed strategy equilibrium ..... 199
+    - Theorem 6.2.1 (Nash, 1951) existence theorem ..... 200
+    - Example: Verifying mixed-strategy equilibrium ..... 200
+  - 6.3 Computing the mixed-strategy Nash equilibria ..... 201
+    - Iterated deletion of strictly dominated strategies (IDSDS) ..... 201
+    - Example: IDSDS application and reduced game ..... 202
+    - Theorem 6.3.1: Indifference condition in mixed equilibria ..... 203
+    - Example: Finding equilibrium probabilities ..... 204
+    - Example: Indifference not sufficient for equilibrium ..... 205
+    - Best reply functions and equilibrium ..... 206
+    - Computational remarks ..... 207
+  - 6.4 Strict dominance and rationalizability ..... 207
+    - Example: Strategy strictly dominated by mixed but not pure strategies ..... 207
+    - Theorem 6.4.1 (Pearce, 1984) ..... 207
+    - Cardinal Iterated Deletion of Strictly Dominated Strategies (IDSDS) ..... 208
+    - Example: Applying cardinal IDSDS ..... 208
+    - Discussion on rationalizability and assumptions ..... 209
+  - 6.5 Exercises ..... 210
+    - 6.5.1 Exercises for Section 6.1 ..... 210
+      - Exercise 6.1 - 6.2
+    - 6.5.2 Exercises for Section 6.2 ..... 211
+      - Exercise 6.3 - 6.4
+    - 6.5.3 Exercises for Section 6.3 ..... 212
+      - Exercise 6.5 - 6.11
+    - 6.5.4 Exercises for Section 6.4 ..... 214
+      - Exercise 6.12 - 6.15
+  - 6.6 Solutions to exercises ..... 216
+    - Solution to Exercise 6.1 ..... 216
+    - Solution to Exercise 6.2 ..... 216
+    - Solution to Exercise 6.3 ..... 217
+    - Solution to Exercise 6.4 ..... 217
+    - Solution to Exercise 6.5 ..... 218
+    - Solution to Exercise 6.6 ..... 218
+    - Solution to Exercise 6.7 ..... 218
+    - Solution to Exercise 6.8 ..... 219
+    - Solution to Exercise 6.9 ..... 219
+    - Solution to Exercise 6.10 ..... 221
+    - Solution to Exercise 6.11 ..... 222
+    - Solution to Exercise 6.12 ..... 223
+    - Solution to Exercise 6.13 ..... 223
+    - Solution to Exercise 6.14 ..... 224
+    - Solution to Exercise 6.15 ..... 225
+```

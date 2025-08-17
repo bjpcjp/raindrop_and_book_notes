@@ -1,0 +1,34 @@
+```markdown
+- Brinkmanship: The Cuban Missile Crisis
+  - 1 A Brief Narrative of Events (560)
+  - 2 A Simple Game-Theoretic Explanation (567)
+  - 3 Accounting for additional complexities (569)
+  - 4 A Probabilistic Threat (575)
+  - 5 Practicing Brinkmanship (579)
+  - Summary (583)
+  - Key Terms (583)
+  - Solved Exercises (584)
+    - S1 Union strike threat and brinkmanship analysis
+    - S2 Movie scenes illustrating brinkmanship
+    - S3 Successful brinkmanship cases
+      - Uruguay Round negotiations
+      - Camp David Accords
+    - S4 Unsuccessful brinkmanship cases
+      - Tiananmen Square 1989
+      - Caterpillar strike 1991-1998
+    - S5 Potential future brinkmanship cases
+      - Taiwan independence scenario
+      - Militarization of space
+  - Unsolved Exercises (586)
+    - U1 Variation on payoffs in brinkmanship model
+    - U2 Additional movie scenes on brinkmanship
+    - U3 Successful brinkmanship examples
+      - South African apartheid negotiations
+      - Northern Ireland peace process
+    - U4 Unsuccessful brinkmanship examples
+      - 1995 US budget confrontation
+      - 2007-2008 TV writers’ strike
+    - U5 Potential future brinkmanship scenarios
+      - US missile defense sites in Europe
+      - Iran nuclear weapons deterrence
+```

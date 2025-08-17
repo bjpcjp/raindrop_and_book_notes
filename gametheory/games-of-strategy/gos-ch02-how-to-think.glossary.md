@@ -1,0 +1,28 @@
+- **Asymmetric information** — A situation in a game where one player has more or better information than another, leading to strategic manipulation like signaling and screening.  
+- **Coalitions** — Alliances formed among three or more players in a constant-sum or zero-sum game to cooperate against others.  
+- **Constant-sum game** — A game where the total gains and losses among players sum to a constant value; often used interchangeably with zero-sum game.  
+- **Cooperative game** — A game in which agreements to coordinate joint actions are enforceable by external parties, facilitating collective strategies.  
+- **Decision** — An action choice situation without strategic interaction; players decide independently without concern for others' responses.  
+- **Equilibrium** — A state where each player uses a strategy that is the best response to the strategies of the other players.  
+- **Expected payoff** — The weighted average of payoffs over all possible outcomes of a game, with weights equal to the probabilities of each outcome.  
+- **Evolutionary game** — An approach where strategies evolve over time based on their success, analogous to biological evolution and natural selection.  
+- **External uncertainty** — Uncertainty about factors outside the game, such as environmental variables or external circumstances affecting payoffs.  
+- **Game** — A strategic interaction involving two or more mutually aware players whose choices influence each other's outcomes.  
+- **Imperfect information** — Games in which players do not have complete information about the moves or payoffs of other players, including both external and strategic uncertainty.  
+- **Information set** — A formal concept defining the knowledge a player has at a particular decision point; relevant for perfect or imperfect information games.  
+- **Mixed strategy** — A strategy involving randomization over available pure strategies to prevent predictability.  
+- **Mutual awareness** — The recognition by players that their actions affect each other and that each knows the others recognize this as well, creating strategic complexity.  
+- **Noncooperative game** — A game where enforceable joint agreements are not possible and each player acts independently, pursuing their own interests.  
+- **Payoff** — A numerical representation of the value or utility a player receives from a particular outcome of the game.  
+- **Perfect information** — A game setting where all players know all previous moves and payoffs, and there is no uncertainty about actions taken.  
+- **Predator-prey game** — Example of strategic interaction in biology where evolutionary game theory applies (implied in evolutionary games).  
+- **Rational behavior** — Players act consistently to maximize their own payoffs, with full knowledge of their preferences and flawless calculation of best strategies.  
+- **Screening** — Strategies or actions designed by a less-informed player to elicit private information from a more-informed player.  
+- **Screening device** — An action or mechanism that forces a more-informed player to reveal information credibly.  
+- **Sequential moves** — A game structure where players take turns moving one after another, allowing for reaction to prior moves.  
+- **Signaling** — Actions by a more-informed player intended to credibly convey private information to others.  
+- **Simultaneous moves** — A game structure where players move at the same time, without knowledge of other players’ current decisions.  
+- **Strategic game** — A game in which players are mutually aware that their actions influence each other and respond accordingly.  
+- **Strategic uncertainty** — A type of imperfect information where a player is unsure of others’ current or past moves.  
+- **Strategy** — A complete plan of action for every possible situation in a game, specifying what moves a player will take.  
+- **Zero-sum game** — A game in which one player’s gain is exactly equal to the other players’ losses; total payoff sums to zero.

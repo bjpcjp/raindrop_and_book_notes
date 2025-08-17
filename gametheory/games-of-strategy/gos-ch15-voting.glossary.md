@@ -1,0 +1,33 @@
+- **agenda paradox** — A voting paradox where the order in which alternatives are voted on affects the final outcome, allowing an agenda setter to manipulate results.
+- **amendment procedure** — A binary voting method in which two alternatives are voted on first, and the winner is then voted against a third alternative.
+- **antiplurality method** — A positional plurative voting method where voters vote against one candidate; votes are tallied by giving points to all but the least-preferred alternative.
+- **approval voting** — A voting method where voters can approve of as many alternatives as they like; the alternative with the most approvals wins.
+- **binary method** — A voting method that considers only two alternatives at a time, often using majority rule between pairs.
+- **Black’s condition** — A restriction on voter preferences requiring single-peaked preferences to avoid voting paradoxes such as the Condorcet paradox.
+- **Borda count** — A positional voting method where voters rank alternatives and points are assigned based on position; the candidate with the highest point total wins.
+- **Condorcet method** — A pairwise voting method where the winner is the candidate who beats every other candidate one-on-one.
+- **Condorcet paradox** — Occurs when there is no Condorcet winner due to cyclical majority preferences despite all individual preferences being transitive.
+- **Condorcet terms** — Sets of preference orderings that cycle in a way that offsets each other, leading to ties or paradoxes in vote aggregation.
+- **Condorcet winner** — A candidate who defeats every other candidate in pairwise majority votes.
+- **continuous distribution** — A model assuming an infinite number of possible voter positions along a political spectrum.
+- **dictatorship (in voting)** — A voting system where one voter’s preferences exclusively determine the group’s ranking.
+- **distribution function** — A function representing the proportion of voters up to a given point along the political spectrum.
+- **dominant strategy** — A strategy that results in a better outcome for a player regardless of what others do.
+- **Elimination method** — A voting procedure where the candidate with the fewest votes is removed in successive rounds until a winner emerges.
+- **median voter** — The voter in the middle of a distribution of preferences who divides the electorate into two equal halves.
+- **median voter theorem** — States that in a two-candidate election with single-peaked preferences, both candidates will position themselves at the median voter’s preference.
+- **mixed method** — A voting procedure combining binary and plurative voting stages, such as majority runoffs or instant runoffs.
+- **multistage procedure** — A voting system involving successive rounds of voting or elimination.
+- **pairwise voting** — Voting on alternatives two at a time, often repeatedly, to determine an overall winner.
+- **plurality rule** — A voting method where the candidate with the most votes wins, even if not a majority.
+- **positional method** — A voting method that assigns points to candidates based on their positions/rankings on each ballot.
+- **principle of minimum differentiation** — The tendency for competitors (e.g., candidates) to position themselves as closely as possible to each other.
+- **proportional representation** — An election system where seats are allocated in proportion to the total votes received by each party.
+- **reversal paradox** — A paradox where the removal of a candidate after voting has occurred changes the outcome in unexpected ways.
+- **rounds** — Successive voting stages in which the worst candidates are eliminated until a final winner emerges.
+- **runoff election** — Follow-up election between top candidates if no candidate wins a majority in the first round.
+- **single transferable vote** — A ranked-choice voting method allowing votes to be transferred to next preferences as candidates are eliminated.
+- **single-peaked preferences** — Preferences ranked such that each voter has one most-preferred alternative and less-preferred options lie further away from that peak.
+- **strategic voting** — Casting a vote not for a voter’s top preference but to influence the outcome more favorably.
+- **uniform distribution** — A continuous voter distribution where all positions have equal probability.
+- **voting paradox** — Situations where aggregated voter preferences lead to contradictory or counterintuitive results.

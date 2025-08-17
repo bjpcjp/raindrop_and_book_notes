@@ -1,0 +1,58 @@
+```markdown
+- 4. General Dynamic Games
+  - 4.1 Imperfect Information
+    - Example: Exam Versions and Copying
+    - Definition 4.1.1: Extensive Form with Perfect Recall
+    - Examples: 
+      - Example 4.1: Ann, Bob, Carla Card Game
+      - Example 4.2: Yvonne and Fran Job Offer Game
+  - 4.2 Strategies
+    - Definition 4.2.1: Strategy in Extensive-Form Games
+    - Strategic Form Examples
+      - Game from Figure 4.5
+      - Game from Figure 4.3
+  - 4.3 Subgames
+    - Definition 4.3.1: Proper Subgame
+    - Definition 4.3.2: Minimal Proper Subgame
+    - Examples (Figures 4.8, 4.9)
+  - 4.4 Subgame-perfect Equilibrium
+    - Definition 4.4.1: Subgame-perfect Equilibrium
+    - Definition 4.4.2: Subgame-perfect Equilibrium Algorithm
+    - Examples:
+      - Game of Figure 4.9
+      - Game of Figure 4.8 (Figure 4.15)
+    - Notes on Multiplicity and Existence
+  - 4.5 Games with Chance Moves
+    - Example: Adele, Ben, and Card Color
+    - Introduction to Nature/Chance Player
+    - Definition 4.5.1: Expected Value of Money Lotteries
+    - Definition 4.5.2: Risk Neutrality
+    - Examples:
+      - Figure 4.17: Extensive Form with Chance Move
+      - Example 4.3: Envelope Exchange Game (Figures 4.19, 4.20)
+  - 4.6 Exercises
+    - 4.6.1 Exercises for Section 4.1: Imperfect Information
+      - Exercise 4.1: Amy and Bill Bidding Game
+      - Exercise 4.2: Incumbent and Entrant Extensive Form
+    - 4.6.2 Exercises for Section 4.2: Strategies
+      - Exercise 4.3: Strategic Form of Exercise 4.1
+      - Exercise 4.4: Strategies and Nash Equilibria for Exercise 4.2
+    - 4.6.3 Exercises for Section 4.3: Subgames
+      - Exercise 4.5: Proper Subgames in Figure 4.3
+      - Exercise 4.6: Proper Subgames in Figure 4.5
+      - Exercise 4.7 & 4.8: Proper and Minimal Subgames in Games Figures 4.21 & 4.22
+    - 4.6.4 Exercises for Section 4.4: Subgame-perfect Equilibrium
+      - Exercise 4.9 & 4.10: Nash and Subgame-perfect Equilibria in Figures 4.23 & 4.24
+      - Exercise 4.11: Equilibria in Amy and Bill Bidding Game (Figure 4.25)
+    - 4.6.5 Exercises for Section 4.5: Games with Chance Moves
+      - Exercise 4.12: Modification of Example 4.3
+      - Exercise 4.13: Three-Player Card Guessing Game
+      - Exercise 4.14: Simplified Poker Extensive Form and Strategies
+      - Exercise 4.15: Auction and Government Palace Sale
+  - 4.7 Solutions to Exercises
+    - Solutions 4.1 & 4.2: Extensive Forms for Amy and Bill; Incumbent and Entrant
+    - Solutions 4.3 & 4.4: Strategic Forms and Nash Equilibria
+    - Solutions 4.5 & 4.6 & 4.7 & 4.8: Counting and Identifying Subgames
+    - Solutions 4.9 to 4.11: Finding Nash and Subgame-perfect Equilibria
+    - Solutions 4.12 to 4.15: Extensive Forms, Strategic Forms, and Analysis with Chance Moves and Auctions
+```

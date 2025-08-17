@@ -1,0 +1,21 @@
+- **Ask shout** — The lowest price a seller is willing to accept for a good.  
+- **Bidding strategy** — The approach traders use to determine the prices at which to bid or ask.  
+- **Bid shout** — The highest price a buyer is willing to pay for a good.  
+- **Buyer** — A trader seeking to purchase a good in the auction market.  
+- **Charging policy** — Rules determining how traders are charged for market services such as registration, shouts, and transactions.  
+- **Clearing partially** — [Not explicitly defined but related to clearing shouts]  
+- **Clearing policy** — The approach specifying when to clear matched shouts in the auction.  
+- **Cleaning price** — The transaction price for matched bids and asks, set anywhere between the ask price and bid price.  
+- **Double auction** — An auction mechanism where buyers and sellers submit bids and asks simultaneously to trade goods.  
+- **Equilibrium matching** — A matching policy designed to maximize the auctioneer’s profit.  
+- **Market liquidity** — The number of successful matches or transactions completed in a market.  
+- **Matching policy** — Rules that determine which bids and asks are paired for transactions.  
+- **Match** — A pair of bid and ask shouts where the ask price is less than or equal to the bid price, enabling a transaction.  
+- **Pricing policy** — The rules to establish the transaction price for matched shouts.  
+- **Private value (vi)** — The individual trader's intrinsic valuation of the good.  
+- **Seller** — A trader seeking to sell a good in the auction market.  
+- **Shout** — A single bid (buy) or ask (sell) submitted by a trader.  
+- **Trader utility** — The profit margin for a trader from a transaction, calculated as clearing price minus private value for sellers, and private value minus clearing price for buyers.  
+- **Trading strategies** — The combination of bidding and market selection approaches employed by traders.  
+- **Zero Intelligence (ZI)** — A simple bidding strategy where traders bid randomly without strategic considerations.  
+- **Zero Intelligence Plus (ZIP)** — An enhanced version of ZI where traders adapt bids based on market feedback.

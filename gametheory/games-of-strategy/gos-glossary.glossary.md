@@ -1,0 +1,69 @@
+- **acceptability condition** — An upper bound on the probability of fulfillment in a brinkmanship threat, expressed as a function of the probability of error, showing the upper limit of risk tolerated by the player making the threat.  
+- **action node** — A node at which one player chooses an action from two or more available.  
+- **addition rule** — Probability of an event requiring one of several disjoint events is the sum of their probabilities.  
+- **adverse selection** — Information asymmetry where a player's type is private information unknown to others.  
+- **agent** — The more-informed player in a principal–agent game who acts under incentive constraints designed by the principal.  
+- **all-pay auction** — An auction where each bidder pays their highest bid regardless of winning.  
+- **alternating offers** — Bargaining procedure where refusal of an offer grants the refuser the next offer opportunity.  
+- **approval voting** — Voting method where voters approve all alternatives they find acceptable.  
+- **ascending auction (English auction)** — Open-outcry auction with increasing bids; highest bid wins.  
+- **assurance game** — Game in which cooperation is best if the other cooperates, otherwise not cooperating is best; (Cooperate, Cooperate) preferred to (Not, Not).  
+- **asymmetric information** — Situation where some players possess private information not common knowledge.  
+- **babbling equilibrium** — Communication stage ignored by players who choose strategies independently of messages.  
+- **backward induction (rollback)** — Analyzing a sequential game by reasoning backwards from the end.  
+- **battle of the sexes** — Game with two asymmetric Nash equilibria preferred differently by each player, both better than other outcomes.  
+- **Bayesian Nash equilibrium** — Nash equilibrium in asymmetric information games, with players applying Bayes’ theorem.  
+- **best response** — A strategy optimal for a player given others' strategies or beliefs.  
+- **best-response curve** — Graph showing a player’s optimal strategy as a function of others' strategies.  
+- **bidding shading** — Bidding below true valuation in an auction.  
+- **brinkmanship** — Threat involving risk of mutual harm increased gradually to induce compliance.  
+- **cheap talk equilibrium** — Equilibrium where pre-play communication is credible and influences strategies optimally.  
+- **chicken game** — Game with two Nash equilibria favoring asymmetric 'Macho' and 'Wimp' strategies; mutual aggressive outcome is worst.  
+- **coercion (oppression)** — Forcing lower payoffs on some players while others gain higher payoffs in asymmetric equilibria.  
+- **collective action problem** — Difficulty achieving socially optimal outcomes due to individuals pursuing personal interests.  
+- **commitment** — Pre-game unconditional action declaration to influence subsequent play.  
+- **common value auction** — Auction where the object has the same value for all but each has only an estimate of it.  
+- **compellence** — Threat intended to induce a player to change the status quo.  
+- **condorcet method** — Voting method where winner must beat every other candidate in pairwise contests.  
+- **constant-sum game** — Game where players’ payoffs sum to a constant; any gain by one equals loss by others.  
+- **contingent strategy** — Strategy dependent on previous actions in repeated play.  
+- **credible strategy** — A strategy whose chosen continuation is optimal in every subgame.  
+- **discount factor** — Multiplier used to reduce the value of future payoffs for comparison at present.  
+- **dominant strategy** — Strategy better than all others regardless of opponents’ strategies.  
+- **dominated strategy** — Strategy worse than another for every possible opponent reaction.  
+- **doomsday device** — Automated severe threat triggering a bad outcome for all to lend credibility to threats.  
+- **efficient frontier** — Boundary of feasible payoffs beyond which no player can improve without hurting another.  
+- **efficient outcome** — Outcome where no player can be made better off without making another worse off.  
+- **equilibrium path of play** — The actual sequence of actions followed under equilibrium strategies.  
+- **evolutionary stable strategy (ESS)** — Strategy stable against invasion by mutants either statically or dynamically.  
+- **expected payoff** — Probability-weighted average of payoffs over uncertainties or mixed strategies.  
+- **extensive form** — Game representation as a tree of sequential moves and outcomes.  
+- **external effect (externality, spillover)** — One player’s action affecting others' payoffs positively or negatively.  
+- **first-mover advantage** — Benefit accrued by choosing to move before others in a sequential game.  
+- **game matrix (game table)** — Table that displays players’ strategies and corresponding payoffs.  
+- **game tree** — Node and branch representation of sequential moves and their outcomes in a game.  
+- **hawk–dove game** — Evolutionary game modeling conflict between aggressive and submissive strategies.  
+- **imperfect information** — Game where players do not observe all prior moves or chance events fully.  
+- **incentive-compatibility constraint** — Condition that agents prefer to reveal true types or take truthful actions.  
+- **information set** — Set of indistinguishable nodes where a player chooses the same action under imperfect information.  
+- **iterated elimination of dominated strategies** — Sequential removal of strategies dominated at each step.  
+- **median voter theorem** — With single-peaked preferences, equilibrium converges to the median voter's preferred outcome.  
+- **mixed strategy** — Randomized choice over pure strategies with specified probabilities.  
+- **moral hazard** — Situation where a player's actions are unobservable to others, creating risk.  
+- **Nash equilibrium** — Strategy profile where no player can improve payoff by unilaterally changing strategy.  
+- **off-equilibrium path** — Game paths not reached under equilibrium strategies.  
+- **payoff** — Numerical value representing a player's outcome or utility in a game.  
+- **perfect Bayesian equilibrium** — Equilibrium with consistent beliefs updated by Bayes' rule and sequential optimality.  
+- **pooling equilibrium** — Equilibrium where different types choose identical strategies, concealing type information.  
+- **principal** — Less-informed player designing incentives for the agent in principal-agent problems.  
+- **prisoners’ dilemma** — Game where defecting dominates cooperating, but mutual defection is worse than mutual cooperation.  
+- **rational irrationality** — Adoption of seemingly suboptimal strategies to make threats or promises credible.  
+- **rollback equilibrium** — Equilibrium found by backward induction pruning of noncredible moves.  
+- **screening** — Strategy by the less-informed player to induce types to reveal themselves truthfully.  
+- **separating equilibrium** — Equilibrium where different types choose different strategies revealing their private information.  
+- **sequential moves** — Game structure where players move in a strict temporal order with knowledge of prior actions.  
+- **subgame-perfect equilibrium (SPE)** — Nash equilibrium with credible strategies in every subgame of the original game.  
+- **tit-for-tat** — Strategy in repeated prisoners’ dilemma: start cooperating, then mimic opponent’s last action.  
+- **trigger strategy** — Cooperate until a defection, then revert to punishment indefinitely or for a specified duration.  
+- **type** — Player’s private information or characteristic in asymmetric information games.  
+- **vickrey auction (second-price auction)** — Auction where highest bidder wins but pays the second highest bid.

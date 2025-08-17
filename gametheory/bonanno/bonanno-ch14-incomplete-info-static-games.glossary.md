@@ -1,0 +1,19 @@
+- **Bayesian Nash equilibrium** — A Nash equilibrium of the imperfect-information game obtained via the Harsanyi transformation, used to analyze games of incomplete information.
+- **Common knowledge** — Information known by all players, and all know that all know it, ad infinitum.
+- **Common prior** — A probability distribution over states that, when conditioned on each player's information partition, yields the player’s beliefs; essential for applying the Harsanyi transformation in multi-sided incomplete information.
+- **Incomplete information** — A situation where some players are uncertain about some elements of the game, such as opponents’ preferences, actions, or payoffs.
+- **Information partition** — The division of the state space into cells representing the states indistinguishable to a player.
+- **Interactive knowledge-belief structure** — A model describing players’ knowledge and beliefs about the game and each other’s beliefs, often represented by states and associated beliefs.
+- **One-sided incomplete information** — A setting where only one player is uncertain about the game or elements of it, while others have complete information.
+- **Multi-sided incomplete information** — A situation where two or more players have uncertainty regarding the game or regarding other players’ beliefs.
+- **Nature** — The hypothetical player who chooses states of the world according to a probability distribution in the Harsanyi transformation.
+- **Nash equilibrium** — A strategy profile where no player can benefit by unilaterally deviating.
+- **Perfect information** — A game property where every player, when making a decision, knows all choices previously made.
+- **Pooling equilibrium** — A pure-strategy Bayesian Nash equilibrium where the informed player chooses the same action regardless of type.
+- **Preferences (von Neumann-Morgenstern)** — Players’ preferences represented by numerical payoffs, allowing expected utility calculations.
+- **Separating equilibrium** — A pure-strategy Bayesian Nash equilibrium where the informed player’s actions differ depending on their type.
+- **Simultaneous-move game** — A game where players choose actions without knowledge of others’ current choices.
+- **Strategic form (normal form)** — A representation of a game listing players, strategies, and payoffs for each strategy profile.
+- **State of the world (state)** — A complete description of all relevant uncertainties in the model, including the game being played and players' types.
+- **Type-space approach** — A method modeling incomplete information by specifying players’ possible types and beliefs over types instead of states.
+- **von Neumann-Morgenstern payoffs** — A cardinal utility representation consistent with expected utility theory used in game analysis.

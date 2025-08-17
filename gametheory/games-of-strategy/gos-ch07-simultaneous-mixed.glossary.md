@@ -1,0 +1,9 @@
+- **expected payoff** — The probability-weighted average of the payoffs from the constituent pure strategies of a mixed strategy.
+- **mixed strategy** — A continuous range of strategies where a player chooses among their pure strategies randomly, with specified probabilities totaling one.
+- **mixed-strategy equilibrium** — A Nash equilibrium in mixed strategies where each player's mixture makes the other player indifferent among their pure strategies, with no player having an incentive to deviate.
+- **Nash equilibrium** — A list of strategy choices, one per player, such that each strategy is the best response to the others, including mixed strategies.
+- **opponent’s indifference property** — The condition that in equilibrium, a player’s mixed strategy keeps the opponent indifferent between their pure strategies.
+- **pure strategy** — A strategy where a player chooses one specific move with certainty (probability 1).
+- **strategic uncertainty** — Uncertainty a player has about the other player’s choice of strategy in simultaneous-move games.
+- **subjective uncertainty** — A player’s personal belief or uncertainty regarding the probabilities with which an opponent chooses among strategies.
+- **zero-sum game** — A game in which one player’s gain is exactly the other player’s loss; their interests are diametrically opposed.

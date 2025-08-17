@@ -1,0 +1,30 @@
+- **Art of game playing** — The intuitive or experiential aspect of strategy that complements the scientific principles of game theory.  
+- **Asymmetries of information** — Situations where some players have private or better information than others in a game.  
+- **Backward reasoning** — Thinking ahead to future moves and then reasoning backward to decide the best current action.  
+- **Binary choice** — A decision between two alternatives, such as whether to do the shopping or not.  
+- **Brinkmanship** — A strategic game where players escalate mutual risk, testing each other’s tolerance for disaster before conceding.  
+- **Case study approach** — Learning strategy through specific examples or cases to illustrate concepts.  
+- **Chicken (game)** — A strategic game where two players move towards disaster, and the first to yield loses, while mutual yielding or mutual defiance have different outcomes.  
+- **Collective-action problem** — A situation where individuals’ incentives work against the group’s overall benefit, requiring cooperation mechanisms.  
+- **Commitment device** — A credible and binding promise to carry out a specific action or policy to influence others’ expectations and strategies.  
+- **Coordination (focal) point** — A strategy or choice on which players converge their expectations and coordinate actions without prior communication.  
+- **Equilibrium** — A stable outcome of a game in which no player can improve by changing their strategy unilaterally (implied concept).  
+- **Evolutionary games** — Strategic situations analyzed in biology and economics to understand how strategies evolve over time.  
+- **Focal point** — A commonly expected solution or strategy that helps players coordinate in games with multiple equilibria.  
+- **Information manipulation** — The strategic use of actions to convey or conceal private information in interactions.  
+- **Makeup exam strategy** — A context illustrating the use of backward reasoning and anticipating opponents’ moves (example story).  
+- **Mixed strategy** — Randomizing over possible actions to prevent an opponent from predicting one’s moves.  
+- **No-excuses policy** — A commitment by professors or others to refuse exceptions to rules to prevent exploitation.  
+- **Payoff** — The benefit or reward a player receives from the outcome of a game (implied concept).  
+- **Promise** — A declaration to undertake a specific future action to influence interaction outcomes.  
+- **Prisoners’ dilemma** — A game where individual rational strategies lead to collectively worse outcomes.  
+- **Rational behavior** — Acting logically to maximize one’s own objectives while considering constraints and available information.  
+- **Screening device** — A strategy used to induce others to reveal their private information credibly.  
+- **Sequential game** — A game where players make moves one after another, observing previous actions.  
+- **Signal** — An action taken to credibly convey private information about oneself to another player.  
+- **Simultaneous game** — A game where players choose actions at the same time without knowledge of others’ choices.  
+- **Strategy** — The plan or method by which a player selects actions in a game to maximize their interests given others’ possible moves.  
+- **Strategic interaction** — Situations in which multiple decision makers consider each other’s actions and responses in choosing strategies.  
+- **Strategic thinking** — Calculated decision making considering others’ simultaneous reasoning and actions.  
+- **Threat** — A declaration of harm or penalty to be imposed on others if they do not behave as desired.  
+- **Win-win game** — A game where all players can come out better off through cooperation or division of benefits.

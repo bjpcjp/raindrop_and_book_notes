@@ -1,0 +1,271 @@
+```markdown
+- Glossary (p. 695)
+  - Acceptability condition
+  - Action node
+  - Addition rule
+  - Adverse selection
+  - Agenda paradox
+  - Agent
+  - All-pay auction
+  - Alternating offers
+  - Amendment procedure
+  - Antiplurality method
+  - Approval voting
+  - Ascending auction
+  - Assurance game
+  - Asymmetric information
+  - Babbling equilibrium
+  - Backward induction
+  - Battle of the sexes
+  - Bayesian Nash equilibrium
+  - Bayes’ theorem
+  - Belief
+  - Best alternative to a negotiated agreement (BATNA)
+  - Best response
+  - Best-response analysis
+  - Best-response curve
+  - Best-response rule
+  - Binary method
+  - Black’s condition
+  - Borda count
+  - Branch
+  - Brinkmanship
+  - Cheap talk equilibrium
+  - Chicken
+  - Chicken in real time
+  - Coercion
+  - Collective action problem
+  - Commitment
+  - Common value
+  - Compellence
+  - Compound interest
+  - Condorcet method
+  - Condorcet paradox
+  - Condorcet terms
+  - Condorcet winner
+  - Constant-sum game
+  - Contingent strategy
+  - Continuation
+  - Continuous distribution
+  - Continuous strategy
+  - Contract
+  - Convention
+  - Convergence of expectations
+  - Cooperative game
+  - Coordination game
+  - Copeland index
+  - Credibility
+  - Custom
+  - Decay
+  - Decision
+  - Decision node
+  - Decision tree
+  - Descending auction
+  - Deterrence
+  - Diffusion of responsibility
+  - Discount factor
+  - Discrete distribution
+  - Disjoint
+  - Distribution function
+  - Dominance solvable
+  - Dominant strategy
+  - Dominated strategy
+  - Doomsday device
+  - Dutch auction
+  - Effectiveness condition
+  - Effective rate of return
+  - Efficient frontier
+  - Efficient outcome
+  - English auction
+  - Equilibrium
+  - Equilibrium path of play
+  - Evolutionary game
+  - Evolutionary stable
+  - Evolutionary stable strategy (ESS)
+  - Expected payoff
+  - Expected utility
+  - Expected value
+  - Extensive form
+  - External effect
+  - Externality
+  - External uncertainty
+  - First-mover advantage
+  - First-price auction
+  - Fitness
+  - Focal point
+  - Free rider
+  - Game
+  - Game matrix
+  - Game table
+  - Game tree
+  - Genotype
+  - Gibbard–Satterthwaite theorem
+  - Gradual escalation of the risk of mutual harm
+  - Grim strategy
+  - Hawk–dove game
+  - Histogram
+  - Impatience
+  - Imperfect information
+  - Impossibility theorem
+  - Incentive-compatibility condition (constraint)
+  - Independent events
+  - Infinite horizon
+  - Information set
+  - Initial node
+  - Instant runoff
+  - Intermediate valuation function
+  - Internalize the externality
+  - Intransitive ordering
+  - Invasion by a mutant
+  - Irreversible action
+  - Iterated elimination of dominated strategies
+  - Leadership
+  - Locked in
+  - Majority rule
+  - Majority runoff
+  - Marginal private gain
+  - Marginal social gain
+  - Mechanism design
+  - Median voter
+  - Median voter theorem
+  - Mixed method
+  - Mixed strategy
+  - Monomorphism
+  - Moral hazard
+  - Move
+  - Multiplication rule
+  - Multistage procedure
+  - Mutation
+  - Nash cooperative solution
+  - Nash equilibrium
+  - Negatively correlated
+  - Neutral ESS
+  - Never a best response
+  - Node
+  - Noncooperative game
+  - Nonexcludable benefits
+  - Nonrival benefits
+  - Norm
+  - Normal distribution
+  - Normal form
+  - Objective value
+  - Observable action
+  - Off-equilibrium path
+  - Off-equilibrium subgame
+  - Open outcry
+  - Opponent’s indifference property
+  - Oppression
+  - Pairwise voting
+  - Partially revealing equilibrium
+  - Participation condition (constraint)
+  - Path of play
+  - Payoff
+  - Payoff table
+  - Penalty
+  - Perfect Bayesian equilibrium (PBE)
+  - Perfect information
+  - Phenotype
+  - Playing the field
+  - Pluralistic ignorance
+  - Plurality rule
+  - Plurative method
+  - Polymorphism
+  - Pooling equilibrium
+  - Pooling of types
+  - Positional method
+  - Positive feedback
+  - Positively correlated
+  - Present value (PV)
+  - Price discrimination
+  - Primary criterion
+  - Principal
+  - Principal–agent (agency) problem
+  - Principle of minimum differentiation
+  - Prisoners’ dilemma
+  - Private value
+  - Probabilistic threat
+  - Probability
+  - Promise
+  - Proportional representation
+  - Proxy bidding
+  - Prune
+  - Punishment
+  - Pure coordination game
+  - Pure public good
+  - Pure strategy
+  - Quantal-response equilibrium (QRE)
+  - Rank-choice voting
+  - Rational behavior
+  - Rational irrationality
+  - Rationalizability
+  - Rationalizable
+  - Refinement
+  - Repeated play
+  - Reputation
+  - Reservation price
+  - Reserve price
+  - Response rule
+  - Reversal paradox
+  - Reversal terms
+  - Risk-averse
+  - Risk-neutral
+  - Robustness
+  - Rollback
+  - Rollback equilibrium
+  - Root
+  - Rounds
+  - Salami tactics
+  - Sanction
+  - Screening
+  - Screening devices
+  - Sealed bid
+  - Secondary criterion
+  - Second-mover advantage
+  - Second-price auction
+  - Selection
+  - Self-selection
+  - Semiseparating equilibrium
+  - Separating equilibrium
+  - Separation of types
+  - Sequential moves
+  - Shading
+  - Shilling
+  - Signaling
+  - Signal jamming
+  - Signals
+  - Simultaneous moves
+  - Sincere voting
+  - Single-peaked preferences
+  - Single transferable vote
+  - Social optimum
+  - Social ranking
+  - Spillover effect
+  - Spoiler
+  - Strategic form
+  - Strategic game
+  - Strategic misrepresentation of preferences
+  - Strategic moves
+  - Strategic uncertainty
+  - Strategic voting
+  - Strategy
+  - Subgame
+  - Subgame-perfect equilibrium (SPE)
+  - Subjective value
+  - Successive elimination of dominated strategies
+  - Surplus
+  - Terminal node
+  - Threat
+  - Tit-for-tat (TFT)
+  - Transitive ordering
+  - Trigger strategy
+  - Type
+  - Ultimatum game
+  - Uniform distribution
+  - Utility function
+  - Variable-threat bargaining
+  - Vickrey auction
+  - Vickrey’s truth serum
+  - Winner’s curse
+  - Yankee auction
+  - Zero-sum game
+```

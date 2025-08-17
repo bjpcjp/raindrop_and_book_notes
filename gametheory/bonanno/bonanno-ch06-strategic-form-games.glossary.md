@@ -1,0 +1,25 @@
+- **Basic outcomes** — The set of fundamental results or end-states of a game before considering mixed or probabilistic outcomes.
+- **Best reply** — A strategy that maximizes a player's payoff given the strategies chosen by the other players.
+- **Cardinal IDSDS (Cardinal Iterated Deletion of Strictly Dominated Strategies)** — An iterative procedure removing strategies strictly dominated by mixed strategies in games with cardinal payoffs to identify rationalizable strategies.
+- **Degenerate lottery** — A lottery that assigns probability 1 to a single basic outcome.
+- **Expected utility** — The weighted average utility of all possible outcomes of a lottery, where weights are probabilities.
+- **Game-frame in strategic form** — A quadruple consisting of players, their strategy sets, a set of basic outcomes, and a function associating each strategy profile with a lottery over outcomes.
+- **Game in strategic form with cardinal payoffs** — A game-frame augmented with player preferences represented by von Neumann-Morgenstern utilities over lotteries.
+- **IDSDS (Iterated Deletion of Strictly Dominated Strategies)** — A process that iteratively removes strictly dominated pure strategies to simplify analysis.
+- **Indifference condition** — The principle that in a mixed-strategy Nash equilibrium, players mix only between pure strategies that yield the same expected payoff.
+- **Mixed strategy** — A probability distribution over a player’s pure strategies.
+- **Mixed-strategy extension** — A version of a strategic-form game where players can use mixed strategies.
+- **Mixed-strategy Nash equilibrium** — A profile of mixed strategies from which no player can gain by unilaterally changing their strategy.
+- **Nash equilibrium** — A strategy profile where each player's strategy is a best reply to the others.
+- **Nash’s theorem** — A foundational result guaranteeing at least one Nash equilibrium in mixed strategies for every finite game with cardinal payoffs.
+- **Player’s payoff function** — A function assigning real-valued cardinal payoffs to players for each strategy profile, often derived as expected utilities of lotteries.
+- **Probabilistic outcome (lottery)** — A probability distribution over basic outcomes associated with a strategy profile.
+- **Pure strategy** — A single, deterministic choice available to a player.
+- **Reduced-form game** — A strategic-form game where each player’s payoff function is expressed as expected utilities over lotteries.
+- **Rationalizable strategy** — A pure strategy that survives elimination through cardinal IDSDS; consistent with common knowledge of rationality.
+- **Support of a mixed strategy** — The set of pure strategies assigned positive probability in a mixed strategy.
+- **Strict dominance by mixed strategy** — A situation in which a pure strategy yields strictly lower expected payoffs than some mixed strategy, regardless of opponents’ strategies.
+- **Strictly dominated strategy** — A strategy that always yields strictly lower payoffs than another strategy (pure or mixed).
+- **Strategy profile** — A specification of strategies, one for each player in the game.
+- **Strategy set (pure strategies)** — The finite set of deterministic strategies available to a player.
+- **Von Neumann-Morgenstern utility function** — A cardinal utility function representing a player’s preferences over lotteries satisfying von Neumann-Morgenstern axioms.

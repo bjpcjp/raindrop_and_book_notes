@@ -1,0 +1,24 @@
+- **Ad auction** — An auction mechanism arranging advertisers’ links by descending bids, where each advertiser pays the next highest bid plus an increment; also known as the Generalized Second-Price Auction (GSP).  
+- **Bid** — The amount of money an advertiser is willing to pay per click on their advertisement.  
+- **Bidder** — An advertiser participating in the ad auction by submitting bids for keywords.  
+- **Click Through Rate (CTR)** — The expected number of clicks an ad in a specific position receives during a period, typically decreasing with lower positions.  
+- **First-price ad auction** — An ad auction where the highest bidder pays their own bid amount; known for instability and strategic bidding wars.  
+- **Flat fee** — A fixed payment charged by a website owner to advertisers for a set number of ad impressions, often used in early internet advertising.  
+- **Generalized Second-Price Auction (GSP)** — A type of ad auction in which advertisers pay the bid of the next highest bidder plus an increment for their position.  
+- **Impression** — A single instance of an advertisement being displayed on a web page to a visitor.  
+- **Increment** — A small amount added to the payment in a second-price auction to outbid the next highest bidder.  
+- **Keyword** — A search term chosen by an advertiser to trigger the display of their ads when matched with a user’s search query.  
+- **Link quality** — Additional factors considered in ad auctions alongside bids, such as relevance or quality of the ad, to improve auction outcomes.  
+- **Negotiated contract** — A case-by-case agreement between advertiser and website owner, often with small monthly budgets for ad placements.  
+- **One-shot auction** — An auction conducted only once at a point in time, which can lead to no pure strategic equilibrium in first-price auctions.  
+- **Payoff** — The benefit or utility a bidder receives from placing an ad in a particular position, calculated using CTR and value per click.  
+- **Position (ad slot)** — The location on a webpage where an ad is displayed; positions differ in expected click rates and visibility.  
+- **Per-click payment** — The payment model where advertisers pay only when their ad is clicked by a user.  
+- **Per-impression payment** — A payment model where advertisers pay based on the number of times their ad is viewed, regardless of clicks.  
+- **Sponsored search** — Advertising model where ads are shown in response to user search queries based on keywords and bids.  
+- **Truth-telling strategy** — Bidding in an auction equal to the bidder’s true value; not a dominant strategy in the GSP auction.  
+- **Value per click** — The monetary value or profit an advertiser assigns to each click their ad receives.  
+- **Volatile prices** — Rapidly changing payment amounts in first-price auctions caused by strategic bid adjustments.  
+- **Web resource capacity** — The limited number of ad slots a website can show, restricting how many ads can be displayed simultaneously.  
+- **Winner’s curse** — The problem in first-price auctions where the highest bidder risks overpaying due to competitive bid escalation (implied).  
+- **Envy Free Equilibrium** — A stable outcome in GSP auctions where no bidder prefers another’s position given the prices paid, discouraging bid manipulation.

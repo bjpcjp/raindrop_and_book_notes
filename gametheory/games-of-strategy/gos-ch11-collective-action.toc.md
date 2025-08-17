@@ -1,0 +1,24 @@
+- Collective-Action Games
+  - 1 Collective-Action Games with Two Players
+    - A. Collective Action as a Prisoners’ Dilemma (p. 419)
+    - B. Collective Action as Chicken (p. 421)
+    - C. Collective Action as Assurance (p. 422)
+    - D. Collective Inaction (p. 423)
+  - 2 Collective-Action Problems in Large Groups
+    - A. Multiplayer Prisoners’ Dilemma (p. 425)
+    - B. Multiplayer Chicken (p. 427)
+    - C. Multiplayer Assurance (p. 429)
+  - 3 Spillovers, or Externalities
+    - A. Commuting and Spillovers (p. 431)
+    - B. Spillovers: The General Case (p. 433)
+    - C. Commuting Revisited: Negative Externalities (p. 436)
+    - D. Positive Spillovers (p. 439)
+  - 4 A Brief History of Ideas
+    - A. The Classics (p. 443)
+    - B. Modern Approaches and Solutions (p. 444)
+    - C. Applications (p. 449)
+  - 5 “Help!”: A Game of Chicken with Mixed Strategies (p. 454)
+- Summary (p. 458)
+- Key Terms (p. 459)
+- Solved Exercises (pp. 459–461)
+- Unsolved Exercises (pp. 461–464)

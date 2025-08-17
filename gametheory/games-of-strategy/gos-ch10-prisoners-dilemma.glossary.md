@@ -1,0 +1,23 @@
+- **Compound interest** — Interest earned on an investment that is added to the principal, so that subsequent interest is earned on both the original principal and accumulated interest.
+- **Contingent strategy** — A strategy in repeated games where a player's current action depends on the previous actions of other players.
+- **Discount factor** — The factor used to calculate the present value of future payoffs, usually denoted by a number less than one, representing the relative value of future earnings compared to the present.
+- **Effective rate of return** — The combined interest or return rate that incorporates the rate of return and the probability that a relationship or game will continue.
+- **Finite repetition** — Playing a game a fixed and known number of times.
+- **Forgetful strategy** — Not explicitly defined, but generally refers to a strategy that may forgive past defections (e.g., tit-for-tat's forgiveness in repeated games).
+- **Grim strategy** — A trigger strategy where a player cooperates until the opponent defects once, then defects forever as punishment.
+- **Infinite horizon** — Refers to an indefinitely repeated or ongoing game with no predetermined endpoint.
+- **Leadership** — A situation where one player is relatively larger or stronger and may sustain cooperation by taking responsibility for cooperation despite the other's defection incentive.
+- **Match strategy** — A pricing or strategic policy where a firm promises to match any competitor’s lower price to maintain cooperative pricing.
+- **Mutation (in evolutionary games)** — Not covered in this text but generally refers to random changes in strategies or behavior.
+- **No cooperation (in prisoners’ dilemma)** — The outcome when all players defect, leading to worse payoffs for all compared to cooperating.
+- **Penalty** — A cost or punishment imposed on players when they defect from cooperation to enforce cooperative behavior.
+- **Perfect information** — Not defined here but generally means all players know the actions taken by others.
+- **Present value (PV)** — The current worth of a sum to be received or paid in the future, discounted by the appropriate rate of return.
+- **Punishment** — The retaliatory action taken by a player in response to an opponent's defection, often defecting in return.
+- **Repeated play** — Playing the same game multiple times, allowing strategies to depend on past actions.
+- **Rollback equilibrium** — The backward induction solution in finite games with perfect information.
+- **Subgame perfect equilibrium** — Not explicitly defined, but generally an equilibrium where strategies constitute a Nash equilibrium in every subgame.
+- **Tit-for-tat (TFT)** — A trigger strategy where a player starts cooperating and then copies the opponent’s previous action; defects in response to defection but forgives if opponent returns to cooperation.
+- **Trigger strategy** — A strategy that cooperates initially but switches to permanent or temporary defection if the other player defects.
+- **Unraveling of cooperation** — The theoretical process by which players defect earlier in a finitely repeated game as the end approaches, leading to no cooperation at all.
+- **Value of future cooperation** — The discounted benefit players expect from maintaining cooperation in future plays of the game.

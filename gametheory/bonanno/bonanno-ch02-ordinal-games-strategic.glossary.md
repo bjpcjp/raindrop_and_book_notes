@@ -1,0 +1,27 @@
+- **Best reply (best response)** — A strategy of a player that yields the highest payoff given the strategies chosen by the other players.
+- **Cartesian product** — For sets S1, S2, ..., Sn, the set of ordered tuples (x1, x2, ..., xn) where each xi ∈ Si.
+- **Dominant strategy** — A strategy that is better than or equal to every other strategy for a player, regardless of what the others do; strictly dominant strategies strictly outperform all others.
+- **Dominant-strategy equilibrium** — A strategy profile where each player plays a dominant strategy.
+- **Game** — A strategic situation that includes players, their strategy sets, outcomes, and their preferences (rankings) over those outcomes.
+- **Game-frame** — A description of a strategic situation without specifying players’ preferences over outcomes.
+- **Incomplete information games** — Games where players do not have full knowledge about other players’ characteristics or payoffs.
+- **Iterated deletion of strictly dominated strategies (IDSDS)** — A procedure in which strictly dominated strategies are eliminated iteratively until no such strategies remain.
+- **Iterated deletion of weakly dominated strategies (IDWDS)** — An iterative process that deletes weakly dominated strategies all at once at each step, to avoid order dependence.
+- **Nash equilibrium** — A strategy profile where no player can improve their payoff by unilaterally deviating from their strategy.
+- **Ordinal game** — A game where players' preferences over outcomes are represented by an ordinal (rank) ordering, rather than cardinal utilities.
+- **Ordinal utility function** — A function representing a player’s ordinal preferences over outcomes such that higher utility numbers correspond to preferred outcomes; utility values are only meaningful in terms of order.
+- **Outcome** — The result of a strategy profile being played in a game.
+- **Pareto superior (strictly/weakly)** — An outcome (or strategy profile) is strictly Pareto superior to another if all players strictly prefer it; weakly Pareto superior if at least one player strictly prefers it and others find it at least as good.
+- **Payoff function** — A function mapping strategy profiles to numerical utilities representing player preferences.
+- **Perfect Bayesian equilibrium** — A refinement of subgame-perfect equilibrium incorporating beliefs and Bayesian updating.
+- **Preference relation** — A complete and transitive relation over outcomes representing a player’s ranking of those outcomes.
+- **Reduced-form ordinal game** — A strategic game expressed using players’ strategy sets and payoff functions derived from ordinal utilities, omitting explicit description of outcomes.
+- **Second-price auction (Vickrey auction)** — A sealed-bid auction where the highest bidder wins but pays the second-highest bid.
+- **Strategy** — A complete plan of action a player can take in a game.
+- **Strategy profile** — A tuple consisting of one strategy chosen by each player.
+- **Strict dominance** — Strategy a strictly dominates strategy b if a yields a strictly higher payoff than b for every possible strategies of the other players.
+- **Strictly dominant strategy** — A strategy that strictly dominates every other strategy of that player.
+- **Subgame-perfect equilibrium** — A Nash equilibrium that specifies optimal strategies for every subgame of a dynamic game.
+- **Weak dominance** — Strategy a weakly dominates strategy b if a yields at least as good payoffs as b for every strategy profile of others, and strictly better for some.
+- **Weakly dominant strategy** — A strategy that weakly dominates or is equivalent to every other strategy.
+- **Weakly dominant-strategy equilibrium** — A strategy profile where each player plays a weakly dominant strategy and at least one player’s strategy is not strictly dominant.

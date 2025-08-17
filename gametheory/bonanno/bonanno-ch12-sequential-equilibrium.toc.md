@@ -1,0 +1,42 @@
+```markdown
+# Table of Contents
+
+- 12. Sequential Equilibrium
+  - 12.1 Consistent assessments
+    - Introduction to consistency and weak sequential equilibrium
+    - Example: Figure 12.1 and beliefs at unreached information sets
+    - Definition 12.1.1: Consistent assessment
+    - Examples of consistent and non-consistent assessments
+      - Figure 12.2 example
+      - Figure 12.3 example
+  - 12.2 Sequential equilibrium
+    - Definition 12.2.1: Sequential equilibrium as consistent and sequentially rational assessment
+    - Example: Figure 12.4 extensive-form game and sequential equilibrium assessment
+    - Theorems
+      - Theorem 12.2.1: Sequential equilibrium implies subgame-perfect equilibrium
+      - Theorem 12.2.2: Existence of sequential equilibrium in finite extensive-form games
+    - Venn diagram relating equilibrium concepts (Figure 12.5)
+  - 12.3 Is ‘consistency’ a good notion?
+    - Critique of consistency: practical and conceptual issues
+    - Quotes from Kreps and Wilson, and Osborne and Rubinstein
+    - Introduction to Perfect Bayesian Equilibrium (in next chapter)
+    - Limitations of sequential equilibrium with respect to weakly dominated strategies
+      - Figure 12.6 example
+    - Mention of trembling-hand perfect equilibrium
+  - 12.4 Exercises
+    - 12.4.1 Exercises for Section 12.1: Consistent assessments
+      - Exercise 12.1: Bayesian updating beliefs (Figure 12.7)
+      - Exercise 12.2: Nash and subgame-perfect equilibria, consistent assessments (Figure 12.8)
+    - 12.4.2 Exercises for Section 12.2: Sequential equilibrium
+      - Exercise 12.3: Sequential equilibrium in pure-strategy Nash equilibria (Figure 12.9)
+      - Exercise 12.4: Subgame-perfect equilibria, weak sequential equilibria, sequential equilibrium (Figure 12.10)
+      - Exercise 12.5: Extensive-form representation and equilibria for electrical circuit game
+      - Exercise 12.6: Buyer-seller bargaining game
+  - 12.5 Solutions to Exercises
+    - Solutions to Exercise 12.1
+    - Solutions to Exercise 12.2
+    - Solutions to Exercise 12.3
+    - Solutions to Exercise 12.4
+    - Solutions to Exercise 12.5
+    - Solutions to Exercise 12.6
+```

@@ -1,0 +1,31 @@
+- **Ascending auction** — Auction starting from a low price, with bidders raising their bids until no higher bids are offered.  
+- **Auctioneer** — The agent who coordinates and manages the auction process.  
+- **Bid** — The price offered by a buyer to purchase a good in an auction.  
+- **Bidder** — A buyer who places bids in an auction.  
+- **Bid shout** — A bid price submitted by a buyer in a double auction.  
+- **Charging policy** — Rules defining how traders are charged fees for market services.  
+- **Cleaning price** — The transaction price used to settle a matched bid-ask pair in a double auction.  
+- **Combinatorial auction** — An auction where bidders can place bids on bundles or combinations of multiple items.  
+- **Correlated value** — A valuation reflecting how much a bidder is willing to pay for a good considering other factors, possibly depending on others' values.  
+- **Demand correspondence** — The set of bundles that maximize a buyer’s utility given the current prices in a combinatorial auction.  
+- **Double auction** — An auction allowing multiple buyers and sellers to submit bids and asks simultaneously.  
+- **Envy free equilibrium** — A stable outcome in ad auctions where no bidder prefers another bidder’s assignment and cannot profitably deviate.  
+- **First-price sealed-bid auction (FPSB)** — A sealed-bid auction in which the highest bidder wins and pays their own bid.  
+- **Gross substitutes condition (GS)** — A condition where an increase in price of some items does not reduce demand for items whose prices remain unchanged, implying substitutability.  
+- **Matching policy** — Rules determining which bid-ask pairs are matched for transactions in double auctions.  
+- **Maximal matching** — A matching policy maximizing the number of transactions (market liquidity).  
+- **Market share** — The proportion of total trades or volume controlled by a market or participant.  
+- **Market simulation** — The use of computational models to replicate auction environments for experimental purposes.  
+- **Market selection strategy** — The approach a trader uses to decide which market to participate in.  
+- **Matching rule** — The process or algorithm used for pairing buyers’ bids and sellers’ asks.  
+- **Payoff** — The utility or profit an agent receives from participating in an auction or trade.  
+- **Private value** — The value of a good as perceived individually and privately by a bidder or seller.  
+- **Pricing policy** — The method used to determine transaction prices for matched bids and asks.  
+- **Price vector** — A set of prices assigned to each item in combinatorial auctions.  
+- **Reserve price** — The minimum price set by the auctioneer below which bids are not accepted.  
+- **Second-price sealed-bid auction (SPSB, Vickrey auction)** — A sealed-bid auction where the highest bidder wins but pays the second-highest bid.  
+- **Shout** — A bid or ask submitted by a trader in a double auction.  
+- **Single-unit auction** — An auction for a single indivisible item.  
+- **Truth-telling** — Bidding a value equal to one’s true valuation of the good.  
+- **Walrasian equilibrium** — A price and allocation where supply meets demand and no agent can improve utility by changing their allocation or prices.  
+- **Winner’s curse** — A phenomenon where the winning bidder tends to overpay due to incomplete information or competition.

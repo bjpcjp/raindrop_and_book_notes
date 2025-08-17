@@ -1,0 +1,11 @@
+- **Demand correspondence \(D_i(p)\)** — The set of bundles a buyer \(i\) demands at a given price vector \(p\).  
+- **Double-track auction** — An auction splitting items into two disjoint sets \(X_1\) and \(X_2\) with opposing price adjustments to drive convergence under certain valuation conditions.  
+- **Excess demand** — A situation where the aggregate demand for an item exceeds its supply at a given price.  
+- **Gross complements (in GSC)** — Items for which price increases in one category negatively affect demand in the other category, violating substitutability.  
+- **Gross substitutes condition (GS)** — A condition on valuation functions where increasing prices of some items does not decrease the demand for other items whose prices remain unchanged.  
+- **Gross substitutes and complements condition (GSC)** — A valuation condition where the item set is partitioned into two categories; price changes in one category do not affect demand for items in the other category that have unchanged prices.  
+- **Price vector \(p\)** — A vector listing the prices of all items in the auction.  
+- **Starting price vector \(p_0\)** — The initial set of item prices before the dynamic auction iteration begins.  
+- **Valuation function** — A buyer’s numeric assessment of the value they assign to different bundles of items.  
+- **Walrasian equilibrium** — A set of prices at which aggregate demand equals supply for every item, and each buyer maximizes utility given these prices.  
+- **Walrasian equilibrium existence** — Not guaranteed; depends on valuation functions, such as satisfying the GS or GSC conditions.

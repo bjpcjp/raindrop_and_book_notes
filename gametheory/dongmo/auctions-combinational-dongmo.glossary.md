@@ -1,0 +1,12 @@
+- **Allocation** — A function π assigning subsets of items to buyers or the seller such that all items are allocated, no items overlap among buyers, and the seller may hold none.  
+- **Bidder** — A participant (buyer) in a combinatorial auction who submits bids for bundles of items.  
+- **Bundle** — A combination of multiple items offered as a single unit in a combinatorial auction.  
+- **Complementary items** — Items whose combined value in a bundle exceeds the sum of their individual values.  
+- **Combinatorial auction** — An auction format where multiple items are sold simultaneously and bidders can place bids on item combinations.  
+- **Demand correspondence** — The set of bundles maximizing a buyer's utility given item prices, defined as Di(p) = arg max(Vi(A) − sum of prices for A).  
+- **Efficient allocation** — An allocation that maximizes the total value summed over all buyers for their allocated bundles.  
+- **Price vector** — A non-negative real number assignment to each item in the auction.  
+- **Seller** — The entity (represented as agent 0) offering items for sale in the auction.  
+- **Substitutable items** — Items whose combined value in a bundle is less than the sum of their individual values.  
+- **Valuation (value function)** — A buyer’s function vi: 2^X → Z+ assigning a non-negative integer value to each subset (bundle) of items.  
+- **Walrasian equilibrium** — A pair (p, π) of price vector and allocation where each buyer receives a demanded bundle maximizing utility at prices p, and no items remain unsold.

@@ -1,0 +1,34 @@
+```markdown
+- 3. Perfect-information Games
+  - 3.1 Trees, frames and games (p.76)
+    - Definition 3.1.1 Rooted directed tree
+    - Definition 3.1.2 Finite extensive form (frame) with perfect information
+    - Example 3.1 Amy and Beth business dissolution game
+    - Definition 3.1.3 Finite extensive game with perfect information
+    - Figures 3.1, 3.2
+  - 3.2 Backward induction (p.80)
+    - Definition 3.2.1 Backward-induction algorithm
+    - Example game with multiple backward-induction solutions (Figures 3.3, 3.4, 3.5)
+  - 3.3 Strategies in perfect-information games (p.83)
+    - Definition 3.3.1 Strategy in perfect-information games
+    - Example game and strategic form (Figures 3.6, 3.7, 3.8, 3.9)
+  - 3.4 Relationship between backward induction and other solutions (p.86)
+    - Theorem 3.4.1 Backward induction solutions are Nash equilibria
+    - Discussion of Nash equilibria vs backward-induction solutions
+    - Example: Entry game and Selten’s Chain Store Game (Figure 3.10, 3.11)
+  - 3.5 Perfect-information games with two players (p.90)
+    - Win-lose games: definition and Theorem 3.5.1
+    - Example 3.2 Sequential number choosing game
+    - Games with outcomes W1, W2, Draw; Theorem 3.5.2
+  - 3.6 Exercises (p.94)
+    - 3.6.1 Exercises for Section 3.1 (Trees, frames and games)
+      - Exercises 3.1, 3.2
+    - 3.6.2 Exercises for Section 3.2 (Backward induction)
+      - Exercises 3.3, 3.4
+    - 3.6.3 Exercises for Section 3.3 (Strategies in perfect-information games)
+      - Exercises 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
+    - 3.6.4 Exercises for Section 3.5 (Two-player games)
+      - Exercises 3.11, 3.12, 3.13
+  - 3.7 Solutions to exercises (p.101)
+    - Solutions to Exercises 3.1 – 3.13 with corresponding figures (3.15 to 3.41)
+```

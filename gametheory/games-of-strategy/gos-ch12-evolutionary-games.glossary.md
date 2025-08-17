@@ -1,0 +1,17 @@
+- **evolutionary stable (ESS)** — A configuration of a population and its phenotypes that cannot be successfully invaded by any mutant phenotype.
+- **evolutionary stable strategy (ESS)** — A phenotype with a strategy that, when predominant in a population, cannot be invaded by any mutant strategy.
+- **fitness** — The quantitative measure of reproductive or evolutionary success of a phenotype or strategy.
+- **genotype** — The set of genes governing particular behaviors or traits of an organism.
+- **hawk–dove game** — A strategic game featuring aggressive (Hawk) and passive (Dove) strategies competing over a resource.
+- **invasion by a mutant** — The process by which a new strategy or phenotype appears in a population and attempts to become more prevalent.
+- **mutation** — A chance genetic change that may produce new phenotypes or strategies.
+- **neutral ESS** — A phenotype or strategy that is evolutionarily stable in the sense that mutants neither increase nor decrease in frequency but can coexist.
+- **phenotype** — The observable behavioral pattern of an organism determined by its genotype.
+- **playing the field** — Evolutionary interactions happening simultaneously among many individuals in a population rather than pairwise.
+- **polymorphism** — An evolutionary stable population consisting of two or more coexisting phenotypes or strategies.
+- **primary criterion** — The test that an evolutionary stable strategy must perform better against itself than a mutant strategy does against it.
+- **selection** — The dynamic process changing the proportions of different phenotypes or strategies based on their fitness.
+- **secondary criterion** — A tie-breaking test required when the primary criterion is inconclusive; compares how an evolutionary stable strategy and a mutant fare against the mutant.
+- **strategy** — A behavior pattern or plan followed by a phenotype in interactions with others, fixed by genetics or other mechanisms.
+- **system 1** — Kahneman’s term for the instinctive, fast mode of decision-making.
+- **system 2** — Kahneman’s term for the calculating, slow, and deliberate mode of decision-making.

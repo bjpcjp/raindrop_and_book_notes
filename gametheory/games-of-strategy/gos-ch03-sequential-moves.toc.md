@@ -1,0 +1,22 @@
+```markdown
+- 3 Games with Sequential Moves
+  - 1 Game Trees
+    - A. Nodes, Branches, and Paths of Play
+    - B. Uncertainty and “Nature’s Moves”
+    - C. Outcomes and Payoffs
+    - D. Strategies
+    - E. Tree Construction
+  - 2 Solving Games by Using Trees
+  - 3 Adding More Players
+  - 4 Order Advantages
+  - 5 Adding More Moves
+    - A. Tic-Tac-Toe
+    - B. Chess
+    - C. Checkers
+  - 6 Evidence Concerning Rollback
+  - 7 Strategies in Survivor
+- Summary
+- Key Terms
+- Solved Exercises
+- Unsolved Exercises
+```

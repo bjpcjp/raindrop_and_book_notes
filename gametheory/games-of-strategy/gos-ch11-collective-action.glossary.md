@@ -1,0 +1,29 @@
+- **Coercion** — The use of force or threats to make individuals comply with group rules or behaviors.
+- **Collective action problem** — A situation where individuals’ rational choices lead to outcomes that are suboptimal for the group.
+- **Common-resource games** — Games where players decide on the use of a common resource that can be overexploited, leading to collective inaction problems.
+- **Convention** — A social custom or widely accepted behavior that emerges because it is in everyone’s interest to conform if others do.
+- **Custom** — A traditional and habitual practice followed by a group, often not formally codified but widely accepted.
+- **Diffusion of responsibility** — A social psychology concept where individuals in a group are less likely to take action because they expect others to do so.
+- **External effect (Externality)** — The impact of one person’s action on the payoffs or well-being of other individuals.
+- **Free rider** — An individual who benefits from others’ efforts without contributing themselves.
+- **Internalize the externality** — To adjust an individual’s incentives, typically through taxes or rewards, so that they bear the full social cost or enjoy the full social benefit of their actions.
+- **Locked in** — A situation where a society or group remains stuck at a suboptimal equilibrium due to historical or strategic path dependencies.
+- **Marginal private gain** — The additional payoff received by an individual from changing their own action, ignoring spillover effects.
+- **Marginal social gain** — The total additional payoff to society resulting from one individual changing their action, including spillovers.
+- **Mixed strategy** — A strategic approach where a player randomizes over possible actions rather than choosing a pure action.
+- **Nonexcludable benefits** — Benefits from a good or project that cannot be withheld from anyone, regardless of their contribution.
+- **Nonrival benefits** — Benefits from a good or project that one person’s consumption does not reduce for others.
+- **Norm** — Socially accepted rules or standards of behavior; may be internalized or enforced.
+- **Oppression** — Forcing a subgroup to accept lower payoffs or roles, often sustained by social or economic power.
+- **Oppression** — The imposition of lower social or economic status on a group within a society, often enforced by coercion.
+- **Personal (Private) incentive** — The motivation for an individual to act based on their own payoff without regard for social outcomes.
+- **Pluralistic ignorance** — A situation where individuals privately disagree but assume incorrectly that others agree, leading to inaction.
+- **Positive feedback** — A process where individual actions increase the incentives for others to take the same action, potentially creating multiple equilibria.
+- **Public good** — A good that is nonexcludable and nonrival in consumption; its benefits are shared by all regardless of contribution.
+- **Pure public good** — A good with strictly nonexcludable and nonrival benefits, such as national defense.
+- **Sanction** — A penalty or reward used by the group to enforce norms or cooperative behavior.
+- **Social optimum** — The allocation or outcome that maximizes the total payoffs or welfare of the society as a whole.
+- **Spillover effect** — The impact of one individual’s action on the payoffs of other individuals in the group.
+- **Strategy (in game theory)** — A complete plan of action for all possible situations in a game.
+- **Swerve strategy** — In the chicken game, the conciliatory action taken by a player to avoid conflict.
+- **Tragedy of the commons** — A situation where individuals overexploit a common resource, leading to its depletion despite it being against everyone’s long-term interest.

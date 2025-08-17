@@ -1,0 +1,22 @@
+- **Alternating offers** — A bargaining process where players take turns making offers and counteroffers until an agreement is reached or the negotiation ends.
+- **Backstop** — See BATNA; the fallback outcome a player receives if no agreement is reached.
+- **BATNA (Best Alternative to a Negotiated Agreement)** — The best payoff that a party can secure by acting outside the negotiation or by not reaching an agreement.
+- **Cooperative game theory** — An approach to game theory where players decide and implement their actions jointly.
+- **Decay** — The reduction in the total available surplus or value over time or rounds of negotiation.
+- **Efficient frontier** — The set of all bargaining agreements that fully exploit mutual gains and leave no unexploited surplus.
+- **Efficient outcome** — An agreement that leaves no unexploited mutual gains; lies on the efficient frontier.
+- **Impatience** — A preference for receiving a payoff sooner rather than later, which affects bargaining outcomes due to the time value of money.
+- **Independence of irrelevant alternatives** — An assumption that removing outcomes that would not be chosen anyway does not affect the bargaining outcome.
+- **Level curves** — Curves representing constant values of the bargaining objective function in Nash’s cooperative solution.
+- **Multilateral bargaining** — Bargaining involving more than two parties, enabling exchange cycles and more complex agreements.
+- **Multi-issue bargaining** — Negotiations involving multiple items or issues simultaneously, increasing possibilities for mutually beneficial trade-offs.
+- **Nash cooperative solution** — A bargaining solution defined by specific axioms (scale invariance, efficiency, independence of irrelevant alternatives) that divides surplus according to bargaining strengths.
+- **Noncooperative game theory** — Game theory approach where players choose strategies separately and independently.
+- **Rollback equilibrium** — The outcome of a sequential game found by reasoning backward from the end of the game.
+- **Screening** — Strategies designed to induce opponents to reveal their private information truthfully.
+- **Signal (Signaling)** — Actions taken by a player to credibly convey private information, such as strength or patience.
+- **Surplus** — The excess value created by reaching an agreement, above what each party can secure separately.
+- **Threats (Strategic threats)** — Explicit or implicit warnings of actions unfavorable to an opponent, used to gain bargaining advantage.
+- **Ultimatum game** — A bargaining game where one player proposes a division and the other player accepts or rejects; rejection leads to no surplus.
+- **Variable-threat bargaining** — A bargaining game where players can manipulate their BATNAs before bargaining begins.
+- **Zero-sum game** — A game where one player's gain is exactly equal to the other player's loss; bargaining situations with a surplus are generally not zero-sum.

@@ -1,0 +1,28 @@
+- **AGM belief revision function** — A belief revision function rationalized by a plausibility order, satisfying AGM axioms including Arrow’s Axiom.  
+- **AGM probabilistic belief revision policy** — A collection of probability distributions consistent with an AGM belief revision function, obtained by conditioning a full-support distribution on the plausible states after receiving information.  
+- **Belief revision** — The process of changing beliefs after receiving surprising information assigned zero initial probability.  
+- **Belief updating** — The rational modification of initial beliefs upon receiving new information that had positive initial probability, typically by conditioning.  
+- **Belief revision function** — A function mapping events to subsets of a universal set representing the revised possible states after receiving information, satisfying certain consistency properties.  
+- **Common knowledge** — An event is common knowledge at a state if all individuals know it, they know that they know it, and so on, ad infinitum.  
+- **Common prior** — A probability distribution over states such that updating it on each individual's information set yields that individual's beliefs, representing like-mindedness of individuals.  
+- **Conditional probability** — The probability of an event given that another event has occurred, defined as P(A|B) = P(A ∩ B) / P(B), assuming P(B) > 0.  
+- **Disjoint sets** — Two sets with no elements in common; their intersection is the empty set.  
+- **Event** — A subset of the sample space, representing a proposition or condition within probability theory.  
+- **Harsanyi consistency (Like-mindedness)** — The property that individuals’ beliefs are derived from a common prior by conditioning on their information; they would have identical beliefs if given the same information.  
+- **Information partition** — A partition of the state space representing the information available to an individual, where each subset is an information set.  
+- **Information set** — A subset of states considered possible by an individual given their information.  
+- **Intersection (A ∩ B)** — The set of elements common to both sets A and B.  
+- **Mutually disjoint sets** — A collection of sets pairwise disjoint; no element is in more than one set.  
+- **Plausibility order** — A complete and transitive relation over states that ranks states by how plausible they are considered by an individual.  
+- **Probability distribution** — A function assigning probabilities to individual elements of a finite universal set such that probabilities are between 0 and 1 and sum to 1.  
+- **Probability measure** — A function assigning probabilities to events (subsets of the sample space) satisfying P(U) = 1 and additivity for disjoint events.  
+- **Partition** — A collection of disjoint subsets of a set whose union is the entire set.  
+- **Like-minded individuals** — Individuals whose beliefs are Harsanyi consistent; they share a common prior and differ only due to differing information.  
+- **Sample space (U)** — The universal set of all possible states or outcomes.  
+- **Support of a probability distribution** — The set of states assigned positive probability by the distribution.  
+- **Union (A ∪ B)** — The set of elements belonging to either set A or set B (or both).  
+- **Updating on an event (conditioning)** — Changing a probability distribution to reflect new information represented by an event, assigning zero probability outside the event and re-scaling probabilities inside it.  
+- **Arrow’s Axiom** — A condition on belief revision functions ensuring consistency when refining information: if E ⊆ F and E ∩ f(F) ≠ ∅, then f(E) = E ∩ f(F).  
+- **Bayes’ rule** — A formula computing the conditional probability of an event given another, relating P(E|F) and P(F|E) using prior probabilities.  
+- **Belief certainty** — An individual is certain of an event if she assigns probability 1 to that event, though the event may still be false in reality.  
+- **De Morgan’s Laws** — Logical identities relating complements of intersections and unions: ¬(A ∪ B) = ¬A ∩ ¬B, ¬(A ∩ B) = ¬A ∪ ¬B.

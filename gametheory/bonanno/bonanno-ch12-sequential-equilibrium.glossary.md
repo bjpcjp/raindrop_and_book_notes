@@ -1,0 +1,17 @@
+- **Assessment** — A pair consisting of a strategy profile and a system of beliefs in an extensive game.  
+- **Bayesian updating** — The process of updating beliefs at reached information sets using Bayes' rule based on the strategy profile.  
+- **Completely mixed strategy** — A strategy profile where every choice at every information set is played with strictly positive probability.  
+- **Consistency** — A property of an assessment where there exists a sequence of completely mixed strategies converging to the strategy profile, whose Bayesian-updated beliefs converge to the system of beliefs in the assessment.  
+- **Consistent assessment** — An assessment that satisfies the consistency condition, ensuring beliefs are limits of beliefs derived by Bayesian updating on perturbed strategies.  
+- **Extensive-form game** — A representation of a game specifying the order of moves, available actions, information sets, and payoffs.  
+- **Information set** — A collection of decision nodes of a player that she cannot distinguish between when making a choice.  
+- **Limit of sequences** — A mathematical concept used to define consistency by taking limits of sequences of strategy profiles and beliefs.  
+- **Nash equilibrium** — A strategy profile where no player can gain by unilaterally deviating given the others’ strategies.  
+- **Perfect Bayesian equilibrium (PBE)** — A refinement of subgame perfection with clear interpretation via belief revision, introduced to address difficulties with sequential equilibrium notions.  
+- **Sequential equilibrium** — An assessment that is both consistent and sequentially rational; a refinement of subgame-perfect equilibrium ensuring rationality and consistent belief updating at all information sets.  
+- **Sequential rationality** — The requirement that choices at each information set maximize expected payoff given the player’s beliefs at that set.  
+- **Subgame-perfect equilibrium (SPE)** — A Nash equilibrium inducing Nash equilibrium strategies in every subgame.  
+- **System of beliefs** — A player’s probabilistic beliefs over nodes within an information set.  
+- **Trembling-hand perfect equilibrium** — An equilibrium concept that eliminates weakly dominated strategies by considering the possibility of slight mistakes ("trembles") by players.  
+- **Weakly dominated strategy** — A strategy that never yields a strictly higher payoff and sometimes yields a strictly lower payoff than some other strategy; such strategies may persist in sequential equilibria.  
+- **Weak sequential equilibrium** — An assessment requiring sequential rationality and Bayesian updating at reached information sets but allowing arbitrary beliefs at unreached sets; not a refinement of SPE.

@@ -1,0 +1,24 @@
+- **Auction** — A market mechanism where goods or services are sold to the highest bidder or bought from the lowest offer in a competitive setting.  
+- **Bet (Shout)** — An offer or bid made by a trader to buy or sell goods in a market.  
+- **CAT Tournament** — The TAC Market Design Game simulating competition among financial market makers using double auction mechanisms.  
+- **Client-Server Structure** — A system architecture where clients request services and a server provides them, used in JTAP for communication between agents and markets.  
+- **Combinatorial Auction** — A market mechanism allowing bidding on combinations of items rather than just individual goods.  
+- **Double Auction** — A market mechanism where buyers and sellers submit bids and offers simultaneously, and trades occur when bids meet offers.  
+- **Electronic Auction** — An auction conducted via electronic platforms, facilitating data collection and analysis.  
+- **English Auction** — A dynamic auction format where bids are openly increased until no higher bid is made.  
+- **Jackaroo Trading Agent Platform (JTAP)** — A multi-agent system allowing autonomous trading agents to trade across multiple market mechanisms.  
+- **Labor Market** — A simulated market within JTAP where jobs and labor services are traded.  
+- **Market Mechanism** — The set of rules and procedures governing how trades occur in a market, such as double auctions or English auctions.  
+- **Market Maker (Specialist)** — An agent or entity that operates a market by facilitating trade, providing liquidity, and setting prices.  
+- **Market Share** — The portion of total trades or volume controlled by a market maker in the TAC Market Design Game.  
+- **Matching** — The process of pairing bids and offers in a market to execute trades.  
+- **Profit** — Earnings made by a market maker or trader after conducting trades.  
+- **Simulated Stock Market** — A market implemented in JTAP where stock securities are traded under defined rules.  
+- **Strategic Trading Game** — A game designed to promote the design and analysis of trading strategies for software traders within simulated financial markets.  
+- **Supply Chain Management (SCM) Game** — A TAC competition focusing on trading agents managing interconnected supply chains.  
+- **Trading Account** — An individual account within a trader entity that can be dedicated to buying or selling a single good.  
+- **Trading Agent** — Autonomous software programs designed to trade in electronic markets on behalf of their owners.  
+- **Trading Agent Competition (TAC)** — An international research forum and competition designed to promote the study of automated trading agents.  
+- **Trading Strategy** — The set of rules or algorithms that determine when and how a trader or agent makes bids or offers.  
+- **Transaction Rate** — The frequency at which trades occur in a market or under a specific market maker.  
+- **Winner Selection** — The process of deciding which bids or offers succeed in a market mechanism.

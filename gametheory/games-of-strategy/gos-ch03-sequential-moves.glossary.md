@@ -1,0 +1,19 @@
+- **action node** — A decision point in a game tree at which a player chooses an action.
+- **backward induction** — A method of analyzing sequential games by reasoning from the end of the game back to the beginning to find optimal strategies.
+- **branch** — A line in a game tree representing a possible action leading from one node to another.
+- **decision node** — A node in a game tree where a player must make a decision; each is associated with the player moving at that point.
+- **decision tree** — A graphical representation of decisions and their possible consequences for a single decision-maker; a game tree extends this to multiple players.
+- **extensive form** — The representation of a sequential-move game as a game tree, showing players, actions, nodes, branches, and payoffs.
+- **first-mover advantage** — The advantage a player may have by moving before others in a sequential-move game, typically due to the ability to commit to actions first.
+- **game tree** — A tree diagram representing the sequential structure of a game, showing the order of moves, possible actions, and payoffs.
+- **initial node** — The root node of a game tree where the game begins and the first move is made.
+- **move** — A single action taken by a player at a decision node.
+- **node** — A point in a game tree representing a decision point or an outcome of the game.
+- **path of play** — A sequence of moves through a game tree from the initial node to a terminal node that represents the play of the game.
+- **prune** — The process of eliminating branches of a game tree that a rational player would not follow, used in rollback analysis.
+- **rollback** — The method of solving sequential-move games by looking ahead to future nodes and reasoning backward to the initial decision, also called backward induction.
+- **rollback equilibrium** — The set of strategies for all players identified through rollback analysis, forming a subgame perfect equilibrium in sequential games.
+- **second-mover advantage** — The advantage a player may have by moving after others in a sequential-move game, often due to flexibility in response.
+- **strategy** — A complete and contingent plan of action specifying a player’s move at every decision node at which they may be called to act.
+- **subgame perfect equilibrium** — A refinement of Nash equilibrium applicable to sequential games, equivalent to rollback equilibrium.
+- **terminal node** — An endpoint of a game tree where the game ends and payoffs to players are assigned.

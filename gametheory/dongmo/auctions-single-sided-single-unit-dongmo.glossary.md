@@ -1,0 +1,17 @@
+- **Ascending auction** — An auction format where bids increase over time until no higher bid is made, exemplified by the English auction.  
+- **Bidder** — A participant in an auction who submits bids to purchase the auctioned good.  
+- **Closed auction** — An auction format where bids are submitted secretly, without knowledge of others’ bids, such as sealed-bid auctions.  
+- **Dutch auction** — An open-cry auction where the auctioneer starts with a high price and progressively lowers it until a bidder accepts the current price.  
+- **English auction** — An open-cry ascending auction where the auctioneer posts a reserve price and bidders successively increase bids until no higher bid is given.  
+- **First-price sealed-bid (FPSB) auction** — A closed auction where bidders submit sealed bids; the highest bidder wins and pays their bid amount.  
+- **Independent private values (IPV) model** — An auction model where each bidder’s value is private and drawn independently from a common known distribution.  
+- **Open auction** — An auction format with visible bids during the bidding process, such as English and Dutch auctions.  
+- **Price discovery** — The process in auctions where the true value or price of an item is revealed through competitive bidding.  
+- **Reserve price** — The minimum price set by the seller below which the good will not be sold.  
+- **Revenue Equivalence Theorem** — A theorem stating that under certain conditions all standard auction formats yield the same expected revenue for the seller.  
+- **Second-price sealed-bid (SPSB) auction** — A closed auction where the highest bidder wins but pays the amount of the second highest bid; also known as the Vickrey auction.  
+- **Seller-bid auction** — An auction format where sellers submit bids indicating the minimum price at which they are willing to sell.  
+- **Single-sided auction** — An auction involving one seller (auctioneer) and multiple buyers competing for a single unit of a good.  
+- **Truth telling** — A characteristic of some auction mechanisms, notably the second-price sealed-bid auction, where bidders are incentivized to bid their true value.  
+- **Winner’s curse** — A phenomenon where the winning bidder tends to overpay due to incomplete information or overly optimistic bidding.  
+- **Winning bid** — The bid amount submitted by the successful bidder who obtains the auctioned item.

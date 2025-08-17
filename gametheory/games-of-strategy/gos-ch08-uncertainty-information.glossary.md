@@ -1,0 +1,20 @@
+- **Adverse selection** — A situation in asymmetric information games where the less-informed party selectively attracts a poorer or undesirable group due to lack of information.
+- **Babbling equilibrium** — An equilibrium in a communication game where messages are ignored and convey no useful information.
+- **Bayesian Nash equilibrium** — An equilibrium concept for games with incomplete information where players maximize expected payoffs given beliefs about other players’ types and strategies.
+- **Cheap talk equilibrium** — An equilibrium where costless, non-binding communication (cheap talk) influences beliefs and strategies credibly.
+- **Incentive-compatibility condition (constraint)** — Conditions ensuring that each type of player prefers the strategy or action designed to reveal their true type rather than mimicking another.
+- **Moral hazard** — A situation of imperfect asymmetric information where a party’s actions (which are unobservable) affect the outcomes and payoffs in a way that creates incentives for shirking or risky behavior.
+- **Negatively correlated** — A statistical relationship where one party’s good outcome is associated with another party’s bad outcome.
+- **Partially revealing equilibrium** — An equilibrium where some information is credibly revealed, but some types may mimic others, leading to only partial separation of types.
+- **Participation condition (constraint)** — Conditions ensuring that players prefer participating in a particular contract or arrangement over their outside option.
+- **Perfect Bayesian equilibrium (PBE)** — A refinement of Bayesian Nash equilibrium incorporating sequential rationality and consistency of beliefs updated using Bayes’ rule.
+- **Pooling** — A situation where different types choose the same action or strategy so that others cannot distinguish between them based on this choice.
+- **Pooling equilibrium** — An equilibrium outcome where different types of players pool together by taking identical actions, making type identification impossible.
+- **Positively correlated** — A statistical relationship where parties’ outcomes tend to move together in the same direction.
+- **Screening** — Strategies or devices used by less-informed players to induce more-informed players to reveal their private information.
+- **Screening device** — A mechanism or set of actions designed to separate types by eliciting truthful revelation of private information.
+- **Self-selection** — When players choose strategies or actions that reveal their type willingly due to incentives created by the game's structure.
+- **Semiseparating equilibrium** — An equilibrium in which some types fully reveal themselves while others mix strategies, leading to only partial separation.
+- **Separating equilibrium** — An equilibrium in which players of different types choose distinct actions that perfectly reveal their private information.
+- **Separation of types** — The phenomenon whereby different types choose different strategies, enabling others to identify their true types.
+- **Signaling** — Actions taken by better-informed players to convey credible information about their private knowledge or type through costly or otherwise informative behavior.

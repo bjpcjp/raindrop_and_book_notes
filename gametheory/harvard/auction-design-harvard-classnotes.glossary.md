@@ -1,0 +1,32 @@
+- **Aftermarket** — Secondary market where goods can be resold; presence can affect incentives and auction efficiency.  
+- **Affiliated Values** — Model where an agent’s high value increases the likelihood others have high values; affects auction dynamics and incentives.  
+- **Ascending-price Auction** — Auction format where prices rise until allocation is determined; e.g., English auction.  
+- **Bidder Rings** — Collusive agreements where a group restricts participation to suppress prices and shares gains post-auction.  
+- **Budget-balanced** — Mechanism property where payments in and out of the system balance without deficit or surplus.  
+- **Clinching Mechanism** — Iterative multi-unit auction that achieves efficient allocation and Vickrey payments under decreasing marginal values.  
+- **Collusion** — Coordinated behavior among bidders to reduce competition and manipulate outcomes.  
+- **Combinatorial Auction** — Auction allowing bids on combinations of items to handle complementarities and non-linear preferences.  
+- **Common Values** — Auction setting where the value is the same for all bidders but not perfectly known; bidders receive correlated signals.  
+- **Double Auction** — Auction involving multiple buyers and sellers simultaneously submitting bids and asks for trades.  
+- **Efficient Auction** — Auction designed to allocate items so as to maximize total valuation among bidders.  
+- **English Auction** — Ascending price auction where bidders openly bid until no one is willing to bid higher.  
+- **Exposure Problem** — Risk in auctions with heterogeneous items where bidders might win only some desired items, leading to inefficiency.  
+- **First-price Sealed-bid Auction (FPSB)** — Each bidder submits a sealed bid; highest bidder wins and pays their bid.  
+- **Gross-substitutes Property** — Condition on bidders’ preferences that guarantee good behavior of simultaneous ascending auctions.  
+- **Information Revelation** — Disclosure of bidder valuations or bids during auctions, which can affect future bidding and strategic behavior.  
+- **Iterative Auction** — Auction conducted over multiple rounds allowing bidders to update bids based on information revealed.  
+- **k-Double Auction (k-DA)** — Double auction variant setting prices using a weighted average of bid and ask at the trading cutoff.  
+- **Linkage Principle** — Idea that auctioneers maximize revenue by committing to releasing information that links bidders’ values.  
+- **Multi-unit Auction** — Auction selling multiple identical units to bidders, possibly with multi-unit demand.  
+- **Multiattribute Auction** — Auction where multiple item attributes (e.g., quality, speed) beyond price are bid upon.  
+- **Optimal Auction** — Auction design that maximizes expected revenue for the seller, potentially requiring reservation prices.  
+- **Private Values** — Auction setting where each bidder’s valuation is independent and private to them.  
+- **Proxy Agent** — Automated bidding agent that bids on behalf of a user up to a specified maximum.  
+- **Revelation Principle** — Theoretical result stating any auction outcome can be implemented by a truthful direct mechanism.  
+- **Reservation Price** — Minimum acceptable price set by the seller to limit losses or improve revenue in an auction.  
+- **Reverse Auction** — Auction with one buyer and multiple sellers, often with descending or ascending price formats.  
+- **Second-price Auction (Vickrey Auction)** — Sealed bid auction where highest bidder wins but pays second highest bid.  
+- **Strategy-proofness** — Property of a mechanism where truth-telling is a dominant strategy for all participants.  
+- **Threshold Problem** — Coordination difficulty among bidders in auctions with multiple items or rounds.  
+- **Vickrey-Clarke-Groves (VCG) Mechanism** — Efficient mechanism that charges bidders based on the externality they impose on others.  
+- **Winner’s Curse** — Phenomenon in common value auctions where the winner tends to overpay due to overly optimistic estimates.

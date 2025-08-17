@@ -1,0 +1,41 @@
+```markdown
+# Table of Contents
+
+- 10. Rationality  
+  - 10.1 Models of strategic-form games (p.348)  
+    - Definition 10.1.1: Model of a game  
+    - Definition 10.1.2: Rationality at a state  
+    - Example: Analysis of rationality in a given model  
+  - 10.2 Common knowledge of rationality in strategic-form games (p.352)  
+    - Notes on knowledge and rationality  
+    - Theorem 10.2.1: Common knowledge of rationality implies surviving iterated deletion  
+    - Theorem 10.2.2: Existence of models with CKR for surviving strategies  
+    - Application example, Figure 10.3  
+  - 10.3 Common knowledge of rationality in extensive-form games (p.354)  
+    - Challenges of modeling dynamic games  
+    - Conceptual issues with strategies in extensive form  
+    - Alternative modeling approaches  
+  - 10.4 Proofs of Theorems (p.356)  
+    - Theorem 10.4.1: Extension on best response and dominance (Osborne & Rubinstein)  
+    - Proof of Theorem 10.2.1  
+    - Proof of Theorem 10.2.2  
+  - 10.5 Exercises  
+    - 10.5.1 Exercises for Section 10.1: Models of strategic-form games (p.358)  
+      - Exercise 10.1  
+      - Exercise 10.2  
+    - 10.5.2 Exercises for Section 10.2: Common knowledge of rationality (p.360)  
+      - Exercise 10.3  
+      - Exercise 10.4  
+      - Exercise 10.5  
+      - Exercise 10.6  
+    - 10.5.3 Exercises for Section 10.3: Extensive-form games (p.361)  
+      - Exercise 10.7 (Challenging question)  
+  - 10.6 Solutions to Exercises (p.362)  
+    - Solutions to Exercise 10.1  
+    - Solutions to Exercise 10.2  
+    - Solutions to Exercise 10.3  
+    - Solutions to Exercise 10.4  
+    - Solutions to Exercise 10.5  
+    - Solutions to Exercise 10.6  
+    - Solutions to Exercise 10.7  
+```

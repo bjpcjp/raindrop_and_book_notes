@@ -1,0 +1,30 @@
+```markdown
+- Simultaneous-Move Games: Mixed Strategies
+  - 1 What is a Mixed Strategy? (p. 215)
+  - 2 Mixing Moves (p. 216)
+    - A. The Benefit of Mixing
+    - B. Best Responses and Equilibrium
+  - 3 Nash Equilibrium as a System of Beliefs and Responses (p. 221)
+  - 4 Mixing in Non-Zero-Sum Games (p. 222)
+    - A. Will Harry Meet Sally? Assurance, Pure Coordination, and Battle of the Sexes
+    - B. Will James Meet Dean? Chicken
+  - 5 General Discussion of Mixed-Strategy Equilibria (p. 227)
+    - A. Weak Sense of Equilibrium
+    - B. Counterintuitive Changes in Mixture Probabilities in Zero-Sum Games
+    - C. Risky and Safe Choices in Zero-Sum Games
+  - 6 Mixing When One Player Has Three or More Pure Strategies (p. 233)
+    - A. A General Case
+    - B. Exceptional Cases
+  - 7 Mixing When Both Players Have Three Strategies (p. 237)
+    - A. Full Mixture of All Strategies
+    - B. Equilibrium Mixtures with Some Strategies Unused
+  - 8 How to Use Mixed Strategies in Practice (p. 242)
+  - 9 Evidence on Mixing (p. 244)
+    - A. Zero-Sum Games
+    - B. Non-Zero-Sum Games
+- Summary (p. 249)
+- Key Terms (p. 249)
+- Solved Exercises (p. 250)
+- Unsolved Exercises (p. 257)
+- Appendix: Probability and Expected Utility (p. 263)
+```

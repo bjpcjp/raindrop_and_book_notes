@@ -1,0 +1,24 @@
+- **Belief** — A player's subjective probability distribution over possible states or strategies, which may be mistaken and does not require truth.
+- **Cardinal payoff** — A payoff that allows numerical comparisons of differences in utility, used to represent player preferences quantitatively.
+- **Common knowledge** — An event is common knowledge at a state if all players know it, know that all players know it, and so on, ad infinitum.
+- **Common knowledge partition** — The partition of states induced by the intersection of all players’ partitions used to characterize common knowledge.
+- **Common knowledge of rationality (CKR)** — The event where every player is rational, every player knows that every player is rational, and this knowledge is iterated infinitely.
+- **Extensive-form game** — A game representation that models sequential moves, information sets, and outcomes explicitly over time.
+- **Information set** — For a player, a subset of states that are indistinguishable to that player given their knowledge; represented by partitions over states.
+- **Interactive knowledge-belief structure** — A framework consisting of a set of states, partitions for each player, and probability distributions over states at each information set, encoding beliefs and knowledge.
+- **Iterated deletion of strictly dominated strategies** — A procedure to remove strategies that are strictly worse than some other strategy, repeated until no such strategies remain.
+- **Model of a game** — An interactive knowledge-belief structure augmented with functions assigning to each player a pure strategy at every state, respecting players' knowledge of their own strategies.
+- **Mutual recognition of rationality** — The concept that players are rational and each player knows that the others are rational, often captured by common knowledge.
+- **Nash equilibrium** — A strategy profile where no player can increase their payoff by unilaterally changing their strategy.
+- **Partition (of states)** — A division of the state space into disjoint sets representing a player's possible knowledge states.
+- **Pure strategy** — A strategy where a player chooses a specific action or complete plan deterministically.
+- **Rationality (player rationality)** — At a state, a player is rational if their chosen pure strategy maximizes their expected payoff given their beliefs about other players' strategies.
+- **Rationality event (Ri)** — The set of states where Player i is rational.
+- **Strictly dominated strategy** — A pure strategy is strictly dominated if there exists another strategy yielding strictly higher payoffs against every profile of opponents' strategies.
+- **Strategy profile** — A tuple consisting of one strategy per player specifying a complete combination of strategies in the game.
+- **Support of a probability distribution** — The subset of states or elements to which the distribution assigns positive probability.
+- **State (of a model)** — An element in the set W representing a possible configuration of strategies and beliefs in the model.
+- **Subgame (Gm)** — The restriction of a game after m steps of iterated deletion of strictly dominated strategies.
+- **Von Neumann-Morgenstern utility** — A cardinal utility function representing player preferences consistent with expected utility theory.
+
+

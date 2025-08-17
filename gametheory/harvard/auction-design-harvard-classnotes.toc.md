@@ -1,0 +1,28 @@
+```markdown
+# Table of Contents
+
+- Auctions: A Special Case of Mechanism Design (p.2)  
+- Private vs. Common Values (p.3)  
+- Private Values (p.4)  
+- Single-item: Efficient (p.5)  
+- Optimal Auction Design (p.6)  
+- As a Constrained Optimization Problem (p.7)  
+- Effect of an Aftermarket (p.8)  
+- eBay Proxy Agents (p.9)  
+- Closing Rules (p.10)  
+- Multi-period Auctions (p.11)  
+- Reverse Auctions/Private Marketplaces (p.12)  
+- Iterative vs. Sealed-bid (p.13)  
+- Collusion (p.14)  
+- Trust (p.15)  
+- Information Revelation (p.16)  
+- Double Auctions (p.17)  
+- Multi-unit Auctions: Sealed-bid (p.18)  
+- Multi-unit Auctions (p.19)  
+- Multi-unit Auctions: Approx. (p.20)  
+- Iterative Multi-Unit Auctions (p.21)  
+- Multiple Heterogeneous Items (p.22)  
+- Additional Auction Variations (p.23)  
+- Common Value Settings (p.24)  
+- Affiliated Values (p.25)  
+```

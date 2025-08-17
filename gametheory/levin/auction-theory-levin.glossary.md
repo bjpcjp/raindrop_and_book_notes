@@ -1,0 +1,26 @@
+- **All-Pay Auction** — An auction format where bidders submit bids and the highest bidder wins, but all bidders must pay their bids regardless of winning.
+- **Affiliate (Aﬃliated Signals)** — A property of signals where higher values of one signal make higher values of other signals more likely, characterized by the monotone likelihood ratio property.
+- **Allocation Mechanism** — A rule or set of rules specifying how an auction allocates the object to bidders and determines payments based on their bids.
+- **Bayesian Game** — A game of incomplete information where players have private signals and form beliefs about other players’ types.
+- **Bid Strategy** — A function mapping a bidder’s private signal (value) to a bid submitted in the auction.
+- **English Auction (Oral Ascending Auction)** — An auction where the price starts low and increases continuously, bidders drop out at prices above their values, and the last remaining bidder wins.
+- **Envelope Theorem** — A mathematical tool to compute derivatives of value functions in optimization problems, used here to characterize bidding strategies.
+- **Expected Revenue** — The seller’s expected payment from the auction, computed from the distribution of bids and bidders’ values.
+- **First-Price Auction (Sealed Bid)** — An auction where bidders submit sealed bids and the highest bidder wins and pays his own bid.
+- **Information Aggregation** — The extent to which auction prices reflect and combine bidders’ private information about the value of the object.
+- **Independent Private Values (IPV) Model** — An auction setting where each bidder’s value depends only on their own private signal, which is independent of others’ signals.
+- **Linkage Principle** — A principle stating that auctions revealing more information in bidders’ payments generate higher expected revenue.
+- **Loser’s Curse** — The phenomenon where losing bidders infer information about others’ valuations that affects equilibrium bidding, counterbalancing the winner’s curse in large auctions.
+- **Monotone Likelihood Ratio Property (MLRP)** — A statistical property of conditional distributions implying that higher signals increase the likelihood of higher values.
+- **Permanent Strategy (Weakly Dominant Strategy)** — A bidding strategy that is the best response regardless of opponents’ actions.
+- **Private Signal (Signal)** — A bidder’s privately observed random variable providing information about their value or about the common value.
+- **Price Formation** — The process by which bids in an auction reflect information and determine the final transaction price.
+- **Price-Shading** — Strategic bidding below true value to increase expected profit, common in first-price auctions.
+- **Probability of Winning** — The likelihood that a bidder wins the auction given their bid and the distribution of other bids.
+- **Pure Common Value Model** — A model where the object has a single true value unknown to bidders, who each receive noisy signals correlated with this value.
+- **Revenue Equivalence Theorem** — A theorem stating that all standard auctions awarding the object to the highest bidder and giving zero expected surplus to the lowest-value bidder yield the same expected revenue.
+- **Second-Price (Vickrey) Auction** — An auction where the highest bidder wins but pays the second-highest bid; bidding true value is a weakly dominant strategy.
+- **Signals Exchangeability** — A property where the joint distribution of bidders’ signals is invariant under permutations of bidders.
+- **Symmetric Equilibrium** — An equilibrium in which all bidders use the same bidding strategy function.
+- **Winner’s Curse** — The adverse selection problem in common value auctions where winning suggests other bidders had lower signals, causing the winner’s valuation to be overestimated.
+- **Winning Bid** — The highest bid submitted in an auction, determining the winner and the price paid depending on auction format.

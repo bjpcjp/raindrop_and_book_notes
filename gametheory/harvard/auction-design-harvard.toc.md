@@ -1,0 +1,45 @@
+```markdown
+# Table of Contents
+
+- Abstract
+- 1 Introduction
+- 2 Economic Properties of Auction Mechanisms
+  - 2.1 Mechanism Design Theory
+    - 2.1.1 Efficient Mechanism Design Problem
+    - 2.1.2 Optimal Mechanism Design Problem
+    - 2.1.3 Revelation Principle
+    - 2.1.4 Groves Mechanisms and VCG
+  - 2.2 Competitive Equilibrium Theory
+  - 2.3 Matching Supply to Demand and Market Clearing
+  - 2.4 Primal-Dual Approach to Mechanism Design
+  - 2.5 Examples: English Auction, Multi-Unit Auctions
+- 3 Computational Considerations in Auctions
+  - 3.1 Bidding Languages
+    - 3.1.1 Logical Bidding Languages
+    - 3.1.2 Compact Representations
+  - 3.2 Winner-Determination Complexity
+    - 3.2.1 Single-Item and Multi-Unit Cases
+    - 3.2.2 Combinatorial Auctions and Side Constraints
+    - 3.2.3 Price Schedules and Supply Curves
+  - 3.3 Auctions with Side Constraints and Business Rules
+- 4 Interaction Between Computation and Incentives
+  - 4.1 Strategic Complexity
+  - 4.2 Communication Complexity
+  - 4.3 Valuation Complexity
+  - 4.4 Implementation Complexity
+  - 4.5 Approximation and Relaxed Incentive Properties
+- 5 Selected Auction Mechanisms and Emerging Research Directions
+  - 5.1 Combinatorial Auctions
+    - 5.1.1 Iterative Combinatorial Auctions
+    - 5.1.2 iBundle and iBEA Auctions
+    - 5.1.3 Ascending-Proxy Auction
+  - 5.2 Multi-Unit Auctions
+    - 5.2.1 Unit Demand Case
+    - 5.2.2 Marginal-Decreasing Valuations (Ausubel’s Clinching Auction)
+  - 5.3 Multiattribute Auctions
+    - 5.3.1 Preferential Independence and Configurable Offers
+    - 5.3.2 Single-Sourcing and Multi-Sourcing
+  - 5.4 Combinatorial Exchanges and Double Auctions
+  - 5.5 Market Clearing and Matching in Double Auctions
+- 6 Conclusion and Future Directions
+```

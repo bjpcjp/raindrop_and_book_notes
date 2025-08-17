@@ -1,0 +1,17 @@
+- **Best response** — A player’s strategy that yields the highest payoff given the strategies chosen by the other players.
+- **Coordination game** — A game in which players benefit from making the same choices or coordinating their strategies, often resulting in multiple equilibria.
+- **Dominant strategy** — A strategy that yields a higher payoff for a player regardless of the strategies chosen by other players.
+- **Dominated strategy** — A strategy that results in lower payoffs for a player than another strategy, regardless of what other players do.
+- **Game matrix (game table)** — A two-dimensional or multidimensional table that represents players’ strategies and corresponding payoffs in a simultaneous-move game.
+- **Mixed strategy** — A probabilistic choice of pure strategies by a player, used to randomize decisions and keep opponents uncertain.
+- **Nash equilibrium** — A profile of strategies in a game such that no player can improve their payoff by unilaterally changing their strategy while others keep theirs fixed.
+- **Normal form** — Another name for the strategic form of a game, representing strategy profiles and payoffs in a matrix or table format.
+- **Payoff** — The numerical value or utility a player receives from an outcome in a game.
+- **Perfect information** — A situation in a game where all players know the moves previously made by other players.
+- **Prisoners’ dilemma** — A game where each player has a dominant strategy that leads to a worse outcome for both players than if they had cooperated.
+- **Pure strategy** — A specific, non-random action or set of actions chosen by a player.
+- **Simultaneous-move game** — A game in which players choose their actions without knowledge of other players’ choices, typically at the same time.
+- **Strategic uncertainty** — Uncertainty a player has about the strategies chosen by others in a game.
+- **Successive elimination of dominated strategies** — An iterative method of simplifying games by removing dominated strategies to find equilibria.
+- **Tied payoff** — When two or more strategies yield the same payoff for a player.
+- **Zero-sum game** — A game in which the sum of payoffs to all players is constant across every outcome, implying one player’s gain is another’s loss.

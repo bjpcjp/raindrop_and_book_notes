@@ -1,0 +1,22 @@
+- **Backward-induction algorithm** — A procedure for solving finite perfect-information games by marking terminal nodes with payoffs and proceeding stepwise backwards, selecting choices that maximize the current player's payoff at each decision node.
+- **Backward-induction outcome** — The actual sequence of moves in a game corresponding to a backward-induction solution, excluding hypothetical plans at nodes not reached.
+- **Backward-induction solution** — A strategy profile obtained via backward induction, specifying optimal choices for all players at every decision node.
+- **Decision node** — A node in a rooted directed tree where a player makes a decision; has outdegree greater than zero.
+- **Dominated strategy** — A strategy that results in worse or no better payoffs compared to another strategy for a player, regardless of opponents’ strategies.
+- **Draw (D)** — A possible outcome in two-player perfect-information games where neither player wins.
+- **Extensive form (or frame)** — A representation of a dynamic game with perfect information using a finite rooted directed tree, with players assigned to decision nodes and actions assigned to edges.
+- **Finite extensive game with perfect information** — An extensive form with perfect information combined with each player’s ranking of outcomes (preferences).
+- **Finite extensive form with perfect information** — A finite rooted directed tree with players assigned to decision nodes and uniquely labeled actions, outcomes assigned to terminal nodes.
+- **Game** — A finite extensive form with players' preferences over outcomes included.
+- **Game-frame** — An extensive form with perfect information without specifying players' rankings of outcomes.
+- **Immediate successor** — A node directly reachable from another node by a single directed edge.
+- **Indegree/Outdegree** — Indegree is the number of edges leading into a node; outdegree is the number of edges leading out from a node.
+- **Nash equilibrium** — A strategy profile in which no player can benefit by unilaterally changing their strategy.
+- **Penultimate node** — A decision node whose immediate successors are all terminal nodes.
+- **Perfect-information game** — A dynamic game where, when making a move, a player knows all prior moves.
+- **Root** — The unique node in a rooted directed tree that has indegree zero.
+- **Sequential game** — A game in which players move one after another, with later players observing previous moves.
+- **Strategy** — A complete contingent plan assigning a choice to every decision node of a player, even for nodes that may not be reached.
+- **Strategy profile** — A list of strategies, one for each player in the game.
+- **Terminal node** — A node in a rooted directed tree with outdegree zero; represents an outcome.
+- **Two-player win-lose game** — A perfect-information game with two possible outcomes where one of the two players wins.

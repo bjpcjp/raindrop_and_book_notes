@@ -1,0 +1,26 @@
+```markdown
+- Simultaneous-Move Games: Discrete Strategies
+  - 1 Depicting Simultaneous-Move Games with Discrete Strategies
+    - Game Table / Normal Form / Strategic Form (p. 92)
+    - Example: Generic Game with Row and Column Players (Figure 4.1) (p. 93)
+    - Example: American Football Play (Figure 4.2) Zero-Sum Game (p. 93)
+  - 2 Nash Equilibrium
+    - Definition and Explanation (p. 94)
+    - Example: Game from Figure 4.1 and Variation with Tie in Payoffs (Figure 4.3) (p. 95)
+    - Nash Equilibrium as Beliefs and Choices (p. 96)
+  - 3 Dominance
+    - Prisoners’ Dilemma Example (Figure 4.4) (p. 99)
+    - Both Players Have Dominant Strategies (p. 100)
+    - One Player Has a Dominant Strategy: Congress-Federal Reserve Game (Figure 4.5) (p. 101)
+    - Successive Elimination of Dominated Strategies (p. 103)
+    - Caution with Weakly Dominated Strategies and Multiple Nash Equilibria (Figure 4.6) (p. 105)
+  - 4 Best-Response Analysis
+    - Best Responses and Nash Equilibrium in the Generic Game (Figure 4.7) (p. 106)
+    - Relation to Dominance and Finding Equilibria (p. 107)
+  - 5 Three Players
+    - Example: Street-Garden Game with Emily, Nina, Talia (Figures 4.8, 4.9) (p. 108)
+    - Dominant Strategies and Nash Equilibrium in Three-Player Games (p. 109)
+  - 6 Multiple Equilibria in Pure Strategies
+    - Coordination Games Overview (p. 111)
+    - Pure Coordination Example: Will Harry Meet Sally? (Figure 4.10) (p. 111)
+```

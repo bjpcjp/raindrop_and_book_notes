@@ -1,0 +1,21 @@
+- **Chance (Nature)** — A fictitious player representing random events with assigned probability distributions in extensive-form games.
+- **Extensive form (or frame)** — A representation of a dynamic game using a rooted directed tree with players assigned to decision nodes, actions assigned to edges, outcomes at terminal nodes, and information sets representing players' knowledge.
+- **Extensive-form game** — An extensive form augmented with payoff rankings or utility functions for each player.
+- **Expected value** — The weighted average of possible monetary outcomes of a lottery, calculated by summing each outcome multiplied by its probability.
+- **Game-frame** — An extensive form without specified payoffs; adding payoffs converts it into a game.
+- **Information set** — A collection of decision nodes for one player among which the player is unable to distinguish at the time of decision; graphically shown by a rounded rectangle enclosing these nodes.
+- **Minimal proper subgame** — A proper subgame that does not strictly contain another proper subgame.
+- **Money lottery** — A probabilistic distribution over sums of money outcomes.
+- **Perfect information** — A situation where every information set of every player consists of a single node, meaning players know all previous moves.
+- **Perfect-information frame** — An extensive form where all information sets are singletons (each contains only one node).
+- **Perfect recall** — The assumption that a player remembers all previous information and their own past actions when making decisions.
+- **Proper subgame** — A subtree of an extensive form starting at a decision node with a singleton information set, including all its successors, and not cutting any information sets.
+- **Risk neutral** — A player who evaluates money lotteries solely based on their expected values, indifferent to risk.
+- **Second-price auction** — An auction where the highest bidder wins and pays the second-highest bid.
+- **Selfish and greedy player** — A player who cares only about their own wealth or payoff and prefers more to less.
+- **Strategy** — A complete contingent plan specifying an action for every information set of a player.
+- **Subgame** — A portion of the game starting at a node with a singleton information set and containing all of its successors without splitting any information sets.
+- **Subgame-perfect equilibrium** — A strategy profile that is a Nash equilibrium in the entire game and in every proper subgame.
+- **Subgame-perfect equilibrium algorithm** — A backward induction-like process that solves minimal subgames first and replaces them with their equilibrium payoffs to find equilibria for the entire game.
+- **Terminal node** — A node in the extensive form tree with no successors, assigned an outcome.
+- **Utility function (ordinal)** — A ranking of outcomes for each player that captures players’ preferences.

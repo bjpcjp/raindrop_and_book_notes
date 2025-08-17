@@ -1,0 +1,30 @@
+```markdown
+- Simultaneous-Move Games: Continuous Strategies, Discussion, and Evidence
+  - 1 Pure Strategies That Are Continuous Variables
+    - A. Price Competition (p.134)
+    - B. Some Economics of Oligopoly (p.138)
+    - C. Political Campaign Advertising (p.139)
+    - D. General Method for Finding Nash Equilibria (p.142)
+  - 2 Critical Discussion of the Nash Equilibrium Concept
+    - A. The Treatment of Risk in Nash Equilibrium (p.143)
+    - B. Multiplicity of Nash Equilibria (p.146)
+    - C. Requirements of Rationality for Nash Equilibrium (p.148)
+  - 3 Rationalizability
+    - A. Applying the Concept of Rationalizability (p.150)
+    - B. Rationalizability Can Take Us All the Way to Nash Equilibrium (p.152)
+  - 4 Empirical Evidence Concerning Nash Equilibrium
+    - A. Laboratory Experiments (p.155)
+      - I. Choosing among multiple equilibria
+      - II. Emotions and social norms
+      - III. Cognitive Errors
+      - IV. Common Knowledge of Rationality
+      - V. Learning and moving toward equilibrium
+    - B. Real-World Evidence (p.161)
+      - I. Applications of Nash Equilibrium
+      - II. Real-world examples of learning
+  - Summary (p.165)
+  - Key Terms (p.165)
+  - Solved Exercises (p.166)
+  - Unsolved Exercises (p.170)
+  - Appendix: Finding a Value to Maximize a Function (p.176)
+```

@@ -1,0 +1,29 @@
+- **Agreeing to disagree** — A concept referring to situations where individuals maintain differing beliefs or opinions despite common knowledge of each other’s views.  
+- **Assessments** — Evaluations in dynamic games that combine beliefs and strategies to judge players' behavior and allow for sequential rationality analysis.  
+- **Backwards induction** — A solution technique for perfect-information games where players anticipate future actions and reason backward to determine optimal strategies.  
+- **Bayesian consistency** — A property requiring players’ beliefs to be updated according to Bayes’ rule wherever applicable in dynamic games.  
+- **Belief revision** — The process of systematically changing beliefs when new information contradicts prior assumptions.  
+- **Belief updating** — The adjustment of probabilistic beliefs in response to new information using conditional probability.  
+- **Behavioral strategies** — Strategies in dynamic games specifying actions at every possible information set, possibly involving randomization.  
+- **Common knowledge** — A state where all players know some information, know that others know it, and so on, ad infinitum.  
+- **Conditional probability** — The probability of an event given that another event has occurred, central to updating beliefs.  
+- **Extensive-form games** — Representation of games using trees showing sequential moves, information sets, and possibly chance moves.  
+- **Game frames** — Basic structures specifying players, strategies, and outcomes but not yet assigning player preferences.  
+- **Game with infinite strategy sets** — Games where players have an unbounded or continuous set of possible strategies.  
+- **Harsanyi consistency (like-mindedness)** — A condition that players’ beliefs are compatible or derivable from a common prior probability distribution.  
+- **Information sets** — Sets of game nodes indistinguishable to a player, representing imperfect information about the game state.  
+- **Iterated deletion of dominated strategies (IDSDS/IDWDS)** — Procedures removing strategies that are strictly or weakly dominated to simplify strategic analysis.  
+- **Mixed strategies** — Strategies where players randomize over available pure strategies with specified probabilities.  
+- **Nash equilibrium** — A strategy profile in which no player can benefit by unilaterally changing their own strategy.  
+- **Ordinal games** — Games where players’ payoffs are ranked ordinally without considering magnitude differences.  
+- **Perfect Bayesian equilibrium (PBE)** — A refinement of equilibrium in dynamic games incorporating sequential rationality and belief consistency.  
+- **Perfect information** — A property of games where all players observe all prior actions when making decisions.  
+- **Probabilistic beliefs** — Players’ subjective probability distributions over uncertain events or opponents’ types and actions.  
+- **Rationality** — The assumption that players choose actions to maximize their expected payoffs given their beliefs.  
+- **Second-price auction** — An auction format where the highest bidder wins but pays the second-highest bid.  
+- **Sequential equilibrium** — An equilibrium concept that refines subgame perfection by considering consistent beliefs at every information set.  
+- **Strategies in perfect-information games** — Plans specifying a player’s action at each decision node with full knowledge of prior moves.  
+- **Subgame-perfect equilibrium (SPE)** — An equilibrium where strategies constitute a Nash equilibrium in every subgame of the original game.  
+- **Subgames** — Parts of extensive-form games that start at one node and include all successors, allowing independent equilibrium analysis.  
+- **Type-space approach** — A framework modeling incomplete information by describing players via types capturing beliefs and payoff-relevant information.  
+- **Weak sequential equilibrium** — A preliminary equilibrium concept combining strategies and beliefs with minimal consistency requirements at reached information sets.

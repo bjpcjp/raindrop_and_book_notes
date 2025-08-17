@@ -1,0 +1,29 @@
+- **Assessment** — A pair consisting of a strategy profile and a system of beliefs, used to evaluate equilibria in games with incomplete information.  
+- **Bayesian Nash Equilibrium** — A Nash equilibrium of the imperfect-information game obtained by applying the Harsanyi transformation to a game of incomplete information.  
+- **Beliefs** — Probabilities assigned by an uninformed player about the possible states or types of other players; can be updated using Bayesian updating.  
+- **Common Knowledge** — A fact known by all players, and all know that all know it, recursively.  
+- **Counter-offer** — In bargaining, a seller’s proposal of a price higher than a buyer’s initial offer.  
+- **Discount Factor (δ)** — A parameter 0 < δ < 1 reflecting the weight given to future payoffs relative to present payoffs.  
+- **Extensive-form Game** — A representation of a game that specifies the order of moves, players’ choices at every decision node, and information sets.  
+- **Forward Induction** — Reasoning that uses players’ actions to infer their private information or types.  
+- **Harsanyi Transformation** — A method that converts a game of incomplete information into an imperfect-information extensive-form game by introducing Nature’s move to select types with given probabilities.  
+- **Incomplete Information** — A situation where some players do not have full knowledge about payoffs, types, or other aspects of the game.  
+- **Information Set** — A collection of decision nodes among which a player cannot distinguish when making a decision.  
+- **Interactive Knowledge-Belief Structure** — A representation showing players’ knowledge and beliefs over possible states of the world or types.  
+- **Informed Player** — A player who knows the exact game or type being played.  
+- **Multisided Incomplete Information** — Situations where more than one player has uncertainty about the game or other players’ types.  
+- **Nature** — A fictitious player used in the Harsanyi transformation to randomly select the state or type according to a commonly known probability distribution.  
+- **One-sided Incomplete Information** — A situation where only one player lacks complete knowledge about the game or payoffs.  
+- **Perfect Information** — A game where at every decision node, the player knows the entire history of previous moves.  
+- **Pooling Equilibrium** — A separating equilibrium in which different types choose the same action, making them indistinguishable.  
+- **Price (p, p0)** — The buyer’s initial offer or seller’s counter-offer in a bargaining context.  
+- **Reputation Effect** — The phenomenon where early actions influence others’ beliefs and future actions, possibly deterring entry or changing behavior.  
+- **Sequential Equilibrium** — A refinement of Bayesian Nash equilibrium in extensive-form games requiring sequential rationality and consistent beliefs.  
+- **Sequential Rationality** — The condition that at every information set, a player’s strategy maximizes expected payoff given beliefs.  
+- **Signal** — An action taken by a player to convey information about her type or state.  
+- **Separating Equilibrium** — An equilibrium where different types choose different actions, revealing their private information.  
+- **Strike** — A work stoppage used as a costly signal during labor negotiations under incomplete information.  
+- **Subgame-Perfect Equilibrium** — A strategy profile constituting a Nash equilibrium in every subgame of the game.  
+- **Truth-in-Advertising Law** — Legislation that forbids false claims but may allow truthful but vague advertisements.  
+- **Uninformed Player** — A player who is uncertain about the game or types of other players.  
+- **Weak Sequential Equilibrium** — A solution concept allowing for any beliefs at unreached information sets and sequential rationality, weaker than sequential equilibrium.

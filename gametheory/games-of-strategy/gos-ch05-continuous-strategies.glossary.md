@@ -1,0 +1,19 @@
+- **best-response curve** — A graphical representation of a player’s best responses to all possible strategies of the other player in a continuous strategy game.
+- **best-response rule** — A formula or function that gives the strategy maximizing a player’s payoff given the strategies of other players.
+- **continuous strategy** — A strategic choice characterized by a continuous range of possible actions rather than a discrete set.
+- **mixed strategies** — Strategies in which players randomize their choices over available pure strategies.
+- **Nash equilibrium** — A set of strategies, one for each player, such that each player’s strategy is the best response to the strategies chosen by the others.
+- **never a best response** — A strategy that is never the best response to any combination of opponents’ strategies and can therefore be eliminated in rationalizability analysis.
+- **perfect Bayesian equilibrium** — A refinement of Nash equilibrium for games with imperfect information, incorporating beliefs that are updated consistently with Bayes’ rule.
+- **prisoners’ dilemma** — A game describing two players who each choose to cooperate or defect, where defection is the dominant strategy but both players are better off if both cooperate.
+- **pure strategies** — Strategies where a player chooses a single specific action with certainty.
+- **quantil-response equilibrium (QRE)** — A solution concept that allows for errors in players’ strategy choices, where mistakes are less likely when mistakes are costly.
+- **rationalizability** — The set of strategies that survive iterative elimination of strategies that are never best responses, identified based solely on common knowledge of rationality.
+- **rationalizable strategies** — Strategies that can be justified given rationality and beliefs about others’ strategies; survive elimination of never-best-response strategies.
+- **refinement** — Additional criteria imposed on Nash equilibria to select among multiple equilibria, often based on credibility or consistency of beliefs.
+- **rollback equilibrium** — The equilibrium found by backward induction in sequential-move games.
+- **sequential-move game** — A game in which players choose actions in sequence, observing previous moves.
+- **simultaneous-move game** — A game in which players choose their actions at the same time without knowledge of the others’ choices.
+- **strategy** — A plan of action or choice for a player within a game.
+- **strategy dominance** — A strategy dominates another if it always yields a higher payoff regardless of opponents’ actions.
+- **weak dominance** — A strategy weakly dominates another if it yields at least as high a payoff in all situations and strictly higher in some.

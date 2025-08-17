@@ -1,0 +1,22 @@
+- **All-pay auction** — An auction where every bidder pays their bid regardless of winning; common in contests where effort or money spent is not refunded to losers.
+- **Ascending auction** — Also known as English auction; bidding starts low and prices increase as bidders openly compete, with the highest bidder winning.
+- **Common value** — An auction environment where the object’s value is the same for all bidders, but bidders have only estimates, often leading to winner’s curse.
+- **Descending auction** — Also called Dutch auction; the auctioneer begins at a high price and lowers it until a bidder accepts the price.
+- **Dutch auction** — A descending auction typically used for perishable goods; also refers to multiunit auctions where the price paid equals the lowest winning bid.
+- **English auction** — See ascending auction; bidders publicly bid increasing prices until no higher bid is made.
+- **First-price auction** — A sealed-bid auction in which the highest bidder pays their bid amount.
+- **Objective value** — Another term for common value; the true value of the object is the same for all bidders but unknown exactly.
+- **Open outcry** — An auction method where bids are made publicly, often verbally or by gestures.
+- **Private value** — An auction environment where each bidder has their own valuation of the item, independent of others’ valuations.
+- **Proxy bidding** — A bidding method where a maximum bid is submitted and the system automatically raises bids incrementally up to that maximum.
+- **Reservation price** — The minimum price below which a seller will refuse to sell an item at auction.
+- **Reserve price** — See reservation price; a seller’s minimum acceptable price in an auction.
+- **Sealed bid** — An auction method where bidders submit private, non-public bids without knowing others’ bids.
+- **Second-price auction** — A sealed-bid auction where the highest bidder wins but pays the amount of the second-highest bid, encouraging truthful bidding.
+- **Shading** — Bidding below one’s true valuation to increase the profit margin, typical in first-price auctions.
+- **Shilling** — Fraudulent bidding by the seller or an accomplice pretending to be a legitimate bidder to inflate auction prices.
+- **Subjective value** — Another term for private value; valuations that differ among bidders based on personal preferences.
+- **Vickrey auction** — A sealed-bid, second-price auction named after William Vickrey that induces bidders to reveal their true valuations.
+- **Vickrey’s truth serum** — The property of Vickrey auctions that truthful bidding is a dominant strategy.
+- **Winner’s curse** — The tendency in common-value auctions for the winning bidder to overpay due to optimistic estimations. 
+- **Yankee auction** — A multiunit auction where the highest bids win units and each winner pays their own bid price per unit.

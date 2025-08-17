@@ -1,0 +1,11 @@
+- **Continuation** — The part of a player’s strategy that pertains to a subgame starting at a particular node, specifying the player’s actions in that subgame.  
+- **Credibility** — The property of a threat or promise being believable because it is optimal for the player to carry it out if the situation arises.  
+- **Information set** — A collection of decision nodes among which a player cannot distinguish at the time of making a move, representing the player’s imperfect information.  
+- **Off-equilibrium path** — A possible sequence of moves in a game that does not lie along the predicted equilibrium path of play.  
+- **Off-equilibrium subgame** — A subgame that arises along an off-equilibrium path, where the player’s strategy must still specify optimal continuation.  
+- **Rollback equilibrium** — An equilibrium derived by backward induction in sequential-move games, specifying optimal actions at every decision node.  
+- **Simultaneous-move game** — A game in which all players choose their moves without knowing the choices of the others, typically analyzed using Nash equilibrium.  
+- **Sequential-move game** — A game in which players make moves one after another, possibly with later players observing earlier moves, typically analyzed using rollback equilibrium.  
+- **Strategy** — A complete plan of action specifying the moves a player will make at every information set where it is their turn to move.  
+- **Subgame** — The part of a game beginning at a particular decision node, containing all subsequent moves and outcomes following that node.  
+- **Subgame-perfect equilibrium (SPE)** — A refinement of Nash equilibrium for sequential games requiring that strategies constitute a Nash equilibrium in every subgame, ensuring credibility of threats and promises.

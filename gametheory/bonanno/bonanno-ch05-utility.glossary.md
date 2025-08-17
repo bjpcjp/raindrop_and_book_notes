@@ -1,0 +1,24 @@
+- **Basic outcomes** — The fundamental possible results of a lottery, which need not be monetary (e.g., health states or awards).  
+- **Bernoulli utility function** — (Implied concept) A function representing preferences over outcomes, typically monetary, allowing for modeling of risk attitudes.  
+- **Compound lottery** — A lottery where some outcomes are themselves lotteries; a lottery of lotteries.  
+- **Degenerate lottery** — A lottery that assigns probability 1 to a single basic outcome. Often identified simply by that basic outcome.  
+- **Expected value** — The weighted sum of outcomes in a lottery, with probabilities as weights; \(E[L] = \sum p_i x_i\).  
+- **Expected utility** — The expected value computed not over outcomes themselves but over their utilities: \(E[U(L)] = \sum p_i U(o_i)\).  
+- **Independence axiom** — A key axiom stating that if an individual is indifferent between a basic outcome and a lottery, then substituting one for the other inside another lottery does not change preference.  
+- **Lottery (simple lottery)** — A probability distribution over a finite set of basic outcomes.  
+- **Monotonicity axiom** — An axiom stating that, between two lotteries mixing the best and worst outcomes, preference depends solely on the probability of the best outcome.  
+- **Normalized utility function** — A von Neumann-Morgenstern utility function scaled so that the utility of the worst basic outcome is 0 and that of the best is 1.  
+- **Preference ranking (%)** — A binary relation over lotteries indicating at least as good as; it is assumed to be complete and transitive in expected utility theory.  
+- **Risk attitude** — Classification of an individual's preference towards lotteries relative to the expected value for sure: risk averse (prefers certain expected value), risk neutral (indifferent), risk loving (prefers the lottery).  
+- **Risk averse** — Preferring the certain expected value of a lottery over the lottery itself.  
+- **Risk neutral** — Being indifferent between a lottery and its expected value for certain.  
+- **Risk loving** — Preferring the lottery over its expected value for certain.  
+- **Simple lottery** — Same as lottery: a probability distribution over basic outcomes (as opposed to compound lottery).  
+- **Transitivity** — A property of preference relations such that if \(L_1 \succeq L_2\) and \(L_2 \succeq L_3\), then \(L_1 \succeq L_3\).  
+- **Utility function** — A numerical representation of preferences over outcomes such that an individual prefers outcome \(o\) to \(o'\) if and only if \(U(o) \geq U(o')\).  
+- **von Neumann-Morgenstern (vNM) utility function** — A utility function representing preferences over lotteries that satisfies expected utility axioms and ranks lotteries by expected utility.  
+- **von Neumann-Morgenstern ranking** — A preference relation over lotteries that satisfies the expected utility axioms (completeness, transitivity, continuity, monotonicity, and independence).  
+- **Expected Utility Axioms** — The axioms (completeness and transitivity, monotonicity, continuity, and independence) that characterize rational preferences representable by expected utility.  
+- **Continuity axiom** — For every basic outcome, there exists a probability mixing the best and worst outcomes that is indifferent to it.  
+- **Affine transformation** — A function \(f(x) = a x + b\) with \(a > 0\), under which vNM utility functions representing the same preferences are unique.  
+- **Cardinal utility** — Another term for vNM utility function, because it is unique up to positive affine transformations and reflects intensity of preferences.
