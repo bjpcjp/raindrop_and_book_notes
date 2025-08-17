@@ -1,0 +1,40 @@
+- **ADF Test (Augmented Dickey-Fuller Test)** — A statistical test used to check if a time series is stationary, meaning its properties like mean and variance do not change over time.  
+- **Asian Options** — Options where the payoff depends on the average price of the underlying asset over a certain period, rather than the price at a specific time.  
+- **Bollerslev’s Multivariate GARCH** — An extension of the GARCH model to multiple time series, capturing time-varying volatilities and correlations between assets.  
+- **Breusch-Pagan Test** — A test used to detect heteroskedasticity in regression residuals, where the variance of errors varies across observations.  
+- **Call Option** — An option giving the holder the right, but not the obligation, to buy an asset at a specified strike price within a set timeframe.  
+- **CDO (Collateralized Debt Obligation)** — A structured financial product pooling fixed-income assets and issuing tranches with different risk and return profiles.  
+- **CDF (Cumulative Distribution Function)** — Not explicitly defined in the document but related to probability distributions describing the probability that a variable takes a value less than or equal to a given number.  
+- **Chi-Squared Test** — A test to determine if there is a significant association between two categorical variables.  
+- **Confidence Interval** — A range of values within which a population parameter is estimated to lie with a specified confidence level.  
+- **Convertible Bonds** — Bonds that can be converted into a predetermined number of the issuer's common shares, combining features of debt and equity.  
+- **Credit Default Swap (CDS)** — A contract where the protection buyer pays premiums to the protection seller in exchange for compensation if a specified credit event (like default) occurs.  
+- **Credit Derivatives** — Financial instruments that transfer credit risk from one party to another, including CDS, credit-linked notes, and total return swaps.  
+- **DCC GARCH (Dynamic Conditional Correlation GARCH)** — A GARCH model variant that models time-varying correlations among multiple assets.  
+- **Delta (not explicitly defined)** — Generally refers to the sensitivity of an option’s price to the change in the underlying asset price.  
+- **Derivative** — A financial contract whose value depends on the price of an underlying asset or benchmark.  
+- **Dividend Stocks** — Stocks of companies that regularly distribute a significant portion of profits as dividends to shareholders.  
+- **Exotic Options** — Complex options with payoffs or conditions that differ from standard options, including barrier, basket, compound, chooser, rainbow, and lookback options.  
+- **Filtration** — A mathematical framework representing the accumulation of information over time as nested sets in probability theory.  
+- **Forwards** — Private agreements between two parties to buy/sell an asset at a specified future date for a price agreed upon today.  
+- **Futures** — Standardized forward contracts traded on exchanges obligating parties to transact at a future date and price.  
+- **GARCH (Generalized Autoregressive Conditional Heteroskedasticity)** — A model to estimate and predict conditional volatility depending on past volatilities and shocks.  
+- **IGARCH (Integrated GARCH)** — A GARCH model variant where shocks to volatility persist indefinitely, with coefficients summing to one.  
+- **Interest Rate Swap** — An agreement where two parties exchange sequences of interest payments, e.g., fixed for floating rates.  
+- **Local Volatility** — A volatility model where the asset's volatility varies with price level and time, adjusting the Black-Scholes assumption of constant volatility.  
+- **Lookback Options** — Options where payoff depends on the maximum or minimum price of the underlying during the option's life.  
+- **Mann-Whitney U Test** — A non-parametric test comparing two independent samples, useful when data is not normally distributed.  
+- **Martingale** — A stochastic process where the conditional expectation of the next value equals the current value, implying no predictable trends.  
+- **Monte Carlo Simulation** — A computational technique involving repeated random sampling to estimate the distribution of possible outcomes.  
+- **Mutual Funds** — Investment vehicles pooling money from multiple investors to buy diversified portfolios of assets.  
+- **Put Option** — An option giving the holder the right, but not the obligation, to sell an asset at a specified strike price within a set timeframe.  
+- **Regression Analysis** — A statistical method used to model the relationship between a dependent variable and one or more independent variables.  
+- **Risk-Neutral Measure (Q Measure)** — A probability measure where all assets grow at the risk-free rate, used for pricing derivatives under no-arbitrage conditions.  
+- **Short Rate Models** — Models that describe the evolution of the instantaneous interest rate over time, foundational in pricing interest-sensitive securities.  
+- **SFTs (Securities Financing Transactions)** — Financial transactions involving secured financing using securities as collateral, such as repos and securities lending.  
+- **Sigma Algebra (σ-algebra)** — A collection of sets including the sample space, closed under complements and countable unions, providing a framework for probability measures.  
+- **Swaps** — Financial agreements to exchange cash flows between parties, including interest rate, currency, commodity, and equity swaps.  
+- **t-test** — A statistical test to compare the means of two groups to assess significant differences.  
+- **Vasicek Model** — A mean-reverting short rate model describing interest rate dynamics with a tendency to revert to a long-term average.  
+- **Volatility** — A measure of variation or risk in the price of a financial instrument, usually quantified by standard deviation.  
+- **Zero-Coupon Bonds** — Bonds issued at a discount and redeemed at face value without periodic interest payments.

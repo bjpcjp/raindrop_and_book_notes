@@ -1,0 +1,20 @@
+- **Capital Asset Pricing Model (CAPM)** — A methodology to estimate the cost of equity by relating expected returns to systematic risk through inputs like risk-free rate, equity risk premium, and beta.  
+- **Cost of Capital** — The weighted average cost of equity, debt, and preferred stock used to discount future cash flows to the firm (WACC).  
+- **Cost of Debt** — The rate used to estimate the cost of a company’s debt, based on observed market rates and possibly a mix of incremental and historical costs.  
+- **Cost of Equity (COE)** — The expected return required by equity investors, estimated here via systematic risk buckets rather than precise CAPM inputs.  
+- **Discounted Cash Flow (DCF) Valuation** — A valuation method that estimates a company’s fair value by discounting forecasted free cash flows in three stages.  
+- **Economic Moat** — A sustainable competitive advantage that allows a company to earn returns on invested capital above its cost of capital for an extended period.  
+- **Earnings Before Interest (EBI)** — Operating income plus certain non-cash charges and adjustments minus taxes, representing earnings available before financing costs.  
+- **Free Cash Flow to the Firm (FCFF)** — Cash flow available to all investors, composed of earnings before interest (EBI) plus net new investment (NNI).  
+- **Investment Rate (IR)** — The percentage of EBI reinvested in the business, calculated as net new investment divided by EBI.  
+- **Net New Investment (NNI)** — Net cash spent on capital expenditures, working capital, operating assets, and acquisitions, less depreciation.  
+- **Normalized Earnings** — Earnings that represent a midcycle, sustainable level, used as a basis for continuing valuation beyond explicit forecasts.  
+- **Return on New Invested Capital (RONIC)** — Incremental earnings generated from new invested capital, calculated as the change in EBI divided by net new investment.  
+- **Return on Invested Capital (ROIC)** — A measure of the profitability and efficiency with which capital is employed in the business.  
+- **Scenario Analysis** — Evaluating a company’s valuation under multiple potential futures (base, bull, and bear cases) to assess uncertainty and risk.  
+- **Systematic Risk** — The non-diversifiable risk affecting a company’s operating earnings due to factors like revenue cyclicality, operating leverage, and financial leverage.  
+- **Systematic Risk Buckets** — Categories (Below Average, Average, Above Average, Very High) used to assign companies’ cost of equity based on their systematic risk profile.  
+- **Terminal Value** — The estimated value of all future cash flows beyond the explicit forecast horizon, calculated using Stage II-III assumptions or alternative methodologies.  
+- **Uncertainty Rating** — A measure reflecting the confidence in the fair value estimate, considering both systematic and company-specific risks.  
+- **Weighted Average Cost of Capital (WACC)** — The average rate of return required by all capital providers, weighted by the proportion of debt, equity, and preferred stock.  
+- **Wide/Narrow Moat Companies** — Firms with significant (wide) or moderate (narrow) sustainable competitive advantages capable of earning returns above WACC for an extended period.

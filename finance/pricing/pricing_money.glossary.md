@@ -1,0 +1,30 @@
+- **Accrued interest** — Interest earned on a bond since the last coupon payment, payable by the bond buyer to the seller upon trade.
+- **Asset swap** — Combining a bond with an interest-rate swap to convert a fixed-rate bond into an effective floating-rate instrument.
+- **Basis points (bp)** — Hundredths of a percent, a unit for measuring interest rate differences (1 bp = 0.01%).
+- **Bid-offer spread** — The difference between the prices at which a dealer is willing to buy (bid) and sell (offer) an instrument.
+- **Cash settlement** — A method where derivatives are settled in cash based on the price of the underlying at expiry rather than physical delivery.
+- **Coupon** — The fixed interest payment on a bond expressed as a percentage of its nominal or face value.
+- **Dirty price** — The full market price of a bond, including accrued interest.
+- **Fixed leg (swap)** — The side of an interest-rate swap where fixed interest payments are made or received.
+- **Forward price** — The agreed price for delivery of an asset at a future date, implied by spot prices and interest/cost differentials.
+- **Futures contract** — Standardized agreement to buy or sell an asset at a set future date and price, traded on exchanges with clearing houses.
+- **Implied volatility** — The market's forecast of the likely volatility of the underlying asset's price, inferred from option prices.
+- **Interest-rate swap (IRS)** — A contract where two parties exchange streams of interest payments, typically fixed versus floating.
+- **LIBOR** — London Interbank Offered Rate; a benchmark interest rate fixed daily based on submissions from leading banks.
+- **Margin (initial, variation)** — Collateral posted to clearinghouses or brokers to cover potential losses on futures or swaps; initial margin secures the position, variation margin adjusts for daily price changes.
+- **Money market** — Market for short-term interbank deposits, typically ranging from overnight to one year maturity.
+- **Nominal (bond)** — The face value of a bond, on which coupons and principal repayment are calculated.
+- **Option (put/call)** — Financial contract giving the right, but not obligation, to sell (put) or buy (call) an underlying asset at a predetermined price before expiry.
+- **Overnight index swap (OIS)** — Swap based on overnight interest rates, often used in discounting or as a reference rate.
+- **Price-yield relationship** — Inverse relationship where bond prices rise as yields fall and vice versa.
+- **Primary dealer** — Firms authorized to participate in government bond auctions and make markets in those bonds.
+- **Repo (repurchase agreement)** — Collateralized loan where securities are sold and repurchased later at agreed prices; reduces credit risk in lending.
+- **Risk-free rate** — The theoretical interest rate on an investment with zero risk, often proxied by government bond yields.
+- **Settlement date (value date)** — The date when payment and delivery occur in a trade, often T+2 business days after trade date.
+- **Strip** — Separately Tradeable Registered Interest and Principal Securities created by separating a bond’s coupons and principal into individual zero-coupon securities.
+- **Swap collateralization** — Posting of collateral to reduce credit risk in swap agreements.
+- **TED spread** — The difference between the yield on short-term US government debt and interbank lending rates; a credit risk indicator.
+- **Tick size** — The minimum price increment for trading a futures contract or security.
+- **Total return** — The combined effect of income (coupons/dividends) and capital gains/losses on an investment.
+- **Yield curve** — Graph showing the relationship between bond yields and maturities.
+- **Yield to maturity (YTM)** — The internal rate of return of a bond if held to maturity, considering all coupon payments and principal repayment.
