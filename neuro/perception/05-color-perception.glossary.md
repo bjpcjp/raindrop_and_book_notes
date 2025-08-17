@@ -1,0 +1,30 @@
+- **Achromatic hues** — Colors ranging from white to black, including shades of gray, which have no hue.  
+- **Addition (additive mixture)** — Mixing of light wavelengths where the resulting color is brighter and closer to white than the original colors.  
+- **Afterimage** — A temporal color phenomenon where, after fixating on a color, a complementary color image appears when looking at a white surface.  
+- **Amplitude** — (Implied concept in light waves) Related to intensity or brightness of light.  
+- **Brightness** — The perceived lightness or intensity of a color or light source; applies to both chromatic and achromatic hues.  
+- **Candle (candela)** — Basic unit of photometry measuring light intensity, roughly equivalent to 0.001 W at 555 nm.  
+- **Chromatic hues** — Colors determined by wavelength, such as green or yellow, possessing a specific hue.  
+- **Color constancy** — The visual system's ability to perceive the true color of objects despite changes in lighting conditions.  
+- **Color mixture** — Combining colors either by additive mixing of light or subtractive mixing of pigments, leading to various perceived colors.  
+- **Complementary colors** — Pairs of colors which, when mixed in equal intensity, produce white or gray; these are opposites on the color wheel.  
+- **Cone cells (cones)** — Photoreceptors in the retina sensitive to short (S), medium (M), and long (L) wavelengths enabling color vision.  
+- **Electromagnetic spectrum** — Range of all waves of electromagnetic radiation, visible light lies between 400 and 700 nm.  
+- **Illuminance (incident light)** — The amount of light falling on a surface, measured in meter-candle units.  
+- **Intensity** — The amount of light energy, often quantified by photometric units rather than photon count.  
+- **Lateral inhibition** — A neural mechanism where excited regions inhibit neighboring areas, influencing color perception phenomena such as simultaneous contrast.  
+- **Luminance** — Amount of light reflected in all directions from a surface, measured in candles per square meter (cd/m²).  
+- **Monochromatic light** — Light consisting of a single wavelength, considered pure in color.  
+- **Non-spectral colors** — Colors not found in the visible spectrum, such as purple, produced by mixing two or more wavelengths.  
+- **Opponent-process theory** — Theory proposing color perception is based on opposing color pairs (red-green, blue-yellow, white-black) at neural levels beyond photoreceptors.  
+- **Perceptual dimensions of color** — Hue, brightness, and saturation; key attributes that describe color experience.  
+- **Photons** — Particles of light which carry energy and exhibit properties of electromagnetic radiation.  
+- **Primary colors** — Three specific colors (red, green, blue) that can be combined to produce all other colors, as defined by the CIE.  
+- **Purity (saturation)** — The degree to which a color is free from white or gray, denoting its vividness or dullness.  
+- **Radiance** — The amount of energy emitted directly from a light source.  
+- **Reflectance** — The ability of a surface to reflect incident light, expressed as a percentage or coefficient.  
+- **Retinal illuminance** — Amount of light reaching the retina, measured in trolands.  
+- **Simultaneous contrast** — A color perception effect where surrounding colors change the appearance of a central color.  
+- **Spectral composition** — Distribution of light energy across different wavelengths in a light source.  
+- **Subtractive mixture** — Mixing of pigments that absorb certain wavelengths, leading to colors that are darker or less bright.  
+- **Trichromatic theory** — Theory stating color vision relies on three types of cones sensitive to different wavelengths (blue, green, red).

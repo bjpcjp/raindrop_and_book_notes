@@ -1,0 +1,27 @@
+- **Amygdala** — brain area important for recognizing emotionally salient stimuli and reinforcing motor and cognitive actions based on reward and punishment.  
+- **Anterior cingulate cortex (ACC)** — brain region encoding the consequences of actions, including difficulty and uncertainty, involved in decision-making.  
+- **Anterior temporal cortex** — area involved in high-level semantic knowledge and deep learning of concepts.  
+- **Attractor dynamics** — neural activation patterns that settle into stable states, supporting memory retrieval via pattern completion.  
+- **Basal Ganglia** — collection of subcortical areas critical for motor control, reinforcement learning, and executive function by selecting actions based on reward history.  
+- **Brodmann areas** — cortical regions defined by anatomical differences, correlating with functional distinctions in the brain.  
+- **Cerebellum** — large brain structure involved in motor coordination and learning through error-driven mechanisms, also active in cognition.  
+- **Dorsal pathway (Where/How pathway)** — visual processing stream through parietal cortex specialized for spatial location, motion, and guiding motor actions.  
+- **Episodic memory** — memory of specific events and facts, rapidly learned and encoded by the hippocampus.  
+- **Error-driven learning** — a learning mechanism where adjustments are made based on the difference between expected and actual outcomes, prominent in cerebellum and neocortex.  
+- **Fusiform face area (FFA)** — region in the inferotemporal cortex specialized in recognizing faces.  
+- **Hippocampus** — archicortical brain area critical for rapid learning of new episodic memories with sparse, pattern-separated representations.  
+- **Medial temporal lobe (MTL)** — brain region including hippocampus, important for storing and retrieving episodic memories and recognition memory signals.  
+- **Neocortex** — outer brain layer responsible for complex cognitive functions, integrating self-organizing, error-driven, and reinforcement learning with attractor and integrative dynamics.  
+- **Orbitofrontal cortex (OFC)** — frontal brain area important for evaluating reward values of stimuli, interacting closely with amygdala.  
+- **Parietal lobe** — cortical area specialized for spatial processing, number, abstract relationships, sensory-motor integration, and metrical information.  
+- **Pattern completion** — process supported by hippocampal attractor dynamics to retrieve full memories from partial cues.  
+- **Pattern separation** — hippocampal mechanism producing sparse and distinct neural activity patterns to minimize interference between similar memories.  
+- **Perception** — process of detecting and interpreting sensory stimuli, involving hierarchical visual areas from V1 to inferotemporal cortex.  
+- **Perirhinal cortex** — medial temporal lobe area involved in recognition memory and familiarity detection.  
+- **Phonological representations** — brain representations related to the sound structure of language.  
+- **Prefrontal cortex (PFC)** — frontal lobe area supporting executive functions such as planning, decision-making, working memory, and cognitive control.  
+- **Reinforcement learning** — learning based on reward and punishment signals, particularly involving basal ganglia and dopamine modulation.  
+- **Self-organizing learning** — learning driven by correlations and regularities in input patterns, important in hippocampus and neocortex.  
+- **Semantic knowledge** — stored understanding of the meaning of words, objects, and concepts, primarily in anterior temporal cortex.  
+- **Ventral pathway (What pathway)** — visual processing stream through temporal cortex specialized for object recognition and categorization.  
+- **Working memory** — active maintenance of information in a readily accessible state, supported by prefrontal cortex and dynamically gated by basal ganglia.

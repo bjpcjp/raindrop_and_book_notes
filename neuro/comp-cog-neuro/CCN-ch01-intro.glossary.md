@@ -1,0 +1,30 @@
+- **Algorithmic level** — The level of analysis describing how computations are performed through sequences of information processing steps.  
+- **Artificial neurons** — Simplified computational units modeled after biological neurons, used in neural network simulations.  
+- **Basal ganglia** — A brain region involved in reinforcement learning, decision making, and interaction with dopamine systems and prefrontal cortex.  
+- **Biological detail** — The inclusion of specific neuronal and physiological properties in models to closely represent actual brain structures.  
+- **Bidirectional connectivity** — Mutual interactions among neurons allowing recurrent communication, important for consciousness and flexible cognition.  
+- **Cognition** — The mental processes involved in perception, attention, memory, language, decision making, and executive function.  
+- **Computational cognitive neuroscience** — An approach using computer models to simulate and understand brain function and cognition.  
+- **Computational level** — The level of analysis that focuses on what computations are being performed and what information is processed.  
+- **Dopamine system** — A neural system that adapts reward signals to novelty and drives learning through phasic dopamine release.  
+- **Emergence** — Complex phenomena arising from simpler interacting parts, where system behavior transcends individual components.  
+- **Episodic memory** — Memory for specific personal experiences, dependent on hippocampal structures and characterized by rapid learning.  
+- **Error backpropagation** — A learning algorithm used in neural networks to adjust connection weights by propagating errors backward through the layers.  
+- **Executive function** — Brain processes, primarily in the prefrontal cortex, that manage attention, task focus, and resistance to distractions.  
+- **Functional brain organization** — The division of the brain into areas specialized for different cognitive functions, such as perception and memory.  
+- **Hippocampus** — A brain area essential for forming new episodic memories, distinguished by pattern separation and inhibition.  
+- **Implementational level** — The level concerned with how hardware (the brain) physically implements cognitive algorithms.  
+- **Learning mechanisms** — Processes by which synaptic strengths and neural responses are adjusted based on experience.  
+- **Memory interference** — The phenomenon where overlapping neural patterns disrupt the encoding or retrieval of memories.  
+- **Neocortex** — The evolutionarily recent and enlarged part of the human brain responsible for higher cognitive functions.  
+- **Neurons** — The fundamental information-processing cells in the brain, highly interconnected through synapses.  
+- **Pattern separation** — A neural process that reduces overlap between similar inputs to minimize memory interference.  
+- **Parallel computation** — Processing simultaneously across many neural units, enabling efficient handling of complex tasks.  
+- **Prefrontal cortex** — The "executive" brain region involved in maintaining task focus and controlling cognitive resources.  
+- **Reconstructionism** — The scientific approach of building complex systems from simpler parts to explain emergent phenomena.  
+- **Reductionism** — The scientific strategy of explaining systems by breaking them down into their fundamental components.  
+- **Reinforcement learning** — Learning based on reward history mediated by brain areas including dopamine and basal ganglia.  
+- **Synapse** — The junctions through which neurons communicate, typically receiving thousands of inputs.  
+- **Task-directed behavior** — The ability to maintain focus on goals despite distractions, supported by executive brain functions.  
+- **Theory** — A formal, testable explanation of phenomena, which can be modeled and refined based on empirical data.  
+- **Virtual reality** — A computerized simulated environment, used in research to study brain and behavioral functions.

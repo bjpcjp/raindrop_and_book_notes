@@ -1,0 +1,28 @@
+- **Behaviorism** — A theory that mental states can be explained in terms of behavioral dispositions or actions, often criticized for ignoring subjective experience.  
+- **Causal Role** — The function or effect a mental state has in producing behavior or other mental states, insufficient alone to explain consciousness.  
+- **Conceptual Scheme** — A system of representation or a set of concepts used to interpret facts or experiences.  
+- **Conscious Experience** — The presence of subjective mental states that have a particular qualitative character accessible only from a first-person perspective.  
+- **Dualism** — Although not explicitly defined, implied as a non-materialist view contrasting with physicalism regarding mind-body relations.  
+- **Echolocation (Sonar)** — A sensory system used by bats involving the emission of sound waves and interpretation of their echoes to perceive the environment.  
+- **Empathy** — The capacity to understand or feel what another being experiences from their point of view, distinct from objective description.  
+- **Experience (Subjective Character)** — The qualitative, first-person nature of mental states; "what it is like" to be a particular organism.  
+- **Functional Characterization** — Defining mental states by their causal relationships and roles in behavior, considered incomplete for explaining consciousness.  
+- **Imagination (Perceptual/Sympathetic)** — Mental processes of forming images or adopting another’s mental state respectively; used in discussing the limits of conceiving other minds.  
+- **Materialism (Physicalism)** — The philosophical position that mental states are physical states or processes, though the exact nature of this relation is not yet understood.  
+- **Mental State** — A state characterized by consciousness or subjective experience, distinct from mere behavioral or physical descriptions.  
+- **Mind-Body Problem** — The philosophical issue concerning how mental states relate to physical processes in the body, complicated by consciousness’s subjective aspect.  
+- **Neobehaviorism** — A modern form of behaviorism that attempts to explain mind in objective terms, criticized for ignoring subjective qualities.  
+- **Objective Character** — The aspect of phenomena that can be described and understood from multiple viewpoints, independent of subjective perspective.  
+- **Phenomenology** — The study and description of subjective experience; Nagel calls for an objective phenomenology to describe subjective character comprehensively.  
+- **Physical Description** — A depiction of phenomena in terms of objective, observable physical processes, traditionally contrasted with mental descriptions.  
+- **Physicalism** — See Materialism; the view that everything about the mind can be explained in physical terms, though current understanding is incomplete.  
+- **Point of View** — The subjective vantage from which an organism experiences the world; central to the concept of "what it is like" to be that organism.  
+- **Privacy of Experience** — The notion that subjective mental states are accessible only to the experiencing subject.  
+- **Psychophysical Reduction** — The attempt to explain mental phenomena entirely in terms of physical processes, challenged by the subjective nature of experience.  
+- **Qualia** — Although not explicitly named by Nagel, closely related to the 'subjective character' or qualitative aspect of experience.  
+- **Reductionism** — The approach of explaining complex phenomena by reducing them to their simpler physical components, seen as inadequate for consciousness.  
+- **Subjective Character** — The unique, first-person qualitative aspect of conscious experience that resists objective analysis.  
+- **Subjectivity** — The property of experiences being accessible only from a particular organism’s perspective.  
+- **Theory of Mind** — The inferred understanding or theory about others’ mental states, made difficult by the subjective nature of experience.  
+- **Universality of Consciousness** — The idea that consciousness exists across many animal species, even if its exact form is unknowable.  
+- **Zombie (Philosophical)** — An implied reference to beings that behave like humans but lack conscious experience.

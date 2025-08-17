@@ -1,0 +1,33 @@
+- **Absolute threshold** — the smallest amount of energy that can be detected in the absence of any stimulation; the minimum amplitude for detection.  
+- **Adaptive methods** — experimental procedures (e.g., staircase, PEST) that adjust stimulus intensity based on participant responses to estimate thresholds efficiently.  
+- **Amplitude** — the magnitude or intensity of a sound wave, usually measured in decibels (dB).  
+- **Aperiodic sound** — a complex sound made of frequencies not integer multiples of a fundamental frequency; lacks periodic harmonic structure.  
+- **Auditory nerve fibers** — nerve cells transmitting auditory information from hair cells in the cochlea to the brain.  
+- **Binaural presentation** — auditory stimuli presented to both ears.  
+- **Cochlea** — spiral-shaped part of the inner ear containing the organ of Corti; responsible for converting sound vibrations into neural signals.  
+- **Critical band** — frequency range around a given frequency within which sounds interfere with each other's perception, relevant to masking.  
+- **Difference threshold** — the minimum intensity difference required for distinguishing two stimuli; also called just noticeable difference (JND).  
+- **Discrimination** — sensory ability to detect differences between stimuli.  
+- **Equal-loudness contours (phons)** — curves showing sound intensities across frequencies perceived as equally loud.  
+- **Frequency** — number of pressure cycles per second in a sound wave, measured in hertz (Hz); related to pitch.  
+- **Frequency theory** — theory that pitch perception corresponds to the frequency of neural firing; limited by neuron firing rates.  
+- **Gap transfer illusion** — auditory illusion in which the perceptual assignment of interruptions shifts between sounds crossing in frequency.  
+- **Hair cells** — specialized sensory cells in the cochlea that transduce mechanical vibrations into nerve impulses, divided into inner and outer types.  
+- **Interaural intensity difference** — difference in sound intensity arriving at each ear; used for localizing high-frequency sounds.  
+- **Interaural time difference** — difference in time of arrival of a sound between the ears; used for localizing low-frequency sounds.  
+- **Just noticeable difference (JND)** — see difference threshold.  
+- **Loudness** — subjective perception of sound intensity.  
+- **Mel** — unit of pitch perception, with 1000 mels corresponding to the pitch of a 1000-Hz tone at 40 dB SPL.  
+- **Organ of Corti** — sensory organ located on the basilar membrane in the cochlea that contains hair cells.  
+- **Perilymph** — fluid filling the vestibular and tympanic canals of the cochlea.  
+- **Phoneme** — basic abstract unit of speech sound that distinguishes meaning but has no meaning in itself.  
+- **Pitch** — auditory sensation relating to frequency that allows ordering sounds from low to high.  
+- **Place theory** — theory of pitch perception that different frequencies stimulate different locations along the basilar membrane.  
+- **Psychometric function** — function describing the relation between stimulus magnitude and the proportion of detections or responses.  
+- **Signal detection theory (SDT)** — framework separating sensitivity to stimulus from decision criteria in detection tasks, quantified by d′ and β.  
+- **Streaming** — perceptual organization process grouping sequences of sounds into coherent auditory objects or streams.  
+- **Stereocilia** — hair-like projections on hair cells that bend in response to movement of the basilar membrane, triggering neural responses.  
+- **Timbre** — subjective quality of sound that distinguishes different sources having the same pitch and loudness.  
+- **Tone** — sound with a definite pitch, often a pure frequency or harmonic complex.  
+- **Volley principle** — neural coding of frequency where groups of neurons fire in staggered fashion to represent higher frequencies.  
+- **Weber’s law** — principle stating that the ratio of the difference threshold to the stimulus intensity is a constant (∆I/I = k).

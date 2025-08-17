@@ -1,0 +1,31 @@
+- **Accommodation** — A kinesthetic monocular cue for depth perception based on the change in the lens shape to focus on objects at different distances.  
+- **Aerial perspective** — A monocular cue where the clarity and sharpness of object contours decrease with distance, making distant objects appear hazier.  
+- **Afterimage** — A retinal image that persists briefly after the removal of the original stimulus, used to study size perception and Emmert’s law.  
+- **Angle effects** — Optical illusions caused by angular relationships, such as Sander’s, Zollner’s, Hering’s, and Poggendorff’s illusions.  
+- **Attentional blink** — A phenomenon in which detection of a second target is impaired if it appears 200–500 ms after a first attended target during rapid stimulus presentation.  
+- **Attentional blindness** — Failure to notice new stimuli in a scene due to attention being occupied elsewhere.  
+- **Binocular convergence** — A depth cue involving the inward turning of eyes to focus on near objects, providing kinesthetic information about absolute distance.  
+- **Blindsight** — A condition where patients with cerebral lesions can respond to visual stimuli without conscious perception.  
+- **Change blindness** — Difficulty detecting large changes in a visual scene, especially during alternating image presentations.  
+- **Cross disparity** — Binocular retinal disparity where a nearer object appears shifted opposite the fixation point on each retina, signaling it is in front.  
+- **Emmert’s law** — The perceived size of an afterimage depends on the distance of the surface onto which it is projected.  
+- **Familiar size** — A monocular visual cue where known object sizes help estimate their distance based on retinal image size.  
+- **Feature integration theory** — A theory stating that visual processing occurs in two stages: automatic parallel processing of features and attentional binding to form objects.  
+- **Hemineglect** — A neurological deficit causing failure to attend to the side opposite a brain lesion, often the left side after right hemisphere damage.  
+- **Horizon (Horopter)** — The locus of points in space where objects are seen singly (not double) with both eyes; also called the Panum’s area.  
+- **Illusory conjunctions** — Errors in visual perception where features such as color and shape are incorrectly combined under challenging viewing conditions.  
+- **Inhibition of return** — The reduced probability of returning attention quickly to a previously attended spatial location after a brief delay.  
+- **Linear perspective** — A monocular cue where parallel lines appear to converge in the distance, creating an impression of depth.  
+- **Local cue** — A cue referring to immediate or relative features of objects in the visual field.  
+- **Müller-Lyer illusion** — An optical illusion where lines with contrary arrow-like end patterns appear different in length although they are equal.  
+- **Motion parallax** — A dynamic monocular cue where closer objects move faster across the retina than distant ones when the observer moves.  
+- **Occlusion (Interposition)** — A monocular cue where an object blocking another is perceived as closer.  
+- **Perceptual constancy** — The phenomenon where perceptual attributes (size, shape, brightness) remain constant despite changes in sensory input.  
+- **Relative brightness** — A monocular monocular cue where brighter objects are perceived as closer than dimmer ones in low-light conditions.  
+- **Relative height** — A monocular cue where objects higher in the visual field appear farther when below the horizon and vice versa above it.  
+- **Retinal disparity** — A binocular cue for depth based on the slight differences between the images formed on each retina.  
+- **Size-distance invariance principle** — The hypothesis that perceived size depends on both retinal image size and perceived distance.  
+- **Stereoscopy** — The perception of depth created by combining two slightly different images, one for each eye.  
+- **Texture gradient** — A monocular cue where the density and size of elements in a scene vary with distance, helping to perceive depth.  
+- **Top-down processing** — Attention guided by cognitive factors such as expectations or knowledge rather than sensory input.  
+- **Visual selectivity** — The attentional ability to focus on relevant visual information while ignoring irrelevant stimuli.

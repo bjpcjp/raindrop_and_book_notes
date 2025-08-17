@@ -1,0 +1,34 @@
+- **Actor** — The component in reinforcement learning responsible for producing motor or cognitive actions based on sensory inputs; in the basal ganglia, it selects actions to execute.
+- **Basal Ganglia (BG)** — Subcortical brain structure specialized for action selection and reinforcement learning driven by reward and punishment signals.
+- **Caudate Nucleus** — A subdivision of the striatum in the basal ganglia involved in action selection, particularly in gating motor and cognitive actions.
+- **Cerebellum** — Brain structure specialized for refining and coordinating motor actions through error-driven learning using sensory feedback.
+- **Climbing Fiber** — Input from the inferior olivary nucleus to Purkinje cells in the cerebellum that conveys error signals and induces synaptic plasticity.
+- **Conditioned Stimulus (CS)** — A previously neutral stimulus that, through learning, predicts a reward or outcome, eliciting dopaminergic firing in reinforcement learning.
+- **Direct Pathway (Go Pathway)** — Striatal pathway in the basal ganglia that facilitates action initiation by disinhibiting thalamic neurons.
+- **Dopamine** — Neuromodulator released by substantia nigra pars compacta and ventral tegmental area neurons; encodes reward prediction error signals critical for reinforcement learning.
+- **Dopamine Receptors (D1 and D2)** — Two types of receptors in the striatum; D1 receptors excite Go pathway neurons, while D2 receptors inhibit NoGo pathway neurons.
+- **Error-Driven Learning** — Learning mechanism that adjusts behavior based on the difference between expected and actual sensory or motor outcomes, as in cerebellar function.
+- **Globus Pallidus Internal Segment (GPi)** — Basal ganglia output nucleus inhibiting thalamic neurons; inhibited by the direct pathway to enable action initiation.
+- **Globus Pallidus External Segment (GPe)** — Basal ganglia nucleus tonically inhibiting GPi; its inhibition by indirect pathway leads to enhanced GPi activity, suppressing actions.
+- **Indirect Pathway (NoGo Pathway)** — Striatal pathway that suppresses undesired actions by increasing inhibition of thalamic targets via the GPi.
+- **Inferior Olivary Nucleus** — Brainstem nucleus providing climbing fiber input to the cerebellum, conveying motor error signals.
+- **Lateral Hypothalamus (LHA)** — Brain area providing primary reward signals, especially for basic rewards like food and water.
+- **Medial Dorsal (MD), Ventral Anterior (VA), Ventrolateral (VL) Thalamic Nuclei** — Thalamic areas involved in relaying disinhibited signals from basal ganglia to frontal cortex.
+- **Mossy Fibers** — Input fibers to the cerebellum that activate granule cells, transmitting sensorimotor information.
+- **NoGo Neurons** — Medium spiny neurons in the striatum of the indirect pathway that inhibit GPe and thus lead to suppression of actions.
+- **Parietal Cortex** — Cortical region involved in spatial mapping and sensorimotor transformation, interconnected with the cerebellum.
+- **Patch/Striosomes** — Clusters of neurons in striatum projecting to dopaminergic systems modulating learning signals.
+- **Pedunculopontine Tegmental Nucleus (PPTN)** — Brainstem structure involved in transforming sustained inputs into phasic dopamine responses.
+- **Prefrontal Cortex (PFC)** — Frontal brain area involved in high-level planning, cognitive action selection, and working memory.
+- **Primary Value (PV) System** — Part of PVLV model representing direct responses to primary rewards that excite dopaminergic neurons.
+- **Purkinje Cells** — Inhibitory cerebellar neurons receiving extensive granule cell input and producing cerebellar output.
+- **Reward Prediction Error (δ or delta)** — The difference between actual and expected rewards, used as a learning signal in reinforcement learning.
+- **Rescorla-Wagner Model** — A classical conditioning model computing reward prediction error as actual minus expected reward.
+- **Self-Organizing Dynamics** — Neural activity patterns characterized by autonomous organization without explicit error or reward signals.
+- **Substantia Nigra Pars Compacta (SNc)** — Dopamine-producing neurons projecting to the striatum, critical for signaling reward prediction errors.
+- **Substantia Nigra Pars Reticulata (SNr)** — Output nucleus of basal ganglia analogous to GPi, providing tonic inhibition to targets such as the superior colliculus.
+- **Temporal Difference (TD) Learning** — Reinforcement learning algorithm incorporating future expected rewards to generate dopamine-like error signals.
+- **Thalamus** — Brain structure relaying basal ganglia output to the cortex, modulated by basal ganglia gating via inhibition/disinhibition.
+- **Ventral Striatum (VS-Patch)** — Subregion of striatum containing patch neurons involved in inhibitory modulation of dopaminergic neurons in reward learning.
+- **Ventral Tegmental Area (VTA)** — Midbrain dopaminergic area important in signaling reward prediction errors and reinforcement learning.
+- **Walker’s Opponent Actor Learning (OpAL)** — An extension of actor-critic models dividing the actor into separate Go and NoGo pathways modulated by dopamine levels.

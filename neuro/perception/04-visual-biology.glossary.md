@@ -1,0 +1,32 @@
+- **Accommodation** — The automatic adjustment of the lens curvature to focus light rays on the retina, making the lens rounder for near objects and flatter for distant objects.  
+- **Aqueous humor** — The fluid filling the anterior part of the eye, between the cornea and the lens, contributing to the eye’s spherical shape.  
+- **Astigmatism** — A refractive problem caused by a non-spherical curvature of the cornea or lens, resulting in blurred vision in some directions.  
+- **Blind spot (optic disk)** — The area on the retina where the optic nerve exits, creating a spot with no photoreceptors and corresponding to a gap in vision.  
+- **Bipolar cells** — Retinal neurons that transmit signals from photoreceptors (rods and cones) to ganglion cells.  
+- **Choroid (choroid membrane)** — A vascularized membrane between the sclera and retina that absorbs internal light reflection and nourishes retinal cells.  
+- **Complex cells** — Visual cortex cells (mainly in layers 2, 3, 5, and 6 of V1) responding selectively to movement, often direction-specific.  
+- **Cones** — Photoreceptor cells in the retina responsible for color vision and high visual acuity; concentrated especially in the fovea; effective in bright light (photopic system).  
+- **Cornea** — The curved, transparent membrane at the front of the eye that begins bending incoming light rays.  
+- **Dorsal pathway (magnoparietal)** — Visual processing pathway associated with “where” and “how” aspects of vision, motion perception, and spatial location, involving area V5.  
+- **Fovea** — The small central region of the retina, about 1° in diameter, with the highest concentration of cones and sharpest vision.  
+- **Ganglion cells** — Retinal cells receiving input mainly from bipolar cells; their axons form the optic nerve; classified into magno, parvo, and W types.  
+- **Hypercomplex cells** — Also called end-stopped cells in the visual cortex; respond selectively to edges of specific orientation or directional movement.  
+- **Hypermetropia (farsightedness)** — A refractive error where images are focused behind the retina due to a short distance between lens and retina; difficulty seeing near objects.  
+- **Lateral geniculate nucleus (LGN)** — A brain structure in the thalamus with six layers, receiving visual input from the retina and involved in form and color perception.  
+- **Lens** — The eye’s transparent structure behind the pupil that changes shape during accommodation to focus light on the retina.  
+- **Magno cells** — Ganglion cells with large receptive fields and fast conduction speed, sensitive to movement and large objects; make up about 10% of ganglion cells.  
+- **Myopia (nearsightedness)** — A refractive error where images are focused in front of the retina due to a long eyeball or excessive corneal/lenticular curvature; difficulty seeing distant objects.  
+- **Optic chiasm** — The point where fibers from the nasal halves of both retinas cross to the opposite side of the brain; no synapse occurs here.  
+- **Optic nerve** — Formed by the axons of ganglion cells, transmitting visual information from the retina to the brain.  
+- **Parvo cells** — Ganglion cells with small receptive fields and slower conduction speed, involved in color vision and fine detail; represent about 80% of ganglion cells.  
+- **Photoreceptors** — Retina cells (rods and cones) that convert light into neural impulses.  
+- **Presbyopia** — Age-related hardening of the lens that reduces its ability to focus on nearby objects, causing difficulty in near vision.  
+- **Primary visual cortex (V1)** — Also called striate cortex or area 17; the first cortical area receiving visual input from LGN with retinotopic and columnar organization.  
+- **Receptive field** — The area on the retina where light stimulation influences the firing rate of a particular neuron, such as a ganglion cell.  
+- **Retina** — The innermost layer of the eye’s posterior part, containing photoreceptors, bipolar cells, and ganglion cells where images are formed.  
+- **Rods** — Photoreceptor cells sensitive to low light, responsible for night vision (scotopic system), more numerous in the retinal periphery.  
+- **Simple cells** — Visual cortex cells with elongated receptive fields that respond maximally to bars of specific orientations.  
+- **Superior colliculus** — A midbrain structure involved in locating visual stimuli and controlling eye movements, receiving some retinal input.  
+- **Ventral pathway (parvotemporal)** — Visual processing pathway associated with object recognition (“what” pathway), color processing (area V4), and form analysis.  
+- **Vitreous humor** — The gelatinous substance filling the large posterior chamber of the eyeball, maintaining its spherical shape.  
+- **Whytt reflex** — The pupil reflex causing constriction of the pupil in response to light intensity changes.

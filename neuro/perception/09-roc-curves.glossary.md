@@ -1,0 +1,13 @@
+- **Criterion** — The decision threshold that determines how an observer decides between signal presence and absence; its location affects the rates of hits and false alarms without altering sensitivity.
+- **Decision criterion** — Another term for criterion; reflects the observer’s threshold for deciding whether a signal is present.
+- **False alarm** — An incorrect response where the observer indicates the presence of a signal when none is present.
+- **Hit** — A correct response where the observer correctly detects the presence of a signal.
+- **Lax observer** — An observer who adopts a low decision criterion, resulting in a high rate of both hits and false alarms.
+- **Noise distribution** — The statistical distribution of trials where only noise is present, used in signal detection theory.
+- **Observer bias** — The tendency of an observer to be more conservative or lax, reflected in the location of their criterion on the ROC curve.
+- **Receiver operating characteristic (ROC) curve** — A plot of the hit rate (true positive rate) on the y-axis against the false alarm rate (false positive rate) on the x-axis, used to evaluate sensitivity and criterion.
+- **Response bias** — See observer bias; the inclination to adopt a particular decision criterion affecting hit and false alarm rates.
+- **Sensitivity (d′)** — A measure of an observer’s ability to discriminate between signal and noise; reflected by the distance of the ROC curve from the diagonal.
+- **Signal + noise distribution** — The statistical distribution of trials where a signal is present along with noise, used in signal detection theory.
+- **Slope (of ROC curve in Z-score space)** — In a Z-transformed ROC plot, the slope indicates whether the assumption of equal variance between noise and signal + noise distributions holds; slope = 1 indicates equal variance.
+- **Z-score transformation** — Converting hit and false alarm proportions into Z-scores to test assumptions about normality and equal variance in signal detection theory.

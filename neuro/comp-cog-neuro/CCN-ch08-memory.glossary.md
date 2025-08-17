@@ -1,0 +1,30 @@
+- **Activation-based memory** — Memory supported by ongoing neural activity; transient, flexible, and short-lived.
+- **Activation-based priming** — Priming effects arising from residual neural firing that dissipates quickly.
+- **Anterograde amnesia** — Inability to form new episodic memories following hippocampal damage.
+- **Auto-encoder** — An invertible mapping between CA1 and entorhinal cortex used for encoding and recall in the hippocampus.
+- **Basal ganglia** — Brain structures involved in motor control, reinforcement learning, and memory updating/maintenance.
+- **CA1** — Region of hippocampus involved in reactivating and auto-encoding entorhinal cortex patterns during recall.
+- **CA3** — Hippocampal region serving as the main engram for episodic memory with recurrent connections enabling pattern completion.
+- **Catastrophic interference** — Rapid forgetting in neural networks caused by overlapping representations when learning new associations.
+- **Complementary Learning Systems (CLS)** — Framework positing distinct roles for hippocampus (rapid episodic learning) and neocortex (slow semantic learning).
+- **Dentate gyrus (DG)** — Hippocampal area with very sparse activity patterns that supports strong pattern separation.
+- **Dual process model** — Model distinguishing hippocampal recollective memory from perirhinal cortex familiarity memory in recognition.
+- **Encoding** — Process of forming a new memory representation.
+- **Entorhinal cortex (EC)** — Input/output pathway of the hippocampus connecting cortical areas and hippocampal subfields.
+- **Familiarity memory** — Coarse graded memory signal, supported by perirhinal cortex, indicating if a stimulus was recently encountered.
+- **Hippocampal amnesia** — Memory deficits resulting from damage to the hippocampus, often impairing episodic memory formation.
+- **Hippocampus** — Brain structure specialized for rapid, sparse, and distinct episodic memory encoding and recall.
+- **Hyperthymesia** — Exceptional autobiographical memory characterized by obsessive rehearsal and enlarged basal ganglia.
+- **Neocortex** — Brain region supporting slow, overlapping distributed learning forming semantic knowledge.
+- **Pattern completion** — Retrieval process where a partial cue triggers reactivation of a full stored hippocampal memory.
+- **Pattern separation** — Process of creating distinct, minimally overlapping memory representations to reduce interference.
+- **Perforant pathway** — Neural pathway connecting entorhinal cortex to dentate gyrus and CA3, facilitating sparse, conjunctive representations.
+- **Perirhinal cortex (PRC)** — Ventral pathway region contributing to familiarity-based recognition memory.
+- **Retrograde amnesia** — Loss of memories formed prior to hippocampal damage, often temporally graded.
+- **Semantic memory** — Slowly acquired, generalized knowledge about the world, supported mainly by neocortex.
+- **Sparse representations** — Neural coding involving few active neurons at a time, reducing overlap between memories.
+- **Stem completion task** — Behavioral paradigm measuring priming effects by having participants complete word stems.
+- **Subiculum** — Hippocampal output area involved in processing novelty signals and connecting to subcortical regions.
+- **Theta oscillations** — Rhythmic hippocampal neural activity (~8-12 Hz) supporting alternating encoding and retrieval phases.
+- **Weight-based memory** — Memory stored through synaptic plasticity lasting from minutes to decades or lifetime.
+- **Weight-based priming** — Priming effects due to synaptic changes lasting a long time, observable behaviorally without conscious awareness.

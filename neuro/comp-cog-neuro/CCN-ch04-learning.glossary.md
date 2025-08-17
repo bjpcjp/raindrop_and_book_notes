@@ -1,0 +1,28 @@
+- **AMPA receptors** — Postsynaptic receptors whose number and efficacy determine synaptic strength; primary excitatory input drivers modified during learning.
+- **Backpropagation** — An error-driven learning algorithm that propagates error signals backward across layers to minimize output error through gradient descent.
+- **BCM learning function** — A Hebbian-based learning rule with a floating threshold adjusted by the long-term average postsynaptic activity, enabling homeostatic balance between LTP and LTD.
+- **Bidirectional connectivity** — Neural connections that allow signals to flow in both directions, enabling communication of error signals for learning without biologically implausible backward propagation.
+- **Calcium ions (Ca++)** — Critical intracellular messengers entering postsynaptic cells via NMDA channels, triggering biochemical processes that alter synaptic plasticity.
+- **Contrastive Attractor Learning (CAL)** — A learning principle where the difference between early (expectation) and late (outcome) network states drives error-driven synaptic weight changes.
+- **Dendritic spine** — The postsynaptic part of a synapse where calcium influx drives biochemical cascades altering synaptic weights.
+- **Error-driven learning** — A form of learning based on the difference between expected and actual outcomes, enabling rapid correction and precise knowledge acquisition.
+- **Hebbian learning** — A synaptic plasticity mechanism where coincident firing of presynaptic and postsynaptic neurons leads to strengthening of the synapse.
+- **Interactive activation dynamics** — Neural activity flow influenced by excitatory and inhibitory connections, shaping settling into attractor states (implied within bidirectional and network dynamics).
+- **Leabra framework** — A biologically realistic neural network framework combining self-organizing and error-driven learning with bidirectional connectivity and inhibitory dynamics.
+- **Long Term Depression (LTD)** — A long-lasting decrease in synaptic efficacy typically induced by low postsynaptic calcium ion levels.
+- **Long Term Potentiation (LTP)** — A long-lasting increase in synaptic efficacy typically triggered by high postsynaptic calcium ion levels.
+- **Metabotropic glutamate receptors (mGlu)** — Receptors that trigger intracellular chemical reactions influencing synaptic plasticity without conducting ions directly.
+- **NMDA receptor/channel** — A postsynaptic receptor that requires both depolarization and glutamate binding to open, allowing Ca++ influx essential for coincidence detection and learning.
+- **Oja’s rule** — A Hebbian learning variant that includes subtractive normalization to prevent unbounded synaptic growth.
+- **Pattern associator** — A type of neural network that learns input-output mappings, illustrating differences in learning capabilities with and without hidden layers.
+- **Postsynaptic membrane potential (Vm)** — The electrical potential across the postsynaptic neuron's membrane, whose elevation relieves Mg++ block on NMDA channels.
+- **Presynaptic neuron** — The sending neuron that releases neurotransmitters like glutamate to activate postsynaptic receptors.
+- **Self-organizing learning** — Learning that extracts long-term statistical regularities from the environment, operating over slower time scales without explicit error signals.
+- **Spike Timing Dependent Plasticity (STDP)** — A biological learning rule where synaptic changes depend on the precise timing order of pre- and postsynaptic spikes.
+- **Synaptic plasticity** — The process of modifying synaptic strengths (weights) based on neural activity, underlying learning and memory formation.
+- **Synaptic weight/efficacy** — The strength of influence a presynaptic neuron has on a postsynaptic neuron, modifiable through learning.
+- **Theta (θ)** — A dynamic threshold parameter in learning functions that determines whether synaptic weight changes are potentiated or depressed.
+- **Voltage-gated calcium channels (VGCCs)** — Postsynaptic channels that allow Ca++ influx based only on postsynaptic membrane potential, less influential than NMDA channels.
+- **XCAL (eXtended Contrastive Attractor Learning)** — A biologically grounded learning rule integrating self-organizing and error-driven learning through a piecewise linear synaptic weight change function.
+- **XCAL dWt function** — A piecewise-linear function describing synaptic weight changes as a function of pre-post activity product and a dynamic threshold, modeling Ca++-dependent plasticity.
+- **λ (lambda) parameter** — A weighting factor balancing self-organizing and error-driven learning components within the XCAL framework.

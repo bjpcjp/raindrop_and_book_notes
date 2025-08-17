@@ -1,0 +1,26 @@
+- **Attractor** — A stable state or configuration toward which a neural network converges, representing a cleaned-up, stable interpretation of input.
+- **Bidirectional connectivity** — The reciprocal feedforward and feedback connections in the neocortex that allow information to flow in both bottom-up and top-down directions.
+- **Categorization** — The process by which neural networks group diverse input patterns into behaviorally relevant abstract categories.
+- **Coarse coding** — A distributed representation where neurons respond in a graded manner to overlapping input features, such as encoding colors by relative activity across a few photoreceptors.
+- **Distributed representation** — A pattern of activity across many neurons where each contributes to encoding multiple features or categories simultaneously.
+- **Energy (Hopfield energy)** — A mathematical measure describing the stability of a network state, which decreases as the network moves toward an attractor.
+- **Excitatory pyramidal neurons** — The primary excitatory neurons in neocortex, constituting about 85% of neurons and responsible for long-range information processing.
+- **Feedforward inhibition** — Inhibition driven by incoming excitatory input that anticipates excitatory neuron activation to regulate activity preemptively.
+- **Feedback inhibition** — Inhibitory interneurons activated by the excitatory neurons they inhibit, providing dynamic regulation based on actual activity levels.
+- **FFFB inhibition** — A computationally efficient form of inhibition combining feedforward and feedback signals to regulate neuron activation.
+- **Granmother cell** — A hypothetical neuron that responds selectively and specifically to a highly abstract concept, such as a particular individual’s face or name.
+- **Harmony (Smolensky Harmony)** — A measure (opposite of energy) that the network maximizes as it settles into coherent states.
+- **Inhibitory interneurons** — Approximately 15% of cortical neurons that provide local inhibition to regulate excitatory activity and prevent over-excitation.
+- **Localist representation** — A coding scheme where single neurons represent specific categories or concepts distinctly, as opposed to distributed coding.
+- **Layer 4 of cortex** — The primary input layer of the neocortex, receiving sensory information (e.g., from the thalamus) with specialized neurons like stellate cells.
+- **Layered structure (neocortex)** — The characteristic six-layer arrangement in the neocortex, with layers specialized for input, processing (hidden), and output functions.
+- **Multiple constraint satisfaction** — A process by which networks integrate multiple conflicting constraints to settle on a coherent interpretation.
+- **Neocortex** — The six-layered outer portion of the cerebral cortex involved in higher cognitive functions, composed mostly of excitatory pyramidal neurons and inhibitory interneurons.
+- **Pattern completion** — The ability of a network to reconstruct full memories or percepts from partial or ambiguous input using bidirectional excitatory dynamics.
+- **Philosophy of Categories** — The study of the nature, truth value, and origins of mental categories, addressing their potential lack of absolute grounding.
+- **Selective attention** — The cognitive mechanism, supported by inhibitory competition, where only a subset of neural detectors activate to focus processing on relevant stimuli.
+- **Sparse distributed representations** — Neural representations with relatively few active neurons (e.g., 15-25%) at a time, resulting from inhibitory competition.
+- **Stereotypes** — Mental categories applied broadly to groups of people, exemplifying how categorical thinking can both enable and limit cognition.
+- **Synaptic weights** — Vectors representing the strength of connections between neurons, which project input patterns along specific dimensions.
+- **Top-down processing** — Feedback-driven neural activity that uses higher-level knowledge to influence lower-level sensory processing.
+- **Wiring patterns (cortical connectivity)** — The organization of feedforward, feedback, lateral, and reciprocal connections among and within cortical areas.

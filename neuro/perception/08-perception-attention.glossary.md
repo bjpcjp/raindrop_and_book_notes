@@ -1,0 +1,28 @@
+- **Attentional blink** — A temporary difficulty in detecting a second target stimulus when it appears 200 to 500 ms after a first target has been detected in a rapid sequence of stimuli.  
+- **Attentional blindness** — The failure to notice a new or unexpected stimulus in a scene because attention is focused elsewhere.  
+- **Attentional deafness** — The reduced ability to detect an auditory stimulus when attention is heavily engaged in another auditory or visual task.  
+- **Attentional filter** — A theoretical mechanism that selects information for processing, potentially at an early stage based on physical features or a later stage after semantic analysis.  
+- **Attentional resource** — The limited mental capacity available to focus attention on one or more cognitive tasks.  
+- **Automatic process** — A cognitive process that occurs without conscious control, often fast and requiring little attentional resources.  
+- **Balint syndrome** — A rare clinical condition caused by bilateral parietal lesions, resulting in difficulties perceiving more than one object at a time (simultagnosia).  
+- **Binding problem** — The challenge of how the brain integrates different features (color, shape, location) processed separately into a coherent perception of an object.  
+- **Change blindness** — The failure to detect a noticeable change in a visual scene when the change occurs during a disturbance such as a flicker or gap.  
+- **Clinical hemineglect** — A disorder where a patient ignores stimuli presented on the side opposite a brain lesion, typically the left side due to right hemisphere damage.  
+- **Dichotic listening** — An experimental task in which different auditory messages are presented simultaneously to each ear, used to study selective auditory attention.  
+- **Echoic memory** — The sensory register for auditory information, where sounds are briefly held after they occur.  
+- **Feature integration theory** — A theory proposing two stages in visual processing: preattentive parallel processing of features and focused attention required to bind features into objects.  
+- **Illusory conjunctions** — Errors in perception where features from different objects are incorrectly combined, often under conditions of divided attention.  
+- **Inhibition of return** — A phenomenon where attention is slower to return to a location that was recently attended to, promoting exploration of novel locations.  
+- **Partial report** — A technique where participants report only a subset of briefly presented stimuli, showing that more information is initially available than can be recalled.  
+- **Perceptual selectivity** — The ability of attention to focus on certain stimuli or locations while ignoring others in the sensory environment.  
+- **Preparatory period** — The interval between a warning signal and a target stimulus that allows temporal orientation and decreased reaction time.  
+- **Response time** — The time elapsed between stimulus presentation and the participant's response, often used to infer attentional processes.  
+- **Sensory register** — The very short-term memory store where incoming sensory information is held briefly before further processing (e.g., iconic memory for vision).  
+- **Simultagnosia** — The inability to perceive more than one object at a time, commonly seen in Balint syndrome.  
+- **Spatial cue** — A signal indicating where a stimulus is likely to appear, used to study spatial preparation of attention.  
+- **Stimulus onset asynchrony (SOA)** — The time interval between the onset of a cue and the onset of a stimulus.  
+- **Stroop effect** — The interference in naming the ink color of words when the word's meaning conflicts with the color, demonstrating automatic processing of word reading.  
+- **Top-down processing** — Attention or perception guided by prior knowledge, expectations, or goals (concept-driven).  
+- **Visual search** — The task or process of actively scanning a visual environment to locate a specific target among distractors.  
+- **Visual selectivity** — The capacity to selectively attend to particular visual stimuli when multiple stimuli compete for attention.  
+- **Warren’s Attenuator model** — (referred to as Treisman's attenuator) A modification of Broadbent’s filter theory suggesting that unattended information is attenuated rather than fully filtered out.

@@ -1,0 +1,30 @@
+- **Absolute threshold** — The minimum amplitude of stimulation necessary for an individual to detect a stimulus at least 50% of the time.
+- **Adaptive methods** — Procedures for estimating thresholds that adjust stimulus values based on observer responses to reduce trial numbers and improve efficiency.
+- **Anticipation error** — A bias where an observer prematurely changes responses, leading to over- or underestimation of thresholds in methods like the method of limits.
+- **Beta (ß) criterion** — A measure of decision bias in signal detection theory, indicating whether an observer is conservative or lax in reporting stimulus detection.
+- **Bisection** — An equisection scaling method where an observer selects a stimulus perceived as halfway between two others.
+- **Cumulative normal function** — A mathematical function derived from the normal distribution used to model psychometric functions.
+- **Difference threshold** — The smallest detectable difference in magnitude between two stimuli, also known as the just noticeable difference (JND).
+- **Fechner Day** — An annual psychophysics meeting held on October 22, honoring Gustav Fechner and organized by the International Society for Psychophysics.
+- **Hit** — A correct detection of a present signal in signal detection theory.
+- **Just noticeable difference (JND)** — See difference threshold.
+- **Lax observer** — An observer who tends to say "yes" more readily in signal detection tasks, leading to more hits but also more false alarms.
+- **Method of adjustment** — A threshold estimation technique where an observer actively adjusts stimulus intensity to the point of detection or equality.
+- **Method of constant stimuli** — A threshold estimation method using a fixed set of stimuli presented in random order to determine detection probabilities.
+- **Method of limits** — A threshold estimation method involving ascending and descending series of stimuli, noting transition points between perceivable and non-perceivable stimuli.
+- **Miss** — A failure to detect a present signal in signal detection theory.
+- **Noise (N)** — Random background sensory activity, both external and internal, present in signal detection theory.
+- **Nominal scale** — A measurement scale used for classification without order or magnitude, appropriate for metathetic continua.
+- **Observer criterion** — The internal threshold or bias determining an observer's decision to report stimulus detection.
+- **Point of subjective equality (PSE)** — The stimulus value at which an observer perceives two stimuli as equal with 50% probability.
+- **Prothetic continuum** — A sensory continuum based on additive physiological processes, where stimulus intensity relates to sensation magnitude.
+- **Psychometric function** — A curve plotting the probability of stimulus detection or discrimination as a function of stimulus magnitude.
+- **Ratio scale** — A measurement scale featuring absolute zero and equal intervals, suited for quantifiable sensory dimensions.
+- **Signal (S)** — The target stimulus to be detected amid noise in signal detection theory.
+- **Signal detection theory (SDT)** — A framework separating sensory sensitivity from decision criteria using hits, misses, false alarms, and correct rejections.
+- **Spatial error** — A bias in simultaneous stimulus discrimination caused by side preference.
+- **Standard deviation (in adjustment method)** — A measure of variability in stimulus equality adjustments, used to infer difference threshold.
+- **Temporal order error** — Bias in sequential stimulus discrimination, favoring one stimulus based on order of presentation.
+- **Weber fraction (K)** — The constant proportional ratio of difference threshold to stimulus magnitude in Weber’s law.
+- **Weber’s law** — A principle stating that the difference threshold is proportional to the magnitude of the stimulus.
+- **Yes response** — Reporting the perception of a stimulus during a trial in detection tasks.

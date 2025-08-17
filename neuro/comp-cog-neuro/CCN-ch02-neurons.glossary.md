@@ -1,0 +1,32 @@
+- **Action potential (spike)** — The brief "alarm" signal a neuron sends to communicate with other neurons once its membrane potential crosses a threshold.
+- **Adaptive Exponential (AdEx) model** — A spiking neuron model where the firing threshold adapts over time based on excitation and recent firing, producing spike rate adaptation.
+- **Axon** — The output end of a neuron that branches widely and forms synapses onto other neurons' dendrites.
+- **Axon hillock** — The initial segment of the axon where the thresholding for action potential firing takes place.
+- **Bayesian Optimal Detector** — A computational interpretation of the equilibrium membrane potential as performing mathematically optimal Bayesian hypothesis testing.
+- **Calcium (Ca++) ions** — Positively charged ions involved in learning processes, flowing through NMDA receptors.
+- **Chloride (Cl-) ions** — Negatively charged ions that flow into the neuron via inhibitory GABA receptors, producing inhibitory postsynaptic potentials.
+- **Conductance (g)** — The inverse of electrical resistance, representing how many ion channels are open and allowing ion flow.
+- **Dendrites** — Branching tree-like structures on neurons that receive synaptic inputs and integrate them.
+- **EPSP (Excitatory Postsynaptic Potential)** — The depolarizing effect on a neuron caused by excitatory inputs, increasing membrane potential.
+- **Equilibrium membrane potential (Vmeq)** — The stable membrane voltage a neuron settles at given fixed excitatory, inhibitory, and leak conductances.
+- **Excitatory inputs** — Synaptic inputs causing a neuron to become more likely to fire, mainly mediated by AMPA channels activated by glutamate.
+- **GABA (gamma-aminobutyric acid)** — The neurotransmitter used by inhibitory synapses that open chloride channels to inhibit the postsynaptic neuron.
+- **Inhibitory inputs** — Synaptic inputs causing a neuron to become less likely to fire, conveyed via GABA channels.
+- **Leak inputs** — Continuous background currents, mainly potassium leak channels, that help maintain the resting potential and balance excitation.
+- **Membrane potential (Vm)** — The electrical voltage across the neuron's membrane relative to the extracellular space.
+- **Metabotropic glutamate receptors (mGluR)** — Postsynaptic receptors involved in learning and working memory that modulate intracellular signaling without passing ions.
+- **NMDA receptors** — Postsynaptic receptors involved in synaptic plasticity and learning, allowing calcium ions to flow.
+- **Net synaptic efficacy (synaptic weight)** — The total impact a sending neuron's activity has on a receiving neuron via its synaptic connection.
+- **Net input conductance (ge, gi)** — The total proportion of excitatory (ge) or inhibitory (gi) ion channels currently open in a neuron.
+- **Neuron** — A fundamental brain cell that detects specific input patterns and outputs signals via action potentials.
+- **Neocortical pyramidal neuron** — A primary neuron type in the cortex characterized by large, spiny dendrites and a distinctive shape.
+- **Postsynaptic potential** — The change in membrane potential of a neuron due to neurotransmitter action at the synapse (excitatory or inhibitory).
+- **Rate code approximation** — An abstract model where neuron output is a continuous value representing average spike rate instead of discrete spikes.
+- **Resting potential** — The typical negative membrane potential (~-70mV) of a neuron when not receiving significant input.
+- **Synapse** — The junction between a sending neuron’s axon terminal and a receiving neuron’s dendrite where neurotransmitter release occurs.
+- **Synaptic channels** — Ion channels in the postsynaptic membrane that open when neurotransmitters bind, allowing ions to flow.
+- **Threshold (Θ)** — The membrane potential level a neuron must reach to trigger an action potential.
+- **Voltage (V)** — Electrical potential difference, here referring to the electrical charge difference across the neuronal membrane.
+- **X-over-X-plus 1 (XX1) function** — A nonlinear function used to approximate neuronal firing rate as a function of excitatory input minus threshold.
+- **Sodium (Na+) ions** — Positively charged ions that flow into neurons via excitatory AMPA channels, depolarizing the membrane.
+- **Tug-of-war analogy** — Conceptual model describing neuronal integration as a balance between excitatory and inhibitory inputs pulling membrane potential in opposite directions.

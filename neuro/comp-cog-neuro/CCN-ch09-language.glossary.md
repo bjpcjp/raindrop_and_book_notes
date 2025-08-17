@@ -1,0 +1,32 @@
+- **Acquired dyslexia** — Reading impairments resulting from brain damage such as stroke, distinct from developmental dyslexia.
+- **Agent** — The semantic role of the entity performing an action in a sentence.
+- **Basal ganglia** — Brain structures implicated in aspects of motor control and linguistic phenomena.
+- **Broca’s area** — Region in ventral posterior frontal cortex linked to syntax processing and speech production.
+- **Broca’s aphasia (Expressive aphasia)** — Language deficit with impaired syntax and speech output but relatively intact comprehension.
+- **Consonants** — Speech sounds produced by blocking airflow in the vocal tract at various places and manners.
+- **Context layer** — Network component that retains prior activation states to integrate information over time in sentence processing.
+- **DeepLeabra** — A biologically based neural network framework incorporating predictive learning and temporal context.
+- **Direct pathway (triangle model)** — Reading pathway mapping orthography directly to phonology for spelling-to-sound correspondences.
+- **Dimensionality reduction** — Statistical technique (e.g., SVD, PCA) used to extract principal components or clusters from data.
+- **Distributed semantics** — Representation of word meaning encoded by patterns of activity across sensory and motor brain areas.
+- **Dyslexia** — General term for reading impairments, including acquired (from brain damage) and developmental forms.
+- **Executive function** — Cognitive processes involving working memory and coordination, critical for syntax and pronoun binding.
+- **IPA (International Phonological Alphabet)** — Standardized system for classifying and transcribing speech sounds.
+- **Latent Semantic Analysis (LSA)** — Model capturing word meanings by statistically analyzing word co-occurrence in language.
+- **Motor control** — Neural mechanisms producing speech and writing motor output, involving cerebellum and basal ganglia.
+- **Nonword reading** — The ability to read pronounceable letter strings not found in the language’s lexicon.
+- **Passive construction** — Sentence syntactic form where the subject receives the action rather than performs it.
+- **Phonological dyslexia** — Acquired dyslexia characterized by difficulty reading nonwords, caused by damage to the orthography-phonology pathway.
+- **Phonology** — Study and system of speech sounds in a language, including vowels and consonants.
+- **Semantic role** — The function that entities play in actions described by sentences, e.g., agent, patient, instrument.
+- **Sentence Gestalt model** — Neural network model that forms distributed, evolving representations of sentence meaning over time.
+- **Semantic errors** — Reading errors where a semantically related but incorrect word is produced, common in deep dyslexia.
+- **Semantic representations** — Brain-encoded meanings of words, distributed across sensory-motor and temporal areas.
+- **Simple recurrent network (SRN)** — Neural network architecture that uses prior hidden states as context for processing sequences.
+- **Spatial invariance** — Property of recognition systems to identify objects (or letters) despite changes in position.
+- **Surface dyslexia** — Acquired dyslexia with intact nonword reading but impaired access to semantics, leading to mispronunciations of exception words.
+- **Syntax** — Complex, abstract set of rules governing the order of words and phrases in language.
+- **Temporal cortex** — Brain region associated with semantic processing and word meaning.
+- **Vowels** — Speech sounds produced with unobstructed airflow, differentiated by tongue position and lip shape.
+- **Wernicke’s area** — Temporal cortex region associated with semantic processing and language comprehension.
+- **Wernicke’s aphasia (Receptive aphasia)** — Language deficit with fluent but meaningless speech and impaired comprehension.

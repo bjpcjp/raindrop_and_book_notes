@@ -1,0 +1,25 @@
+- **Active maintenance** — The ability of PFC neurons to sustain neural firing over time to hold information in an active state, supporting working memory and goal maintenance.  
+- **Anterior cingulate cortex (ACC)** — A medial PFC area involved in encoding affective and motivational aspects of motor control, including effort, conflict, and decision uncertainty.  
+- **Basal ganglia (BG)** — A group of subcortical nuclei that dynamically gate both motor actions and PFC active memory updating through disinhibition of thalamic relay neurons.  
+- **Corticothalamocortical loop** — A recurrent circuit involving PFC neurons and thalamic relay cells supporting sustained activity and maintenance of information.  
+- **Corticocortical loop** — Recurrent excitatory connections among pyramidal neurons within PFC stripes that support reverberant firing to maintain information.  
+- **Dorsal lateral prefrontal cortex (DLPFC)** — Lateral PFC region interconnected with motor and parietal areas, associated with "cold" cognitive control and executive functions related to motor planning.  
+- **Dynamic gating** — The process by which the BG selectively opens or closes thalamocortical loops to update or maintain active information in the PFC.  
+- **Environmental dependency syndrome** — A behavioral condition caused by PFC damage, where behavior is driven reflexively by immediate environmental cues rather than goals or plans.  
+- **Medial prefrontal cortex (mPFC)** — Medial PFC regions involved in integrating affective and motivational signals to influence decision making and cognitive control.  
+- **NMDA receptors** — A type of glutamate receptor at synapses implicated in intrinsic excitatory maintenance currents that support sustained neural firing in PFC.  
+- **Orbitofrontal cortex (OFC)** — Ventromedial PFC area that encodes the affective value of sensory stimuli, critical for evaluating potential rewards and emotional processing.  
+- **Output gating** — A BG-mediated mechanism controlling whether information maintained in PFC is allowed to influence downstream processing and behavior.  
+- **Phasic dopamine (DA) signals** — Brief bursts of dopaminergic neuron activity from VTA and SNc that provide reinforcement signals to train BG gating based on reward predictions.  
+- **Prefrontal cortex (PFC)** — The frontal brain area responsible for executive functions, including abstract reasoning, planning, active maintenance of information, and top-down control.  
+- **Prefrontal cortex basal ganglia working memory (PBWM) model** — A computational model capturing the interaction between PFC active maintenance, BG gating, and dopamine-based learning to produce executive function.  
+- **Robust active maintenance** — The biologically supported capacity of PFC neurons to hold goal-relevant information over delays despite distraction.  
+- **Sustained neural firing** — Continuous activation of neurons over time, enabling maintenance of information in working memory.  
+- **Stripes (in PFC)** — Anatomically and functionally distinct elongated neural clusters within PFC, allowing independent updating and maintenance via BG loops.  
+- **Substantia nigra pars compacta (SNc)** — A dopaminergic midbrain area providing phasic dopamine signals critical for reinforcement learning in BG gating.  
+- **Top-down excitatory biasing** — The PFC’s capacity to influence processing in posterior cortical areas by selectively enhancing task-relevant information.  
+- **Ventromedial prefrontal cortex (VMPFC)** — Medial and ventral PFC regions associated with encoding the affective value ("hot what") of stimuli and decision-related emotional processing.  
+- **Ventral lateral prefrontal cortex (VLPFC)** — Lateral PFC region connected to temporal cortex pathways involved in perceptual identification and semantic associations.  
+- **Ventral tegmental area (VTA)** — A dopaminergic midbrain area working alongside SNc to provide phasic dopamine reinforcement signals.  
+- **Working memory** — The temporary, active maintenance of information in PFC neural populations for ongoing cognitive control and planning.  
+- **Wisconsin card sorting task (WCST)** — A behavioral paradigm assessing cognitive flexibility and the ability to shift strategies, reliant on intact PFC function.

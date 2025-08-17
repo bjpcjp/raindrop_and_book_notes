@@ -1,0 +1,28 @@
+- **AIT (Anterior Inferotemporal Cortex)** — area where visual information becomes abstract and semantic, encoding information about people, places, and things.  
+- **Balint’s Syndrome** — condition caused by bilateral parietal damage, characterized by an inability to recognize objects when multiple objects are present.  
+- **Center-surround Receptive Fields** — receptive fields with an excitatory center and inhibitory surround (or vice versa), allowing retinal cells to respond to contrasts rather than uniform illumination.  
+- **Dorsal Pathway (Where/How Pathway)** — visual processing stream projecting to parietal cortex, involved in spatial location, motion processing, and spatial attention.  
+- **Edge Detectors** — neurons in V1 that respond to oriented edges or bars of light, forming the basic visual vocabulary.  
+- **Fusiform Face Area (FFA)** — an area near the fusiform gyrus in IT cortex especially responsive to faces.  
+- **Hemispacial Neglect** — neurological condition usually caused by right parietal damage, leading to neglect of the left spatial field.  
+- **Invariant Object Recognition** — the brain’s ability to recognize an object regardless of variations in location, size, rotation, or appearance.  
+- **IT (Inferotemporal Cortex)** — higher-level visual area involved in recognizing complex objects and encoding invariant, distributed representations of objects.  
+- **Lateral Geniculate Nucleus (LGN)** — a relay nucleus in the thalamus that transmits visual signals from the retina to primary visual cortex (V1).  
+- **Neural Topography** — the spatial organization of neurons such that neighboring neurons encode similar features.  
+- **Object Recognition** — the primary function of the ventral “what” pathway, involving the identification of objects in the visual input.  
+- **Photoreceptors** — cells in the retina sensitive to light wavelengths, contributing to color vision and spatial resolution.  
+- **Pinwheel Structures** — cortical organization patterns in V1 where orientation preferences of edge detectors vary around a central point.  
+- **Posner Spatial Cueing Task** — an experimental task that measures spatial attention effects via reaction times to valid and invalid spatial cues.  
+- **Primary Visual Cortex (V1)** — the first cortical area receiving visual input from LGN, coding oriented edges and basic visual features.  
+- **Receptive Field (RF)** — the region of the visual field from which a neuron receives input.  
+- **Self-organizing Learning** — learning mechanisms (e.g., XCAL algorithm) driven by input statistics and neural activity, shaping the development of feature detectors.  
+- **Simple Cells (V1)** — V1 neurons that detect oriented edges with precise spatial and polarity selectivity.  
+- **Spatial Attention** — cognitive process focusing processing resources on a specific spatial location to enhance perception and reduce confusion among multiple objects.  
+- **Topographic Organization** — spatial mapping of sensory information in the brain where adjacent neurons represent adjacent regions in input space.  
+- **Top-down Processing** — influence of higher-level cognitive or attentional systems on lower-level perceptual processing.  
+- **Tuned Orientation Neurons** — V1 neurons selectively responding to specific edge orientations with a characteristic tuning curve.  
+- **V2 (Secondary Visual Cortex)** — processes combinations of edge detectors into junctions, basic textures, and 3D depth cues, aiding in spatial invariance.  
+- **V4** — visual area detecting more complex shape features over larger receptive fields, furthering feature complexity and invariance.  
+- **Ventral Pathway (What Pathway)** — visual processing stream projecting to temporal cortex involved in recognition of object identity.  
+- **Visual Cortex** — brain regions (V1, V2, V4, IT) involved in processing and interpreting visual information hierarchically.  
+- **XPAT (XCAL Predictive Attention Training)** — a computational framework illustrating self-organization and spatial feature integration (note: only XCAL algorithm explicitly mentioned).

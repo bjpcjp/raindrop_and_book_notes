@@ -1,0 +1,23 @@
+- **Active Inference** — A theoretical framework describing how agents predict and minimize surprise by updating beliefs and actions.
+- **Allosteric Kinetics** — Regulatory mechanism of receptor proteins influenced by the binding of molecules at sites other than the active site.
+- **Basal Ganglia** — Brain structures involved in motor control, decision making, and reinforcement learning.
+- **Boltzmann Machines** — Stochastic neural networks that learn representations via probabilistic inference.
+- **Cognitive Control** — Mental processes that allow flexible adaptation to goals and environmental demands.
+- **Dendritic Spines** — Small protrusions on neuron dendrites where synapses form, crucial for synaptic plasticity.
+- **Deep Learning** — Machine learning approach using multi-layered neural networks to model complex patterns.
+- **Dopamine** — Neuromodulator involved in reward processing, learning, and motor function.
+- **Hippocampus** — Brain region essential for memory formation and spatial navigation.
+- **Integrate-and-Fire Model** — Simplified computational model of neuron firing based on membrane potential integration.
+- **Long-Term Memory** — System for storing information over extended periods for recall.
+- **Microcircuits** — Networks of interconnected neurons within a localized brain area.
+- **Neocognitron** — Early artificial neural network model for visual pattern recognition.
+- **Neocortex** — Part of the cerebral cortex involved in higher-order brain functions like sensory perception and cognition.
+- **Neural Plasticity** — Ability of neural circuits to change structurally and functionally in response to experience.
+- **Perceptron** — Basic unit of a neural network used for binary classification tasks.
+- **Predictive Coding** — Neural mechanism where the brain predicts sensory input and updates based on prediction errors.
+- **Reinforcement Learning** — Learning paradigm where agents learn to make decisions by receiving rewards or punishments.
+- **Spike Timing-Dependent Plasticity (STDP)** — Synaptic modification dependent on the timing of neuronal spikes.
+- **Striatum** — Subcortical brain structure part of the basal ganglia involved in reward and movement.
+- **Synaptic Tagging and Capture** — Process allowing transient synaptic changes to become long-lasting through molecular tagging.
+- **Theta Rhythm** — Brain oscillation frequency associated with learning and memory, especially in the hippocampus.
+- **Working Memory** — Cognitive system responsible for temporarily holding and manipulating information.

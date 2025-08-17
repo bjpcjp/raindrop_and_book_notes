@@ -1,0 +1,30 @@
+- **Agnosia** — A deficit in the identification or recognition of objects, not caused by intellectual, sensory, or language disorders, involving problems in perceptual processing or memory representations.
+- **Associative agnosia** — A type of agnosia where the individual can perceive features but cannot access or retrieve the semantic meaning of the object.
+- **Bloch’s law** — The principle that the product of intensity (I) and exposure time (T) of a stimulus equals a constant (C) for visual detection at short durations.
+- **Campbell and Robson’s multiple spatial channels theory** — A theory proposing that visual scenes are decomposed into different spatial frequency channels, each tuned to narrow bands of spatial frequencies.
+- **Contrast sensitivity function (CSF)** — The relationship between spatial frequency and the threshold contrast needed for stimulus perception; sensitivity peaks around 3 cycles/degree in humans.
+- **Decision demons** — Units in the pandemonium theory responsible for selecting the best matching cognitive demon for object recognition.
+- **Edge** — A change in luminance or spectral composition creating boundaries between objects; fundamental for contour perception.
+- **Feature demons** — Units in the pandemonium model that detect basic features like curves and angles in visual stimuli.
+- **Form agnosia** — A severe type of agnosia characterized by difficulty in extracting basic features such as corners or edges.
+- **Geons** — Basic geometric components (about 36 types) used in Biederman’s recognition-by-components model for object recognition.
+- **Good continuation** — A Gestalt law stating that elements aligned in a continuous line or curve are perceived as belonging together.
+- **Lateral inhibition** — A retinal mechanism where activated nerve cells inhibit the activity of their neighbors, enhancing brightness contrast and edge detection.
+- **Law of closure** — The Gestalt principle stating that the visual system tends to perceive incomplete figures as complete by filling in missing parts.
+- **Law of common fate** — The Gestalt principle that elements moving in the same direction are perceived as a group.
+- **Law of proximity** — The Gestalt law that elements close to each other tend to be grouped together perceptually.
+- **Law of similarity** — The Gestalt principle that elements sharing similar attributes, such as color or shape, are grouped perceptually.
+- **Law of the pragnanz (good form)** — A Gestalt law stating that visual perception tends to organize stimuli into the simplest and most stable form.
+- **Luminance** — The intensity of light emitted or reflected from a surface; changes in luminance create edges and contours.
+- **Mach bands** — Perceptual phenomena where small bright or dark bands are seen near edges due to lateral inhibition enhancing contrast.
+- **Microsaccades** — Small, involuntary eye movements that prevent retinal image stabilization and enable continuous contour perception.
+- **Pandemonium theory** — A parallel processing model of form recognition involving feature demons, cognitive demons, and decision demons.
+- **Perceptual grouping** — The visual system’s automatic organization of elements into groups based on Gestalt laws like proximity, similarity, and connectedness.
+- **Perception of contours** — The visual ability to detect edges and boundaries which define shapes and objects in the environment.
+- **Primitives sketch (2D)** — In Marr’s computational theory, the initial two-dimensional representation of an image after feature extraction.
+- **Relative size** — A factor in figure-ground segregation where smaller or thinner shapes are more readily perceived as figures.
+- **Spatial frequency** — The number of cycles of a light-dark pattern per degree of visual angle, important in visual processing and form perception.
+- **Spatial phase** — The horizontal position of a grating’s sine wave pattern relative to a reference point.
+- **Templates** — Stored mental images used for recognizing objects by superimposing and matching perceived stimuli.
+- **Transformational agnosia** — A form of agnosia where objects cannot be recognized from new or unusual perspectives.
+- **Uniform connectedness (connectedness)** — A modern Gestalt principle stating that elements physically connected are perceived as a single unit.

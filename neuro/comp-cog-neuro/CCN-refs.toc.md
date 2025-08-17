@@ -1,0 +1,108 @@
+```markdown
+- References
+  - Ackley, David H., G. E. Hinton, and T. J. Sejnowski. 1985
+  - Albus, James S. 1971
+  - Allport, D. A. 1985
+  - Aron, Adam R., et al. 2007
+  - Baars, B. J. 1988
+  - Baddeley, A. D. 1986
+  - Badre, David, and Michael J Frank. 2012
+  - Barnes, J. M., and B. J. Underwood. 1960
+  - Benda, Jan, Leonard Maler, and André Longtin. 2010
+  - Bi, Guo-qiang, and Mu-ming Poo. 1998
+  - Bienenstock, Elie L., Leon N. Cooper, and Paul W. Munro. 1982
+  - Bosch, Miquel, and Yasunori Hayashi. 2012
+  - Brette, Romain, and Wulfram Gerstner. 2005
+  - Buffalo, Elizabeth A, et al. 2011
+  - Cavanagh, James F, et al. 2011
+  - Cleeremans, A., and J. L. McClelland. 1991
+  - Cohen, J. D., K. Dunbar, and J. L. McClelland. 1990
+  - Collins, Anne G. E., and Michael J. Frank. 2013, 2014, 2016
+  - Cooper, L. N., et al. 2004
+  - Coslett, H. B., and E. Saffran. 1991
+  - Cox, Sylvia M. L., et al. 2015
+  - Crick, F. 1989
+  - Elman, J. L. 1990
+  - Felleman, D. J., and D. C. Van Essen. 1991
+  - Franceschetti, S, et al. 1995
+  - Frank, Michael J. 2005, 2006; Frank, M. J., et al. 2004, 2006, 2011; Frank, M. J., and D. Badre. 2012
+  - Fukushima, Kunihiko. 1980
+  - Fuster, J. M., and G. E. Alexander. 1971
+  - Goodale, Melvyn A., and A. David. Milner. 1992
+  - Hasselmo, Michael E., et al. 2002
+  - Haxby, J. V., et al. 2001
+  - Hazy, Thomas E., Michael J. Frank, and R. C. O’Reilly. 2006, 2007, 2010
+  - Hertz, John, Anders Krogh, and Richard G. Palmer. 1991
+  - Hikida, Takatoshi, et al. 2010
+  - Hikosaka, O., et al. 2000
+  - Hinton, G. E. 1989; Hinton, G. E., and T. J. Sejnowski. 1983
+  - Hirshman, E., A. Passannante, and J. Arndt. 2001
+  - Hopfield, J. J. 1982, 1984
+  - Jordan, M. I. 1989
+  - Kachergis, George, et al. 2014
+  - Kaczmarek, Leonard K. 2013
+  - Ketz, Nicholas, et al. 2013
+  - Kirkwood, A., M. G. Rioult, and M. F. Bear. 1996
+  - Kobatake, E., and K. Tanaka. 1994
+  - Kohn, Adam. 2007
+  - Kravitz, Alexxai V., et al. 2010, 2012; Kravitz, Dwight J., et al. 2011
+  - Krizhevsky, Alex, Ilya Sutskever, and Geoffrey E. Hinton. 2012
+  - Kubota, K., and H. Niki. 1971
+  - Lamme, Victor A. F. 2006
+  - Landauer, Thomas K., and Susan T. Dumais. 1997
+  - LeCun, Yann, Yoshua Bengio, and Geoffrey Hinton. 2015
+  - Leutgeb, J. K., et al. 2007
+  - Levitt, J. B., et al. 1993
+  - Lim, Sukbin, et al. 2015
+  - Lisman, John E., and Anthony A. Grace. 2005
+  - Lorincz, Magor L, et al. 2009
+  - Luczak, Artur, Peter Bartho, and Kenneth D. Harris. 2013
+  - Markov, Nikola T., et al. 2014
+  - Marr, D. 1969, 1971, 1977
+  - Marshall, Lisa, et al. 2006
+  - McClelland, J. L. 1998, 2000; McClelland, J. L., et al. 1995
+  - McCloskey, M., and N. J. Cohen. 1989
+  - Mink, J. W. 1996
+  - Minsky, M., and S. A. Papert. 1969
+  - Mollick, Jessica A., et al. n.d.
+  - Montague, P. Read, et al. 1996
+  - Movellan, J. R., and J. L. McClelland. 1993
+  - Munakata, Y. 1998
+  - Norman, Kenneth A., et al. 2003, 2006; Norman, Kenneth A., and R. C. O’Reilly. 2003
+  - Oja, E. 1982, 1989
+  - Olshausen, B. A., and D. J. Field. 1996
+  - O’Reilly, R. C. 1996, 2010; O’Reilly, R. C., and Michael J. Frank. 2006; O’Reilly, R. C., et al. 2007
+  - O’Reilly, R. C., and J. L. McClelland. 1994; O’Reilly, R. C., and Y. Munakata. 2000
+  - O’Reilly, R. C., Dean R. Wyatte, and John Rohrlich. 2017
+  - Patterson, K., et al. 2007
+  - Piaget, J. 1954
+  - Pinker, S., and A. Prince. 1988
+  - Plaut, David C., and Tim Shallice. 1993; Plaut, D. C., et al. 1996
+  - Posner, M. I. 1980
+  - Quiroga, R. Quian, et al. 2005
+  - Ranganath, Charan, and Maureen Ritchey. 2012
+  - Redondo, Roger L., and Richard G. M. Morris. 2011
+  - Rescorla, R. A., and A. R. Wagner. 1972
+  - Reynolds, Jeremy R., and R. C. O’Reilly. 2009
+  - Ritvo, Victoria J. H., et al. 2019
+  - Rohde, Douglas L. T. 2002
+  - Rudy, Jerry W. 2015
+  - Rumelhart, David E., and David Zipser. 1985; Rumelhart, D. E., et al. 1986
+  - Sanchez-Vives, Maria V., et al. 2000
+  - Sanger, T. D. 1989
+  - Schmidhuber, Jürgen. 2015
+  - Schultz, W., et al. 1997
+  - Seidenberg, M. S., and J. L. McClelland. 1989
+  - Shallice, T. 1988
+  - Shen, Weixing, et al. 2008
+  - Shouval, Harel Z., et al. 2010
+  - Silver, David, et al. 2017
+  - Smolensky, P. 1986
+  - St John, M. F., and J. L. McClelland. 1990
+  - Stroop, J. R. 1935
+  - Sutton, R. S., and A. G. Barto. 1981, 1998
+  - Ungerleider, L. G., and M. Mishkin. 1982
+  - Urakubo, Hidetoshi, et al. 2008
+  - Widrow, B., and M. E. Hoff. 1960
+  - Zalocusky, Kelly A., et al. 2016
+```

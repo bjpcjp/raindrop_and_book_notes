@@ -1,0 +1,27 @@
+- **Amusia** — A disorder affecting music perception, usually involving pitch processing deficits; can be congenital or acquired.  
+- **Auditory Continuity Illusion** — Perceiving a sound as uninterrupted when a silent gap is filled with louder noise.  
+- **Auditory Scene Analysis** — The perceptual organization and segregation of auditory information into meaningful streams or objects.  
+- **Auditory Stream** — A perceptual unit grouping related sounds based on frequency and timing, similar to a visual object.  
+- **Categorical Perception** — Difficulty discriminating sounds within the same category compared to sounds from different categories, often used to describe speech sound perception.  
+- **Chroma** — The quality of a musical pitch that allows recognition of notes across octaves despite frequency differences.  
+- **Consonant** — A speech sound produced by obstructing airflow in the vocal tract; classified by place and manner of articulation and voicing.  
+- **Doppler Effect** — The perceived change in frequency of a sound due to relative motion between the source and observer.  
+- **Formants** — Dark bands in a spectrogram representing concentrations of acoustic energy during speech production.  
+- **Head Transfer Function** — The acoustic modifications caused by the head and ears on sounds arriving at the ears, aiding sound localization.  
+- **Interaural Intensity Difference** — The difference in sound loudness between the two ears, used for localizing high-frequency sounds.  
+- **Interaural Time Difference** — The difference in arrival time of a sound between the two ears, used for localizing low-frequency sounds.  
+- **Morpheme** — The smallest unit of meaning in a language; can be free (standalone) or bound (attached to other morphemes).  
+- **Musical Pitch** — The perceived frequency of a sound as positioned on a chromatic scale with discrete notes and octaves.  
+- **Perfect Pitch** — The rare ability to identify or produce a musical note without any reference tone.  
+- **Phoneme** — The smallest unit of sound in a language that distinguishes meaning but has no meaning by itself.  
+- **Phonetics** — The study of the acoustic properties and production of speech sounds.  
+- **Pitch** — The perceptual attribute of sound frequency, corresponding to how high or low a sound is perceived.  
+- **Speech Perception Motor Theory** — The theory that speech perception involves activation of motor processes used in speech production.  
+- **Spectrogram** — A visual representation of sound frequencies and intensities over time, used to analyze speech sounds.  
+- **Streaming** — The auditory process of grouping successive sounds into perceptual streams based on similarity and timing.  
+- **Tempo** — The speed at which a piece of music is performed.  
+- **Timbre** — The quality or color of a musical sound distinguishing different instruments or voices.  
+- **Voice Onset Time** — The time delay between the release of a consonant and the onset of vocal cord vibrations, important in distinguishing phonemes.  
+- **Ventriloquism Effect** — The illusion where sound is perceived as coming from a visible source rather than the actual sound source.  
+- **Vowel** — A speech sound produced with an open vocal tract, characterized by specific formant frequencies.  
+- **Wernicke’s Area** — A brain region in the temporal lobe involved in language comprehension; damage causes fluent but nonsensical speech (aphasia).

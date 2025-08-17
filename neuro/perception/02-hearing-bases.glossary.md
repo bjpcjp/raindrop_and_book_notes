@@ -1,0 +1,33 @@
+- **Amplitude** — The magnitude or intensity of a sound wave, expressed in decibels (dB), reflecting the pressure variation in the air.
+- **Aperiodic sound** — A complex sound composed of frequencies that are not integer multiples of a fundamental frequency, also called partials.
+- **Auditory cortex (A1)** — The primary brain region in the temporal lobe where auditory information is processed; it exhibits a tonotopic organization.
+- **Auditory nerve** — The nerve transmitting electrical signals from the cochlea to the brain, also called the vestibulocochlear nerve (eighth cranial nerve).
+- **Binaural presentation** — Sound presented to both ears simultaneously.
+- **Bone conduction** — Transmission of sound vibrations through the bones of the skull, bypassing the outer and middle ear.
+- **Cochlea** — Spiral-shaped, fluid-filled inner ear structure containing the basilar membrane and organ of Corti, essential for converting sound vibrations into neural signals.
+- **Complex sound** — A sound wave consisting of two or more different frequencies combined.
+- **Critical band** — The frequency range within which a sound can mask another sound.
+- **Decibel (dB)** — A logarithmic unit used to express the intensity of sound relative to a reference pressure.
+- **Eustachian tube** — A canal connecting the middle ear with the pharynx, helping equalize air pressure on both sides of the eardrum.
+- **Frequency** — The number of compression-rarefaction cycles of a sound wave completed in one second, measured in hertz (Hz).
+- **Fundamental frequency (F0)** — The lowest frequency of a complex periodic sound from which harmonic frequencies are integer multiples.
+- **Harmonic sound** — A periodic complex sound with frequency components at integer multiples of the fundamental frequency.
+- **Inner ear** — The part of the ear including the cochlea, vestibule, and semicircular canals, responsible for hearing and balance.
+- **Loudness** — The subjective perception of sound intensity, influenced by both amplitude and frequency.
+- **Masking** — The process by which one sound makes another sound inaudible due to simultaneous or near-simultaneous presentation.
+- **Middle ear** — The part of the ear containing the ossicles (malleus, incus, stapes) that transmit vibrations from the eardrum to the inner ear.
+- **Organ of Corti** — The sensory organ within the cochlea containing inner and outer hair cells that transduce mechanical vibrations into neural signals.
+- **Outer ear** — The external portion of the ear, including the pinna and auditory canal, that collects and channels sound waves.
+- **Phase** — The relative position of two sound waves in their cycles, expressed in degrees.
+- **Pitch** — The subjective impression of how high or low a sound seems, closely related to frequency.
+- **Place theory** — Theory that pitch is determined by the specific location of maximal stimulation on the basilar membrane.
+- **Presbycusis** — Age-related hearing loss, especially affecting the perception of high frequencies.
+- **Pure tone** — A sound consisting of a single frequency, represented by a sine wave.
+- **Sone** — A unit measuring perceived loudness, scaled relative to a 1000-Hz tone at 40 dB SPL.
+- **Speech frequency range** — Typically from about 100 Hz to 10 kHz, where most conversational sounds occur.
+- **Sound wave** — A propagation of pressure variations through a medium, consisting of compressions and rarefactions.
+- **SPL (Sound Pressure Level)** — The level of sound pressure expressed in decibels relative to a reference pressure.
+- **Temporal coding** — The representation of sound frequency by the timing and phase-locked firing of auditory nerve fibers.
+- **Timbre** — The subjective quality that distinguishes two sounds of the same pitch and loudness, due to different harmonic content.
+- **Traveling wave** — The wave motion along the basilar membrane whose point of maximal displacement depends on sound frequency.
+- **Volley principle** — Theory that groups of auditory nerve fibers cooperate to represent high-frequency sounds by firing in sequence.

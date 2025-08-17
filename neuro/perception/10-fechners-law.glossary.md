@@ -1,0 +1,10 @@
+- **Absolute threshold** — The minimum intensity of a stimulus that can be detected; the zero point on Fechner’s psychological scale.  
+- **Fechner’s Law** — The principle stating that the magnitude of sensation (JND) is proportional to the logarithm of stimulus intensity above the absolute threshold.  
+- **Just-noticeable difference (JND)** — The smallest difference in stimulus intensity that can be perceived; used as a unit of sensation magnitude.  
+- **K (multiplicative constant)** — A constant whose value depends on the sensory modality and dimension, used in Fechner’s equation relating sensation to stimulus intensity.  
+- **Logarithmic scale** — A scale in which stimulus intensities are plotted as logarithmic values, resulting in a linear relationship with sensation magnitude.  
+- **Psychological scale** — A scale of sensation magnitudes beginning at the absolute threshold, often measured in JND units.  
+- **Sensory continuum** — A range of stimulus intensities over which sensations are measured or compared.  
+- **Sensory dimension** — A property or quality of a sensory modality (e.g., brightness, loudness) relevant to perception.  
+- **Stimulus intensity (ϕ)** — The physical magnitude of a stimulus above the absolute threshold.  
+- **Weber fraction** — The constant ratio representing the just-noticeable difference relative to the baseline stimulus intensity, used to quantify the JND indirectly.
