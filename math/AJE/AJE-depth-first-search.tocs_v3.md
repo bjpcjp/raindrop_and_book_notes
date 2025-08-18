@@ -1,0 +1,48 @@
+![AJE-depth-first-search](AJE-depth-first-search.best.png)
+
+- **Exercises**
+  - **Graphs**
+    - Prove the equivalence of multiple tree definitions involving connectivity, acyclicity, and edge constraints.
+    - Demonstrate that any connected acyclic graph with at least two vertices has at least two vertices of degree one without using well-known tree properties.
+    - Prove every tree is bipartite and design an efficient bipartiteness-checking algorithm.
+    - Model pecking orders among pigeons with directed graphs, including cyclic orders, and prove existence of procession orderings.
+    - Analyze Euler tours, including conditions on vertex degrees and algorithms for construction or reporting impossibility.
+    - Show that d-dimensional hypercubes contain Hamiltonian cycles and determine which have Euler tours.
+  - **Traversal Algorithms**
+    - Define strong connectivity and describe methods to direct edges of an undirected graph to achieve strong connectivity.
+    - Prove properties relating depth-first and breadth-first spanning trees in connected graphs.
+    - Study the EagerWFS algorithm, prove correctness, equivalence to BFS under queue usage, and impossibility to replicate DFS behavior.
+    - Analyze the ThreeColorSearch algorithm and its stack and queue variants, proving invariants, termination, and relationships to DFS and BFS.
+    - Extend ThreeColorSearch to concurrent environments with edge additions while maintaining correctness.
+  - **Reductions**
+    - Model number mazes as graphs and design algorithms to find minimum moves or report unsolvability.
+    - Map Snakes and Ladders gameplay to path-finding problems and devise an algorithm for minimal moves.
+    - Formulate the Vidrach Itky Leda puzzle as a graph traversal problem involving two tokens and asymmetric movement.
+    - Determine if a walk of length divisible by three exists between two vertices in a directed graph.
+    - Find shortest walks with constraints on consecutive edge colors in directed graphs.
+    - Identify vertices reachable via walks with cyclic color sequences, like the French flag walk.
+    - Solve teleportation problems in galaxy networks minimizing teleports subject to cost modulo conditions and free usage coupons.
+    - Decide solvability of the Three Sea Shells puzzle involving simultaneous token movements on graphs.
+    - Compute minimal steps for multiple coins to reach the same vertex with constraints on movements and speed, including scalable algorithms.
+    - Determine if walks with only acute angles exist between two points in geometric graphs via efficient angle queries.
+    - Develop path-finding algorithms avoiding intersections with given horizontal and vertical line segments.
+    - Prove the ability for two agents to meet on a zigzag path under east-west alignment constraints and provide algorithms for this decision problem.
+    - Analyze Kaniel the Dane’s puzzle involving two tokens moving maximally along unobstructed directions and provide solvability algorithms.
+    - Design algorithms for the Rectangle Walk puzzle involving moves between nested and containing rectangles in black/white grids.
+    - Model and solve the Racetrack game involving discrete velocity changes and movement constraints on a grid to reach a finish line.
+    - Present polynomial-time algorithms for rolling die mazes with labeled and blocked squares and implicit representations.
+    - Find walks in edge-colored directed graphs with palindromic color patterns, including shortest such walks.
+    - Provide an O(n) time algorithm to decide if White can win American checkers variants by capturing all Black pieces in one turn using jump sequences.  
+- **Depth-First Search**
+  - DFS Algorithm
+    - DFS operates recursively by marking nodes and recursively exploring unmarked neighbors.
+    - Modifications enable computing useful information via PreVisit and PostVisit hooks.
+    - DFS visits precisely the set of vertices reachable from the starting vertex.
+  - DFS in Directed and Undirected Graphs
+    - In undirected graphs, DFS rooted at a vertex explores its entire component with parent pointers forming a spanning tree.
+    - In directed graphs, reachability is not symmetric, so DFS rooted at different vertices explores different subgraphs.
+    - Parent pointers from DFS in directed graphs define a tree rooted at the starting vertex covering exactly the reachable vertices.
+  - DFS Wrapper and Preprocessing
+    - A wrapper can ensure full graph traversal by invoking DFS on all unmarked vertices.
+    - Preprocessing steps can be applied before DFS calls as needed.
+  - Further reading includes foundational graph traversal techniques such as [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition) by Cormen et al.

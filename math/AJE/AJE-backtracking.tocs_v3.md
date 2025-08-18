@@ -1,0 +1,111 @@
+![AJE-backtracking](AJE-backtracking.best.png)
+
+- **Exercises**
+  - **14. Line segments on parallel lines and circles**
+    - Part (a) requires a divide-and-conquer algorithm to count intersecting pairs of n line segments between two parallel lines in O(n log n) time.
+    - Part (b) extends the problem to points on the unit circle, yielding an O(n log² n) time solution via reduction to (a).
+    - Part (c) asks for an improved O(n log n) time algorithm for part (b) by building upon the solution in (b).
+  - **15. Sorting with SqrtSort subroutine**
+    - Describes an algorithm that sorts an array using a subroutine SqrtSort, sorting subarrays of length √n in place.
+    - Part (a) analyzes the count of SqrtSort calls, aiming for optimality.
+    - Part (b) proves that the number of calls is optimal up to constant factors.
+    - Part (c) studies the running time when SqrtSort is implemented recursively.
+  - **16. Weighted Median Computation**
+    - Defines weighted median and provides an O(n)-time algorithm using unsorted value and weight arrays with distinct values.
+  - **17. Detecting Frequent Values**
+    - Part (a) gives an O(n) algorithm to detect if any element appears more than n/4 times.
+    - Part (b) generalizes this to a threshold k, with running time dependent on n and k.
+    - Avoids hashing or value-dependent sorting methods.
+  - **18. Median of 5 Elements Using Comparisons**
+    - Describes an algorithm using at most 6 comparisons based on a decision tree structure.
+  - **19. Parametrized Blum-Select Algorithm (Mom b Select)**
+    - Part (a) states recurrence relations for the running time based on block size b.
+    - Parts (b)–(e) analyze worst-case times for specific b values (1 through 5).
+    - Parts (f)–(g) discuss constants and which block size b yields minimal constants.
+  - **20. Median of Medians with Double Layers**
+    - Defines MomomSelect algorithm with two layers of median-of-3 computations to achieve O(n) time.
+  - **21. Median and kth Element from Sorted Arrays**
+    - Part (a) finds the median of two sorted arrays in Θ(log n) time.
+    - Part (b) extends to kth smallest element in arrays of sizes m and n with Θ(log(m + n)) time.
+    - Part (c) and (d) deal with three sorted arrays and 2D arrays with sorted rows.
+  - **22. Recursive Squaring Algorithms**
+    - Part (a) adapts Karatsuba’s algorithm to square n-digit numbers with 3 subproblems in O(n^lg3) time.
+    - Part (b) describes an O(n^log3 6) time algorithm using 6 subproblems of size roughly n/3.
+    - Part (c) improves to O(n^log3 5) time using 5 subproblems.
+  - **23. Recursive Multiplication and Representation**
+    - Part (a) multiplies m- and n-digit numbers with complexity O(n m^lg 3-1).
+    - Part (b) computes 2^n decimal representation in O(n^lg 3) time.
+    - Part (c) extends to arbitrary n-bit binary number representation.
+    - Part (d) further improves decimal conversion time to O(M(n) log n) using domain transformation.
+  - **24. Factorial Computation and Running Times**
+    - Part (a) counts multiplications in naive recursive factorial.
+    - Part (b) derives bit-length of n! as Θ(n log n).
+    - Part (c) computes running time under O(k·l) multiplication.
+    - Part (d) proposes recursive Falling product method and analyzes its runtime.
+    - Parts (e)–(f) describe Karatsuba variant multiplication and update factorial runtimes accordingly.
+  - **25. Euclidean Algorithm and Variants**
+    - Part (a) proves correctness of classical recursive gcd algorithm.
+    - Part (b) evaluates worst-case time of EuclidGCD.
+    - Part (c) proves correctness of FastEuclidGCD using modulus.
+    - Part (d) analyzes FastEuclidGCD runtime assuming mod cost.
+    - Part (e) proves correctness of BinaryGCD algorithm.
+    - Part (f) analyzes BinaryGCD runtime assuming bitwise division costs.
+  - **26. Tiling a 2^n × 2^n Chessboard with One Square Missing**
+    - Describes an O(4^n) algorithm to tile the board using L-shaped tiles of 3 squares.
+    - Proof that such a tiling always exists is required.
+  - **27. Identifying Majority Political Parties by Interaction**
+    - Part (a) finds majority party if it constitutes more than half the delegates using pairwise checks.
+    - Part (b) finds plurality party members with minimal identification calls given party size p.
+  - **28. Identifying Knights, Knaves, and Normals on Smullyan Island**
+    - Part (a) presents algorithm to identify inhabitants’ types assuming strict knight majority.
+    - Part (b) proves impossibility of complete identification if knight count is not a strict majority.
+  - **29. Rotating Pixel Maps Using Blits**
+    - Part (a) proves correctness of two recursive rotation algorithms when n is power of two.
+    - Part (b) counts exact number of blits at power-of-two sizes.
+    - Part (c) modifies algorithm for arbitrary n and analyzes blit count.
+    - Parts (d) and (e) analyze running time assuming blits take O(k²) or O(k) time.
+  - **30. Finding Minimum in a Bitonic Array**
+    - Describes an O(log n) algorithm for arrays with one increasing then decreasing segment (possibly shifted).
+  - **31. Finding Fixed Points in Sorted Arrays**
+    - Part (a) finds index i with A[i] = i or reports none in O(log n) time.
+    - Part (b) simplifies algorithm when A[1] > 0 for faster determination.
+  - **32. Finding a Local Minimum in Array**
+    - Given boundary conditions, presents an O(log n) algorithm to find a local minimum.
+    - Proof that at least one local minimum must exist under given constraints.
+  - **33. Rotated Sorted Arrays**
+    - Part (a) finds rotation offset k for array rotated by unknown shift.
+    - Part (b) searches for a value x in rotated array efficiently.
+  - **34. Heroes Shooting Nearest Taller Neighbors**
+    - Part (a) provides an O(n log n) divide-and-conquer algorithm to find shooting targets.
+    - Part (b) proves at least floor(n/2) distinct targets exist.
+    - Part (c) computes number of rounds until only shortest hero remains alive in O(n).
+  - **35. Finding Local Maxima in Grid of Unique Numbers**
+    - Part (a) solves problem for one-row grid.
+    - Part (b) extends solution to square grid, finding maxima efficiently.
+    - Part (c) proves solution optimal up to constant factor.
+  - **36. Missing Bit Strings Detection via FetchBit**
+    - Part (a) finds single missing l-bit string using O(n) bit fetches.
+    - Part (b) finds k missing strings from array using O(n log k) fetches.
+  - **37. Largest Complete Subtree in Binary Tree**
+    - Describes recursive method to find largest complete subtree’s root and depth.
+  - **38. Finding a Central Vertex in Binary Tree**
+    - Defines central vertex with balanced subtree sizes.
+    - Provides proof and algorithm for finding central vertex.
+  - **39. Binary Tree Reconstruction from Traversals**
+    - Part (a) reconstructs tree from preorder and postorder sequences.
+    - Part (b) shows no unique reconstruction possible from preorder and postorder alone.
+    - Part (c) reconstructs from preorder and inorder.
+    - Parts (d)–(e) reconstruct binary search trees from preorder in O(n) time.
+  - **40. kd-Trees and Point Queries**
+    - Part (a) counts cells in kd-tree structure.
+    - Part (b) bounds number of cells a horizontal line can cross.
+    - Part (c) counts points above a horizontal line using kd-tree.
+    - Part (d) counts points inside rectangular query region efficiently.
+  - **41. Reconstructing Tree from Ambiguous Traversals**
+    - Part (a) reconstructs unique binary tree from given traversals using corrected recursion calls.
+    - Part (b) reconstructs traversal code that generated outputs or reports ambiguity.
+  - **42. Transforming Binary Trees into Binary Search Trees**
+    - Part (a) transforms arbitrary binary tree to BST using O(n²) rotations/swaps without modifying pointers.
+    - Part (b) improves transformation to O(n log n) steps.
+    - Part (c) proves any BST can be converted to any other BST with O(n) rotations.
+    - Part (d) open problem on achieving O(n) transformations to BST.
