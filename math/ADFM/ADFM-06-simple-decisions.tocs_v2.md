@@ -1,19 +1,38 @@
-- 6 Simple Decisions  
-  - 6.1 Constraints on Rational Preferences  
-    The four constraints on rational preferences are completeness, transitivity, continuity, and independence. These conditions ensure the existence of a utility function that models preferences as a real-valued function over uncertain outcomes. The axioms underlie the von Neumann-Morgenstern framework, foundational in expected utility theory. For in-depth theory, see [Schoemaker 1982](https://www.jstor.org/stable/2722734).  
-  - 6.2 Utility Functions  
-    Rational preferences imply the existence of a utility function U matching preference orderings, unique up to a positive affine transformation. Utility of lotteries equals the expectation of utility over outcomes. This formalizes rational decision-making under uncertainty. A foundational reference is Bernoulli's original work [Bernoulli 1954 translation](https://www.jstor.org/stable/1907240).  
-  - 6.3 Utility Elicitation  
-    Utility elicitation infers utility functions from human judgments using constructed lotteries and preference queries, typically normalizing utilities between 0 and 1. Monetary values are not always adequate due to nonlinearity of utility of wealth, as demonstrated by risk-aversion behaviors. Detailed methods are surveyed in [Farquhar 1984](https://doi.org/10.1287/mnsc.30.11.1283).  
-  - 6.4 Maximum Expected Utility Principle  
-    This principle prescribes that rational agents choose actions maximizing expected utility, computed from probabilistic beliefs about outcomes and their utilities. It serves as the fundamental decision-making criterion in the presence of uncertainty. For a full treatment, see [Peterson 2009](https://doi.org/10.1017/CBO9780511804774).  
-  - 6.5 Decision Networks  
-    Decision networks extend Bayesian networks by including decision and utility nodes, modeling decision problems with chance nodes, actions, and utilities. Solving them entails evaluating expected utilities for all decisions given observations, which is generally NP-hard. Algorithms by Shachter (1986, 1988) provide foundational methods; see [Jensen & Nielsen 2007](https://link.springer.com/book/10.1007/978-0-387-68282-7) for comprehensive discussion.  
-  - 6.6 Value of Information  
-    Value of information quantifies the expected utility gain from observing additional variables before making decisions. It is computed as the difference between expected utility with and without the information, never negative, and guides observation choices when considering observation costs. Howard (1966) first formalized information value; see [Howard 1966](https://ieeexplore.ieee.org/document/4054414).  
-  - 6.7 Irrationality  
-    Empirical evidence shows human preferences often violate rationality axioms, exhibiting phenomena such as the certainty effect and framing effect. These deviations challenge expected utility theory's descriptive accuracy, motivating alternative models like prospect theory. For critique and alternatives, consult [Kahneman & Tversky 1979](https://www.jstor.org/stable/1914185) and Ariely (2008).  
-  - 6.8 Summary  
-    Rational decision making merges probability with utility theory, relying on utility function existence from preference constraints. Decisions maximize expected utility and can be modeled with decision networks. Solving involves Bayesian inference and is computationally hard; value of information guides observation. Recognizing human irrationality remains important for practical decision systems.  
-  - 6.9 Exercises  
-    The exercises apply theoretical concepts including normalization of utilities, lotteries inducing indifference, affine transformations preserving preference, risk aversion proofs, expected utility calculations, and value of information computations. Solutions demonstrate practical application of utility theory to decision problems and networks. Supplementary materials include decision theory textbooks and foundational papers.
+- **6 Simple Decisions**
+  - **6.1 Constraints on Rational Preferences**
+    - Rational preferences follow completeness, transitivity, continuity, and independence constraints.
+    - These constraints are necessary for defining rational decisions under uncertainty.
+    - The von Neumann-Morgenstern axioms formalize these constraints; see [Theory of Games and Economic Behavior](https://press.princeton.edu/books/hardcover/9780691130613/theory-of-games-and-economic-behavior).
+  - **6.2 Utility Functions**
+    - Rational preferences imply the existence of a real-valued utility function unique up to positive affine transformation.
+    - The utility of lotteries equals the expected utility calculated from constituent outcomes.
+    - See Schoemaker's survey on utility theory for foundational background.
+  - **6.3 Utility Elicitation**
+    - Utility functions can be inferred by eliciting indifference probabilities between outcomes and lotteries.
+    - Monetary values are not a reliable utility proxy due to nonlinearity of wealth utility; risk aversion modifies utility shapes.
+    - Relevant methods are surveyed by [Utility Assessment Methods](https://pubsonline.informs.org/doi/abs/10.1287/mnsc.30.11.1283).
+  - **6.4 Maximum Expected Utility Principle**
+    - A rational decision maximizes expected utility given observations and probabilistic models.
+    - Expected utility is computed as the sum of utilities weighted by conditional outcome probabilities.
+    - See [Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/) for AI perspectives.
+  - **6.5 Decision Networks**
+    - Decision networks augment Bayesian networks with decision and utility nodes to compactly represent decision problems.
+    - Nodes include chance (random variables), decision (actions), and utility nodes; edges represent probabilistic, informational, or functional relations.
+    - Algorithms for evaluation involve iterating over decision assignments and performing Bayesian inference; see [Bayesian Networks and Decision Graphs](https://link.springer.com/book/10.1007/978-0-387-68282-1).
+  - **6.6 Value of Information**
+    - Value of information quantifies the expected increase in utility from observing additional variables.
+    - It is computed by comparing expected utilities before and after conditioning on the new observation.
+    - The value of information is always nonnegative and can guide sequential observations; see Howard (1966), [Information Value Theory](https://ieeexplore.ieee.org/document/4103122).
+  - **6.7 Irrationality**
+    - Empirical studies reveal humans often violate rational utility theory axioms, exhibiting certainty and framing effects.
+    - These violations include preference inconsistencies as shown by Tversky and Kahneman’s experiments.
+    - Prospect theory provides an alternative model better aligned with observed human behavior; see [Prospect Theory](https://www.jstor.org/stable/1914185).
+  - **6.8 Summary**
+    - Rational decision making integrates probability and utility theory.
+    - Utility functions arise from rational preference constraints.
+    - Decision networks model decisions and utilities compactly but solving them is NP-hard.
+    - Value of information shapes observation strategies but human decisions can deviate from rationality.
+  - **6.9 Exercises**
+    - Exercises cover utility normalization, lotteries, utility transformations, power utility risk aversion proof, expected utility calculation, and value of information computation.
+    - Solutions illustrate application of theory to practical decision examples such as umbrella bringing and puppy feeding.
+    - Exercises facilitate deeper understanding of decision theory principles and computational methods.

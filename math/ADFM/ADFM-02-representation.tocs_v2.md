@@ -1,37 +1,75 @@
-- Representation  
-  - Degrees of Belief and Probability  
-    Conditional plausibility comparisons establish an ordering system that leads to representing belief with a real-valued function P. Under assumptions of universal comparability and transitivity, this function maps to probability values between 0 and 1. Fundamental axioms of probability then formalize how these plausibilities quantify uncertainty. For more, see [Probability Theory: The Logic of Science](https://bayes.wustl.edu/etj/prob/book.pdf).  
-  - Probability Distributions  
-    Probability distributions assign likelihoods to variable outcomes, with discrete distributions represented by probability mass functions and continuous ones by density functions. Discrete probabilities sum to 1, while continuous densities integrate to 1. Parameterizations such as the uniform and Gaussian distributions illustrate typical forms. An introductory resource is [Introduction to Probability](http://web.mit.edu/dimitrib/www/prob/prob10.pdf).  
-    - Discrete Probability Distributions  
-      Discrete probability distributions map a finite set of variable states to probabilities summing to one, with parameters reduced by normalization constraints. Notational conventions utilize lowercase letters for variable assignments. Examples include distributions over die rolls with probabilities θ1:6. Julia and MATLAB programming conventions for indexing are mentioned.  
-    - Continuous Probability Distributions  
-      Continuous distributions assign probability density functions where the probability of any specific value is infinitesimally small, requiring integration over intervals to compute probabilities. Cumulative distribution functions and quantile functions complement density functions. Uniform and Gaussian distributions exemplify continuous models. Refer to [Bertsekas and Tsitsiklis, Introduction to Probability](https://athenasc.com/probbook.html) for foundational theory.  
-  - Joint Distributions  
-    Joint distributions describe probabilities over multiple variables, with discrete joints represented by tables that grow exponentially in size. Independence assumptions reduce complexity via product factorizations, while decision trees and factor functions provide alternative compact representations. Continuous joint distributions include multivariate uniforms, mixtures, discretizations, and Gaussian models with covariance parameterizations. See [Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models) for deeper insights.  
-    - Discrete Joint Distributions  
-      Joint discrete probabilities cover all variable assignments with probabilities summing to one. The exponential growth of parameters (2^n - 1 for n binary variables) motivates exploiting independence assumptions, which factorize distributions into products reducing parameter count. Factor data structures and decision tree representations optimize storage when repeated values exist.  
-    - Continuous Joint Distributions  
-      These extend discrete concepts to continuous variables using multivariate distributions. Uniform distributions over boxes and their mixtures allow flexible modeling. Piecewise-constant discretization and decision trees map continuous distributions efficiently. Multivariate Gaussian distributions are parameterized by mean vectors and covariance matrices, with independence expressed via diagonal covariance.  
-  - Conditional Distributions  
-    Conditional distributions describe probabilities of variables given evidence, defined by the ratio of joint probabilities. Key properties include normalization and the law of total probability applied conditionally. Bayes’ theorem relates conditional probabilities by swapping conditioning variables. Representations vary by discrete and continuous variables, including conditional probability tables, Gaussian models, and sigmoid/logit functions modeling soft thresholds. Deterministic variables are also discussed.  
-    - Discrete Conditional Models  
-      Conditional discrete distributions use tables indexed by conditioned variable values, where probabilities sum to one over the conditioned variable given fixed evidence. Tables grow exponentially with conditioning variables, and decision trees optimize representation when many values repeat.  
-    - Conditional Gaussian Models  
-      These model continuous variables conditioned on discrete variables as mixtures of Gaussian distributions, parameterized separately by each discrete case. The total parameters scale with the number of discrete states.  
-    - Linear Gaussian Models  
-      Linear Gaussian models relate continuous variables linearly before applying Gaussian noise, modeling P(X|Y) with a Gaussian whose mean is a linear function of Y. Parameters include linear coefficients, bias, and variance.  
-    - Conditional Linear Gaussian Models  
-      These combine discrete and continuous conditioning, representing P(X|Y,Z) with Gaussian distributions whose means depend linearly on continuous parents and where discrete parent states index separate parameter sets.  
-    - Sigmoid Models  
-      Sigmoid or logit models define soft probabilistic thresholds for binary outcomes conditioned on continuous variables, controlling threshold location and spread with parameters, producing characteristic "S"-shaped curves.  
-    - Deterministic Variables  
-      Deterministic variables have probability 1 assigned to specific values determined by evidence functions; sparse factor representations efficiently encode these without wasteful zero probabilities.  
-  - Bayesian Networks  
-    Bayesian networks encode joint distributions using directed acyclic graphs and factorized conditional distributions at each node given parents. The chain rule constructs joint probabilities as products of conditionals, greatly reducing required parameters through structural assumptions. Example includes a satellite-monitoring problem modeling rare failures and system outcomes. Implementations use variable, factor, and graph structures. See [Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models).  
-  - Conditional Independence  
-    Conditional independence generalizes independence by asserting that two variables are independent given a third. This concept is encoded graphically in Bayesian networks via d-separation, specifying three canonical path patterns that block influence. The Markov blanket of a node consists of its parents, children, and children's other parents, forming the minimal conditioning set rendering the node independent of others. Correctness depends on validity of independence assumptions. For algorithmic details, see [Probabilistic Reasoning in Intelligent Systems](https://mitpress.mit.edu/books/probabilistic-reasoning-intelligent-systems).  
-- Summary  
-  The chapter motivates representing uncertainty through probability theory grounded in axioms linking plausibility and probability distributions. It reviews discrete and continuous distributions, joint and conditional distributions, and how mixtures increase modeling flexibility. Bayesian networks enable efficient joint distribution representation by exploiting conditional independence, which is rigorously defined by d-separation in graph structures. These foundational concepts enable scalable probabilistic modeling for complex systems.  
-- Exercises  
-  The exercises apply theoretical concepts to practical problems including deriving cumulative distributions of exponential variables, identifying mixture components, constructing decision trees for joint distributions, computing parameter counts for mixture models and Bayesian networks, examining d-separation and Markov blankets, and understanding the implications of network structure on independence. Each exercise reinforces foundational probability modeling and graph-based inference principles.
+- **Representation**
+  - **Degrees of Belief and Probability**
+    - Plausibility between propositions can be compared using operators indicating more likely, equally likely, or less likely.
+    - Universal comparability and transitivity assumptions allow representing plausibility via real-valued functions.
+    - Subjective probability axioms justify using probability functions P such that 0 ≤ P(A) ≤ 1.
+    - See [Probability Theory: The Logic of Science](https://cambridge.org) by E. T. Jaynes for elaboration.
+  - **Probability Distributions**
+    - Probability distributions assign probabilities over discrete or continuous sets of values.
+    - Probability mass functions represent discrete distributions with masses summing to one.
+    - Continuous variables are represented via probability density functions integrating to one.
+    - Distributions often combine into mixtures for flexibility.
+    - See [Introduction to Probability](https://athenasc.com/probbook.html) by Bertsekas and Tsitsiklis for foundational theory.
+    - **Discrete Probability Distributions**
+      - Discrete distributions define probabilities over a finite set of assignments.
+      - The sum of probabilities over all discrete values equals one.
+      - Assigning probabilities to binary variables uses conventions like 0 for false and 1 for true.
+    - **Continuous Probability Distributions**
+      - Continuous distributions use density functions where probability for exact values is infinitesimal.
+      - Cumulative distribution functions define cumulative probabilities up to a value.
+      - Quantile functions provide inverse CDF values for given probability thresholds.
+      - Common distributions include Uniform, Gaussian, truncated Gaussian, and mixtures.
+      - Mixture models combine multiple unimodal distributions weighted by mixing coefficients.
+  - **Joint Distributions**
+    - Joint probability distributions cover assignments across multiple variables.
+    - Marginal distributions are obtained by summing or integrating out other variables.
+    - Discrete joint distributions can be tabulated but suffer exponential growth in parameters.
+    - Independence assumptions allow factorization and large parameter savings.
+    - Joint distributions can be represented as factors or decision trees for storage efficiency.
+    - **Discrete Joint Distributions**
+      - Tables explicitly list all possible combinations with associated probabilities summing to one.
+      - Decision trees compactly represent repeated or structured values.
+    - **Continuous Joint Distributions**
+      - Joint continuous distributions include multivariate uniform and Gaussian distributions.
+      - Piecewise constant densities and decision trees can approximate or represent continuous joint densities.
+      - Multivariate Gaussians require mean vector and covariance matrix parameters.
+      - Independence within variables corresponds to diagonal covariance matrices.
+  - **Conditional Distributions**
+    - Conditional probability distributions give probabilities of variables given evidence values.
+    - Defined as P(x | y) = P(x, y) / P(y) with corresponding normalization constraints.
+    - Bayes' rule relates P(x | y) and P(y | x).
+    - Conditional distributions can be discrete tables, conditional Gaussians, linear Gaussian, conditional linear Gaussians, sigmoid models, or deterministic.
+    - **Discrete Conditional Models**
+      - Conditional tables specify probabilities for a variable given conditioning variables.
+      - Number of parameters grows exponentially with conditioned variables.
+      - Decision trees reduce storage by exploiting repeated patterns.
+    - **Conditional Gaussian Models**
+      - Represent continuous variables conditioned on discrete variables via a mixture of Gaussians.
+    - **Linear Gaussian Models**
+      - Model continuous variables with Gaussian noise where mean is a linear function of other continuous variables.
+    - **Conditional Linear Gaussian Models**
+      - Combine conditioning on discrete and continuous variables by having Gaussian means as linear functions dependent on discrete conditions.
+    - **Sigmoid Models**
+      - Model binary variables conditioned on continuous variables using soft thresholds with logistic sigmoid functions.
+    - **Deterministic Variables**
+      - Variables with values derived deterministically from evidence can be sparsely represented instead of full tables.
+  - **Bayesian Networks**
+    - Bayesian networks represent joint distributions with directed acyclic graphs encoding conditional dependencies.
+    - Each node associates with a conditional distribution given its parents.
+    - Chain rule constructs joint distribution as a product of conditional distributions.
+    - Conditional independence encoded in the network reduces the number of parameters needed.
+    - Implementation involves variables, conditional factors, and directed graphs.
+    - For comprehensive study, see [Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models) by Koller and Friedman.
+  - **Conditional Independence**
+    - Conditional independence generalizes independence by stating P(X, Y | Z) = P(X | Z) P(Y | Z).
+    - d-separation criteria determine conditional independence from graph structure through analysis of paths and blocking conditions.
+    - Markov blankets comprise a node’s parents, children, and co-parents of children, forming a minimal conditioning set rendering the node independent of others.
+    - Invalid conditional independence assumptions risk model inaccuracies.
+    - For algorithms on d-separation, see Koller and Friedman’s comprehensive text.
+- **Summary**
+  - Degrees of belief motivate probability representations subject to axioms and ordering assumptions.
+  - Probability distributions span discrete, continuous, and mixture forms.
+  - Joint and conditional distributions enable modeling of multiple variables and their dependencies.
+  - Bayesian networks provide graphical factorization and parameter reduction via conditional independence.
+  - Conditional independence assumptions are foundational for compact and effective probabilistic modeling.
+

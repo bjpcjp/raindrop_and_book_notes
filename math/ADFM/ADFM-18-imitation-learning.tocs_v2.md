@@ -1,15 +1,42 @@
-- Imitation Learning
-  - Behavioral Cloning
-    - Behavioral cloning treats imitation learning as a supervised learning problem, training a stochastic policy to maximize the likelihood of expert state-action pairs. It can use discrete conditional models or represent policies with neural networks optimized via gradient ascent. Cascading errors from limited expert data coverage often degrade performance over time, as poor state generalization leads to invalid or unseen situations. For further reading, see [Pomerleau, 1991](https://doi.org/10.1162/neco.1991.3.1.88).
-  - Dataset Aggregation
-    - Dataset aggregation (DAgger) addresses cascading errors by iteratively training a policy on datasets augmented with expert-labeled state-action pairs from the policy's own rollouts. This method incrementally covers state space regions the policy encounters, improving generalization as more expert data accumulates. However, convergence is not guaranteed. Additional insights are found in [Ross et al., 2011](http://proceedings.mlr.press/v15/ross11a/ross11a.pdf).
-  - Stochastic Mixing Iterative Learning
-    - Stochastic Mixing Iterative Learning (SMILe) incrementally mixes newly trained component policies with prior policies and the expert, decaying expert influence over iterations. This approach retrains a policy on recent expert-labeled data and probabilistically blends in prior policies, improving performance by balancing exploration and expert guidance. For more, see [Ross and Bagnell, 2010](https://proceedings.mlr.press/v15/ross11a/ross11a.pdf).
-  - Maximum Margin Inverse Reinforcement Learning
-    - Maximum Margin IRL learns a linear reward function by matching expert feature expectations while maximizing the margin by which the expert outperforms previous policies. It models reward features as binary and uses quadratic programming to find weights, iteratively training policies to reduce this margin until convergence. The method produces a mixture policy approximating expert behavior. See [Abbeel and Ng, 2004](https://ai.stanford.edu/~ang/papers/icml04-apprentice.pdf) for details.
-  - Maximum Entropy Inverse Reinforcement Learning
-    - Maximum Entropy IRL resolves the ambiguity of multiple reward functions by choosing the maximum entropy distribution over trajectories matching expert feature expectations. It models trajectory probabilities proportional to exponentiated rewards normalized over all trajectories. Gradient ascent optimizes reward parameters using discounted state visitation frequencies and policies derived by reinforcement learning. Detailed exposition is in [Ziebart et al., 2008](https://www.aaai.org/Papers/AAAI/2008/AAAI08-164.pdf).
-  - Generative Adversarial Imitation Learning
-    - Generative Adversarial Imitation Learning (GAIL) simultaneously trains a discriminator to distinguish expert from policy-generated state-action pairs, and a policy to fool the discriminator. This adversarial setup bypasses explicit reward inference by providing a learning signal similar to a reward function. Optimization alternates between discriminator updates and policy improvement via reinforcement learning methods like trust region policy optimization. The foundational work is [Ho and Ermon, 2016](https://arxiv.org/abs/1606.03476).
-  - Summary
-    - Imitation learning encompasses methods that learn desired behavior solely from expert demonstrations, without explicit reward functions. Behavioral cloning optimizes action likelihoods; dataset aggregation and SMILe iteratively refine policies using expert feedback; inverse reinforcement learning infers rewards by matching expert feature frequencies, either via margin maximization or maximum entropy; and GAIL frames imitation as adversarial training between a discriminator and policy. These methods address challenges of limited data coverage and policy generalization.
+- **18 Imitation Learning**
+  - **18.1 Behavioral Cloning**
+    - Trains a stochastic policy to maximize the likelihood of expert state-action pairs as a supervised learning problem.
+    - Cascading errors emerge as small inaccuracies compound during rollout, causing poor performance in unseen states.
+    - Bayesian networks and differentiable function approximators like neural networks can represent policies.
+    - [Pomerleau (1991) on neural network training](https://doi.org/10.1162/neco.1991.3.1.88)
+  - **18.2 Dataset Aggregation**
+    - Iteratively improves a policy by collecting expert-labeled data from states the policy visits and aggregating with previous data.
+    - The method, known as DAgger, alternates between policy rollouts and expert corrections to cover likely encountered states.
+    - Though effective in practice for mitigating cascading errors, convergence is not guaranteed.
+    - [Ross et al. (2011) on DAgger](https://proceedings.mlr.press/v15/ross11a/ross11a.pdf)
+  - **18.3 Stochastic Mixing Iterative Learning**
+    - Builds policies by stochastically mixing newly-learned policies with prior ones, gradually reducing reliance on the expert.
+    - Starts from the expert policy and blends in trained policies weighted by a mixing scalar, allowing smooth policy improvement.
+    - Unlike dataset aggregation, SMILe trains new components only on recent data rather than accumulating datasets.
+    - [Ross & Bagnell (2010) on SMILe](https://arxiv.org/abs/1011.0686)
+  - **18.4 Maximum Margin Inverse Reinforcement Learning**
+    - Seeks a reward function that explains expert behavior by matching feature expectations from expert data.
+    - Formulates a quadratic program maximizing the margin between expert and previous policies’ feature expectations under a norm constraint.
+    - Produces a mixed policy combining policies found at each iteration to approximate expert behavior.
+    - [Abbeel & Ng (2004) on apprenticeship learning](http://ai.stanford.edu/~ang/papers/icml04-apprentice.pdf)
+  - **18.5 Maximum Entropy Inverse Reinforcement Learning**
+    - Resolves ambiguity in feature matching by selecting the maximum-entropy distribution over trajectories with expected rewards.
+    - Defines trajectory probabilities exponentially weighted by cumulative reward with normalization over all trajectories.
+    - Objective optimized via gradient ascent requiring discounted state visitation frequencies and optimal policy estimation.
+    - [Ziebart et al. (2008) on max-entropy IRL](https://www.aaai.org/Papers/AAAI/2008/AAAI08-292.pdf)
+  - **18.6 Generative Adversarial Imitation Learning**
+    - Trains a policy and a discriminator adversarially, with the discriminator distinguishing expert from policy state-action pairs.
+    - The policy aims to fool the discriminator by generating behavior indistinguishable from expert demonstrations.
+    - Optimization alternates between discriminator gradient ascent and policy optimization via trust region policy optimization.
+    - [Ho & Ermon (2016) on GAIL](https://arxiv.org/abs/1606.03476)
+  - **18.7 Summary**
+    - Behavioral cloning fits policies by maximizing likelihood of expert actions but suffers cascading errors.
+    - Dataset aggregation and SMILe improve policies interactively by querying experts on encountered states.
+    - Inverse reinforcement learning aims to infer reward functions explaining expert data; max-margin and max-entropy methods are key approaches.
+    - GAIL leverages adversarial training to imitate expert behavior without explicitly recovering the reward function.
+- **18.8 Exercises**
+  - Explores practical considerations and extensions of imitation learning methods.
+  - Highlights generalized policy parameterization to address data scarcity and the use of cost-sensitive learning.
+  - Discusses limitations of max-margin IRL and preferences of maximum entropy principles.
+  - Considers reward function surrogate forms in GAIL and trajectory-based discriminators.
+  - Provides worked solutions grounded in content from the chapter and related literature.

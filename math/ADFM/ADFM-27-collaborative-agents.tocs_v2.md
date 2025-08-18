@@ -1,17 +1,34 @@
-- 27 Collaborative Agents
-  - 27.1 Decentralized Partially Observable Markov Decision Processes
-    Dec-POMDPs model multiple agents with a shared objective acting independently under local partial observability. Each agent selects local actions based on individual observation histories while the state and single reward function are shared. This framework generalizes POMGs for cooperative multiagent settings; see [Oliehoek and Amato 2016](https://link.springer.com/book/10.1007/978-3-319-39399-3) for a comprehensive introduction.
-  - 27.2 Subclasses
-    Dec-POMDP subclasses vary by agent count, observability, and communication assumptions, influencing computational complexity. Joint full observability (Dec-MDP) means combined agent observations reveal the true state, though observations are not shared during execution. Factored Dec-POMDPs leverage transition, observation, and reward independence, reducing complexity and enabling models like ND-POMDPs with coordination graphs; for complexity classes see the table in the text.
-  - 27.3 Dynamic Programming
-    Dynamic programming solves Dec-POMDPs by iteratively applying the Bellman equation and pruning dominated joint policies, extending POMG dynamic programming methods to the collaborative setting. It requires reformulating the Dec-POMDP as a POMG with identical reward functions for all agents, allowing reuse of established algorithms.
-  - 27.4 Iterated Best Response
-    Iterated best response optimizes joint policies by repeatedly fixing all agents’ policies except one, and computing that agent’s best response, converging to a joint equilibrium. Though computationally efficient and typically fast, it may converge to suboptimal equilibria due to the existence of multiple Nash equilibria.
-  - 27.5 Heuristic Search
-    Heuristic search explores a fixed-size subset of joint policies to control exponential growth, guiding search via heuristics that estimate future beliefs by simulating random actions and observations. It expands conditional plans bottom-up and selects high-utility policies at each iteration, balancing tractability with policy quality; see [Seuken and Zilberstein 2007](https://www.ijcai.org/Proceedings/07/Papers/062.pdf) for details.
-  - 27.6 Nonlinear Programming
-    Nonlinear programming formulates Dec-POMDP policy optimization as a nonlinear program over fixed-size stochastic controllers, simultaneously optimizing action and node transition probabilities. This generalizes POMDP NLP approaches and can yield optimal joint controllers given the controller size; see [Amato et al. 2010](https://doi.org/10.1007/s10458-010-9135-2) for methodology.
-  - 27.7 Summary
-    The section recaps Dec-POMDP characteristics, subclasses, and solution methods including dynamic programming, iterated best response, heuristic search, and nonlinear programming. It emphasizes the use of conditional plans under local observability and the varying computational trade-offs across approaches.
-  - 27.8 Exercises
-    Exercises cover practical and theoretical aspects of Dec-POMDPs, including their advantages over POSGs in collaborative robotics, distinctions of joint full observability, exploiting independence assumptions to decompose Dec-MDPs into individual MDPs, leveraging MMDP/MPOMDP models as heuristics in heuristic search, and formulating best response controllers using nonlinear programming. Each exercise includes fact-based solutions illustrating fundamental modeling and algorithmic insights.
+- **Collaborative Agents**
+  - **Decentralized Partially Observable Markov Decision Processes (Dec-POMDPs)**
+    - Dec-POMDPs model multiple agents collaboratively maximizing a single shared reward under local partial observability.
+    - Each agent selects actions based on local observation histories without full state knowledge.
+    - The predator-prey problem demonstrates Dec-POMDP application with independent predator movements and a randomly moving prey.
+    - See F. A. Oliehoek and C. Amato's [A Concise Introduction to Decentralized POMDPs](https://link.springer.com/book/10.1007/978-3-319-29383-2) for a comprehensive introduction.
+  - **Subclasses of Dec-POMDPs**
+    - Subclasses differ by the number of agents, observability type (full, partial, joint full), and communication capability.
+    - Joint full observability implies combined agent observations reveal the true state; such Dec-POMDPs are Dec-MDPs.
+    - Factored Dec-POMDPs allow state, transition, observation, and reward independence decompositions to reduce complexity.
+    - ND-POMDPs use coordination graphs to structure rewards based on agent interactions in the hypergraph.
+    - MMDPs and MPOMDPs result from free communication and full sharing of observations and actions among agents.
+  - **Dynamic Programming**
+    - Applies Bellman equations iteratively with pruning of dominated policies to find optimal joint policies.
+    - Leverages previous POMG algorithms by aligning individual rewards with shared Dec-POMDP rewards.
+  - **Iterated Best Response**
+    - Iteratively updates a single agent’s policy assuming other agents’ policies fixed to find joint equilibrium policies.
+    - Fast convergence is typical due to shared rewards but may find suboptimal equilibria.
+    - Also known as joint equilibrium-based search for policies (JESP).
+  - **Heuristic Search**
+    - Explores a fixed number of joint policies guided by heuristic estimates of future beliefs and utilities.
+    - Controls exponential policy growth by selecting best joint conditional plans at each iteration.
+    - Memory bounded dynamic programming (MBDP) is a known variant.
+  - **Nonlinear Programming**
+    - Formulates fixed-size joint controller policy optimization as a nonlinear program generalizing single-agent POMDP NLPs.
+    - Optimizes policy node action and observation-update probabilities under Bellman consistency constraints.
+    - Employs solvers like Ipopt to optimize value functions given initial beliefs.
+    - Reference: Amato, Bernstein, and Zilberstein’s work on optimizing fixed-size stochastic controllers.
+  - **Exercises**
+    - Highlight practical advantages of Dec-POMDPs in cooperative applications like robotics.
+    - Explain joint full observability implications versus individual state knowledge.
+    - Prove that transition, observation, and reward independence enable decomposition into separate MDPs.
+    - Discuss leveraging MMDP or MPOMDP solutions as heuristics in Dec-POMDP policy search.
+    - Describe computing best response controllers via nonlinear programming for use in iterated best response.

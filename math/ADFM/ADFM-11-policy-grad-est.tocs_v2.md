@@ -1,13 +1,38 @@
-- Policy Gradient Estimation
-  - Finite Difference
-    - Finite difference methods approximate the gradient of a function by small step changes in each parameter dimension. This approach requires simulating rollouts to estimate utility at perturbed parameters and averaging results to compute the gradient. The method suffers from high variance due to stochastic trajectories and sensitivity to parameter scaling, exemplified by the difficulty in choosing suitable step sizes when parameters vary widely in scale. Further reading: [Finite Difference Methods](https://en.wikipedia.org/wiki/Finite_difference_method).
-  - Regression Gradient
-    - Regression gradient estimation uses linear regression over multiple random perturbations of policy parameters to estimate the gradient more robustly. Perturbations are sampled uniformly on a hypersphere, and utility differences are regressed to infer the gradient. Increasing the number of perturbations relative to the number of parameters improves estimate quality. This method smooths noise better than finite differences. Further reading: [Linear Regression](https://en.wikipedia.org/wiki/Linear_regression).
-  - Likelihood Ratio
-    - The likelihood ratio, or log-derivative trick, reformulates the policy gradient as the expectation of the gradient of the log policy multiplied by trajectory returns. It decomposes the gradient into components involving the policy likelihood, allowing gradient estimation through sampled trajectories without requiring exact knowledge of environment dynamics. This method provides unbiased gradient estimates but can have high variance. Further reading: [Likelihood Ratio Method](https://en.wikipedia.org/wiki/Score_function_estimator).
-  - Reward-to-Go
-    - Reward-to-go refines the likelihood ratio method by attributing each policy gradient component to cumulative future rewards from each timestep onward. This causality-respecting modification reduces variance by only considering rewards following the action rather than total returns. It approximates the state-action value function for effective gradient computation and is unbiased. Further reading: [Policy Gradient Theorem](https://papers.nips.cc/paper/1999/file/464d828b85b67d3df1d3e9720807900b-Paper.pdf).
-  - Baseline Subtraction
-    - Baseline subtraction further reduces variance by subtracting a baseline value from the reward-to-go without adding bias. The baseline can be a state-dependent function optimized to minimize variance for each gradient component. This approach effectively centers the gradient signal around relative advantages of actions, linking naturally to the advantage function. It is commonly combined with likelihood ratio gradient estimation. Further reading: [Advantage Actor-Critic Methods](https://arxiv.org/abs/1506.02438).
-- Summary
-  - The chapter outlines multiple policy gradient estimation techniques: finite differences, regression regression, likelihood ratio methods, reward-to-go, and baseline subtraction. Finite differences and regression provide gradient approximation via perturbations, while likelihood ratio uses analytical gradient decompositions. Variance reduction via reward-to-go and baselines improves estimate quality without bias. These concepts form the foundation for practical policy optimization in stochastic environments. Further reading: [Policy Gradient Methods in Reinforcement Learning](https://web.stanford.edu/class/archive/cs/cs234/cs234.1194/lectures/lecture4.pdf).
+- **Policy Gradient Estimation**
+  - **Finite Difference**
+    - Finite difference estimates gradients by evaluating small changes in function values along each parameter dimension.  
+    - Policy gradient estimation using finite difference requires simulating rollouts to estimate utility.  
+    - Variance in estimates arises from stochastic trajectories; sharing random seeds can reduce this variance.  
+    - Policy parameterization scale significantly affects gradient sensitivity, as shown in Example 11.1.  
+    - See PEGASUS algorithm [Ng and Jordan (2000)](https://auai.org/uai2000/papers/063.pdf).  
+  - **Regression Gradient**
+    - Uses linear regression on random perturbations around policy parameters to estimate gradients more robustly.  
+    - Requires generating multiple perturbations and corresponding utility rollouts to perform regression.  
+    - Increases sample efficiency compared to finite differences by using random directions rather than coordinate axes.  
+    - Example 11.2 demonstrates successful gradient estimation on a noisy quadratic function.  
+    - Review linear regression basics in section 8.6.  
+  - **Likelihood Ratio**
+    - Applies the likelihood ratio (log derivative) trick to express policy gradient as an expectation involving ∇θ log likelihood.  
+    - Gradient estimator sums log-policy gradients weighted by trajectory returns over sampled trajectories.  
+    - Can handle stochastic policies without knowledge of transition probabilities; deterministic policies require transition models.  
+    - Algorithm 11.4 implements this estimator using m rollouts.  
+    - For more, see Williams (1992) on REINFORCE algorithms.  
+  - **Reward-to-Go**
+    - Introduces the reward-to-go method to reduce variance by considering future rewards starting from each timestep.  
+    - Avoids bias by ensuring gradient terms depend only on future rewards causally affected by actions at that timestep.  
+    - Algorithm 11.5 implements the reward-to-go estimator, showing improvements in variance.  
+    - The reward-to-go corresponds to the state-action value estimate \(Q_\theta(s,a)\).  
+    - See the policy gradient theorem for theoretical grounding.  
+  - **Baseline Subtraction**
+    - Further variance reduction is achieved by subtracting a baseline value from the reward-to-go in gradient estimates.  
+    - Baseline subtraction does not introduce bias because the expectation of baseline weighted log gradient is zero.  
+    - The optimal baseline minimizes variance and can be computed from sample data as a ratio of expectations involving log-gradient squares.  
+    - Using a state-dependent baseline relates to advantage functions \(A(s,a) = Q(s,a) - U(s)\).  
+    - Algorithm 11.6 details the method combining likelihood ratio, reward-to-go, and baseline subtraction.  
+    - See Peters and Schaal (2008) for discussion on baselines in policy gradients.  
+  - **Summary**
+    - Finite differences and linear regression provide straightforward gradient estimates but suffer from high variance or scaling issues.  
+    - The likelihood ratio method leverages policy structure for efficient unbiased gradient estimation.  
+    - Reward-to-go and baseline subtraction significantly reduce variance without biasing estimates.  
+    - Policy gradients based on advantages improve learning signal quality.  
+    - See comprehensive survey in Sutton et al. (2000).

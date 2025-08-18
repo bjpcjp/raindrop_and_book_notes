@@ -1,17 +1,49 @@
-- Exact Solution Methods
-  - Markov Decision Processes (MDPs)
-    - MDPs model sequential decision-making under uncertainty with stochastic dynamics depending only on the current state and action (Markov assumption). Stationary MDPs have time-invariant transition and reward functions. The chapter introduces the MDP structure and provides an example of aircraft collision avoidance framed as an MDP. For detailed theory on MDPs, see [Puterman, Markov Decision Processes](https://www.wiley.com/en-us/Markov+Decision+Processes%3A+Discrete+Stochastic+Dynamic+Programming-p-9780471727828).
-  - Policy Evaluation
-    - Policy evaluation computes the expected utility (value function) of a fixed policy, either iteratively using a lookahead update or exactly by solving a system of linear equations. Iterative policy evaluation converges under contraction conditions. This section includes algorithmic implementations. For iterative methods in MDPs, consult [Sutton and Barto, Reinforcement Learning](http://incompleteideas.net/book/the-book.html).
-  - Value Function Policies
-    - Given a value function, a greedy policy selects actions maximizing the expected return via the lookahead equation. The action-value function Q(s,a) and advantage function A(s,a) provide alternative policy representations. Optimal policies exist as deterministic functions of state. Further exploration is found in [Puterman, Markov Decision Processes](https://www.wiley.com/en-us/Markov+Decision+Processes%3A+Discrete+Stochastic+Dynamic+Programming-p-9780471727828).
-  - Policy Iteration
-    - Policy iteration alternates policy evaluation and improvement steps to converge to an optimal policy in finite iterations due to the finite policy space. Modified policy iteration trades off between full evaluation and improvement. Algorithmic details and convergence proofs are provided. For advanced understanding, see [Puterman, Markov Decision Processes](https://www.wiley.com/en-us/Markov+Decision+Processes%3A+Discrete+Stochastic+Dynamic+Programming-p-9780471727828).
-  - Value Iteration
-    - Value iteration improves the value function directly via Bellman backups, guaranteed to converge to the optimal value function by contraction mapping. The discount factor γ heavily affects convergence speed and error bounds. Early stopping can be based on the Bellman residual. The section includes examples and algorithms. See [Bellman, Dynamic Programming](https://press.princeton.edu/books/paperback/9780691047674/dynamic-programming) for foundational theory.
-  - Asynchronous Value Iteration
-    - Asynchronous or Gauss-Seidel value iteration updates subsets of states in place per iteration, saving computation and sometimes accelerating convergence depending on state-update order. Convergence is guaranteed if each state updates infinitely often. Practical benefits and ordering effects are demonstrated. Further details in [Bertsekas and Tsitsiklis, Neuro-Dynamic Programming](https://web.mit.edu/dimitrib/www/NDP-book.html).
-  - Linear Program Formulation
-    - Finding the optimal policy in an MDP can be framed as a linear program minimizing state utilities under Bellman inequality constraints. This formulation has a polynomial-time complexity with variables equal to the number of states and constraints equal to states times actions. Though asymptotically efficient, it is often slower in practice than value iteration. Implementation details provided. For linear programming in MDPs, see [Vanderbei, Linear Programming](https://link.springer.com/book/10.1007/978-1-4419-6366-3).
-  - Linear Systems with Quadratic Reward
-    - Extends MDPs to continuous vector states/actions with linear transitions plus additive Gaussian noise and quadratic (negative definite) rewards, known as linear–quadratic regulators (LQR). The Bellman equation transforms into matrix Riccati equations with closed-form solutions for finite horizons. This provides exact optimal controls under these conditions. The section includes a detailed solution derivation and example. Consult [Bertsekas, Dynamic Programming and Optimal Control](http://web.mit.edu/dimitrib/www/dpchapter.html) for in-depth treatment.
+- **7 Exact Solution Methods**
+  - **7.1 Markov Decision Processes**
+    - MDPs model sequential decision problems with uncertain action effects based on the Markov assumption.
+    - The state evolves probabilistically, and the utility is decomposed into rewards over time.
+    - Policies choose actions given states, with focus on deterministic and stationary policies.
+    - Core references include Bellman's Dynamic Programming (1957) and Puterman's book on MDPs.
+  - **7.2 Policy Evaluation**
+    - Policy evaluation computes the value function of a given policy either iteratively or exactly by solving a linear system.
+    - Iterative policy evaluation is based on a contraction mapping update equation and can achieve arbitrary precision.
+    - Exact evaluation uses matrix inversion but has cubic time complexity in the number of states.
+    - Policy evaluation algorithms are exemplified on discrete problems like the hex world.
+  - **7.3 Value Function Policies**
+    - A policy can be greedily extracted from any value function by maximizing expected lookahead rewards.
+    - Action value functions (Q-functions) quantify expected returns starting from a state-action pair.
+    - Advantage functions measure the benefit of actions over the greedy action.
+    - Greedy policies ensure optimality when derived from the optimal value function.
+  - **7.4 Policy Iteration**
+    - Policy iteration alternates between policy evaluation and policy improvement until convergence.
+    - Convergence is guaranteed due to finite policies and monotonic improvement.
+    - Variants like modified policy iteration approximate evaluation steps for efficiency.
+    - Empirical examples demonstrate policy iteration on grid-world style problems.
+  - **7.5 Value Iteration**
+    - Value iteration iteratively applies the Bellman optimality operator to improve the value function.
+    - It converges to the optimal value function under contraction mapping properties.
+    - Early stopping criteria based on Bellman residuals provide error bounds on value approximation.
+    - Discount factor γ affects convergence speed and approximation accuracy.
+  - **7.6 Asynchronous Value Iteration**
+    - Asynchronous methods update value estimates at a subset of states per iteration, e.g., Gauss-Seidel value iteration.
+    - Convergence requires every state to be updated infinitely often.
+    - State update ordering significantly influences convergence speed.
+    - Backwards induction is an example of a specialized asynchronous update order.
+  - **7.7 Linear Program Formulation**
+    - Finding an optimal value function can be posed as a linear program minimizing total utility subject to Bellman inequalities.
+    - The max operator in Bellman constraints is replaced by linear inequalities for all actions.
+    - The linear program has a polynomial number of variables and constraints.
+    - Although polynomial-time solvable, value iteration tends to be more practical.
+    - For further details, consult [Vanderbei, Linear Programming](https://link.springer.com/book/10.1007/978-1-4614-7636-8).
+  - **7.8 Linear Systems with Quadratic Reward**
+    - Continuous state and action MDPs with linear dynamics and quadratic rewards (LQR problems) admit exact closed-form solutions.
+    - Dynamics are linear with additive Gaussian noise; rewards penalize deviations quadratically.
+    - The value function is quadratic in the state, and the optimal policy is linear.
+    - The discrete-time Riccati equation governs recursion for value matrices over finite horizons.
+    - For detailed exposition see [Bertsekas, Dynamic Programming and Optimal Control](http://athenasc.com/dpbook.html).
+  - **7.9 Summary**
+    - Exact dynamic programming methods solve discrete MDPs with bounded rewards.
+    - Policy evaluation can be done iteratively or exactly via linear algebra.
+    - Policy iteration and value iteration are core dynamic programming methods for optimal policies.
+    - Linear programming offers an alternative polynomial-time solution for MDPs.
+    - Linear-quadratic continuous problems admit analytical solutions.

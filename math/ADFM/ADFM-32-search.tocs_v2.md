@@ -1,13 +1,39 @@
-- E Search Algorithms  
-  - E.1 Search Problems  
-    The section defines a search problem as a deterministic Markov decision process focused on maximizing total reward over sequences of actions. It specifies the key components: state space, action space, deterministic transitions, and reward function, and introduces goal states as absorbing with zero future rewards. The provided data structure encapsulates these elements. Contributing factors include deterministic transitions and the absence of discounting future rewards. For further details, see [Search Problems in AI](https://www.cs.cmu.edu/~15381-f19/recitations/rec08.pdf).
-  - E.2 Search Graphs  
-    This section explains how finite search problems map to graphs where nodes represent states and edges represent action-driven transitions with associated rewards. It illustrates the representation using a sliding tile puzzle with states and reward-labeled transitions. The search graph's structure influences how search algorithms traverse and map problem states. Factors include finite state and action spaces and deterministic transitions. More can be found in [Graph Search Algorithms](https://web.stanford.edu/class/cs221/lectures/lecture2.pdf).
-  - E.3 Forward Search  
-    Forward search is described as a depth-limited recursive search evaluating all possible action sequences up to a depth d, using a heuristic value function at the horizon. It performs a depth-first traversal with complexity O(|A|^d), visiting all reachable states, which can be computationally expensive. The explicit depth control and the state evaluation function are contributing factors. See further [Forward Search Methods](https://link.springer.com/chapter/10.1007/978-3-540-85725-9_10).
-  - E.4 Branch and Bound  
-    Branch and bound enhances forward search by pruning suboptimal branches using upper and lower bounds on expected rewards, sorting actions by potential reward, and cutting off exploration when bounds indicate suboptimality. It can considerably reduce computations depending on the tightness of heuristic bounds but retains the same worst-case complexity. The quality of heuristics strongly affects pruning efficiency. Refer to [Branch and Bound Method](https://en.wikipedia.org/wiki/Branch_and_bound).
-  - E.5 Dynamic Programming  
-    Dynamic programming avoids recomputing values for previously visited states by caching results in a transposition table, exploiting optimal substructure in search problems. It stores evaluation results indexed by state-depth tuples and significantly reduces redundant computations, as shown in comparative examples. The presence of optimal substructure and effective caching mechanisms are key factors. Explore more in [Dynamic Programming in Search](https://web.stanford.edu/class/cs168/lectures/10/Small10.pdf).
-  - E.6 Heuristic Search  
-    Heuristic search improves branch and bound by ordering actions using a heuristic upper bound on future returns and caching state evaluations to eliminate redundant work. It requires admissible and consistent heuristics for optimality guarantees and does not require a separate lower bound like branch and bound. The approach balances heuristic guidance with memoization for efficient search. The admissibility and consistency of heuristics influence performance. For in-depth coverage, review [Heuristic Search](https://ai.stanford.edu/~paskin/gm-short-course/slides/search.pdf).
+- **E Search Algorithms**
+  - **E.1 Search Problems**
+    - Search problems focus on finding action sequences to maximize rewards over deterministic state transitions.
+    - They frame as Markov decision processes but with deterministic transitions.
+    - Examples include sliding tile puzzles, the Rubik's Cube, Sokoban, and shortest path problems.
+    - State and action spaces can be finite or infinite, with absorbing states yielding no future reward.
+    - For further reading, see [Markov Decision Processes](https://en.wikipedia.org/wiki/Markov_decision_process).
+  - **E.2 Search Graphs**
+    - Search problems with finite states/actions can be represented as graphs with states as nodes and transitions as edges.
+    - Edges are labeled with actions and expected rewards.
+    - Search algorithms explore such graphs by generating a search tree from an initial state.
+    - Example provided from a 3×3 sliding tile puzzle.
+    - More on graph search at [Graph Search Algorithms](https://en.wikipedia.org/wiki/Graph_traversal).
+  - **E.3 Forward Search**
+    - Performs depth-limited search from an initial state, recursively exploring all possible action sequences up to depth d.
+    - Uses an approximate value function U(s) to estimate terminal node values.
+    - Results in a complete search tree with complexity O(|A|^d).
+    - Depth-first nature can be inefficient due to redundant state visits.
+    - See [Depth-First Search](https://en.wikipedia.org/wiki/Depth-first_search) for more.
+  - **E.4 Branch and Bound**
+    - Employs upper (Qhi) and lower (Ulo) bounds to prune suboptimal branches during search.
+    - Actions are explored in order of descending upper bound values.
+    - Can avoid exploring large portions of the search tree if bounds are effective.
+    - Worst-case complexity equals forward search; efficiency depends heavily on tightness of heuristics.
+    - Branch and bound compared with forward search in hex world example.
+    - Refer to [Branch and Bound Method](https://en.wikipedia.org/wiki/Branch_and_bound).
+  - **E.5 Dynamic Programming**
+    - Avoids redundant evaluation by caching results of subproblems in a transposition table.
+    - Applicable when problems exhibit optimal substructure, enabling reuse of computed optimal paths.
+    - Shares the recursive structure of forward search but benefits from memoization.
+    - Demonstrated improvements over pure forward search by reducing exponential state visits.
+    - For more, see [Dynamic Programming](https://en.wikipedia.org/wiki/Dynamic_programming).
+  - **E.6 Heuristic Search**
+    - Improves branch and bound by ordering actions using a heuristic upper bound Uhi(s).
+    - Maintains a cache of visited states to avoid redundant computations like dynamic programming.
+    - Requires admissible (not overestimating) and consistent heuristics to guarantee optimality.
+    - Orders actions by immediate reward plus heuristic, pruning branches that cannot improve current best.
+    - Compared favorably against branch and bound in hex world example.
+    - More details at [Heuristic Search](https://en.wikipedia.org/wiki/Heuristic_search_algorithm).

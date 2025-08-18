@@ -1,16 +1,49 @@
-- Model-Based Methods
-  - Maximum Likelihood Models
-    - Maximum likelihood estimates of transition and reward functions use counting of observed state transitions and summation of received rewards. Transition probabilities are estimated as ratios of transition counts, and mean rewards are computed per state-action pair. Initial counts can be nonzero to incorporate prior knowledge. The methods require heuristic exploration to balance exploitation.
-      External resource: [Reinforcement Learning: An Introduction, Sutton and Barto](http://incompleteideas.net/book/the-book.html)
-  - Update Schemes
-    - Different update schemes for maintaining and improving the value function under continuously changing models aim to balance computational efficiency and accuracy. Full updates resolve the entire model using linear programming after each transition; randomized updates perform Bellman backups at visited and random states; prioritized sweeping focuses updates on states with the highest priority using a queue propagated by transition likelihood and value changes.
-      External resource: [Prioritized Sweeping in Reinforcement Learning](https://papers.nips.cc/paper/1993/file/03de0a9763cc3512beb4ebf412824dda-Paper.pdf)
-  - Bayesian Methods
-    - Bayesian reinforcement learning represents uncertainty over transition models using Dirichlet distributions, one per state-action pair. This approach uses prior distributions updated with observed counts to form posteriors, enabling reasoning about model uncertainty. Although maintaining a full Bayesian belief state is computationally intensive, it enables principled exploration without heuristic parameters.
-      External resource: [Bayesian Reinforcement Learning: A Survey](https://homes.cs.washington.edu/~manishg/papers/brlsurvey.pdf)
-  - Bayes-adaptive MDPs
-    - A Bayes-adaptive MDP models the unknown MDP parameters as part of the state space by augmenting the original states with belief over model parameters. This creates a continuous belief state space, where the transition function includes Bayesian belief updating. The optimal value function satisfies a generalized Bellman equation but is difficult to solve directly due to belief space complexity.
-      External resource: [Bayes-Adaptive MDPs](https://papers.nips.cc/paper/2006/file/20a3b60ba9b3a678405e5c4f69975749-Paper.pdf)
-  - Posterior Sampling
-    - Posterior sampling reduces computational complexity by sampling a single MDP model from the current Bayesian posterior and solving it optimally to select actions. This procedure alternates between belief updates via observed transitions and resampling models, avoiding heuristic exploration parameters and approximating the Bayes-adaptive solution.
-      External resource: [A Bayesian Framework for Reinforcement Learning](https://icml.cc/Conferences/2000/proceedings/papers/StrensM.pdf)
+- **16 Model-Based Methods**
+  - **16.1 Maximum Likelihood Models**
+    - Maximum likelihood estimates use observed transition counts and rewards to estimate model parameters.
+    - Transition probabilities are approximated by normalizing state-action-state counts.
+    - Reward functions are estimated as mean rewards from observed samples.
+    - Prior knowledge can initialize count and reward sums non-zero to incorporate domain information.
+    - For additional details, see [Chapter 15.6](#) and [Algorithm 15.9](#).
+  - **16.2 Update Schemes**
+    - Different update schemes balance computational efficiency and update frequency for planning with evolving models.
+    - Exploration strategies such as e-greedy (Algorithm 16.3) are necessary to avoid exploitation pitfalls.
+    - **Full Updates**
+      - Exact solves of the maximum likelihood model after each step can be done using linear programming or value iteration.
+      - This approach is computationally expensive but precise (Algorithm 16.4).
+    - **Randomized Updates**
+      - Updates occur at recently visited and a few random states to reduce computational cost (Algorithm 16.5).
+      - This method relates to the Dyna architecture by Richard Sutton (1991).
+    - **Prioritized Updates**
+      - Uses a priority queue to select states that have the most significant value changes for update.
+      - Prioritization is based on the magnitude of value changes weighted by transition probabilities (Algorithm 16.6).
+      - Refer to Moore and Atkeson (1993) for foundational work on prioritized sweeping.
+  - **16.3 Bayesian Methods**
+    - Bayesian reinforcement learning maintains a posterior over model parameters rather than single point estimates.
+    - The posterior over transition probabilities is represented using Dirichlet distributions parameterized by transition counts.
+    - Beliefs update with experience to refine transition model uncertainty.
+    - The Bayesian approach integrates exploration and exploitation naturally without heuristic parameters.
+    - For an extensive survey, see Ghavamzadeh et al. (2015) on Bayesian reinforcement learning.
+  - **16.4 Bayes-adaptive MDPs**
+    - Bayes-adaptive MDPs augment the state space with belief states over model parameters to represent uncertainty explicitly.
+    - The transition function accounts both for state transitions and belief updates using Bayes’ rule.
+    - The belief space is continuous and often high-dimensional, complicating exact solutions.
+    - Approximations or online solution methods are required; see chapters 8 and 9 for relevant techniques.
+    - Dynamic decision networks (Figure 16.1) illustrate the integration of state and belief evolution.
+  - **16.5 Posterior Sampling**
+    - Posterior sampling draws a model from the current belief distribution and solves the corresponding MDP to select actions.
+    - This approach avoids heuristic exploration and balances exploration-exploitation effectively.
+    - Solving a new MDP for each sample can be expensive but offers statistically principled exploration.
+    - Algorithm 16.8 provides an implementation using samples from Dirichlet posteriors.
+    - Refer to Strens (2000) for foundational introduction of posterior sampling in reinforcement learning.
+  - **16.6 Summary**
+    - Model-based methods estimate transition and reward models through interaction.
+    - Maximum likelihood approaches require explicit exploration strategies.
+    - Prioritized sweeping focuses computational effort on states with the most significant value change.
+    - Bayesian methods maintain distributions over models allowing principled exploration.
+    - Posterior sampling reduces complexity of Bayes-adaptive MDPs by sampling models for planning.
+  - **16.7 Exercises**
+    - Exercise 16.1 applies maximum likelihood estimation to simple tabulated data.
+    - Exercise 16.2 discusses bounds on prioritized sweeping updates.
+    - Exercise 16.3 counts parameters in Bayesian model estimation with Dirichlet priors.
+    - Exercise 16.4 computes a posterior Dirichlet distribution after observing transitions.

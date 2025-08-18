@@ -1,52 +1,86 @@
-- Problem summary and properties
-  - Overview table of decision making problems
-    - Table F.1 summarizes key properties of multiple decision making benchmark problems including state, action, and observation cardinalities, as well as discount factors. The problems vary from discrete to continuous spaces and single to multiagent settings. This overview aids in selecting appropriate benchmarks for evaluating algorithms. Further details can be found in the [Algorithms for Reinforcement Learning Book](https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf).
-- F.1 Hex World
-  - Hex world problem description and dynamics
-    - Hex world is a stochastic MDP defined on a hexagonal tile map with six possible movement directions. Movement attempts succeed with probabilities distributed as 0.7 for intended direction and 0.15 for each neighboring direction. Terminal cells yield fixed rewards and transition to an absorbing terminal state. Blocking boundaries prevent movement with a penalty. The problem tests navigation under probabilistic transitions. See [MDP Basics](https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf) for related theory.
-  - Standard and straight-line hex world policies
-    - Two variants, standard and straight-line hex world, illustrate reward propagation from terminal states. The straight-line version presents a simple chain-like state space to demonstrate how reward signals back up through the transitions. Optimal policies are visually depicted, colored by expected state values. This aids understanding of value iteration and policy optimality. Additional reading: [Baird’s Residual Algorithms](https://proceedings.mlr.press/v95/baird15a.html).
-- F.2 2048
-  - Game mechanics and state transitions
-    - The 2048 problem models a tile sliding puzzle on a 4×4 board with four discrete actions (up, down, left, right). Tiles of equal value merge when shifted, generating rewards equal to the merged tile value. Random tile spawns of value 2 or 4 appear after each move. The state space is infinite due to combinatorial tile arrangements. The problem challenges algorithms with stochasticity and large state-action spaces. For more, see the original game creator’s page: [2048 by G. Cirulli](https://gabrielecirulli.github.io/2048/).
-  - Policies and strategies
-    - A common heuristic is cornering large tiles and alternating movements to keep larger values accumulated. Reward is only obtained from merges, emphasizing long-term strategy. This framework tests planning and value estimation under uncertainty. Further algorithmic approaches are discussed in [Reinforcement Learning and 2048](https://arxiv.org/abs/1710.02939).
-- F.3 Cart-Pole
-  - Problem description and state dynamics
-    - Cart-pole involves balancing a pole on a cart moving laterally. The state includes continuous position, velocity, pole angle, and angular velocity. Actions apply left or right forces. State updates use physical dynamics with Euler integration, accounting for gravity and force limits. Reward is 1 per timestep maintaining balance within constraints; failure triggers termination. This benchmark tests control under continuous, nonlinear dynamics. See [OpenAI Gym CartPole Environment](https://gym.openai.com/envs/CartPole-v1/) for implementation details.
-- F.4 Mountain Car
-  - Problem setup and physics model
-    - Mountain car involves a car in a valley that must gain momentum by first moving away from goal before ascending. The state space is continuous over position and velocity. Actions include left acceleration, right acceleration, or no acceleration. Gravity drives velocity changes, modeled deterministically. Rewards are -1 per timestep, encouraging minimal steps to goal. This problem illustrates challenges with delayed rewards and planning. Relevant reading: [Mountain Car Reinforcement Learning](https://webdocs.cs.ualberta.ca/~sutton/book/ebook/node13.html).
-- F.5 Simple Regulator
-  - Problem formulation and solution properties
-    - The simple regulator is a linear quadratic control problem with a one-dimensional continuous state and action. Transitions have additive Gaussian noise. Rewards penalize squared state deviations quadratically but do not depend on actions. Optimal policy is linear, driving the state to zero. Standard Riccati equation methods do not apply due to zero action reward term. This example is common in policy gradient studies. For further reading, see [Linear Quadratic Regulators](https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf).
-- F.6 Aircraft Collision Avoidance
-  - Problem setup and dynamics
-    - The problem models advising an aircraft to climb, descend, or maintain course to avoid a head-on intruder. The state comprises relative altitude, vertical speed, previous advisory, and time to collision. Dynamics integrate vertical rates with noisy accelerations subject to constraints. Penalties arise from proximity at collision and changes in advisories. The problem can be solved via discretized dynamic programming due to deterministic time reduction. The scenario evaluates decision-making under uncertainty and safety-critical constraints. More details can be found in [Kochenderfer et al., MIT Lincoln Lab report](https://arxiv.org/abs/1109.0529).
-- F.7 Crying Baby
-  - POMDP formulation and dynamics
-    - The crying baby is a two-state POMDP modeling a baby's hunger state (hungry or sated), three caregiver actions (feed, sing, ignore), and noisy observations (crying or quiet). Actions affect the hunger state deterministically or probabilistically and observation likelihoods vary by both state and actions. Feeding always resolves hunger, singing provides information with observation bias, and ignoring risks sustained hunger. Rewards penalize hungry baby states and caregiver effort differently. The problem illustrates partial observability and information-gathering actions in decision making. See [Smallwood and Sondik, 1973](https://pubsonline.informs.org/doi/abs/10.1287/opre.21.5.1071) for foundational POMDP control.
-- F.8 Machine Replacement
-  - Problem states, actions, and reward structure
-    - The machine replacement problem models maintaining a machine with up to two failing components (states 0,1,2). Actions include manufacturing with or without product inspection, interrupting production for inspection and partial repair, or replacing both components fully. Product defects probabilistically depend on broken components. Observations reveal defectiveness or component states based on actions. Rewards reflect product quality, inspection costs, and repair costs. This POMDP captures maintenance scheduling under uncertainty. Policies exhibit disjoint regions where same actions are optimal. For more, see [Machine Maintenance Problems in POMDPs](https://doi.org/10.1287/opre.21.5.1071).
-- F.9 Catch
-  - Problem setup and agent model
-    - The catch problem involves an agent, Johnny, deciding throws at varying distances to maximize expected catch reward. Catch probability follows a logistic function parameterized by proficiency s, unknown to Johnny but fixed during the game. The agent selects throw distances from a discrete set aiming to maximize finite horizon expected cumulative reward. This problem tests decision making under parameter uncertainty and finite resources. Related reading: [Bayesian Reinforcement Learning](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/notes/lecture19.pdf).
-- F.10 Prisoner’s Dilemma
-  - Game rules and payoffs
-    - The prisoner’s dilemma is a two-agent matrix game where each player chooses between cooperating or defecting. Mutual cooperation yields moderate penalties (1 year each), mutual defection yields heavier penalties (3 years each), and unilateral defection yields asymmetric outcomes (0 years for defector, 4 for cooperator). The game demonstrates conflict between individual rationality and collective optimality. Infinite horizon versions use discount factor 0.9 to enable repeated play analysis. Foundational game theory explanations: [Tucker’s Prisoner’s Dilemma History](https://plato.stanford.edu/entries/prisoner-dilemma/).
-- F.11 Rock-Paper-Scissors
-  - Game structure and payoffs
-    - Rock-paper-scissors is a symmetric two-player game with discrete actions rock, paper, and scissors. Outcomes are cyclical: rock beats scissors, scissors beats paper, and paper beats rock, each yielding +1 reward to winner and -1 to loser; ties yield zero reward. The game illustrates non-transitive competition and mixed-strategy equilibria. Infinite horizon versions include discounting. Detailed analysis available in [Rock-Paper-Scissors Game Theory](https://mathworld.wolfram.com/Rock-Paper-Scissors.html).
-- F.12 Traveler’s Dilemma
-  - Problem definition and equilibrium
-    - Two travelers independently claim a value between $2 and $100 for identical lost baggage. If both claim same value, both receive that. If claims differ, lower claim gains plus $2 bonus, and higher claim receives lower claim minus $2 penalty. Despite intuitive high claims, the unique Nash equilibrium is both choosing $2. This paradox illustrates incentive incompatibilities in game theory. For a comprehensive discussion, see [Basu, 1994](https://www.jstor.org/stable/2117927).
-- F.13 Predator-Prey Hex World
-  - Multiagent setup and reward structure
-    - This extension of the hex world involves predator and prey agents moving on a shared hex grid with independent stochastic transitions. Predators seek to capture prey by occupying the same cell, receiving rewards proportional to prey captured divided by predator count. Prey incur heavy penalties if caught and have free movement costs. New prey appear randomly after capture. The problem challenges multiagent coordination and competition with stochasticity. Related research: [Multiagent Reinforcement Learning in Predator-Prey](https://dl.acm.org/doi/10.5555/2011632).
-- F.14 Multi-Caregiver Crying Baby
-  - Extension and interaction dynamics
-    - The multi-caregiver crying baby problem extends the original to two caregivers acting simultaneously. The baby’s state transitions if either caregivers feed. Observations are shared noisy signals about crying state, but actions may differ. Caregivers have asymmetric penalties favoring different caregiving actions. This multiagent POMDP tests coordination, observation sharing, and heterogeneous preferences. See [Multiagent POMDP Models](https://papers.nips.cc/paper/7937-scalable-planning-and-learning-for-collaborative-multiagent-pomdps).
-- F.15 Collaborative Predator-Prey Hex World
-  - Team predator coordination with partial observations
-    - This variant has a team of predators collaborating to catch a single randomly moving prey on a hex grid. Prey moves avoiding predator-occupied cells. Predators have noisy local observations indicating prey presence nearby. Movement is penalized, while capturing the prey yields a positive reward. After capture, prey respawn at a random location. This problem examines cooperative multiagent planning under partial observability and stochastic dynamics. Further reading: [Collaborative Multiagent Systems](https://ieeexplore.ieee.org/document/8892403).
+- **F Problems**
+  - **F.1 Hex World**
+    - The hex world is a simple MDP with probabilistic movement in six directions on a hexagonal tile map.
+    - Moving in the intended direction occurs with probability 0.7; side neighbors with 0.15 each.
+    - Terminal states yield specified rewards and transition to a unique terminal absorbing state.
+    - The straight-line hex world variation illustrates reward propagation from a single reward state.
+    - See L. Baird’s work on residual algorithms in reinforcement learning for related methods.
+  - **F.2 2048**
+    - The 2048 problem is a discrete tile game on a 4x4 board with four possible move directions.
+    - Tiles merge when two equal-valued tiles collide, creating a tile with combined value and yielding reward equal to that value.
+    - New tiles spawn randomly after each move, typically values 2 or 4 in empty spaces.
+    - The game ends when no moves can create space; scoring strategies involve stacking larger tiles in a corner.
+    - Refer to G. Cirulli’s 2014 development of the 2048 game.
+  - **F.3 Cart-Pole**
+    - The cart-pole problem involves balancing a pole attached to a cart moving laterally by applying left or right forces.
+    - The state is continuous, comprising cart position and velocity, pole angle, and angular velocity.
+    - State updates use nonlinear dynamics incorporating gravity, force, pole length, mass, and friction.
+    - Reward of 1 is given each timestep the pole remains balanced within constraints; otherwise transition to a terminal state occurs.
+    - See Barto, Sutton, and Anderson (1983) and OpenAI Gym implementations for details.
+  - **F.4 Mountain Car**
+    - Mountain car is a continuous-state control problem where a vehicle must gain momentum by moving left first to ascend a hill.
+    - Actions are discrete: accelerate left, right, or coast.
+    - State variables include position and velocity with deterministic transitions influenced by gravity.
+    - Reward is −1 each step until reaching the goal at the hill top.
+    - The problem demonstrates delayed reward knowledge propagation; see Moore (1990) and Singh & Sutton (1996).
+  - **F.5 Simple Regulator**
+    - The simple regulator is a linear quadratic regulator with single real-valued state and action.
+    - Successor states follow a linear-Gaussian distribution; rewards depend quadratically on the state.
+    - Optimal policy is to negate the state (π(s) = −s), centering states around zero.
+    - Optimal value function is negative quadratic in state with an additive constant based on discount factor.
+    - Classical Riccati equation methods do not apply directly due to zero action reward term.
+  - **F.6 Aircraft Collision Avoidance**
+    - The problem involves deciding climb, descend, or no advisory actions to avoid a head-on intruder aircraft.
+    - State variables are relative altitude, vertical rate, previous action, and time to collision.
+    - Dynamics include stochastic acceleration noise and action-dependent vertical acceleration with saturation limits.
+    - Penalties are imposed for proximity less than 50 m at collision and for advising changes.
+    - Efficient solution by discretization and backward induction; see Kochenderfer & Chryssanthacopoulos (2011).
+  - **F.7 Crying Baby**
+    - This POMDP models caring for a baby with two states (hungry, sated), three actions (feed, sing, ignore), and two noisy observations (crying, quiet).
+    - Feeding always sates the baby; singing is an information-gathering action without cry potential when sated.
+    - Transition probabilities specify baby hunger dynamics; observations depend on baby state and action.
+    - Rewards penalize hunger heavily; feeding and singing incur smaller effort penalties.
+    - The optimal infinite horizon policy with discount factor 0.9 balances feeding, singing, and ignoring; see Smallwood & Sondik (1973).
+  - **F.8 Machine Replacement**
+    - This discrete POMDP aims to maintain a machine with two components that may fail independently.
+    - States represent 0 to 2 faulty components; four actions include manufacturing, examining, interrupting, and replacing.
+    - Observations include defective/non-defective product detection depending on action.
+    - Rewards incorporate product quality, inspection costs, interruption costs, and replacement costs.
+    - Optimal policies display complex shapes with disjoint regions; see Kochenderfer (2015) for adaptations.
+  - **F.9 Catch**
+    - Johnny attempts to catch throws over a finite number of attempts, choosing throw distances from a discrete set.
+    - Successful catch probability depends on throw distance and an unknown proficiency parameter s.
+    - The proficiency s is assumed discrete and static; rewards equal throw distance if caught, zero otherwise.
+    - Johnny updates beliefs over proficiencies and optimizes catch attempts accordingly.
+  - **F.10 Prisoner’s Dilemma**
+    - A classic two-agent game where each prisoner chooses to cooperate or defect.
+    - Payoffs depend on joint actions: both cooperate incur 1 year; unilateral defection yields 0 for defector and 4 years for cooperator; both defect get 3 years.
+    - Agents have discrete action sets; rewards can be structured in a standard payoff matrix.
+    - Can be played once or infinitely with discount factor 0.9.
+    - Tucker (1950) formalized the dilemma; see [Prisoner’s Dilemma](https://en.wikipedia.org/wiki/Prisoner%27s_dilemma) for history.
+  - **F.11 Rock-Paper-Scissors**
+    - Two agents simultaneously choose rock, paper, or scissors; outcomes produce unit rewards/penalties based on rock-paper-scissors rules.
+    - Payoff matrix shows win/loss/zero outcome symmetry.
+    - The game can be played once or repeated infinitely with discount factor 0.9.
+    - The game exemplifies mixed strategy equilibria; see [Rock-Paper-Scissors](https://en.wikipedia.org/wiki/Rock_paper_scissors) for mathematical analysis.
+  - **F.12 Traveler’s Dilemma**
+    - Two travelers select suitcase values between $2 and $100; rewards depend on both declarations.
+    - If values equal, both get that value; otherwise lower value plus $2 to lower, higher value minus $2 to higher.
+    - The unique Nash equilibrium is both declaring $2, despite typical human choices clustering near $97–$100.
+    - See K. Basu’s paper on paradoxes of rationality in game theory for this problem.
+  - **F.13 Predator-Prey Hex World**
+    - Multiagent extension of hex world with sets of predators and prey on a hex grid.
+    - Predators receive rewards based on number of prey captured proportionally to number of predators; prey receive heavy penalty if captured.
+    - Prey respawn at random cells after being devoured; predators pay small penalty for movement.
+    - No terminal states exist; the environment is ongoing.
+  - **F.14 Multi-Caregiver Crying Baby**
+    - Multiagent version of the crying baby problem with two caregivers.
+    - Baby state and observations are shared; actions can be individual feed, sing, or ignore.
+    - Either caregiver feeding transitions baby to sated state.
+    - Observation dynamics enforce caregivers perceive the same baby state observations but not necessarily each other’s actions.
+    - Caregivers incur penalties for hunger and different effort costs based on action preference.
+  - **F.15 Collaborative Predator-Prey Hex World**
+    - Predators collaborate to capture one moving prey on a hex grid with partial-observation.
+    - Each predator senses local cells, receiving noisy observations of prey presence.
+    - Predators receive a large reward if any captures occur, penalized by movement cost.
+    - Prey moves randomly to unoccupied neighboring cells after capture.

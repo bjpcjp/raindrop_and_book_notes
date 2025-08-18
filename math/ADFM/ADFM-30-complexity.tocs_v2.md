@@ -1,13 +1,26 @@
-- C Computational Complexity  
-  - C.1 Asymptotic Notation  
-    - Explanation and illustration of asymptotic notation (big-Oh) and its use in characterizing function growth and algorithm complexity.  
-      Big-Oh notation provides an upper bound on the growth of functions as their input approaches a limit, commonly used to describe time or space complexity. The text details how constants and combinations of terms influence the order, emphasizing the fastest growing term as dominant. Examples show how to apply and interpret this notation. Further reading: [Introduction to Asymptotic Notation](https://en.wikipedia.org/wiki/Big_O_notation).  
-  - C.2 Time Complexity Classes  
-    - Overview of key time complexity classes: P, NP, NP-hard, and NP-complete, including their relationships and importance in computational theory.  
-      P contains problems solvable in polynomial time; NP includes problems verifiable in polynomial time; NP-hard problems are at least as difficult as the hardest NP problems; NP-complete are both NP and NP-hard. The assumed inequality P ≠ NP underpins many cryptographic systems. The section introduces polynomial transformations and the foundational 3SAT problem. Further reading: [Complexity classes P and NP](https://en.wikipedia.org/wiki/P_complexity_class).  
-  - C.3 Space Complexity Classes  
-    - Description of space complexity classes, focusing on PSPACE, and its relation to time complexity classes.  
-      PSPACE denotes problems solvable using polynomial memory without time constraints, distinguishing memory reuse from time's one-way progression. P and NP are subsets of PSPACE, but it is unknown if PSPACE contains problems outside NP. Polynomial-time reductions define PSPACE-hard and PSPACE-complete problems analogous to NP. Further reading: [PSPACE Complexity Class](https://en.wikipedia.org/wiki/PSPACE).  
-  - C.4 Decideability  
-    - Discussion of undecidable problems, highlighting the halting problem as a canonical example.  
-      Undecidable problems lack guaranteed finite-time algorithms for general resolution. The halting problem demonstrates this for arbitrary programs in Turing complete languages, with no universal method able to decide termination. Some specific cases can be decided, but no algorithm exists for the general case. Further reading: [Halting Problem](https://en.wikipedia.org/wiki/Halting_problem).
+- **C Computational Complexity**
+  - **C.1 Asymptotic Notation**
+    - Asymptotic notation characterizes the growth rates of functions and provides upper bounds as the argument approaches a value.
+    - The letter O in big-Oh notation stands for the "order" of growth of a function.
+    - Constants in functions can be absorbed into the bounding constant in O notation.
+    - The order corresponds to the fastest growing term in a linear combination of terms.
+    - Further reading: [Computational Complexity: A Conceptual Perspective](https://doi.org/10.1017/CBO9780511819455) by O. Goldreich.
+  - **C.2 Time Complexity Classes**
+    - The class P consists of problems solvable in polynomial time.
+    - NP contains problems whose solutions can be verified in polynomial time.
+    - NP-hard problems are at least as difficult as the hardest NP problems.
+    - NP-complete problems are both NP-hard and belong to NP.
+    - The P vs NP problem remains unsolved and is fundamental to cryptography.
+    - Further reading: [Reducibility Among Combinatorial Problems](https://doi.org/10.1145/800076.802987) by R. M. Karp.
+  - **C.3 Space Complexity Classes**
+    - PSPACE includes problems solvable with polynomial space without time constraints.
+    - Time complexity classes P and NP are subsets of PSPACE.
+    - Space can be reused during computation, unlike time.
+    - PSPACE-hard and PSPACE-complete classes are defined via polynomial time transformations.
+    - Further reading: [PSPACE Complexity](https://en.wikipedia.org/wiki/PSPACE).
+  - **C.4 Decideability**
+    - Undecidable problems cannot be solved in finite time for all inputs.
+    - The halting problem is a canonical example of an undecidable problem.
+    - There is no algorithm that can universally determine if arbitrary programs halt.
+    - The halting problem applies to languages that are Turing-complete or computationally universal.
+    - Further reading: [The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem).

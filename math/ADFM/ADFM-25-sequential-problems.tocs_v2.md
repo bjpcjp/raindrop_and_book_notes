@@ -1,15 +1,43 @@
-- 25 Sequential Problems
-  - 25.1 Markov Games
-    - Markov games generalize simple games by including a shared state space where transitions depend on joint actions of multiple agents. Each agent receives individualized rewards based on the current state and joint actions. This framework extends multi-agent reinforcement learning by accounting for stochastic state transitions, as initially studied by Shapley in 1953. Further reading: [Shapley, “Stochastic Games,” PNAS, 1953](https://www.pnas.org/content/39/10/1095).
-  - 25.2 Response Models
-    - This section generalizes response models such as best response and softmax response to Markov games, where agent policies depend on the current state and fixed policies of other agents. Best response policies reformulate the multi-agent interaction as an MDP by fixing other agents’ strategies, whereas softmax responses introduce stochasticity controlled by a precision parameter λ. Both require solving an MDP with modified reward and transition functions. Further reading: [Littman, "Markov Games," ICML 1994](http://www.cs.brown.edu/~mlittman/pubs/mg-icml94.pdf).
-  - 25.3 Nash Equilibrium
-    - The Nash equilibrium concept extends to Markov games as stationary Markov perfect equilibria, where no agent gains by unilateral deviation given others’ stationary policies. The equilibrium can be found by solving a nonlinear optimization minimizing sum of utility deviations constrained by valid policy distributions over all states and joint actions. Existence is guaranteed for finite discounted Markov games. Further reading: [Fink, "Equilibrium in a Stochastic n-Person Game," Hiroshima University, 1964](https://doi.org/10.3792/pieees1963.28.1_89).
-  - 25.4 Opponent Modeling
-    - Opponent modeling adapts fictitious play to Markov games by maintaining maximum likelihood estimates of other agents’ state-dependent policies using counts of observed actions per state. Knowing the transition function enables model updates via asynchronous value iteration. This method iteratively updates policies and utilities based on joint interactions and state transitions, providing a practical learning approach for multi-agent sequential domains. Further reading: [Uther & Veloso, “Adversarial Reinforcement Learning,” CMU Tech Report, 1997](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume2/uther98a.pdf).
-  - 25.5 Nash Q-Learning
-    - Nash Q-learning extends Q-learning to multi-agent Markov games by maintaining joint state-action value estimates and updating them based on observed transitions and Nash equilibria computed over next states’ Q-values. It employs e-greedy exploration with learning rates inversely proportional to visitation counts, dynamically adapting to others’ changing policies. This algorithm leverages equilibrium computation to handle general-sum stochastic games. Further reading: [Hu & Wellman, “Nash Q-Learning,” JMLR, 2003](https://jmlr.org/papers/volume4/hu03a/hu03a.pdf).
-  - 25.6 Summary
-    - Markov games extend MDPs and simple games to multi-agent sequential decision making, involving individualized rewards and complex joint policies. Nash equilibria generalize to these settings but require solving nonlinear optimization over joint state-action policies. Learning-based approaches include opponent modeling and Nash Q-learning that incorporate known transition functions or joint value function updates respectively. These frameworks enable multi-agent reinforcement learning under uncertainty and strategic interaction. Further reading: [Busoniu et al., “Multi-agent Reinforcement Learning,” IEEE Trans. Systems, 2008](https://ieeexplore.ieee.org/document/4576109).
-  - 25.7 Exercises
-    - Exercises reinforce understanding of Markov games’ generalization of MDPs and simple games, existence and characterization of best and stochastic responses, policy classifications including behavioral and non-stationary policies, and methods for computing utilities in opponent modeling. They consolidate theoretical concepts and practical implications concerning policy forms and computational trade-offs. Further reading: [Shoham & Leyton-Brown, "Multiagent Systems," 2009](https://mitpress.mit.edu/books/multiagent-systems).
+- **25 Sequential Problems**
+  - **25.1 Markov Games**
+    - Markov games extend simple games by including a shared state and state transitions.
+    - Transitions depend on joint actions, and each agent receives individual rewards based on state and actions.
+    - The joint policy defines probability distributions over joint actions given current states.
+    - Markov games generalize multi-agent decision processes and can represent problems like traffic routing.
+    - Refer to L. S. Shapley’s seminal paper [“Stochastic Games” (1953)](https://www.pnas.org/doi/10.1073/pnas.39.10.1095) for foundational theory.
+  - **25.2 Response Models**
+    - Response policies maximize expected utility given fixed policies of other agents.
+    - Best response reduces to solving an MDP conditioned on other agents’ policies.
+    - Softmax response introduces stochasticity weighted by a precision parameter λ.
+    - Algorithms provide methods for computing best and softmax responses in Markov games.
+    - For hierarchical softmax, see section 24.6 and algorithm 24.9 for algorithmic details.
+  - **25.3 Nash Equilibrium**
+    - Nash equilibrium extends to Markov games where all agents best-respond to one another.
+    - Every finite Markov game with discounted infinite horizon has at least one Nash equilibrium.
+    - Finding equilibrium involves solving a nonlinear optimization problem with utility and policy constraints.
+    - The equilibrium requires policies to be valid probability distributions over actions in every state.
+    - The work by A. M. Fink [“Equilibrium in a Stochastic n-Person Game” (1964)](https://pubmed.ncbi.nlm.nih.gov/17757698/) provides proof of equilibrium existence.
+  - **25.4 Opponent Modeling**
+    - Opponent modeling maintains maximum-likelihood counts of other agents’ state-action frequencies.
+    - Tracking counts over states and actions allows estimation of opponent policies given known transition functions.
+    - Utilities require computation of best responses to dynamically updated opponent models, generally via induced MDPs.
+    - Frequent value iteration updates reduce utility estimation error but increase computational cost.
+    - The approach generalizes fictitious play and is detailed in works by Uther and Veloso [“Adversarial Reinforcement Learning” (1997)](https://www.cs.cmu.edu/~mmv/papers/CMU-CS-03-107.pdf).
+  - **25.5 Nash Q-Learning**
+    - Nash Q-learning generalizes Q-learning to multiagent settings by maintaining joint action value functions.
+    - Updates are performed using Nash equilibria computed from simple games constructed at successor states.
+    - The update uses a learning rate inversely proportional to visit counts and employs e-greedy exploration.
+    - This method models reactions of other agents through equilibrium computations.
+    - Foundational reading: J. Hu and M. P. Wellman’s [“Nash Q-Learning for General-Sum Stochastic Games” (2003)](http://jmlr.org/papers/volume4/hu03a/hu03a.pdf).
+  - **25.6 Summary**
+    - Markov games combine sequential decision processes with multiple agents having individual rewards.
+    - Nash equilibria extend to Markov games but require joint policies over all states and agents.
+    - Opponent modeling leverages knowledge of transition functions to estimate opponents’ policies.
+    - Nash Q-learning incorporates equilibrium computations into Q-learning for multiagent learning.
+    - These methods provide foundational frameworks for multiagent reinforcement learning and strategic interaction.
+  - **25.7 Exercises**
+    - Exercises cover formalizing Markov games as generalizations of MDPs and simple games.
+    - Investigations include the necessity of stochastic policies in equilibria and alternative policy types.
+    - Discussions address computation methods for utilities in opponent modeling with respective pros and cons.
+    - Solutions provide rigorous explanations of best-response determinism and policy categories.
+    - The exercise section supplements learning with theoretical and practical problem formulations.

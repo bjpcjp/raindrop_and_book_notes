@@ -1,13 +1,35 @@
-- Structure Learning
-  - Bayesian Network Scoring  
-    The section explains scoring a network structure G based on how well it models data by maximizing P(G|D) using Bayes’ rule and integrating out parameters θ. The Bayesian score balances model complexity and data fit, promoting simpler models for smaller datasets. Factors include priors and data quantity, with a uniform prior often used. For more on Bayesian network scoring, see [Probabilistic Graphical Models by Koller and Friedman](https://mitpress.mit.edu/books/probabilistic-graphical-models).
-  - Directed Graph Search  
-    This section discusses searching the vast and superexponential space of directed acyclic graphs to maximize the Bayesian score. Algorithms like K2 and local search (hill climbing) offer polynomial-time but non-optimal solutions. Search challenges include NP-hardness and local optima, with solutions such as simulated annealing and genetic algorithms. For algorithmic approaches, refer to [Learning Bayesian Networks is NP-Complete by Chickering](https://people.cs.ubc.ca/~russell/papers/k2-learning.pdf).
-  - Markov Equivalence Classes  
-    Markov equivalence occurs when different graph structures encode identical conditional independence assumptions. Equivalence requires same undirected edges and identical immoral v-structures. Bayesian scores with BDe priors remain score equivalent across Markov equivalent structures. Factoring Markov equivalence avoids ambiguity in edge directions. See [Learning Bayesian Networks: The Combination of Knowledge and Statistical Data](https://link.springer.com/article/10.1007/BF00994199) for detailed theory.
-  - Partially Directed Graph Search  
-    Searching over Markov equivalence classes represented by partially directed graphs (containing directed and undirected edges) can be more efficient than direct DAG search. Local operations include edge addition, removal, reversal, and creating immoral v-structures without producing cycles. Scoring involves selecting members of the equivalence class and computing Bayesian scores. For methods on this approach, consult [Learning Equivalence Classes of Bayesian-Network Structures by Chickering](http://www.jmlr.org/papers/volume2/chickering02a/chickering02a.pdf).
-  - Summary  
-    This section synthesizes key points: structure learning maximizes the Bayesian score, balancing complexity and data fit; the search space is superexponential and NP-hard to explore globally; heuristic search methods provide efficient, albeit suboptimal, solutions; and Markov equivalence classes allow more compact and unambiguous model representations.
-  - Exercises  
-    The exercises reinforce concepts of graph neighborhoods, local search iteration counts, Markov equivalence classes, and partially directed acyclic graphs with examples and solutions. They consolidate understanding of network structure complexity, search operations, and equivalence class properties. For further practice, see [Bayesian Network Structure Learning Exercises](https://www.cs.ubc.ca/~murphyk/Teaching/CS340-Fall07/bn-exercise.html).
+- **5 Structure Learning**
+  - **5.1 Bayesian Network Scoring**
+    - Computes the probability of a network structure given data using Bayes' rule and marginalization over parameters.
+    - The Bayesian score balances model complexity against available data, favoring simpler models with less data and more complex models with more data.
+    - The Bayesian score is computed efficiently using the log of gamma functions and often assumes a uniform prior.
+    - Learning the network structure is NP-hard due to the exponential size of the search space.
+    - Further reading: [Probabilistic Graphical Models: Principles and Techniques](https://mitpress.mit.edu/books/probabilistic-graphical-models)
+  - **5.2 Directed Graph Search**
+    - The search space of directed acyclic graphs (DAGs) grows superexponentially with the number of nodes.
+    - Common search strategies include K2, local search (hill climbing), simulated annealing, genetic algorithms, memetic algorithms, and tabu search.
+    - K2 runs in polynomial time but does not guarantee a global optimum; local search moves greedily to neighbors with better scores.
+    - Advanced search methods mitigate local optima through random restarts, probabilistic acceptance, and genetic operations.
+    - Further reading: [Algorithms for Optimization](https://mitpress.mit.edu/books/algorithms-optimization)
+  - **5.3 Markov Equivalence Classes**
+    - Different DAGs can encode identical conditional independence assumptions and are said to be Markov equivalent.
+    - Two graphs are Markov equivalent if they have the same skeleton (edges ignoring direction) and the same immoral v-structures.
+    - Bayesian scores with BDe or BDeu priors assign equal scores to equivalent structures; uniform priors do not guarantee this.
+    - Checking Markov equivalence involves verifying edge presence and v-structures.
+    - Further reading: [Learning Bayesian Networks: The Combination of Knowledge and Statistical Data](https://www.jmlr.org/papers/volume2/heckerman02a/heckerman02a.pdf)
+  - **5.4 Partially Directed Graph Search**
+    - Markov equivalence classes can be represented by partially directed acyclic graphs containing both directed and undirected edges.
+    - Searching the space of equivalence classes reduces redundancy compared to searching all DAGs but remains complex.
+    - Local graph operations for search include adding, removing, or reversing edges, and creating immoral v-structures.
+    - Scoring a partially directed graph involves generating a member DAG and computing its score.
+    - Further reading: [Learning Equivalence Classes of Bayesian-Network Structures](http://people.csail.mit.edu/dchick/publications/jmlr02.pdf)
+  - **5.5 Summary**
+    - Bayesian network structure learning involves maximizing the Bayesian score conditioned on data.
+    - The Bayesian score incorporates model complexity and data quantity to avoid over- or underfitting.
+    - The structure search space grows superexponentially, making optimal structure learning NP-hard.
+    - Practical algorithms like K2 and local search provide efficient but approximate solutions.
+    - Searching Markov equivalence classes can improve efficiency by avoiding redundant searches.
+  - **5.6 Exercises**
+    - Exercises cover counting neighbors of DAGs, neighborhood size of given Bayesian networks, minimal local search iterations, Markov equivalence class representations, and examples of non-Markov equivalence classes.
+    - Solutions involve enumerating possible edge operations and understanding graph transformations impacting equivalence.
+    - Exercises reinforce concepts of graph neighborhoods, equivalence classes, and search iteration counts.

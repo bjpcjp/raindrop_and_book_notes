@@ -1,13 +1,38 @@
-- Policy Validation
-  - Performance Metric Evaluation
-    The section explains evaluating policies using different performance metrics expressed as expectations over trajectory distributions in Markov decision processes (MDPs). It describes how policy evaluation outputs a state-dependent value function representing expected metric values and how large or continuous state spaces often require sampling for estimation. Key influencing factors include metric definitions, initial state distributions, and computational challenges in estimating rare-event metrics. For additional techniques on risk measures in MDPs, see [Risk-Averse Dynamic Programming for Markov Decision Processes](https://doi.org/10.1007/s10107-009-0307-3).
-  - Rare Event Simulation
-    This part discusses challenges in estimating metrics influenced by rare events, like collision probabilities, using direct sampling. It introduces importance sampling as an efficient alternative that samples from an alternative proposal distribution and reweights outcomes to provide unbiased estimates. The choice of proposal distribution influences estimator efficiency, and domain expertise guides its design. An extended introduction to rare event simulation is available in [Introduction to Rare Event Simulation](https://www.springer.com/gp/book/9780387009379) by Bucklew.
-  - Robustness Analysis
-    The section highlights the need to evaluate policy performance under model deviations due to differences between the planning and real-world environments. It recommends stress testing policies in diverse scenarios to assess sensitivity and suggests robust dynamic programming to optimize policies over sets of varying transition and reward models. Factors influencing robustness include model simplicity, fidelity, and computational considerations. Details on robust dynamic programming appear in [Robust Dynamic Programming](https://doi.org/10.1287/moor.1040.0115) by Iyengar.
-  - Trade Analysis
-    This section covers studying tradeoffs between multiple competing performance metrics, such as safety versus operational efficiency in collision avoidance. It introduces the concept of Pareto optimality, defining policies not dominated by others across all metrics, and the Pareto frontier representing efficient tradeoffs. Varying policy parameters can map the space of achievable tradeoffs, aiding system design choices. Foundational insights on Pareto efficiency are discussed in [Vilfredo Pareto’s Economic Writings](https://www.econlib.org/library/Enc/bios/Pareto.html).
-  - Adversarial Analysis
-    The section presents adversarial analysis that models an adversary selecting transitions to minimize policy performance while maximizing trajectory likelihood, transforming policy validation into a deterministic search problem. It defines an adversarial reward combining negative original reward with a log-likelihood term weighted by a parameter controlling focus on likely trajectories. The approach helps identify most likely failure trajectories for deeper safety insights. Adaptive stress testing techniques are detailed in [Adaptive Stress Testing of Airborne Collision Avoidance Systems](https://doi.org/10.1109/DASC.2015.7311370).
-  - Summary
-    The summary recaps key methods for validating policies: performance evaluation via dynamic programming or simulation, confidence assessment using statistical or Bayesian methods, improved rare event estimation through importance sampling, robustness analysis against model uncertainties, tradeoff analysis for multi-objective optimization, and adversarial analysis for safety assessment. It synthesizes the chapter’s analytical tools for real-world deployment readiness. For further comprehensive survey on policy validation, see [A Survey of Algorithms for Black-Box Safety Validation](https://arxiv.org/abs/2005.02979).
+- **Policy Validation**
+  - **Performance Metric Evaluation**
+    - Performance metrics for policies are expectations of trajectory metrics over state-action trajectories.
+    - Collision avoidance and portfolio investment examples illustrate evaluation of safety and return probabilities.
+    - Policy evaluation algorithms can compute value functions for any additive step-wise performance metric.
+    - Sampling methods estimate overall performance when state spaces are large or continuous.
+    - Accurate estimates and confidence intervals depend on sufficient sample size and high variance can occur with rare events.
+    - Relevant further reading: A. Ruszczyński, “Risk-Averse Dynamic Programming for Markov Decision Processes.”
+  - **Rare Event Simulation**
+    - Direct sampling can be inefficient when estimating rare event probabilities such as collisions.
+    - Importance sampling uses an alternative proposal distribution to generate informative samples and weight them for unbiased estimates.
+    - The optimal proposal distribution scales with the absolute value of the trajectory metric times the trajectory probability.
+    - Importance sampling can substantially reduce sample requirements by focusing on critical initial states or transitions.
+    - For introduction to importance sampling, see J. A. Bucklew, *Introduction to Rare Event Simulation*.
+  - **Robustness Analysis**
+    - Policies can be evaluated on environments that deviate from the assumed optimization model to assess robustness.
+    - Stress testing includes evaluating policies under extreme but plausible scenarios to identify potential failure modes.
+    - Using simpler planning models can prevent overfitting but necessitates robust evaluation models for accurate assessment.
+    - Robust dynamic programming optimizes policies against a set of transition and reward models rather than a single model.
+    - Foundational paper: G. N. Iyengar, “Robust Dynamic Programming,” Mathematics of Operations Research, 2005.
+  - **Trade Analysis**
+    - Trade analysis studies how varying design parameters affect multiple competing objectives, e.g., safety vs. efficiency.
+    - Pareto optimal policies are those not dominated by any others across multiple performance metrics.
+    - Visualization of tradeoff curves enables informed selection of design points balancing safety and advisory frequency.
+    - Pareto frontiers assist in eliminating suboptimal policies and comparing policy generation methodologies.
+    - Classical concept: Vilfredo Pareto, Italian economist.
+  - **Adversarial Analysis**
+    - Adversarial analysis models an adversary selecting transitions to minimize policy returns while maximizing trajectory likelihood.
+    - Transforming to adversarial MDPs allows use of dynamic programming or approximate solvers to find worst-case scenarios.
+    - Defining failure states can enable identification of most likely failure trajectories to evaluate system risk.
+    - Actions to mitigate failures include changing action/reward models, improving solvers, or not deploying unsafe policies.
+    - Methodologies exemplified by R. Lee et al., “Adaptive Stress Testing of Airborne Collision Avoidance Systems,” DASC 2015.
+  - **Summary**
+    - The chapter outlines methods for policy evaluation, sampling rare events, and assessing robustness to model errors.
+    - Standard error and Bayesian approaches quantify confidence in performance estimates.
+    - Importance sampling improves estimation efficiency for rare failure probabilities.
+    - Robust and adversarial analyses provide frameworks for stress testing and identifying failure modes.
+    - Trade analysis clarifies compromises among multiple objectives in system design.

@@ -1,19 +1,77 @@
-- Inference
-  - Inference in Bayesian Networks
-    - The section defines inference as determining the distribution over query variables given observed evidence, using the posterior distribution terminology. It illustrates exact inference computations via conditional probability, marginalization, and the chain rule on a Bayesian network example. Factors and their operations—product, marginalization, and conditioning—are introduced as tools to implement exact inference. Computation complexity given factor products is a practical consideration. For further reading, see [Koller & Friedman, Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models).
-  - Inference in Naive Bayes Models
-    - This section focuses on naive Bayes networks where features conditionally independent given a class variable simplify inference. It specifies the joint distribution as prior times the product of class-conditional feature likelihoods and defines classification as posterior probability over classes given observed features. The section notes the proportionality used to avoid computing normalization constants explicitly and mentions decision-making considerations beyond max posterior class selection. Relevant resource: [Murphy, Machine Learning: A Probabilistic Perspective](https://mitpress.mit.edu/books/machine-learning-0).
-  - Sum-Product Variable Elimination
-    - Sum-product variable elimination improves inference efficiency by sequentially marginalizing hidden variables and interleaving factor products per an elimination ordering. The method reduces intermediate factor sizes compared to naive computation by early marginalization and reusing intermediate results, achieving linear scaling with network size in favorable cases. The section highlights the NP-hardness of choosing optimal variable order and references heuristics to minimize intermediate factors. More details can be found at [Darwiche, Modeling and Reasoning with Bayesian Networks](https://www.cambridge.org/core/books/modeling-and-reasoning-with-bayesian-networks/).
-  - Belief Propagation
-    - Belief propagation exploits message passing via the sum-product algorithm to compute marginal distributions efficiently on tree-structured Bayesian networks. For networks with cycles, junction tree transformations or loopy belief propagation enable exact or approximate inference respectively, albeit without guarantees of convergence. The method operates linearly on trees and generalizes to factor graphs. See [Kschischang et al., Factor Graphs and the Sum-Product Algorithm](https://ieeexplore.ieee.org/document/910572) for a tutorial.
-  - Computational Complexity
-    - Inference in Bayesian networks is NP-hard, demonstrated by reduction from 3SAT. A corresponding network structure encodes clause satisfaction via conditional probability distributions. This establishes the impracticality of general-purpose exact inference algorithms, motivating research into approximate inference methods. An in-depth complexity analysis is provided by [Cooper, The Computational Complexity of Probabilistic Inference using Bayesian Belief Networks](https://www.sciencedirect.com/science/article/abs/pii/000437029090022K).
-  - Direct Sampling
-    - Direct sampling draws independent samples from the joint distribution of a Bayesian network using its topological ordering. These samples estimate query probabilities by counting consistency with evidence but can be very inefficient if evidence is rare due to discarded inconsistent samples. Sampling relies on conditional probabilities and topological sorting to ensure parents are sampled first. For additional context, consult [Motwani & Raghavan, Randomized Algorithms](https://www.cambridge.org/core/books/randomized-algorithms/).
-  - Likelihood Weighted Sampling
-    - Likelihood weighted sampling improves efficiency by generating samples consistent with observed evidence, assigning weights according to the likelihood of evidence variables under the sampled parents. This approach reduces wasted computation compared to direct sampling but can still suffer inefficiency in cases of rare events, such as the chemical detection example. The method combines sampling with weighted importance to approximate posterior distributions effectively. See [Fung & Chang, Weighing and integrating evidence for stochastic simulation in Bayesian networks](https://www.sciencedirect.com/science/article/abs/pii/S0004370299000444) for further reading.
-  - Gibbs Sampling
-    - Gibbs sampling is a Markov chain Monte Carlo method generating correlated samples consistent with evidence by sequentially sampling each unobserved variable conditioned on the current values of all other variables in the network’s Markov blanket. This method converges to the true posterior distribution asymptotically and can be more efficient than direct or likelihood weighted sampling, especially for complex distributions. Burn-in and thinning techniques address sample correlation and convergence issues. For comprehensive coverage, see [Barber, Bayesian Reasoning and Machine Learning](http://www.cs.ucl.ac.uk/staff/D.Barber/textbook/).
-  - Inference in Gaussian Models
-    - Exact inference in multivariate Gaussian models leverages closed-form expressions for marginal and conditional distributions. Given joint mean and covariance matrices partitioned into query and evidence variables, the conditional distribution’s mean and covariance are computed via matrix operations involving inverses and products. This allows analytic solutions for Bayesian inference when the joint is Gaussian. The Distributions.jl package supports this in practice. For more, consult [Bishop, Pattern Recognition and Machine Learning](https://www.springer.com/gp/book/9780387310732).
+- **3 Inference**
+  - Inference computes distributions over unobserved variables given observed evidence.
+  - It distinguishes query variables, evidence variables, and hidden variables within Bayesian networks.
+  - Exact inference methods can be computationally intractable for large or complex networks.
+  - Approximate inference algorithms address computational challenges of exact methods.
+
+- **3.1 Inference in Bayesian Networks**
+  - Exact inference uses the chain rule, marginalization, and conditioning on evidence to compute posteriors.
+  - Factors represent discrete multivariate distributions and are manipulated via factor product, marginalization, and conditioning.
+  - Algorithm 3.4 performs exact inference by factor product, evidence conditioning, marginalizing hidden variables, and normalization.
+  - Factor product size can grow exponentially with variable domain sizes, limiting practicality.
+
+- **3.2 Inference in Naive Bayes Models**
+  - Naive Bayes models assume conditional independence of features given the class.
+  - Joint distribution decomposes as the prior over the class times product of class-conditional likelihoods.
+  - Posterior inference involves normalizing joint class-feature probabilities.
+  - Classification often selects the class with maximum posterior probability but decision theory may adjust based on misclassification costs.
+
+- **3.3 Sum-Product Variable Elimination**
+  - Variable elimination interleaves summations and factor products to eliminate hidden variables efficiently.
+  - The ordering of variable elimination affects computational complexity.
+  - Algorithm 3.5 implements sum-product variable elimination, updating factors as variables are marginalized.
+  - Finding an optimal elimination order is NP-hard, making heuristics necessary for large networks.
+
+- **3.4 Belief Propagation**
+  - Belief propagation performs inference by passing messages between nodes in networks without undirected cycles.
+  - It yields exact solutions on tree-structured networks and approximate solutions otherwise.
+  - Junction tree algorithms convert networks with loops into tree structures at the cost of increased variable combinations.
+  - Loopy belief propagation provides approximate inference without guarantees but often works well in practice.
+  - For further reading, see [Factor Graphs and the Sum-Product Algorithm](https://ieeexplore.ieee.org/document/910572).
+
+- **3.5 Computational Complexity**
+  - Inference in Bayesian networks is NP-hard via reduction from the 3SAT problem.
+  - The constructed Bayesian network models 3SAT variables and clauses, encoding satisfiability in probabilities.
+  - This complexity result motivates the study of approximate inference methods.
+  - For complexity background, see [The Computational Complexity of Probabilistic Inference Using Bayesian Belief Networks](https://www.aaai.org/Papers/AI/1990/AI90-035.pdf).
+
+- **3.6 Direct Sampling**
+  - Direct sampling draws independent samples from the joint distribution to estimate posterior probabilities.
+  - Samples inconsistent with evidence are discarded, reducing efficiency when evidence is rare.
+  - Topological sorting ensures sampling parents before children.
+  - Algorithm 3.7 implements direct sampling by filtering samples consistent with evidence.
+  - For foundational concepts, see [Randomized Algorithms](https://doi.org/10.1017/CBO9780511809071).
+
+- **3.7 Likelihood Weighted Sampling**
+  - Likelihood weighting generates samples consistent with evidence and assigns weights reflecting observation likelihoods.
+  - It assigns observed variables their evidence values and multiplies the sample weight by the likelihood from conditional distributions.
+  - Algorithm 3.8 implements likelihood weighted sampling to produce weighted estimates.
+  - While it reduces sample wastage, it can still be inefficient for very unlikely evidence due to weight variance.
+
+- **3.8 Gibbs Sampling**
+  - Gibbs sampling is a Markov chain Monte Carlo method generating correlated samples consistent with evidence.
+  - Each unobserved variable is resampled conditioned on current values of all other variables (its Markov blanket).
+  - Algorithm 3.10 implements Gibbs sampling with burn-in and thinning to reduce sample correlation.
+  - Gibbs sampling converges asymptotically to the true posterior distribution.
+  - For detailed discussion, see [Bayesian Reasoning and Machine Learning](http://www.cs.ucl.ac.uk/staff/D.Barber/BayesBook/).
+
+- **3.9 Inference in Gaussian Models**
+  - Joint Gaussian variables allow exact, closed-form marginal and conditional distributions.
+  - The conditional mean and covariance have explicit matrix formulas involving inversion of covariance submatrices.
+  - Algorithm 3.11 performs Gaussian inference given query variables and evidence.
+  - Multivariate Gaussian inference is efficient and avoids combinatorial explosion of discrete factors.
+  - The [Distributions.jl](https://juliastats.org/Distributions.jl/stable/) package implements MvNormal distributions.
+
+- **3.10 Summary**
+  - Exact inference requires joint probability computation and marginalization but may be inefficient.
+  - Variable elimination and belief propagation improve efficiency depending on network structure.
+  - Inference can be reduced to NP-hard problems; approximate methods mitigate computational constraints.
+  - Sampling-based approximate inference methods include direct, likelihood weighted, and Gibbs sampling.
+  - Gaussian models allow exact inference through linear algebra operations.
+
+- **3.11 Exercises**
+  - Exercises address formulating exact inference equations for given Bayesian network queries.
+  - Problems focus on naive Bayes classification, Bayesian network construction from 3SAT, and topological sorting.
+  - Additional exercises involve likelihood-weighted sampling and conditional Gaussian inference.
+  - Solutions demonstrate application of core inference formulas and algorithms discussed.
+  - For practice problems in probabilistic graphical models, refer to [Probabilistic Graphical Models Specialization](https://www.coursera.org/specializations/probabilistic-graphical-models).

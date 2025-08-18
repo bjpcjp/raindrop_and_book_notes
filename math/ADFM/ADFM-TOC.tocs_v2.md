@@ -1,110 +1,435 @@
-- Preface  
-  The Preface introduces the purpose and scope of the book, outlining its focus on decision making and probabilistic reasoning. It frames the foundational concepts and approaches explored throughout the text, setting context for subsequent chapters. For further foundational context, see [Introduction to Decision Making](https://plato.stanford.edu/entries/decision-theory/).
+- **Preface**
+  - The preface introduces the purpose and scope of the book.
+  - It outlines the target audience and prerequisites.
+  - It sets expectations regarding the topics and depth covered.
+  - Recommendations for further preparatory reading include foundational texts on algorithms and decision theory.
 
-- Acknowledgments  
-  This section credits individuals and organizations contributing to the development and refinement of the book. It acknowledges the collaborative and interdisciplinary nature influencing the book's comprehensive coverage. For insights into academic collaboration, refer to [The Nature of Scientific Collaboration](https://royalsocietypublishing.org/doi/full/10.1098/rsos.161136).
+- **Acknowledgments**
+  - The acknowledgments credit contributors, reviewers, and supporters of the book.
+  - It highlights collaboration and peer input in the book’s development.
+  - Appreciation is expressed for institutional and individual support.
 
-- 1 Introduction  
-  - 1.1 Decision Making  
-    This subsection defines decision making as a process of choosing among alternatives under uncertainty. It highlights foundational theories distinguishing rational preferences and their formal representation. Related foundational principles are detailed in [Decision Theory](https://plato.stanford.edu/entries/decision-theory/).  
-  - 1.2 Applications  
-    This part details real-world applications of decision-making methods across various domains including robotics, economics, and AI. The causal influence of domain-specific challenges shapes method selection and adaptation. See [Applications of Decision Analysis](https://pubsonline.informs.org/doi/10.1287/educ.1070.0001) for more.  
-  - 1.3 Methods  
-    Methods discussed include probabilistic modeling, utility theory, and computational algorithms facilitating decision-making under uncertainty. The integration of these methods stems from theoretical and empirical advancements. More on methodology is available at [Decision Making Methods](https://www.sciencedirect.com/topics/computer-science/decision-making-methods).  
-  - 1.4 History  
-    The history section traces the evolution of decision theory from early philosophical roots to modern algorithmic frameworks. Influential figures and paradigm shifts are identified, shaping current approaches. Detailed history can be found in [A History of Decision Theory](https://www.cambridge.org/core/journals/journal-of-economic-perspectives/article/history-of-decision-theory/3340F6271EE4CA42A832EF8B525C1DB0).  
-  - 1.5 Societal Impact  
-    This subsection examines how decision theory advances impact society, influencing policy, ethics, and technology deployment. Challenges arising from societal complexity critically inform research directions. For expanded discussion, see [Societal Implications of AI](https://aitopics.org/doc/news/NSF-societal-implications).  
-  - 1.6 Overview  
-    Provides a roadmap of the book’s structure, summarizing key topics and their interrelations from probabilistic reasoning through multiagent systems. The overview establishes thematic continuity and sets expectations. For pedagogical context, consult [How to Write a Book Overview](https://writingcenter.unc.edu/tips-and-tools/book-reports/).
+- **1 Introduction**
+  - **1.1 Decision Making**
+    - Defines decision making within uncertain environments.
+    - Describes the role of preferences and rational choice.
+    - References foundational models in decision theory.
+  - **1.2 Applications**
+    - Presents practical examples across domains like robotics and economics.
+    - Explains how decision making algorithms impact these fields.
+  - **1.3 Methods**
+    - Details various algorithmic frameworks for decision making.
+    - Contrasts model-based and model-free approaches.
+  - **1.4 History**
+    - Chronicles the evolution of decision theory and related algorithms.
+    - Highlights seminal contributions and milestones.
+  - **1.5 Societal Impact**
+    - Discusses ethical considerations and the societal influence of decision algorithms.
+    - Points to challenges in fairness, accountability, and transparency.
+  - **1.6 Overview**
+    - Summarizes the book’s structure and thematic organization.
+    - Previews major topics covered in subsequent parts.
 
-- I Probabilistic Reasoning  
-  - 2 Representation  
-    - 2.1 Degrees of Belief and Probability  
-      This subsection explains degrees of belief as subjective probabilities quantifying uncertainty. It presents probability axioms as the foundation for coherent reasoning under uncertainty. Key impacts arise from mathematical rigor aligning belief with measurable uncertainty. Explore foundational concepts at [Probability Theory](https://plato.stanford.edu/entries/probability-theory/).  
-    - 2.2 Probability Distributions  
-      Discusses the formal definition and properties of probability distributions that describe random variable behavior. Variability in distribution types influences modeling choices and inference. For further detail, see [Probability Distributions Overview](https://www.statisticshowto.com/probability-distributions/).  
-    - 2.3 Joint Distributions  
-      Joint distributions represent combined probabilities over multiple variables capturing dependencies. Conditioning and marginalization emerge as critical operations. This interplay affects computational feasibility. See [Joint Probability Distributions](https://www.khanacademy.org/math/statistics-probability/probability-library).  
-    - 2.4 Conditional Distributions  
-      Conditional distributions express probabilities given known events, enabling updated beliefs. The core factor is the application of Bayes' theorem formalizing inference. More on conditionals at [Conditional Probability](https://www.britannica.com/science/conditional-probability).  
-    - 2.5 Bayesian Networks  
-      Bayesian networks model complex joint distributions via directed acyclic graphs encoding conditional independencies. Their structure simplifies inference and learning by exploiting factorization. For technical details, see [Bayesian Networks Tutorial](https://www.cs.ubc.ca/~murphyk/Bayes/bnintro.html).  
-    - 2.6 Conditional Independence  
-      Introduces conditional independence as a fundamental property enabling simplification of joint distributions and efficient computation. It shapes network structure and inference algorithms. For mathematical grounding, review [Conditional Independence](https://en.wikipedia.org/wiki/Conditional_independence).  
-    - 2.7 Summary  
-      Summarizes the role of probabilistic representations in capturing uncertainty and enabling algorithmic reasoning. Emphasizes interplay between structure and probability calculus.  
-    - 2.8 Exercises  
-      Provides practice problems to reinforce understanding of representation concepts, including probabilistic reasoning and Bayesian network structures.
+- **I Probabilistic Reasoning**
+  - **2 Representation**
+    - **2.1 Degrees of Belief and Probability**
+      - Introduces probability as a measure of belief strength.
+      - Differentiates subjective probabilities from frequencies.
+      - Suggests [Probability Theory: The Logic of Science](https://bayes.wustl.edu/etj/prob/book.pdf) for deeper study.
+    - **2.2 Probability Distributions**
+      - Defines distributions and their key properties.
+      - Explains common discrete and continuous distributions.
+    - **2.3 Joint Distributions**
+      - Describes the representation of joint probabilities over multiple variables.
+      - Discusses factorization and complexity implications.
+    - **2.4 Conditional Distributions**
+      - Details the concept and calculation of conditional probabilities.
+      - Emphasizes the importance for inference and learning.
+    - **2.5 Bayesian Networks**
+      - Presents graphical models representing conditional dependencies.
+      - Explains node, edge semantics, and factorization of joint distributions.
+    - **2.6 Conditional Independence**
+      - Formalizes conditional independence and its role in simplifying models.
 
-  - 3 Inference  
-    - 3.1 Inference in Bayesian Networks  
-      Details algorithms to compute posterior probabilities given evidence using network structure, including exact and approximate methods. Complexity constraints shape method applicability. Reference [Probabilistic Inference](https://web.stanford.edu/class/cs228/).  
-    - 3.2 Inference in Naive Bayes Models  
-      Explains simplified inference by assuming conditional independence of features, enabling efficient computation despite high-dimensional data. The model’s assumptions guide usage scenarios. See [Naive Bayes Classifier](https://en.wikipedia.org/wiki/Naive_Bayes_classifier).  
-    - 3.3 Sum-Product Variable Elimination  
-      Introduces an exact inference algorithm exploiting distributive law to compute marginals efficiently by eliminating variables. Algorithmic efficiency depends on graph structure. More at [Variable Elimination](https://web.stanford.edu/class/cs228/handouts/variable_elimination.pdf).  
-    - 3.4 Belief Propagation  
-      Describes iterative message passing for exact inference on trees and approximate inference on graphs with cycles. Its performance links to graph topology. See [Belief Propagation Algorithms](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa10/readings/pearl1988.pdf).  
-    - 3.5 Computational Complexity  
-      Analyzes the computational difficulty of inference, establishing that exact inference is often NP-hard. Graph structure influences tractability. See complexity results at [Complexity of Probabilistic Inference](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.11.4556).  
-    - 3.6 Direct Sampling  
-      Describes basic Monte Carlo methods to approximate distributions by sampling from the joint distribution directly, limited by high-dimensional spaces. Sampling efficiency is influenced by variable dependencies. For an introduction, see [Monte Carlo Methods](https://en.wikipedia.org/wiki/Monte_Carlo_method).  
-    - 3.7 Likelihood Weighted Sampling  
-      Introduces an importance sampling method that weights samples by likelihood to handle evidence, improving sample efficiency. Its effectiveness depends on evidence incorporation strategy. See [Likelihood Weighting](https://web.stanford.edu/class/cs228/handouts/Inference.pdf).  
-    - 3.8 Gibbs Sampling  
-      Explains Markov Chain Monte Carlo sampling by iteratively sampling variables conditioned on others, enabling approximate inference in complex models. Convergence depends on mixing properties. See [Gibbs Sampling](https://projecteuclid.org/euclid.aos/1176344076).  
-    - 3.9 Inference in Gaussian Models  
-      Covers exact inference in models with continuous variables assuming Gaussian distributions, leveraging conjugacy and analytical solutions. Underlying linearity and Gaussian assumptions enable closed-form computations. Details at [Gaussian Processes](http://www.gaussianprocess.org/gpml/).  
-    - 3.10 Summary  
-      Summarizes inference techniques ranging from exact algorithms to sampling methods, highlighting trade-offs between precision and scalability.  
-    - 3.11 Exercises  
-      Offers problems to practice inference methods including message passing, sampling, and Gaussian reasoning.
+  - **3 Inference**
+    - **3.1 Inference in Bayesian Networks**
+      - Details computational methods for querying Bayesian networks.
+      - Discusses exact and approximate techniques.
+    - **3.2 Inference in Naive Bayes Models**
+      - Explains simplified inference under independence assumptions.
+    - **3.3 Sum-Product Variable Elimination**
+      - Describes an algorithm for exact inference via message passing.
+    - **3.4 Belief Propagation**
+      - Covers iterative inference in tree-structured or loopy graphs.
+    - **3.5 Computational Complexity**
+      - Analyzes the computational challenges and NP-hardness.
+    - **3.6 Direct Sampling**
+      - Introduces naive sampling as an inference approach.
+    - **3.7 Likelihood Weighted Sampling**
+      - Discusses importance sampling weighted by evidence likelihood.
+    - **3.8 Gibbs Sampling**
+      - Describes a Markov Chain Monte Carlo method for approximate inference.
+    - **3.9 Inference in Gaussian Models**
+      - Covers inference methods specialized for Gaussian distributions.
 
-  - 4 Parameter Learning  
-    - 4.1 Maximum Likelihood Parameter Learning  
-      Describes estimation of model parameters by maximizing data likelihood under assumed models, foundational in statistical learning. Availability and completeness of data influence estimates. For fundamentals, see [MLE Introduction](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation).  
-    - 4.2 Bayesian Parameter Learning  
-      Presents methods incorporating prior distributions over parameters to update beliefs with data, providing regularization and uncertainty quantification. Priors and likelihoods determine posterior forms. See [Bayesian Learning](https://en.wikipedia.org/wiki/Bayesian_inference).  
-    - 4.3 Nonparametric Learning  
-      Introduces flexible learning methods without fixed parameter dimension, allowing model complexity to grow with data. Causal necessity arises from unknown or complex model structure. See [Nonparametric Models](https://en.wikipedia.org/wiki/Nonparametric_statistics).  
-    - 4.4 Learning with Missing Data  
-      Explores algorithms handling incomplete or partially observed data, such as Expectation-Maximization, to infer parameters. Missingness patterns critically affect method design. Refer to [EM Algorithm](https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm).  
-    - 4.5 Summary  
-      Highlights parameter estimation strategies, their strengths, and contextual applicability related to data completeness and prior knowledge.  
-    - 4.6 Exercises  
-      Provides practical exercises to implement parameter learning in varied scenarios including missing data cases.
+  - **4 Parameter Learning**
+    - **4.1 Maximum Likelihood Parameter Learning**
+      - Introduces estimation of parameters by maximizing the likelihood function.
+    - **4.2 Bayesian Parameter Learning**
+      - Applies Bayesian inference to update parameter beliefs.
+    - **4.3 Nonparametric Learning**
+      - Explores methods that do not assume fixed parameter dimension.
+    - **4.4 Learning with Missing Data**
+      - Discusses algorithms for incomplete observation scenarios.
+    - **4.5 Summary**
+      - Reviews key concepts and methods discussed.
+  
+  - **5 Structure Learning**
+    - **5.1 Bayesian Network Scoring**
+      - Covers metrics for model evaluation and selection.
+    - **5.2 Directed Graph Search**
+      - Explains algorithms for searching graph structures.
+    - **5.3 Markov Equivalence Classes**
+      - Describes equivalence between graphical models representing the same distributions.
+    - **5.4 Partially Directed Graph Search**
+      - Introduces search methods for hybrid graph representations.
 
-  - 5 Structure Learning  
-    - 5.1 Bayesian Network Scoring  
-      Describes scoring functions evaluating fit of candidate network structures to data, balancing complexity and likelihood. Model selection depends on scoring reliability. See [Bayesian Network Structure Learning](https://link.springer.com/article/10.1007/s10994-006-6222-y).  
-    - 5.2 Directed Graph Search  
-      Explains search algorithms in the space of directed graphs for optimal structure discovery. Search efficiency influenced by heuristic guidance. See survey at [Graph Search Methods](https://arxiv.org/abs/0909.1950).  
-    - 5.3 Markov Equivalence Classes  
-      Identifies equivalence classes of network structures yielding identical conditional independencies, reducing redundancy in search. Recognizing equivalence aids efficient model selection. For details, see [Markov Equivalence](https://arxiv.org/abs/1110.0916).  
-    - 5.4 Partially Directed Graph Search  
-      Discusses search strategies incorporating both directed and undirected edges to represent uncertainty in causality, aiding model identifiability. Further reading at [Causal Discovery Algorithms](https://ftp.cs.ucla.edu/pub/stat_ser/r268.pdf).  
-    - 5.5 Summary  
-      Summarizes structural learning as combining scoring and search, constrained by equivalence and computational complexity.  
-    - 5.6 Exercises  
-      Contains problems to deepen understanding of structure scoring, search heuristics, and equivalence concepts.
+  - **6 Simple Decisions**
+    - **6.1 Constraints on Rational Preferences**
+      - States axioms defining rational consistency.
+    - **6.2 Utility Functions**
+      - Defines utility as a numerical representation of preferences.
+    - **6.3 Utility Elicitation**
+      - Describes techniques to quantify user preferences.
+    - **6.4 Maximum Expected Utility Principle**
+      - Introduces decision-making by maximizing expected utility.
+    - **6.5 Decision Networks**
+      - Explains graphical models combining decisions and uncertainties.
+    - **6.6 Value of Information**
+      - Discusses quantifying information's impact on decision quality.
+    - **6.7 Irrationality**
+      - Addresses deviations from rational decision behaviors.
 
-  - 6 Simple Decisions  
-    - 6.1 Constraints on Rational Preferences  
-      Details axiomatic foundations restricting rational preference relations, such as completeness and transitivity, forming decision theory basis. Violations affect decision consistency. For axioms, see [Von Neumann–Morgenstern Utility Theorem](https://plato.stanford.edu/entries/decision-theory/#VonNeuMorThe).  
-    - 6.2 Utility Functions  
-      Defines utility functions as numerical representations of preferences, enabling quantitative decision analysis. Utility scales are construction-dependent and fundamental to expected utility theory. See [Utility Theory](https://en.wikipedia.org/wiki/Utility_theory).  
-    - 6.3 Utility Elicitation  
-      Covers methods to derive utilities from preferences including direct rating, lotteries, and elicitation protocols. Quality depends on elicitation accuracy and user understanding. See [Utility Assessment](https://www.sciencedirect.com/science/article/pii/S0377221797000297).  
-    - 6.4 Maximum Expected Utility Principle  
-      Introduces the principle choosing actions maximizing expected utility, providing a normative standard for rational choice. Assumes known probability and utility functions. Related resource: [Expected Utility](https://plato.stanford.edu/entries/rationality/#ExpecUtilPrin).  
-    - 6.5 Decision Networks  
-      Describes graphical representations combining probabilistic and utility models to analyze complex decision problems effectively. Integration facilitates computation and interpretation. See [Decision Networks](https://en.wikipedia.org/wiki/Influence_diagram).  
-    - 6.6 Value of Information  
-      Explores how acquiring information influences decision quality by modifying expected utility, guiding information-gathering strategies. Value depends on cost and impact on outcomes. See [Value of Information Analysis](https://en.wikipedia.org/wiki/Value_of_information).  
-    - 6.7 Irrationality  
-      Discusses deviations from rational decision criteria including biases and paradoxes that challenge classical theory. Understanding these informs more descriptive models. See [Behavioral Decision Theory](https://www.annualreviews.org/doi/full/10.1146/annurev.psych.55.090902.142015).  
-    - 6.8 Summary  
-      Summarizes foundations of decision theory emphasizing utility, rationality, and computational representations.  
-    - 6.9 Exercises  
-      Exercises focus on applications and implications of rational choice axioms, utility functions, and decision network analysis.
+- **II Sequential Problems**
+  - **7 Exact Solution Methods**
+    - **7.1 Markov Decision Processes**
+      - Defines frameworks for sequential decision making under uncertainty.
+    - **7.2 Policy Evaluation**
+      - Details methods for computing expected returns of policies.
+    - **7.3 Value Function Policies**
+      - Explains representation of policies via value functions.
+    - **7.4 Policy Iteration**
+      - Describes iterative policy improvement algorithms.
+    - **7.5 Value Iteration**
+      - Covers dynamic programming for optimal value computation.
+    - **7.6 Asynchronous Value Iteration**
+      - Describes updates not requiring full state sweeps.
+    - **7.7 Linear Program Formulation**
+      - Presents LP approaches for solving MDPs.
+    - **7.8 Linear Systems with Quadratic Reward**
+      - Examines specialized formulations of MDPs with quadratic utilities.
+
+  - **8 Approximate Value Functions**
+    - **8.1 Parametric Representations**
+      - Discusses using parameterized functions to represent value functions.
+    - **8.2 Nearest Neighbor**
+      - Describes interpolation via the closest known values.
+    - **8.3 Kernel Smoothing**
+      - Introduces smooth estimates using kernels.
+    - **8.4 Linear Interpolation**
+      - Covers linear interpolation techniques.
+    - **8.5 Simplex Interpolation**
+      - Explains higher-dimensional interpolation using simplices.
+    - **8.6 Linear Regression**
+      - Applies regression for value function approximation.
+    - **8.7 Neural Network Regression**
+      - Introduces neural networks as nonlinear function approximators.
+
+  - **9 Online Planning**
+    - **9.1 Receding Horizon Planning**
+      - Defines planning over rolling finite horizons.
+    - **9.2 Lookahead with Rollouts**
+      - Covers simulating future outcomes to improve decisions.
+    - **9.3 Forward Search**
+      - Describes tree expansion from the current state.
+    - **9.4 Branch and Bound**
+      - Explains pruning of search spaces via bounds.
+    - **9.5 Sparse Sampling**
+      - Presents sampling-based approximations of planning.
+    - **9.6 Monte Carlo Tree Search**
+      - Details stochastic tree search balancing exploration and exploitation.
+    - **9.7 Heuristic Search**
+      - Introduces informed search strategies guided by heuristics.
+    - **9.8 Labeled Heuristic Search**
+      - Covers enhanced heuristic approaches using labels.
+    - **9.9 Open-Loop Planning**
+      - Discusses planning without state feedback.
+
+  - **10 Policy Search**
+    - **10.1 Approximate Policy Evaluation**
+      - Describes estimating policy values without full models.
+    - **10.2 Local Search**
+      - Details iterative improvement in policy parameters.
+    - **10.3 Genetic Algorithms**
+      - Explains evolutionary strategies for optimizing policies.
+    - **10.4 Cross Entropy Method**
+      - Introduces probabilistic optimization technique.
+    - **10.5 Evolution Strategies**
+      - Covers adaptive search methods mimicking natural evolution.
+    - **10.6 Isotropic Evolutionary Strategies**
+      - Discusses a simplified evolutionary method using isotropic mutations.
+
+  - **11 Policy Gradient Estimation**
+    - **11.1 Finite Difference**
+      - Describes gradient estimation by perturbing parameters.
+    - **11.2 Regression Gradient**
+      - Covers regression-based approaches to gradient estimation.
+    - **11.3 Likelihood Ratio**
+      - Explains an importance sampling method for gradients.
+    - **11.4 Reward-to-Go**
+      - Introduces variance reduction techniques using future rewards.
+    - **11.5 Baseline Subtraction**
+      - Details further variance reduction by removing baselines.
+
+  - **12 Policy Gradient Optimization**
+    - **12.1 Gradient Ascent Update**
+      - Presents basic gradient-based policy improvement.
+    - **12.2 Restricted Gradient Update**
+      - Describes constrained optimization steps.
+    - **12.3 Natural Gradient Update**
+      - Covers geometry-aware gradient methods.
+    - **12.4 Trust Region Update**
+      - Explains stable policy update methods.
+    - **12.5 Clamped Surrogate Objective**
+      - Introduces objectives limiting policy changes to improve robustness.
+
+  - **13 Actor-Critic Methods**
+    - **13.1 Actor-Critic**
+      - Defines architectures combining policy (actor) and value function (critic).
+    - **13.2 Generalized Advantage Estimation**
+      - Presents advanced advantage computations to reduce bias and variance.
+    - **13.3 Deterministic Policy Gradient**
+      - Covers gradients for deterministic policies.
+    - **13.4 Actor-Critic with Monte Carlo Tree Search**
+      - Integrates tree search with actor-critic learning.
+
+  - **14 Policy Validation**
+    - **14.1 Performance Metric Evaluation**
+      - Discusses criteria for evaluating policies.
+    - **14.2 Rare Event Simulation**
+      - Covers techniques to evaluate policies on infrequent but important events.
+    - **14.3 Robustness Analysis**
+      - Addresses sensitivity of policies under model perturbations.
+    - **14.4 Trade Analysis**
+      - Explores compromises among competing objectives.
+    - **14.5 Adversarial Analysis**
+      - Examines testing policies against worst-case scenarios.
+
+- **III Model Uncertainty**
+  - **15 Exploration and Exploitation**
+    - **15.1 Bandit Problems**
+      - Defines the exploration-exploitation tradeoff in single-state settings.
+    - **15.2 Bayesian Model Estimation**
+      - Discusses Bayesian updating for uncertainty quantification.
+    - **15.3 Undirected Exploration Strategies**
+      - Details naive exploration tactics without model guidance.
+    - **15.4 Directed Exploration Strategies**
+      - Presents exploration guided by model uncertainty.
+    - **15.5 Optimal Exploration Strategies**
+      - Explains strategies optimizing long-term performance via exploration.
+    - **15.6 Exploration with Multiple States**
+      - Extends the exploration-exploitation trade to MDPs.
+
+  - **16 Model-Based Methods**
+    - **16.1 Maximum Likelihood Models**
+      - Covers estimation of transition models from data.
+    - **16.2 Update Schemes**
+      - Describes procedures for updating model parameters online.
+    - **16.3 Bayesian Methods**
+      - Details full probabilistic modeling of uncertainty.
+    - **16.4 Bayes-adaptive MDPs**
+      - Introduces models incorporating learning into planning.
+    - **16.5 Posterior Sampling**
+      - Discusses sampling-based strategies for model uncertainty.
+
+  - **17 Model-Free Methods**
+    - **17.1 Incremental Estimation of the Mean**
+      - Details simple online estimations of expected returns.
+    - **17.2 Q-Learning**
+      - Introduces off-policy temporal difference learning.
+    - **17.3 Sarsa**
+      - Describes on-policy temporal difference learning.
+    - **17.4 Eligibility Traces**
+      - Covers methods combining multi-step returns.
+    - **17.5 Reward Shaping**
+      - Presents techniques to modify reward signals for better learning.
+    - **17.6 Action Value Function Approximation**
+      - Explains function approximation for large state-action spaces.
+    - **17.7 Experience Replay**
+      - Describes data reuse for improved sample efficiency.
+
+  - **18 Imitation Learning**
+    - **18.1 Behavioral Cloning**
+      - Defines supervised learning to mimic expert behavior.
+    - **18.2 Dataset Aggregation**
+      - Introduces iterative methods for correcting distributional drift.
+    - **18.3 Stochastic Mixing Iterative Learning**
+      - Covers probabilistic blending of learned and expert policies.
+    - **18.4 Maximum Margin Inverse Reinforcement Learning**
+      - Explains inferring reward functions via margin maximization.
+    - **18.5 Maximum Entropy Inverse Reinforcement Learning**
+      - Discusses probabilistic models of expert behavior.
+    - **18.6 Generative Adversarial Imitation Learning**
+      - Applies adversarial learning techniques to imitation.
+
+- **IV State Uncertainty**
+  - **19 Beliefs**
+    - **19.1 Belief Initialization**
+      - Describes setting initial probability distributions over states.
+    - **19.2 Discrete State Filter**
+      - Covers filtering for finite state spaces.
+    - **19.3 Linear Gaussian Filter**
+      - Introduces Kalman filtering for linear Gaussian systems.
+    - **19.4 Extended Kalman Filter**
+      - Details nonlinear extensions via local linearizations.
+    - **19.5 Unscented Kalman Filter**
+      - Presents alternative nonlinear filter using deterministic sampling.
+    - **19.6 Particle Filter**
+      - Explains sampling-based filtering approaches.
+    - **19.7 Particle Injection**
+      - Discusses techniques to maintain particle diversity.
+
+  - **20 Exact Belief State Planning**
+    - **20.1 Belief-State Markov Decision Processes**
+      - Defines planning over continuous belief spaces.
+    - **20.2 Conditional Plans**
+      - Describes policy representations conditioned on observations.
+    - **20.3 Alpha Vectors**
+      - Introduces piecewise-linear representations of value functions.
+    - **20.4 Pruning**
+      - Covers removal of dominated alpha vectors.
+    - **20.5 Value Iteration**
+      - Details dynamic programming in belief space.
+    - **20.6 Linear Policies**
+      - Explains linear function approximations for policies.
+
+  - **21 Offline Belief State Planning**
+    - **21.1 Fully Observable Value Approximation**
+      - Uses easier fully observable MDPs to bound belief state problems.
+    - **21.2 Fast Informed Bound**
+      - Discusses computationally efficient value function bounds.
+    - **21.3 Fast Lower Bounds**
+      - Presents methods for quickly estimating pessimistic values.
+    - **21.4 Point-Based Value Iteration**
+      - Introduces scalable approximate value iteration on selected belief points.
+    - **21.5 Randomized Point-Based Value Iteration**
+      - Extends point-based methods with random sampling.
+    - **21.6 Sawtooth Upper Bound**
+      - Explains upper bound approximations using sawtooth functions.
+    - **21.7 Point Selection**
+      - Discusses heuristics for choosing belief points.
+    - **21.8 Sawtooth Heuristic Search**
+      - Covers heuristic search guided by sawtooth bounds.
+    - **21.9 Triangulated Value Functions**
+      - Introduces interpolation schemes for value function approximation.
+
+  - **22 Online Belief State Planning**
+    - **22.1 Lookahead with Rollouts**
+      - Describes simulating future trajectories for planning.
+    - **22.2 Forward Search**
+      - Explains expanding belief tree nodes forward.
+    - **22.3 Branch and Bound**
+      - Details pruning suboptimal branches.
+    - **22.4 Sparse Sampling**
+      - Covers sampling-based belief state exploration.
+    - **22.5 Monte Carlo Tree Search**
+      - Applies stochastic tree search in belief spaces.
+    - **22.6 Determinized Sparse Tree Search**
+      - Combines sparse sampling with determinization.
+    - **22.7 Gap Heuristic Search**
+      - Introduces heuristics based on approximation gaps.
+
+  - **23 Controller Abstractions**
+    - **23.1 Controllers**
+      - Defines parametric controllers for decision making.
+    - **23.2 Policy Iteration**
+      - Covers iterative improvement of controller parameters.
+    - **23.3 Nonlinear Programming**
+      - Describes optimization techniques for controller synthesis.
+    - **23.4 Gradient Ascent**
+      - Explains gradient-based controller optimization.
+
+- **V Multiagent Systems**
+  - **24 Multiagent Reasoning**
+    - **24.1 Simple Games**
+      - Introduces foundational concepts in game theory.
+    - **24.2 Response Models**
+      - Covers models predicting agent reactions.
+    - **24.3 Nash Equilibrium**
+      - Defines stable solution concepts where no agent benefits from unilateral change.
+    - **24.4 Correlated Equilibrium**
+      - Extends equilibria allowing correlated strategies.
+    - **24.5 Iterated Best Response**
+      - Details iterative methods converging to equilibria.
+    - **24.6 Hierarchical Softmax**
+      - Presents computational methods for large action spaces.
+    - **24.7 Fictitious Play**
+      - Describes learning in games through repeated play.
+
+  - **25 Sequential Problems**
+    - **25.1 Markov Games**
+      - Defines extension of MDPs to multiple interacting agents.
+    - **25.2 Response Models**
+      - Discusses predictive behavior models in multiagent settings.
+    - **25.3 Nash Equilibrium**
+      - Covers equilibrium concepts in Markov games.
+    - **25.4 Opponent Modeling**
+      - Explains techniques estimating opponents’ strategies.
+    - **25.5 Nash Q-Learning**
+      - Introduces Q-learning adapted for multiagent games.
+
+  - **26 State Uncertainty**
+    - **26.1 Partially Observable Markov Games**
+      - Extends partially observable MDPs to multiagent contexts.
+    - **26.2 Policy Evaluation**
+      - Details evaluation of multiagent belief-dependent policies.
+    - **26.3 Nash Equilibrium**
+      - Discusses equilibria under state uncertainty.
+    - **26.4 Dynamic Programming**
+      - Covers dynamic programming methods for multiagent POMDPs.
+
+  - **27 Collaborative Agents**
+    - **27.1 Decentralized Partially Observable Markov Decision Processes**
+      - Defines frameworks for decentralized decision making under uncertainty.
+    - **27.2 Subclasses**
+      - Describes restricted problem classes tractable for solution.
+    - **27.3 Dynamic Programming**
+      - Explains solution methods for decentralized control.
+    - **27.4 Iterated Best Response**
+      - Discusses iterative solution techniques in collaborative settings.
+    - **27.5 Heuristic Search**
+      - Presents heuristic approaches to decentralized problems.
+    - **27.6 Nonlinear Programming**
+      - Covers optimization formulations for decentralized controllers.
+
+- **Appendices**
+  - **A Mathematical Concepts**
+    - Provides foundational mathematical tools including measure theory, convexity, and information theory.
+  - **B Probability Distributions**
+    - Details key probability distributions used throughout the book.
+  - **C Computational Complexity**
+    - Covers complexity classes and asymptotic notation relevant to algorithms.
+  - **D Neural Representations**
+    - Describes neural network architectures and training methods.
+  - **E Search Algorithms**
+    - Reviews classical search problem formulations and solution methods.
+  - **F Problems**
+    - Introduces benchmark problems used as examples or exercises in the book.
+  - **G Julia**
+    - Provides an overview of programming constructs in Julia for implementation examples.
+
+- **References**
+  - Comprehensive list of bibliographic sources cited throughout the book.
+
+- **Index**
+  - Alphabetical listing of key terms and topics with page references.

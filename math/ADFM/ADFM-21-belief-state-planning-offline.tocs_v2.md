@@ -1,21 +1,66 @@
-- Offline Belief State Planning
-  - Fully Observable Value Approximation
-    - Describes QMDP algorithm where the value function is approximated under the assumption of full observability after one step. The algorithm iterates alpha vectors for each action using value iteration on the fully observable MDP. QMDP produces an upper bound on the optimal POMDP value function but may poorly approximate information gathering actions. See [Hauskrecht 2000](https://doi.org/10.1613/jair.613) for QMDP theoretical properties.
-  - Fast Informed Bound
-    - Introduces a tighter upper bound than QMDP by accounting for the observation model in alpha vector updates. The fast informed bound requires O(|A||S||O|) operations and generally produces a tighter upper bound on the value function. Further details are available in [Hauskrecht 2000](https://doi.org/10.1613/jair.613).
-  - Fast Lower Bounds
-    - Presents two lower bound methods: the best-action worst-state (BAWS) lower bound and the blind lower bound. BAWS uses the worst-case state reward to produce a loose but quick lower bound. The blind lower bound assumes committing to a fixed action regardless of observations and is refined by iterative updates. These bounds seed more complex planning algorithms.
-  - Point-Based Value Iteration
-    - Describes a lower-bound method generating multiple alpha vectors, each tied to a belief point. The algorithm performs backups at these points to improve the value function approximation. Although it does not guarantee optimality due to limited belief coverage, it provides an effective lower bound for policy extraction. A survey on these solvers is [Shani et al. 2012](https://doi.org/10.1007/s10458-011-9188-0).
-  - Randomized Point-Based Value Iteration
-    - A variation that randomly updates alpha vectors associated with belief points, potentially increasing or decreasing their number. It improves computational efficiency while maintaining policy improvement guarantees at the sampled beliefs. It is introduced in [Spaan & Vlassis 2005](https://doi.org/10.1613/jair.1500).
-  - Sawtooth Upper Bound
-    - Defines a point-set representation of the upper bound with belief-utility pairs forming inverted pyramids ("teeth") which combine into the sawtooth shape. It interpolates utilities over belief points using L1-distance-based weighting and maintains standard basis beliefs for convexity guarantees. Iterative one-step lookahead updates improve the bound. Related concepts are detailed in [Hauskrecht 2000](https://doi.org/10.1613/jair.613).
-  - Point Selection
-    - Discusses strategies to select belief points for point-based methods, focusing on beliefs reachable under (approximate) policies. Methods include random belief expansion and exploratory expansion maximizing distance in belief space (L1-norm). Proper selection focuses computation on relevant parts of the belief space to improve policy quality. For detailed methods, see [Kurniawati et al. 2008](https://roboticsproceedings.org/rss04/p36.pdf).
-  - Sawtooth Heuristic Search
-    - An offline heuristic search method aiming to tighten upper and lower bounds on the value function, guided by the gap between these bounds at beliefs reachable from an initial belief. It selectively explores beliefs based on the gap threshold and updates both bounds iteratively until convergence. This approach is foundational to HSVI and SARSOP algorithms, as described in [Smith & Simmons 2004](https://www.cs.toronto.edu/~rgk/Research/HSVI-UAI04.pdf).
-  - Triangulated Value Functions
-    - Explains using Freudenthal triangulation for belief space discretization, enabling interpolation of the value function over a continuous belief space. Value function approximations rely on barycentric coordinates in the simplex enclosing the belief, allowing efficient upper bound approximations and dynamic programming. The method originates from [Lovejoy 1991](https://doi.org/10.1287/opre.39.1.162).
-  - Summary
-    - Summarizes the chapter's key offline belief state approximation methods: QMDP and fast informed bound as upper bounds, point-based algorithms as lower bounds, sawtooth upper bound improvements, belief point selection techniques, heuristic search tightening bounds, and triangulated interpolations for value approximation. It emphasizes the trade-offs and applicability in POMDP planning contexts.
+- **21 Offline Belief State Planning**
+  - **21.1 Fully Observable Value Approximation**
+    - QMDP uses value iteration to compute alpha vectors from a fully observable MDP.
+    - It assumes perfect observability after the first step, producing an upper bound on the true optimal value function.
+    - Initialization with an upper bound guarantees that QMDP provides an upper bound after finite iterations.
+    - QMDP poorly approximates information gathering actions that reduce uncertainty.
+    - See [Hauskrecht, 2000](https://jair.org/index.php/jair/article/view/10397) for proof that QMDP provides an upper bound.
+  - **21.2 Fast Informed Bound**
+    - Computes one alpha vector per action, incorporating the observation model to tighten bounds.
+    - Runs with complexity O(|A||S||O|) per iteration and produces upper bounds tighter than QMDP.
+    - Iteratively updates alpha vectors to improve policy representation.
+    - Empirical results demonstrate its improved accuracy over QMDP.
+    - For more details, refer to [Hauskrecht, 2000](https://jair.org/index.php/jair/article/view/10397).
+  - **21.3 Fast Lower Bounds**
+    - Introduces two lower bound methods: best-action worst-state (BAWS) and blind lower bounds.
+    - BAWS computes the discounted reward from the best action in the worst state forever, represented by a single alpha vector.
+    - Blind lower bound assumes committing forever to a single action, iteratively improved from BAWS.
+    - Both provide quick but loose lower bounds used to seed other planning algorithms.
+  - **21.4 Point-Based Value Iteration**
+    - Computes multiple alpha vectors, each associated with different belief points to better approximate value functions.
+    - Maintains a lower bound on the optimal value function, updating alpha vectors via belief backups.
+    - Converges when no further improvements are possible, though may be suboptimal due to limited belief coverage.
+    - Well-distributed beliefs improve approximation quality.
+    - See [Shani et al., 2012](https://dl.acm.org/doi/10.5555/2160076) for a survey.
+  - **21.5 Randomized Point-Based Value Iteration**
+    - Updates alpha vectors at randomly selected belief points until all beliefs in the set are improved.
+    - Improves computational efficiency by selectively updating without maintaining alpha vectors at all beliefs.
+    - Maintains the property of improving lower bounds iteratively.
+    - Useful variation to basic point-based value iteration for problems with large belief sets.
+    - Introduced in [Spaan and Vlassis, 2005](https://doi.org/10.1613/jair.1588).
+  - **21.6 Sawtooth Upper Bound**
+    - Represents the value function as a set of belief-utility pairs forming inverted pyramidal "teeth" in belief space.
+    - Guarantees an upper bound if initial utilities are upper bounds, by interpolating minimum values from pyramid sets.
+    - Interpolation uses L1 distances to determine which hyperplane applies at each belief point.
+    - Can be improved iteratively by greedy one-step lookahead on a superset of belief points.
+    - For details consult [Hauskrecht, 2000](https://jair.org/index.php/jair/article/view/10397).
+  - **21.7 Point Selection**
+    - Effective point selection focuses belief points on reachable and relevant areas of belief space.
+    - Random belief expansion explores reachable beliefs under random policies; exploratory expansion adds beliefs farthest from existing ones.
+    - Distance in belief space typically measured using the L1 norm.
+    - Proper selection improves approximation quality and computational efficiency.
+    - SARSOP algorithm builds upon this intuition for sampling optimally reachable beliefs [Kurniawati et al., 2008](https://roboticsproceedings.org/rss06/proceedings.pdf).
+  - **21.8 Sawtooth Heuristic Search**
+    - Offline method refining upper and lower bounds on value functions using sawtooth representation and alpha vectors.
+    - Selects beliefs to explore based on gap thresholds that vary with search depth.
+    - Selects next belief by greedy action under current upper bound and observation maximizing value gap.
+    - Early stopping when initial belief gap falls below threshold δ.
+    - See [Smith and Simmons, 2004](https://arxiv.org/abs/cs/0407053) for heuristic search value iteration concepts.
+  - **21.9 Triangulated Value Functions**
+    - Uses Freudenthal triangulation on a discrete set of beliefs to approximate value functions via barycentric interpolation.
+    - Converts integer vertices to beliefs via an invertible linear transformation to cover the belief simplex.
+    - Interpolates at arbitrary beliefs using barycentric coordinates computed within enclosing simplices.
+    - Ensures interpolated functions remain convex upper bounds if initialized accordingly.
+    - Detailed in [Lovejoy, 1991](https://doi.org/10.1287/opre.39.1.162).
+  - **21.10 Summary**
+    - QMDP provides an upper bound assuming immediate full observability.
+    - Fast informed bound tightens upper bounds by accounting for observation effects.
+    - Point-based and randomized point-based methods produce lower bounds with alpha vectors at selected beliefs.
+    - Sawtooth bounds allow efficient iterative upper bound improvement.
+    - Triangulated policies use Freudenthal triangulation to approximate upper bounds with guaranteed convexity.
+  - **21.11 Exercises**
+    - Exercises provide practical computations of alpha vectors using QMDP and blind lower bound.
+    - Sawtooth upper bound interpolation demonstrated using belief-utility pairs.
+    - Derivations of barycentric coordinates in Freudenthal triangulation explained step-by-step.
+    - Examples illustrate use and interpretation of triangulation vertices and permutations.
+    - Offers concrete applications consolidating concepts from the chapter.

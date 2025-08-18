@@ -1,29 +1,58 @@
-- Approximate Value Functions  
-  Approximate value functions represent solutions for large or continuous state-space problems where exact value functions are infeasible due to memory or computation constraints. They use parametric models Uθ(s) to approximate the value function and derive policies by maximizing expected future returns. Techniques involve applying dynamic programming iteratively on a finite set of states and refining parametric approximations. Refer to [Approximate Dynamic Programming by W. B. Powell](https://www.wiley.com/en-us/Approximate+Dynamic+Programming%3A+Solving+the+Curses+of+Dimensionality%2C+2nd+Edition-p-9781118147480) for an extended treatment.  
-
-  - Parametric Representations  
-    Parametric value functions Uθ(s) use a parameter vector θ and function β(s) or β(s,a) to approximate utility or action values globally or locally. Policies select actions by maximizing value or Q-value approximations. Finite sets of states S for backups can be grid-based or sampled with bias toward likely encountered states. Both local and global methods often reduce to linear function approximations differing in basis function design. Algorithmic implementations alternate Bellman backups and approximation fitting. See sections on linear function approximation in [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html) for more detail.  
-
-  - Nearest Neighbor  
-    Nearest neighbor local approximation estimates the value Uθ(s) of an arbitrary state by averaging the values θi of the k closest states s_i in a set S. It requires a distance metric d(s,s′), commonly Euclidean, and produces piecewise constant value functions that improve in smoothness as k increases. Algorithm 8.2 details implementation using sorting of distances and averaging. Efficient search structures like kd-trees optimize nearest neighbor lookups. More on k-nearest neighbors appears in [Pattern Recognition and Machine Learning by Bishop](https://www.springer.com/gp/book/9780387310732).  
-
-  - Kernel Smoothing  
-    Kernel smoothing uses a kernel function k(s, s0) to weight nearby known state values θi in S, producing smooth approximations Uθ(s) = Σ θi βi(s) with βi(s) proportional to k(s, si). Common kernels include inverse distance and Gaussian kernels with smoothing parameter σ controlling generalization. This technique allows smoother and more continuous representation compared to nearest neighbors and can be applied in discrete or continuous state spaces. Algorithm 8.3 implements this approach. See [Kernel Smoothing by Wand and Jones](https://www.crcpress.com/Kernel-Smoothing/Wand-Jones/p/book/9780412032051) for deeper study.  
-
-  - Linear Interpolation  
-    Linear interpolation approximates value functions locally by weighting values of neighboring grid vertices. In 1D, the value at s between s1 and s2 is a weighted average controlled by relative position α. In 2D (bilinear interpolation), it interpolates twice successively along each axis using four vertex values, weighting according to areas of opposing quadrants. Multilinear interpolation extends this to d dimensions with 2^d vertices. Equation 8.12 formalizes bilinear interpolation in 2D. Algorithm 8.4 provides a multilinear interpolation implementation. See [Numerical Recipes](http://numerical.recipes/) for interpolation techniques.  
-
-  - Simplex Interpolation  
-    Simplex interpolation partitions each d-dimensional grid cell into d! simplexes (generalized triangles) via Coxeter-Freudenthal-Kuhn triangulation, approximating value functions by linearly weighting d+1 vertices of the simplex containing the query state. This reduces computation compared to multilinear interpolation (which requires 2^d points). The method ensures continuity across neighboring simplexes. Algorithm 8.5 details implementation. Example 8.1 computes weights explicitly for a 3D simplex. See the dissertation [Simplicial Mesh Generation with Applications](https://ecommons.cornell.edu/handle/1813/5917) by Moore for foundational theory.  
-
-  - Linear Regression  
-    Global linear regression approximates the value function as a linear combination of nonlinear basis functions β(s) or β(s,a) with parameter vector θ. This includes polynomial, sinusoidal, or Fourier bases that map states to higher-dimensional spaces, enabling nonlinear approximations despite linearity in parameters. Fitting minimizes squared prediction errors at sampled states using matrix operations and pseudoinverse computation. Algorithm 8.6 implements this procedure. Example 8.2 illustrates polynomial basis regression on the mountain car problem. See [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/) for regression theory.  
-
-  - Neural Network Regression  
-    Neural networks represent value functions without requiring explicit basis functions by learning parameterized nonlinear transformations from state input to utility outputs. Training involves minimizing prediction errors via gradient-based optimization (e.g., gradient descent) using backpropagation for gradients. While more flexible than linear regression, they require iterative optimization and careful design. Appendix D reviews networks briefly. See [Deep Learning by Goodfellow et al.](https://www.deeplearningbook.org/) for comprehensive coverage.  
-
-  - Summary  
-    The chapter summarizes approximate value function methods, contrasting local and global techniques. It emphasizes iterative dynamic programming over finite state subsets combined with parametric fitting. Local methods include nearest neighbor, kernel smoothing, linear and simplex interpolation; global methods leverage linear regression with nonlinear bases or neural networks. Neural networks remove manual basis selection but require more complex fitting algorithms. These approximations facilitate tackling problems with large or continuous state spaces where tabular methods are infeasible.  
-
-- Exercises  
-  The exercises reinforce concepts of value function approximation including expressing tabular methods as linear approximators, counting parameters in local vs global approximations, applying nearest neighbor with different distance metrics, validating weighting functions, proving bilinear interpolation invariance under scaling, constructing bilinear interpolation formulas, computing simplex interpolation weights, and implementing linear regression with Fourier bases on mountain car problems. Solutions include explicit formulas, matrix computations, and reasoning steps based on chapter equations and algorithms. Readers may consult [Reinforcement Learning Exercises](https://web.stanford.edu/class/archive/cs/cs234/cs234.1194/assignment1.pdf) for further practice problems in value function approximation.
+- **Approximate Value Functions**
+  - **Parametric Representations**
+    - Value functions are approximated using parameter vectors θ with various possible forms.
+    - Action extraction uses an arg max over expected rewards plus discounted future values.
+    - Local approximations weight utilities from a set of states S, while global approximations combine basis functions linearly.
+    - Iterative approximate dynamic programming alternates between Bellman backups and parametric refitting.
+    - Further reading: [Approximate Dynamic Programming: Solving the Curses of Dimensionality](https://onlinelibrary.wiley.com/doi/book/10.1002/9781118032718)
+  - **Nearest Neighbor**
+    - Approximates state value as the utility of the closest—or k closest—states using a distance metric.
+    - Produces piecewise constant value functions; k determines smoothness.
+    - Efficiency can be improved using specialized data structures like kd-trees.
+  - **Kernel Smoothing**
+    - Approximates values as a weighted sum using kernel functions that decrease with state distance.
+    - Kernels can be inverse distance or Gaussian, producing smooth approximations.
+    - Useful for continuous state spaces and demonstrated on discrete hex world and mountain car problems.
+  - **Linear Interpolation**
+    - Estimates values by linearly combining utilities from vertices of a grid cell containing the state.
+    - Bilinear interpolation extends this to two dimensions using four vertices.
+    - Weights correspond to relative distances or areas opposite each vertex.
+  - **Simplex Interpolation**
+    - More efficient than multilinear interpolation in high dimensions by interpolating over d+1 vertices forming a simplex.
+    - Uses Coxeter-Freudenthal-Kuhn triangulation to partition cells into simplexes for continuity.
+    - Interpolates values by sorting and weighting based on ordered coordinates within the grid cell.
+    - Further reading: [Simplicial Mesh Generation with Applications](https://ecommons.cornell.edu/handle/1813/6361)
+  - **Linear Regression**
+    - Represents the value function as a linear combination of nonlinear basis functions.
+    - Parameters θ fit by minimizing squared error using matrix pseudoinverse techniques.
+    - Basis functions influence approximation quality; polynomial, sinusoidal, and Fourier bases are common.
+    - Suitable for global approximations with potentially nonlinear effects on state variables.
+    - Further reading: [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)
+  - **Neural Network Regression**
+    - Uses neural networks to represent value functions without manually selecting basis functions.
+    - Network parameters correspond to weights optimized via gradient descent to reduce prediction error.
+    - Enables complex, nonlinear approximations but requires more complex training compared to linear methods.
+    - Further reading: [Deep Learning](https://www.deeplearningbook.org/)
+  - **Summary**
+    - Value function approximation is essential for large or continuous state spaces where tabular methods are infeasible.
+    - Local methods rely on values of nearby known states, including nearest neighbor, kernel smoothing, linear, and simplex interpolation.
+    - Global methods include linear regression with basis functions and neural network regression.
+    - Approximations are iteratively refined using dynamic programming applied at selected states.
+- **Exercises**
+  - **Exercise 8.1: Tabular Representation as Linear Approximation**
+    - Demonstrates equivalence by using indicator functions as basis functions for each discrete state or state-action pair.
+  - **Exercise 8.2: Parameter Counts in Local vs. Global Approximations**
+    - Local approximation parameter count equals number of state-action pairs times actions.
+    - Global approximation parameter count equals number of chosen basis functions.
+  - **Exercise 8.3: k-Nearest Neighbor with Different Metrics**
+    - Computes approximate state value using L1, L2, and L∞ norms.
+    - Shows how choice of distance metric affects neighbor selection and resulting approximation.
+  - **Exercise 8.4: Validity of Weighting Functions**
+    - Evaluates whether given weighting functions sum to one.
+    - Shows normalization fixes invalid weighting functions.
+  - **Exercise 8.5: Invariance of Bilinear Interpolation under Linear Scaling**
+    - Proof that bilinear interpolation results remain unchanged if the grid axes are scaled linearly.
+  - **Exercise 8.6: Bilinear Interpolation Coefficients for Given Grid and State**
+    - Substitutes specific coordinates into bilinear interpolation formula to produce explicit interpolant.
+  - **Exercise 8.7: Simplex Interpolation Weights Computation**
+    - Calculates vertex weights for a given state within a simplex using permutation sorting and linear constraints.

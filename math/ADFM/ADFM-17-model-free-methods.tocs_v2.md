@@ -1,15 +1,55 @@
-- Model-Free Methods  
-  - Incremental Estimation of the Mean  
-    Many model-free methods incrementally estimate the mean from sequential samples using learning rates α(m). The update rule adjusts the estimate proportionally to the difference between the new sample and the previous estimate, allowing convergence if α(m) satisfies appropriate summability conditions. For further reading, see the foundational text [Reinforcement Learning: An Introduction](https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf) by Sutton and Barto.  
-  - Q-Learning  
-    Q-learning incrementally estimates the action value function by applying the Bellman equation in an off-policy manner, updating the Q-values using observed rewards and the maximum predicted future reward. It requires exploration strategies such as ε-greedy to ensure adequate state-action space coverage. For extensive theory and applications, see the original dissertation [Learning from Delayed Rewards](http://www2.informatik.uni-freiburg.de/~chris/watkins-thesis.pdf) by Watkins.  
-  - Sarsa  
-    Sarsa is an on-policy reinforcement learning algorithm that updates the action value function using the actual next action from the policy rather than maximizing over all possible next actions. It converges to optimal policies given appropriate exploration but can differ in convergence speed compared to Q-learning. The concept is detailed in Rumery and Niranjan’s technical report [On-Line Q-Learning Using Connectionist Systems](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-166.pdf).  
-  - Eligibility Traces  
-    Eligibility traces propagate reward information backwards through recently visited states and actions using exponentially decaying credit (parameter λ). This mechanism speeds up learning, especially with sparse rewards, by updating multiple prior state-action pairs rather than only the immediate predecessor. Care is needed when combining with off-policy methods due to potential instability. For foundational insights, consult Sutton’s paper [Learning to Predict by the Methods of Temporal Differences](https://webdocs.cs.ualberta.ca/~sutton/papers/sutton-88-with-erratum.pdf).  
-  - Reward Shaping  
-    Reward shaping modifies the reward function during training by adding a potential-based function F(s,a,s′) = γβ(s′) − β(s), ensuring the optimal policy remains invariant. This technique uses domain knowledge to guide learning when original rewards are sparse or insufficient. The policy invariance theory is elaborated by Ng, Harada, and Russell in [Policy Invariance Under Reward Transformations](http://ai.berkeley.edu/Papers/shaping_icml99.pdf).  
-  - Action Value Function Approximation  
-    Model-free methods can leverage parametric, differentiable approximations of the action value function, such as linear models or neural networks, to handle large or continuous spaces. Gradient descent minimizes the difference between the approximate and optimal action values using sample-based updates. For deep reinforcement learning applications, see the book [Foundations of Deep Reinforcement Learning](https://www.pearson.com/us/higher-education/program/Graesser-Foundations-of-Deep-Reinforcement-Learning/PGM334651.html).  
-  - Experience Replay  
-    Experience replay stores past experience tuples in a buffer, sampling them randomly during training to mitigate catastrophic forgetting and reduce correlation in sequential data samples. This improves data efficiency and stabilizes learning when applying function approximation. The method was popularized by Mnih et al. in the seminal work [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/abs/1312.5602).
+- **17 Model-Free Methods**
+  - **17.1 Incremental Estimation of the Mean**
+    - Many model-free methods incrementally estimate action value functions from samples.
+    - Incremental mean estimation applies a learning rate function for updates to ensure convergence.
+    - Constant learning rates cause exponential decay of older samples' influence.
+    - The update rule relates to stochastic gradient descent and defines the temporal difference error.
+    - For further depth, see Sutton and Barto's [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html).
+  - **17.2 Q-Learning**
+    - Q-Learning incrementally updates the action value function using the Bellman equation.
+    - The update uses observed rewards and next state-action values without requiring known transition models.
+    - An exploration strategy like ε-greedy is necessary to guarantee convergence.
+    - The Q-learning update is an off-policy method estimating the optimal policy value.
+    - The original Q-learning algorithm is described by Watkins (1989).
+  - **17.3 Sarsa**
+    - Sarsa updates action values using the actual next action taken, unlike Q-learning's maximization.
+    - It is an on-policy method directly estimating the value of the exploration policy.
+    - Sarsa often converges slower than Q-learning depending on the problem.
+    - Implementation maintains the last experience tuple for updates.
+    - For foundational details, see Rummery and Niranjan (1994).
+  - **17.4 Eligibility Traces**
+    - Eligibility traces propagate reward information backward to prior states and actions.
+    - They accelerate learning, especially in environments with sparse rewards.
+    - Trace decay parameter λ controls the exponential decay of credit assignment.
+    - Sarsa(λ) maintains a trace of visits and applies updates weighted by visit counts.
+    - Off-policy methods like Q-learning require special care when using eligibility traces due to stability issues.
+  - **17.5 Reward Shaping**
+    - Reward shaping augments sparse reward functions with domain knowledge to speed learning.
+    - Shaped rewards must satisfy \(F(s,a,s') = \gamma \beta(s') - \beta(s)\) to preserve optimal policies.
+    - Shaping can involve penalties or bonuses based on distance or intermediate behaviors.
+    - Correct reward shaping maintains policy invariance.
+    - For theory and applications, see Ng, Harada, and Russell (1999).
+  - **17.6 Action Value Function Approximation**
+    - Parametric function approximation generalizes value functions to large or continuous spaces.
+    - Gradient descent minimizes the loss between approximated and optimal action values.
+    - The update rule uses sample-based estimates since the optimal policy is unknown.
+    - Differentiable approximators include linear models and neural networks.
+    - Deep reinforcement learning literature offers practical implementation insights, e.g., Graesser and Keng (2020).
+  - **17.7 Experience Replay**
+    - Experience replay stores past experience tuples to prevent catastrophic forgetting.
+    - Random sampling from replay memory reduces correlation between training samples.
+    - Replay enables multiple uses of experience tuples, improving data efficiency and stability.
+    - Experience replay adapts gradient updates to use batches from stored experiences.
+    - Introduced and applied in deep RL by Mnih et al. (2013); extensions include prioritized replay (Schaul et al., 2016).
+  - **17.8 Summary**
+    - Model-free methods learn action value functions without explicit models.
+    - Incremental mean estimation underlies many learning updates.
+    - Q-learning and Sarsa differ in on-policy versus off-policy updates and exploration use.
+    - Eligibility traces and reward shaping enable faster or more guided learning.
+    - Function approximation and experience replay address scalability and stability challenges.
+  - **17.9 Exercises**
+    - Exercises cover incremental mean estimation with different learning rates.
+    - Update rules for value functions and complexities of Q-learning and Sarsa are analyzed.
+    - Sarsa(λ) behavior, computational cost, and eligibility trace limits are explored.
+    - Solutions involve step-by-step calculations and complexity assessments.
+    - Exercises reinforce understanding of core model-free concepts and algorithms.

@@ -1,31 +1,87 @@
-- Mathematical Concepts
-  - A.1 Measure Spaces
-    - A sigma-algebra over a set Ω is a collection of subsets including Ω, closed under complementation and countable unions. A measure space consists of a set Ω, a sigma-algebra Σ, and a measure µ mapping subsets to non-negative extended real numbers, satisfying non-negativity, null empty set, and countable additivity. These properties define measurable sets and establish the foundational structure for integration and probability. See [Measure Space - Wikipedia](https://en.wikipedia.org/wiki/Measure_space) for further details.
-  - A.2 Probability Spaces
-    - A probability space is a measure space with total measure equal to one, consisting of the sample space Ω, event space Σ, and a probability measure µ (commonly P). The Kolmogorov axioms encompass non-negativity, countable additivity, and normalization to unity. These axioms underpin modern probability theory. Refer to [Probability Space - Wikipedia](https://en.wikipedia.org/wiki/Probability_space) for an overview.
-  - A.3 Metric Spaces
-    - A metric space is a set X equipped with a metric d mapping pairs in X to non-negative real numbers, satisfying identity of indiscernibles, symmetry, and the triangle inequality. This metric formalizes notions of distance and convergence. See [Metric Space - Wikipedia](https://en.wikipedia.org/wiki/Metric_space) for foundational concepts.
-  - A.4 Normed Vector Spaces
-    - A normed vector space couples a vector space X with a norm ‖·‖ that is zero only at the zero vector, absolutely homogeneous, and satisfies the triangle inequality. L^p norms parameterized by p≥1 are common, such as L¹ (taxicab), L² (Euclidean), and L^∞ (maximum) norms, which induce associated metrics via d(x,y)=‖x−y‖. For deeper insights, consult [Normed Vector Space - Wikipedia](https://en.wikipedia.org/wiki/Normed_vector_space).
-  - A.5 Positive Definiteness
-    - A symmetric matrix A is positive definite if x^T A x > 0 for all nonzero x, and positive semidefinite if x^T A x ≥ 0 always. Positive definiteness is crucial for ensuring properties like convexity of quadratic forms and convergence analysis. See [Positive-definite matrix - Wikipedia](https://en.wikipedia.org/wiki/Positive-definite_matrix).
-  - A.6 Convexity
-    - Convexity concerns sets and functions, where a set S is convex if any convex combination αx+(1−α)y for α∈[0,1] lies within S. A function f is convex over S if it lies below the linear interpolation of any two points, and strictly convex if this inequality is strict for α in (0,1). Strict convexity guarantees at most one minimum. Convex sets and convex functions are foundational in optimization. See [Convex set - Wikipedia](https://en.wikipedia.org/wiki/Convex_set) and [Convex function - Wikipedia](https://en.wikipedia.org/wiki/Convex_function).
-  - A.7 Information Content
-    - Information content I(x) = −log P(x) quantifies the surprise of observing discrete value x with probability P(x). The logarithm base determines units: natural logs produce nats, base 2 produces bits. This quantifies the minimal bits required to encode x optimally under P. For detailed theory see [Information Content - Wikipedia](https://en.wikipedia.org/wiki/Information_content).
-  - A.8 Entropy
-    - Entropy H(X) is the expected information content of a discrete random variable X, defined as H(X) = −∑ P(x) log P(x). For continuous variables, differential entropy h(X) integrates p(x) log p(x). Entropy measures uncertainty and plays a central role in information theory. See [Entropy (information theory) - Wikipedia](https://en.wikipedia.org/wiki/Entropy_(information_theory)).
-  - A.9 Cross Entropy
-    - Cross entropy H(P,Q) between distributions P and Q measures the expected log loss when Q models data generated from P, computed as −∑ P(x) log Q(x) for discrete or integral form for continuous cases. It quantifies inefficiency of using Q as a model for P. See [Cross entropy - Wikipedia](https://en.wikipedia.org/wiki/Cross_entropy).
-  - A.10 Relative Entropy
-    - Relative entropy or Kullback–Leibler divergence D_KL(P||Q) measures the difference from Q to P, given by ∑ P(x) log [P(x)/Q(x)]. It requires the support of P to be included in Q's support and is zero only when distributions coincide. It is foundational in statistics and information theory. See [Kullback–Leibler divergence - Wikipedia](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence).
-  - A.11 Gradient Ascent
-    - Gradient ascent iteratively updates a differentiable function's input by moving in the direction of increasing gradient: x ← x + α∇f(x), where step size α influences convergence speed and stability. A decaying step size α ← γα with 0 < γ < 1 is often used to enhance convergence. This method seeks local maxima without guarantee of global optimum. See [Gradient ascent - Wikipedia](https://en.wikipedia.org/wiki/Gradient_ascent).
-  - A.12 Taylor Expansion
-    - The Taylor expansion represents a function as an infinite sum of derivatives at a point, allowing local polynomial approximations: f(x) ≈ f(a) + f'(a)(x−a) + (1/2)f''(a)(x−a)² + ... . It extends to multiple dimensions with gradients and Hessians. Taylor expansions enable function approximations and local analysis. For more see [Taylor series - Wikipedia](https://en.wikipedia.org/wiki/Taylor_series).
-  - A.13 Monte Carlo Estimation
-    - Monte Carlo estimation approximates the expectation of a function f under distribution p by averaging f over samples drawn from p: E_p[f(x)] ≈ (1/n)∑ f(x^(i)). The estimator's variance decreases with sample size as Var(f)/n. This method allows approximation where analytic integrals are difficult. See [Monte Carlo method - Wikipedia](https://en.wikipedia.org/wiki/Monte_Carlo_method).
-  - A.14 Importance Sampling
-    - Importance sampling computes expectations under distribution p using samples from a different distribution q by weighting samples with p(x)/q(x). This allows efficient estimation when sampling from p is difficult but q is accessible. The quality depends on the choice of q covering the support of p. Further reading at [Importance sampling - Wikipedia](https://en.wikipedia.org/wiki/Importance_sampling).
-  - A.15 Contraction Mappings
-    - A contraction mapping f on a metric space reduces distance by factor α < 1: d(f(x), f(y)) ≤ α d(x,y). The Banach fixed-point theorem states every contraction mapping on a complete metric space converges to a unique fixed point via iteration. This property is employed in convergence proofs such as for the Bellman operator in reinforcement learning. See [Banach fixed-point theorem - Wikipedia](https://en.wikipedia.org/wiki/Banach_fixed-point_theorem).
+- **A.1 Measure Spaces**
+  - A sigma-algebra over a set Ω is a collection of subsets closed under complementation, countable unions, and contains Ω.
+  - A measure space consists of Ω, a sigma-algebra Σ, and a measure µ satisfying non-negativity, measure of empty set zero, and countable additivity on disjoint sets.
+  - For more on measure theory, see [Measure Theory by Paul Halmos](https://link.springer.com/book/10.1007/978-1-4757-5645-5).
+
+- **A.2 Probability Spaces**
+  - A probability space is a measure space with the additional requirement that the measure of the entire set Ω is 1.
+  - The components are named sample space (Ω), event space (Σ), and probability measure (µ or P).
+  - The properties follow the Kolmogorov axioms combining measure properties with µ(Ω) = 1.
+  - Refer to [Kolmogorov's Foundations of the Theory of Probability](https://archive.org/details/FoundationsOfTheTheoryOfProbability).
+
+- **A.3 Metric Spaces**
+  - A metric space consists of a set X with a distance function d mapping pairs of elements to non-negative reals.
+  - The metric satisfies identity of indiscernibles, symmetry, and the triangle inequality.
+  - See [Metric Spaces by Mícheál Ó Searcóid](https://www.springer.com/gp/book/9781852339317) for details.
+
+- **A.4 Normed Vector Spaces**
+  - Normed vector spaces have a norm function mapping vectors to non-negative reals, zero only at the zero vector, absolutely homogeneous, and obeying the triangle inequality.
+  - Lp norms are parameterized by p ≥ 1, including L1 (taxicab), L2 (Euclidean), and L∞ (max norm).
+  - Norms induce metrics by defining d(x, y) = ||x - y||.
+  - For foundational knowledge, see [Functional Analysis by Walter Rudin](https://www.springer.com/gp/book/9780070542361).
+
+- **A.5 Positive Definiteness**
+  - A symmetric matrix A is positive definite if xᵀAx > 0 for all nonzero x; positive semidefinite if xᵀAx ≥ 0.
+  - Positive definiteness ensures certain matrix properties relevant in optimization and numerical methods.
+  - See [Matrix Analysis by Roger Horn and Charles Johnson](https://www.cambridge.org/core/books/matrix-analysis/46C1842191F055A9165F90E58B9A7D6D).
+
+- **A.6 Convexity**
+  - Convex combinations are weighted sums of vectors with nonnegative weights summing to one.
+  - A convex set contains all convex combinations of its points.
+  - A function is convex on a convex set if for all x, y and α in [0, 1], f(αx + (1 − α)y) ≤ αf(x) + (1 − α)f(y).
+  - Strict convexity requires strict inequality for α in (0, 1).
+  - See [Convex Optimization by Boyd and Vandenberghe](https://web.stanford.edu/~boyd/cvxbook/).
+
+- **A.7 Information Content**
+  - Information content I(x) of observing a value x with probability P(x) is −log P(x).
+  - The logarithm base determines units, usually natural logs (nats) or base 2 (bits).
+  - Information content measures the minimal bits required to encode value x under ideal coding.
+  - See [Shannon's original paper](https://ieeexplore.ieee.org/document/6773024).
+
+- **A.8 Entropy**
+  - Entropy H(X) is the expected information content of a discrete variable: H(X) = −∑ P(x) log P(x).
+  - Differential entropy h(X) extends this to continuous densities.
+  - Entropy quantifies uncertainty inherent in a distribution.
+  - Additional reading: [Information Theory, Inference, and Learning Algorithms by David MacKay](http://www.inference.org.uk/itila/).
+
+- **A.9 Cross Entropy**
+  - Cross entropy H(P, Q) measures expected information content when using distribution Q to encode samples from P.
+  - Defined as −∑ P(x) log Q(x) for discrete, with an integral form for continuous cases.
+  - Cross entropy is used in machine learning loss functions.
+  - For details, see [Elements of Information Theory by Cover and Thomas](https://www.wiley.com/en-us/Elements+of+Information+Theory%2C+2nd+Edition-p-9780471241959).
+
+- **A.10 Relative Entropy**
+  - Relative entropy or KL divergence DKL(P||Q) measures difference between distributions P and Q.
+  - Defined as ∑ P(x) log (P(x)/Q(x)), only when support of P is contained in Q's support.
+  - Used extensively in statistics and machine learning to measure distribution discrepancy.
+  - See [Kullback and Leibler's original work](https://www.amazon.com/Information-Theory-Statistics-Solomon-Kullback/dp/0486445492).
+
+- **A.11 Gradient Ascent**
+  - Gradient ascent iteratively updates x by moving in the direction of the gradient to maximize a differentiable function f(x).
+  - Step factor α controls step size; decay of α can be applied to improve convergence.
+  - Widely used in optimization and machine learning.
+  - See [Convex Optimization by Boyd and Vandenberghe](https://web.stanford.edu/~boyd/cvxbook/) for convergence discussion.
+
+- **A.12 Taylor Expansion**
+  - Taylor expansion represents a function locally as an infinite sum of polynomial terms based on its derivatives at a point.
+  - Linear and quadratic approximations use the first two or three terms.
+  - The multivariate version applies gradients and Hessians.
+  - See [Advanced Calculus by Patrick M. Fitzpatrick](https://www.worldcat.org/title/advanced-calculus/oclc/799090570) for deeper insight.
+
+- **A.13 Monte Carlo Estimation**
+  - Monte Carlo estimation approximates expected values by averaging function evaluations on samples drawn from the target distribution.
+  - The variance decreases inversely with the number of samples.
+  - Useful when analytic integration is intractable.
+  - See [Monte Carlo Methods in Financial Engineering by Paul Glasserman](https://www.springer.com/gp/book/9780387004518).
+
+- **A.14 Importance Sampling**
+  - Importance sampling estimates expectations over p by sampling from an alternative distribution q, weighting samples by p(x)/q(x).
+  - Enables variance reduction or sampling when direct sampling from p is difficult.
+  - Requires q to have support covering p.
+  - For further reading, see [Monte Carlo Statistical Methods by Robert and Casella](https://link.springer.com/book/10.1007/978-1-4757-4145-2).
+
+- **A.15 Contraction Mappings**
+  - A contraction mapping f on a metric space reduces distances between points by a factor α < 1.
+  - The Banach fixed-point theorem guarantees a unique fixed point and convergence of repeated application.
+  - Demonstrated with a specific R² example and Euclidean norm.
+  - See [Functional Analysis by Walter Rudin](https://www.springer.com/gp/book/9780070542361) for contraction mapping theorem.

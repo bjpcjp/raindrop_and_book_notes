@@ -1,15 +1,49 @@
-- 19 Beliefs
-  - 19.1 Belief Initialization  
-    The agent's initial belief over states can be represented parametrically (e.g., categorical or Gaussian) or non-parametrically (e.g., particles). Diffuse initial beliefs avoid overconfidence in incorrect states but pose challenges in sparse sampling, especially in non-parametric methods. Initializing beliefs after informative observations, such as landmark detections, helps focus belief sampling; see [Probabilistic Robotics](https://mitpress.mit.edu/books/probabilistic-robotics) for further details.
-  - 19.2 Discrete State Filter  
-    Beliefs in discrete POMDPs are categorical distributions over finite states and can be updated exactly using recursive Bayesian estimation based on transition and observation models. The belief vector lies in a probability simplex, ensuring non-negative elements summing to one. Accurate observation and transition models critically influence belief update success; foundational concepts appear in [Sutton and Barto's Reinforcement Learning](http://incompleteideas.net/book/the-book.html).
-  - 19.3 Linear Gaussian Filter  
-    For continuous states under linear–Gaussian assumptions on transitions, observations, and beliefs, the Kalman filter performs exact belief updates using mean and covariance predictions and Kalman gain adjustments. This method assumes Gaussian noise and linear dynamics, enabling efficient recursive estimation. The classical Kalman filter is detailed in [Kalman’s original paper](https://ieeexplore.ieee.org/document/4085255).
-  - 19.4 Extended Kalman Filter  
-    The EKF extends the Kalman filter to nonlinear transition and observation models by linearizing dynamics around the current belief mean using Jacobians. It produces Gaussian approximations but does not preserve exact posteriors or multimodality, trading accuracy for computational tractability. The EKF implementation and applicability are extensively covered in [Probabilistic Robotics](https://mitpress.mit.edu/books/probabilistic-robotics).
-  - 19.5 Unscented Kalman Filter  
-    The UKF avoids derivatives by deterministically sampling sigma points to approximate nonlinear transformations of Gaussian distributions. It generalizes belief updates by transforming sigma points through nonlinear functions, reconstructing new means and covariances. Parameters control sigma point distribution, and the method outperforms EKF in many nonlinear settings. For in-depth theory, see [Julier and Uhlmann's UKF paper](https://ieeexplore.ieee.org/document/1416923).
-  - 19.6 Particle Filter  
-    Particle filters represent beliefs as weighted samples (particles) and update by sampling successor states via transition dynamics, weighting by observation likelihoods, and resampling accordingly. They approximate arbitrary distributions and handle nonlinear, non-Gaussian dynamics but suffer from particle deprivation. Standard tutorials include [Arulampalam et al.’s particle filter overview](https://ieeexplore.ieee.org/document/978374).
-  - 19.7 Particle Injection  
-    Particle injection mitigates particle deprivation by adding random samples from broader distributions, balancing exploration and accuracy. Adaptive injection adjusts injection rates based on fast and slow moving averages of particle weights, preventing overconfidence during filter convergence or noisy observations. Core principles and adaptive strategies are discussed in [Probabilistic Robotics](https://mitpress.mit.edu/books/probabilistic-robotics).
+- **19 Beliefs**
+  - **19.1 Belief Initialization**
+    - Beliefs can be represented parametrically (categorical or multivariate normal) or non-parametrically (particles).
+    - Initial beliefs encode prior information and should be diffuse in absence of knowledge to avoid overconfidence.
+    - Landmark observations can help initialize beliefs more precisely in robotic navigation.
+    - Refer to [Probabilistic Robotics](https://mitpress.mit.edu/books/probabilistic-robotics) by Thrun et al. for practical belief updating methods.
+  - **19.2 Discrete State Filter**
+    - In POMDPs, the agent receives observations with probabilities dependent on states and actions.
+    - Beliefs over discrete states are represented as categorical distributions (belief vectors) constrained to the probability simplex.
+    - Recursive Bayesian estimation updates beliefs based on actions and observations using the transition and observation models.
+    - The crying baby example demonstrates belief updates in a simple discrete POMDP.
+  - **19.3 Linear Gaussian Filter**
+    - Kalman filters provide exact belief updates for linear Gaussian transition and observation models with Gaussian beliefs.
+    - The filter performs prediction based on dynamics and correction using observations through the Kalman gain.
+    - References include Rudolf Kálmán’s seminal paper and [Estimation with Applications to Tracking and Navigation](https://www.wiley.com/en-us/Estimation+with+Applications+to+Tracking+and+Navigation-p-9780471546894).
+  - **19.4 Extended Kalman Filter**
+    - The EKF extends the Kalman filter to nonlinear dynamics by linearizing through Taylor expansions (Jacobian matrices).
+    - EKF approximates updated beliefs as Gaussian distributions but does not preserve true posterior mean and variance.
+    - It is widely used in practice due to computational efficiency despite being an approximation.
+    - Jacobians provide local linear approximations necessary for updates.
+  - **19.5 Unscented Kalman Filter**
+    - The UKF uses deterministic sigma points to approximate the effect of nonlinear transformations on Gaussian beliefs without derivatives.
+    - Sigma points and associated weights reconstruct mean and covariance after transformation for improved approximation.
+    - The scalar spread parameter λ controls sigma point dispersion and affects approximation quality.
+    - The UKF calculates the Kalman gain using cross covariance matrices instead of linear observation matrices.
+    - See Julier and Uhlmann’s original work on unscented filtering for foundational details.
+  - **19.6 Particle Filter**
+    - Particle filters approximate beliefs using a set of sampled states (particles), useful for non-linear, non-Gaussian models.
+    - Particles propagate via transition distributions, and weights reflect observation likelihoods.
+    - Resampling is based on weights to approximate posterior distributions; rejection sampling variants exist but are limited for continuous observations.
+    - Performance depends on particle count and distribution coverage.
+    - For a tutorial, see Arulampalam et al. (2002) on particle filters for Bayesian tracking.
+  - **19.7 Particle Injection**
+    - Particle injection mitigates particle deprivation by adding randomly sampled particles from a broad distribution.
+    - Adaptive injection adjusts the number of injected particles based on the ratio of fast and slow exponential moving averages of particle weights.
+    - Injection reduces the risk of losing particles near the true state but can decrease accuracy if overused.
+    - Parameters α (smoothing factors) and ν (injection rate scalar) tune the adaptive approach.
+    - Adaptive injection adapts to varying observation likelihoods to maintain particle diversity.
+  - **19.8 Summary**
+    - POMDPs model decision making with state uncertainty requiring belief maintenance.
+    - Beliefs can be discrete categorical distributions or continuous Gaussian distributions.
+    - Linear Gaussian models allow exact analytical filtering; nonlinearities require EKF or UKF approximations.
+    - Particle filters approximate beliefs with samples and are broadly applicable.
+    - Maintaining accurate and robust beliefs depends on model accuracy and appropriate filter choice.
+  - **19.9 Exercises**
+    - Exercises cover conceptual and computational understanding of belief updates in POMDPs, Kalman filters, particle filters, and conjugate distributions.
+    - Applications include localization, parameter estimation (Poisson and gamma distributions), and aircraft monitoring.
+    - Solutions emphasize the mathematical formulations and reasoning underlying different belief update methods.
+    - Exercises provide practical connections to modeling assumptions and limitations in various filtering approaches.

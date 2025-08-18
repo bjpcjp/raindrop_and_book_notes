@@ -1,23 +1,25 @@
-- Introduction  
-  - Decision Making  
-    An agent acts based on observations of its environment in an observe-act loop, where observations are often incomplete or noisy. Key sources of uncertainty in decision-making include outcome, model, state, and interaction uncertainties. These uncertainties critically influence computational approaches to intelligent decision making. See [Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/) for foundational concepts.  
-  - Applications  
-    Examples of decision making under uncertainty include aircraft collision avoidance, automated driving, breast cancer screening, financial portfolio allocation, and distributed wildfire surveillance. These domains involve balancing safety, risk, and uncertainty in dynamic environments. Relevant real-world applications and case studies illustrate these challenges. For further study, see [MIT Press Collision Avoidance](https://mitpress.mit.edu/books/decision-making-under-uncertainty).  
-  - Methods  
-    Methods for designing decision agents include explicit programming, supervised learning (behavioral cloning), optimization, planning, and reinforcement learning. Each method varies in designer responsibility and automation degree, with planning and reinforcement learning focusing on sequential and uncertain environments. The trade-offs among these methods guide appropriate application choices. See [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/RLbook2020.pdf) for methodology details.  
-  - History  
-    The history of automated decision making spans ancient myths through economic utility theory, psychological learning theories, neuroscientific insights, computer science paradigms, engineering practices, mathematical probability, and operations research. Interdisciplinary contributions have shaped modern algorithmic approaches. Reference [The Quest for Artificial Intelligence](https://ai.stanford.edu/~nilsson/QAI/qai.pdf) for an in-depth historical overview.  
-  - Societal Impact  
-    Algorithmic decision making supports environmental sustainability, medical advances, urban infrastructure, and transportation, while posing challenges of bias, adversarial risks, and ethical concerns. The equitable and robust deployment of these algorithms is critical to maximize societal benefits and minimize harms. See [Artificial Intelligence for Social Good: A Survey](https://arxiv.org/abs/2001.01818) for a comprehensive discussion.  
-  - Overview  
-    The book is structured in five parts addressing probabilistic reasoning, sequential decision problems, model uncertainty (reinforcement learning), state uncertainty (POMDPs), and multiagent systems. Each part progressively relaxes assumptions and expands problem complexity to provide a comprehensive understanding of decision making under uncertainty. For foundational knowledge, consult [Markov Decision Processes: Discrete Stochastic Dynamic Programming](https://link.springer.com/book/10.1007/978-1-4614-1743-8).  
-- Probabilistic Reasoning  
-  Probabilistic reasoning introduces representing uncertainty with probability distributions, inference in multivariable contexts, learning model parameters, and combining utility theory into decision networks. The maximum expected utility principle guides rational decision making under uncertainty. Bayesian methods and decision networks facilitate structured reasoning in complex domains. See [Bayesian Networks and Decision Graphs](https://mitpress.mit.edu/books/bayesian-networks-and-decision-graphs) for deeper exploration.  
-- Sequential Problems  
-  Sequential decision making involves making a series of decisions to maximize expected utility over time using Markov decision processes (MDPs). Exact and approximate offline and online solution methods are discussed, along with policy search techniques. These methods address challenges in stochastic and fully observable environments where future uncertainty is critical. Additional reference: [Dynamic Programming and Optimal Control](http://web.stanford.edu/group/scpnt/gpml/).  
-- Model Uncertainty  
-  Model uncertainty covers reinforcement learning, where the agent learns optimal policies through interaction without prior knowledge of transition or reward models. Key challenges include balancing exploration and exploitation, delayed rewards, and generalization from limited experience. Core algorithms and theory underpin adaptive decision making in unknown environments. See [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/RLbook2020.pdf) for a comprehensive treatment.  
-- State Uncertainty  
-  State uncertainty involves partially observable Markov decision processes (POMDPs), where the agent receives noisy observations rather than exact states. Solutions require belief state updates and policies mapping beliefs to actions. Both exact and approximate methods address complexity in inferring and acting under uncertainty. For further reading, consult [POMDPs for Robotics](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0071917).  
-- Multiagent Systems  
-  Multiagent systems extend decision making to multiple interacting agents with potentially competing or collaborative objectives. The framework includes simple games, Markov games (MGs), partially observable Markov games (POMGs), and decentralized POMDPs (Dec-POMDPs). Algorithms combine reinforcement learning with multiagent considerations to solve these generalized models. Reference [Multiagent Systems: Algorithmic, Game-Theoretic, and Logical Foundations](https://www.cambridge.org/core/books/multiagent-systems/80090DD2D722B1C2BB7157FEA1711BED) for detailed algorithmic approaches.
+- **Introduction**
+  - **Decision Making**
+    - An agent acts based on observations of its environment through an observe-act loop.
+    - Agents face four main sources of uncertainty: outcome, model, state, and interaction uncertainty.
+    - A comprehensive introduction to artificial intelligence is provided by [Russell and Norvig (2021)](https://www.pearson.com/us/higher-education/program/Russell-Artificial-Intelligence-A-Modern-Approach-4th-Edition/PGM333213.html).
+  - **Applications**
+    - Decision making under uncertainty applies to diverse domains such as aircraft collision avoidance, automated driving, breast cancer screening, financial portfolio allocation, and wildfire surveillance.
+    - Challenges include noisy or incomplete observations, unpredictable agent behavior, and balancing risk and reward.
+    - Real examples and references in each domain provide foundational resources for deeper study.
+  - **Methods**
+    - Methods include explicit programming, supervised learning, optimization, planning, and reinforcement learning.
+    - Planning uses known models to guide search, whereas reinforcement learning learns strategies from interaction without a known model.
+    - Approaches differ in automation level and are chosen based on problem complexity and uncertainty.
+  - **History**
+    - Decision making automation has roots from ancient myths to modern interdisciplinary research.
+    - Major contributions come from economics (utility theory, game theory), psychology (reinforcement learning origins), neuroscience (neural networks), computer science (symbolic and connectionist AI paradigms), engineering (robotics, control theory), mathematics (Bayesian statistics), and operations research (optimization methods).
+    - Important foundational works include [Stigler (1950)](https://www.jstor.org/stable/1826464), [Koopman (1980)](https://www.elsevier.com/books/search-and-screening/koopman/978-0-08-027099-4), and [Nilsson (2009)](https://mitpress.mit.edu/books/quest-artificial-intelligence).
+  - **Societal Impact**
+    - Decision making algorithms contribute to sustainability, medicine, infrastructure, and transportation.
+    - Challenges include algorithmic bias, fairness, adversarial robustness, and ethical responsibility.
+    - Relevant surveys analyze AI for social good such as [Shi et al. (2020)](https://arxiv.org/abs/2001.01818).
+  - **Overview**
+    - The book is structured into five parts addressing probabilistic reasoning, sequential decision problems, model uncertainty (reinforcement learning), state uncertainty (POMDPs), and multiagent systems.
+    - Each part builds on the previous to address increasingly complex uncertainty and interaction scenarios.
+    - Fundamental models such as Markov decision processes (MDP), partially observable MDPs, and Markov games are introduced with solution methods.

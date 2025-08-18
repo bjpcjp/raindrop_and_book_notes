@@ -1,37 +1,42 @@
-- Controllers
-  - Controller definition and components  
-    The section defines controllers as policy representations maintaining internal state with nodes, action selection distribution ψ(a|x), and successor distribution η(x'|x,a,o). Controllers improve scalability by using finite graphs instead of enumerating belief points. This approach allows stochastic transitions among successor nodes, generalizing conditional plans. Further reading: [Finite State Controllers for POMDPs](https://web.archive.org/web/20090724144522/http://rakaposhi.eas.asu.edu/learnpoms/node9.html).
-  - Example: Crying baby controller  
-    A two-node controller is constructed for the crying baby problem, with deterministic action and successor transitions reacting directly to observations. This compact representation manages internal state effectively to react appropriately to crying or quiet observations. The example demonstrates direct policy graph construction without maintaining belief states. Further reading: [POMDPs in Practice](https://www.pomdp.org/tutorials/).
-  - Comparison to conditional plans  
-    Conditional plans are trees with exponentially growing nodes, whereas controllers use directed graphs allowing stochastic transitions and compact infinite horizon policy representation. The controller outperforms conditional plans by representing infinite horizon behavior in just two nodes, highlighting efficiency in policy size. Further reading: [Conditional Plans and Finite State Controllers](https://link.springer.com/chapter/10.1007/3-540-44794-6_29).
-  - Utility evaluation via product MDP  
-    Utility evaluation uses a product MDP with state space X × S, solving a system of linear equations (23.1) or via iterative policy evaluation. The value U(x,s) can be interpreted as alpha vectors, linking to belief-state value computation. Controllers avoid maintaining beliefs directly by iterating over nodes. Further reading: [Value Iteration in POMDPs](https://web.stanford.edu/~boqing/papers_published/pomdp_value_iteration.pdf).
-- Policy Iteration
-  - Algorithm and process overview  
-    Policy iteration alternates policy evaluation and improvement, starting from any initial controller. Improvement adds nodes deterministically for all action-observation-node combinations, followed by pruning dominated or identical nodes to manage complexity. This iterative refinement converges to an optimal infinite horizon controller. Further reading: [Hansen (1998) - Policy iteration for POMDPs](http://robotics.stanford.edu/~ruichin/hansen_uai98.pdf).
-  - Example: Crying baby policy improvement  
-    The example performs one policy improvement step generating 12 new nodes from the initial two, enumerating deterministic action and successor function assignments. Resulting expanded controllers enhance expected utility, with pruning removing redundant or dominated nodes to optimize representation. This illustrates the combinatorial growth and the importance of pruning. Further reading: [Finite State Controllers in POMDPs](https://arxiv.org/pdf/1701.06519.pdf).
-  - Pruning algorithm details  
-    The pruning step removes dominated nodes (those with lower utilities across all states) and identical nodes, including updating transitions to bypass pruned nodes. This reduces controller size without sacrificing value. It retains nodes that improve or match previous utilities, ensuring convergence and computational tractability. Further reading: [Pruning Techniques in POMDP Controllers](https://aaai.org/ocs/index.php/AAAI/AAAI10/paper/view/1989).
-  - Example: Policy iteration on crying baby  
-    A practical demonstration shows utility improvements over two iterations with corresponding pruning. Utility plots illustrate convergence toward near-optimal values, and pruning removes redundant nodes generated across iterations to maintain compactness and optimality. The example confirms the theoretical advantages of policy iteration methods in controller optimization. Further reading: [Incremental POMDP controller construction](https://www.cs.cmu.edu/~ggordon/papers/hansen98.pdf).
-- Nonlinear Programming
-  - Problem formulation for fixed-size controllers  
-    Nonlinear programming (NLP) represents controller optimization as maximizing initial belief utility subject to Bellman constraints, enforcing action and successor distributions as proper probabilities. This formulation fixes controller size and simultaneously optimizes ψ and η. It can be solved via quadratically constrained linear programs for efficiency. Further reading: [Amato et al. (2010) - Optimization of Fixed-Size Controllers](https://link.springer.com/article/10.1007/s10458-010-9111-x).
-  - Algorithm implementation details  
-    The algorithm translates the POMDP into tensor form and defines decision variables for utilities, action distributions, and successor distributions, alongside nonlinear constraints enforcing Bellman equations. Optimizers like IPOPT are applied for solution. This direct approach avoids iterative evaluation-improvement cycles and keeps controller size fixed. Further reading: [Ipopt Tutorial](https://coin-or.github.io/Ipopt/).
-  - Example: Fixed-size controller results for crying baby  
-    NLP computes optimal controllers for sizes k=1 to k=3 nodes. k=1 yields trivial ignore-forever policy; k=2 and k=3 generate near-optimal policies reacting to crying with feeding and returning to ignoring otherwise. Stochasticity in nodes and transitions is visualized with opacity, demonstrating compact and effective policy representation. Further reading: [POMDP Fixed-size Controller Examples](https://www.aaai.org/Papers/AAAI/2011/AAAI11-096.pdf).
-- Gradient Ascent
-  - Theoretical background and formulation  
-    Gradient ascent optimizes fixed-size controllers directly by computing gradients of utility with respect to action selection ψ and successor selection η distributions. The formulation linearizes Bellman equations using transition matrices over node-state spaces and analytically derives gradients via matrix inversion and differentiation of the transition and reward components. Further reading: [Meuleau et al. (1999) - Gradient ascent for POMDP controllers](https://dl.acm.org/doi/10.5555/2074058.2074086).
-  - Algorithmic gradient computation  
-    The algorithm computes matrices Tθ and reward vectors rθ based on current policy parameters, then calculates gradient components ∂U/∂ψ and ∂U/∂η by differentiating the Bellman equations through matrix inversion formulas. Gradients are then used in gradient ascent steps with projection to probability simplices to maintain valid distributions. Further reading: [Matrix differential calculus for POMDPs](https://epubs.siam.org/doi/10.1137/060659153).
-  - Controller gradient ascent algorithm  
-    Starting with random ψ and η, the algorithm iteratively computes policy gradients and updates the policy with step size α. After each update, parameters are projected onto probability simplices to preserve distributions. This method can converge to local optima, and adaptive gradient methods are suggested to alleviate optimization difficulties. Further reading: [Projected Gradient Descent](https://en.wikipedia.org/wiki/Projected_gradient_descent).
-  - Example: Gradient ascent on catch problem  
-    The example shows progressive refinement of policies over iterations with a fixed three-node controller. Initially random, the policy learns to adjust throwing distance and uses nodes to remember catching history. This demonstrates effective use of limited memory via controller parameters and gradient updates. Further reading: [Learning POMDP controllers via gradient ascent](https://link.springer.com/chapter/10.1007/3-540-44681-9_5).
-- Summary  
-  - Overview of controller advantages and methods  
-    Controllers provide compact, scalable policy representations not reliant on belief updates, representing policies as finite node-action-observation graphs. Policy iteration alternates evaluation and improvement steps with pruning to optimize controller size. Nonlinear programming provides a direct optimization of fixed-size controllers. Gradient ascent improves controller parameters gradually via differentiable policy gradients. These methods enable efficient controller design for infinite horizon POMDPs. Further reading: [Survey on POMDP solution methods](https://link.springer.com/chapter/10.1007/978-3-540-24775-3_23).
+- **Controllers**
+  - Controllers maintain internal state represented as a finite graph of nodes.
+  - Actions depend on the current node via a stochastic action selection distribution ψ.
+  - Successor nodes depend on the current node, action, and observation via a distribution η.
+  - Controllers generalize conditional plans by allowing stochastic transitions and infinite horizon policies.
+  - See [Finite State Controllers in POMDPs](https://cs.stanford.edu/people/eroberts/courses/soco/projects/pomdp/finite_state_controllers.html) for more.
+
+- **Policy Iteration**
+  - Policy iteration alternates between policy evaluation and policy improvement steps.
+  - Improvement adds new deterministic nodes with fixed action and successor choices.
+  - Pruning removes dominated or duplicate nodes to control growth.
+  - The algorithm guarantees non-decreasing utility and convergence to an optimal policy.
+  - See Hansen, E. A. (1998). [Solving POMDPs by Searching in Policy Space](https://papers.nips.cc/paper_files/paper/1998/file/7b8c180ek9b50a2ca5a6aecd3662b4e0-Paper.pdf).
+
+- **Nonlinear Programming**
+  - Reformulates fixed-size controller optimization as a quadratically constrained linear program.
+  - Simultaneously optimizes action selection ψ and successor selection η.
+  - No alternating evaluation and improvement steps required.
+  - Enables use of general-purpose nonlinear solvers like Ipopt.
+  - See Amato, C., Bernstein, D. S., & Zilberstein, S. (2010). [Optimizing Fixed-Size Stochastic Controllers for POMDPs](https://doi.org/10.1007/s10458-010-9122-x).
+
+- **Gradient Ascent**
+  - Uses gradient-based optimization to iteratively improve fixed-size controllers.
+  - Computes gradients of the utility with respect to ψ and η via matrix calculus on the Bellman equation.
+  - Updates parameters followed by projection onto probability simplices to maintain validity.
+  - Gradient ascent can converge to local optima and benefits from adaptive step sizes.
+  - See Meuleau et al. (1999). [Solving POMDPs by Searching the Space of Finite Policies](https://doi.org/10.5555/2074047.2074060).
+
+- **Summary**
+  - Controllers avoid explicit belief maintenance, improving computational tractability.
+  - Nodes can be interpreted as abstract subsets of the belief space linked to alpha vectors.
+  - Policy iteration combines evaluation, improvement, and pruning for convergence on optimal policies.
+  - Nonlinear programming and gradient ascent offer optimization approaches for fixed-size controllers.
+  - Controllers provide scalable policy representations for infinite horizon POMDPs.
+
+- **Exercises**
+  - Compare advantages of controller policies over conditional plans and belief-based methods.
+  - Discuss optimality and limitations of deterministic node additions in controller policy iteration.
+  - Prove that pruning nodes does not alter the policy utility.
+  - Propose an algorithm to find minimal controller size achieving large controller utility.
+  - Analyze computational complexity of the gradient ascent step and propose improvements.
+  - For further practice, refer to [POMDPs.jl Documentation](https://github.com/JuliaPOMDP/POMDPs.jl).

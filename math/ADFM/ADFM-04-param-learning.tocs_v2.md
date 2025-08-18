@@ -1,45 +1,76 @@
-- 4 Parameter Learning
-  - Overview of parameter learning approaches
-    - This section introduces the problem of learning or fitting probabilistic model parameters from data. It contrasts the maximum likelihood approach, which finds parameters maximizing data likelihood, with the Bayesian approach, which updates a prior distribution over parameters based on observed data. It also notes alternative models that do not commit to a fixed number of parameters. For a broad introduction to machine learning, see [Machine Learning: A Probabilistic Perspective by K. P. Murphy](https://mitpress.mit.edu/books/machine-learning-0).
-  - 4.1 Maximum Likelihood Parameter Learning
-    - Definition and challenges of maximum likelihood estimation
-      - Maximum likelihood estimation (MLE) finds parameters θ that maximize the likelihood of observed data D under the model P(D|θ). The method often relies on the assumption of independent and identically distributed (IID) samples and maximizes the log-likelihood for numerical stability. The section discusses analytical and numerical challenges in maximization. For foundational concepts on likelihood methods, consult [Introduction to Statistical Learning](https://www.statlearning.com/).
-    - 4.1.1 Maximum Likelihood Estimates for Categorical Distributions
-      - MLE for binomial and categorical data
-        - This subsection derives MLE for a binary variable modeled via the binomial distribution, showing that the MLE parameter estimate corresponds to the observed frequency m/n. It extends to categorical distributions with multiple outcomes, where each parameter estimate equals the relative frequency of observed counts normalized over all categories. Key factors include the assumption of independent outcomes and multinomial sampling. See [Bayesian Data Analysis](https://www.stat.columbia.edu/~gelman/book/) for further reading.
-    - 4.1.2 Maximum Likelihood Estimates for Gaussian Distributions
-      - Analytical MLE for Gaussian parameters
-        - The log-likelihood of Gaussian-distributed data is maximized to estimate mean µ and variance σ². By setting partial derivatives to zero, the MLE parameters correspond to the sample mean and variance. This approach assumes IID Gaussian data. A detailed treatment is available in [Pattern Recognition and Machine Learning by Bishop](https://www.springer.com/gp/book/9780387310732).
-    - 4.1.3 Maximum Likelihood Estimates for Bayesian Networks
-      - MLE for discrete Bayesian network parameters
-        - The section describes MLE for discrete Bayesian networks composed of n variables, each with ri states and qi parental instantiations. Counts mijk from data are normalized to estimate conditional probabilities θijk = P(Xi=k | parents=πij). Challenges include ensuring sufficient data for each parental configuration to avoid undefined estimates. The section provides an algorithm for count extraction. For context, see [Bayesian Networks and Decision Graphs by Koller and Friedman](https://mitpress.mit.edu/books/probabilistic-graphical-models).
-  - 4.2 Bayesian Parameter Learning
-    - Overview of Bayesian parameter estimation
-      - Bayesian learning estimates a posterior distribution p(θ|D), quantifying uncertainty in parameters. This contrasts with MLE’s point estimates and addresses data scarcity or zero-observation issues. The section discusses expectation and maximum a posteriori (MAP) estimators and models Bayesian learning as inference over a network capturing parameter and data dependencies. For comprehensive coverage, refer to [Bayesian Reasoning and Machine Learning by Barber](https://www.cs.ucl.ac.uk/staff/D.Barber/textbook/).
-    - 4.2.1 Bayesian Learning for Binary Distributions
-      - Beta distribution as conjugate prior for Bernoulli parameters
-        - This part demonstrates Bayesian updating with a beta prior for a binary variable’s parameter θ. The posterior remains a beta distribution with updated parameters incorporating observed counts m and n−m. The section provides formulas for normalization constants via the gamma function, calculation of mean and mode of beta distributions, and the concept of pseudocounts affecting posterior certainty. Review [Conjugate Bayesian analysis of the Gaussian distribution](https://en.wikipedia.org/wiki/Conjugate_prior#Beta_distribution_and_Bernoulli_distribution) for linked topics.
-    - 4.2.2 Bayesian Learning for Categorical Distributions
-      - Dirichlet distribution for categorical parameter inference
-        - The Dirichlet prior generalizes the beta prior for multinomial distributions. Parameters α1:n serve as pseudocounts that update with observed counts m1:n, yielding a Dirichlet posterior. The section defines the density function, mean, and mode of the Dirichlet, emphasizing normalization constraints of parameters. For more detail, see [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution).
-    - 4.2.3 Bayesian Learning for Bayesian Networks
-      - Bayesian parameter estimation in discrete Bayesian networks
-        - This subsection shows that priors over local conditional probability tables factorize into Dirichlet distributions with uniform pseudocounts as default. Posterior parameters are updated by summing prior pseudocounts and observed counts mijk. An algorithm for initializing prior parameters is provided. The conjugacy of Dirichlet priors and multinomial likelihood ensures tractable posterior updates. Further reading includes [Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models-0).
-  - 4.3 Nonparametric Learning
-    - Kernel density estimation for flexible density modeling
-      - Nonparametric methods allow the number of parameters to scale with data size, avoiding fixed-parameter assumptions. Kernel density estimation (KDE) is presented as a weighted sum of kernel functions (commonly Gaussian) centered at observed data points, with bandwidth controlling smoothness. Larger bandwidths smooth density estimates while smaller ones can overfit. Bayesian approaches exist for bandwidth selection. For practical guidance, see [Kernel Smoothing by Wand and Jones](https://www.taylorfrancis.com/books/mono/10.1201/9780429498637/kernel-smoothing-miao-wand).
-  - 4.4 Learning with Missing Data
-    - Challenges and approaches to parameter learning with incomplete data
-      - Missing data complicate parameter estimation, with naive approaches discarding incomplete instances often resulting in inadequate data usage. The section assumes data are missing at random, enabling methods that infer missing entries or optimize parameters despite missingness. Alternative mechanisms requiring specialized methods are noted. A comprehensive review is available in [Handbook of Missing Data Methodology](https://www.crcpress.com/Handbook-of-Missing-Data-Methodology/Molenberghs-Fitzmaurice-Kenward-Tsiatis-Verbeke/p/book/9781466503081).
-    - 4.4.1 Data Imputation
-      - Techniques for filling in missing values in datasets
-        - Imputation approximates the posterior distribution over missing entries by point estimates such as marginal mode, nearest neighbor, or posterior-mode/sample based on fitted models. Marginal mode imputes with the most common observed value, nearest neighbor uses distances in observed variables, and model-based methods exploit probabilistic relationships for refined predictions. Examples reveal the pros and cons of each method. For further methods, consult [Multiple Imputation for Nonresponse in Surveys](https://www.wiley.com/en-us/Multiple+Imputation+for+Nonresponse+in+Surveys-p-9780471655749).
-    - 4.4.2 Expectation-Maximization
-      - Iterative algorithm for parameter estimation with missing data
-        - The Expectation-Maximization (EM) algorithm starts with initial parameters, and alternates between estimating missing data distributions using current parameters (E-step) and maximizing likelihood with completed data (M-step). The method can handle latent variables unobserved in all instances and is not guaranteed to find global optima but often works well in practice. Employing multiple random initializations reduces convergence to local optima. EM is foundational in learning Gaussian mixture models and other latent variable models. For foundational details, see [EM Algorithm paper by Dempster et al. (1977)](https://doi.org/10.2307/2984875).
-  - 4.5 Summary
-    - Key points on parameter learning approaches
-      - This section recaps that parameter learning involves estimating model parameters from data, either via maximizing the likelihood or inferring a posterior distribution over parameters. It highlights the convenience of beta and Dirichlet priors for Bayesian updating, the distinction between parametric and nonparametric methods, and strategies for handling missing data such as imputation and EM. For a broad overview, refer to [Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/).
-  - 4.6 Exercises
-    - Practice problems reinforcing parameter learning concepts
-      - Exercises focus on deriving MLE for Laplace distributions, computing MLE in Bayesian networks from data, Bayesian parameter estimation with beta priors, imputation methods for missing data in both discrete and continuous cases, and EM algorithm applications for Gaussian mixture models. These problems consolidate understanding of analytical derivations and algorithmic implementations. For additional exercises, see [Probabilistic Graphical Models Exercises](https://pgm.stanford.edu/).
+- **4 Parameter Learning**
+  - **4.1 Maximum Likelihood Parameter Learning**
+    - Maximum likelihood parameter learning identifies parameters that maximize the likelihood of observed data given a probabilistic model.
+    - It assumes independent and identically distributed samples, enabling likelihood factorization into products over individual data points.
+    - Log-likelihood maximization is preferred for numerical stability and analytic tractability when possible.
+    - Common distributions covered include categorical, Gaussian, and Bayesian networks.
+    - For further theoretical background, see [Machine Learning: A Probabilistic Perspective](https://mitpress.mit.edu/books/machine-learning).
+  - **4.1.1 Maximum Likelihood Estimates for Categorical Distributions**
+    - Parameter estimation for categorical distributions involves counting observations for each category.
+    - The binomial distribution models the likelihood for binary outcomes like flight collision events.
+    - Maximum likelihood estimates correspond to relative frequencies in the data.
+    - For multi-category variables, estimated parameters are normalized counts over classes.
+  - **4.1.2 Maximum Likelihood Estimates for Gaussian Distributions**
+    - The log-likelihood for Gaussian distributions depends on mean and variance parameters.
+    - Setting derivatives of the log-likelihood to zero yields closed-form maximum likelihood estimates for mean and variance.
+    - Estimates are respectively the sample mean and sample variance of observed data.
+  - **4.1.3 Maximum Likelihood Estimates for Bayesian Networks**
+    - Parameters of discrete Bayesian networks factor according to their conditional distributions.
+    - Counts of variable-parent instantiations are extracted from data to estimate parameters.
+    - The maximum likelihood estimate for each conditional probability is the normalized count of occurrences.
+    - Practical implementation involves tabulating counts and normalizing rows of conditional probability tables.
+  - **4.2 Bayesian Parameter Learning**
+    - Bayesian learning treats parameters as random variables, updating priors with observed data to obtain posterior distributions.
+    - This approach quantifies uncertainty and can prevent unreasonable point estimates from limited data.
+    - Posterior expected values and maximum a posteriori (MAP) estimates provide alternative parameter estimates.
+    - Bayesian parameter learning can be viewed as inference in a Bayesian network with parameters as latent variables.
+  - **4.2.1 Bayesian Learning for Binary Distributions**
+    - Beta distributions serve as conjugate priors for binomial likelihoods, enabling analytic posterior updates.
+    - Posterior parameters are sums of prior "pseudocounts" and observed counts.
+    - The Beta distribution's mean and mode have closed-form expressions for parameter estimation.
+    - Prior choice influences posterior especially with small data; uniform Beta(1,1) is a common default.
+  - **4.2.2 Bayesian Learning for Categorical Distributions**
+    - The Dirichlet distribution generalizes the Beta distribution to multiple categories.
+    - Dirichlet parameters represent pseudocounts and admit analytic posterior updates adding observed counts.
+    - Posterior means and modes follow explicit formulae in terms of Dirichlet parameters.
+    - Dirichlet priors enable straightforward Bayesian parameter learning for multinomial data.
+    - Visualization of Dirichlet densities provides intuition about concentration and mode behaviors.
+  - **4.2.3 Bayesian Learning for Bayesian Networks**
+    - Bayesian network parameters have factorized Dirichlet priors over conditional probability tables.
+    - Posterior Dirichlet parameters are computed by adding observed counts to prior pseudocounts.
+    - Algorithms implement generation of uniform Dirichlet priors compatible with network structures.
+    - The posterior update process is an arithmetic addition between data-derived counts and priors.
+  - **4.3 Nonparametric Learning**
+    - Nonparametric methods, such as kernel density estimation, represent distributions without fixed finite parameters.
+    - Kernel density estimation smooths observed data using kernels like Gaussian functions.
+    - The kernel bandwidth controls smoothness; larger bandwidth yields smoother densities.
+    - Bayesian techniques exist for bandwidth selection to optimize model fit.
+    - Reference: [Kernel Density Estimation (Wikipedia)](https://en.wikipedia.org/wiki/Kernel_density_estimation).
+  - **4.4 Learning with Missing Data**
+    - Missing data challenges learning, making naive discarding of incomplete samples inefficient.
+    - Parameter estimates from missing data require marginalization over unobserved entries, which is often computationally expensive.
+    - Approaches include data imputation and expectation-maximization (EM) algorithms.
+    - Missingness is assumed "missing at random," where missingness is independent of unobserved values conditioned on observed data.
+    - For deeper coverage, see [Handbook of Missing Data Methodology](https://www.crcpress.com/Handbook-of-Missing-Data-Methodology/Molenberghs-Fitzmaurice-Kenward-Tsiatis-Verbecke/p/book/9781466563939).
+  - **4.4.1 Data Imputation**
+    - Imputation fills missing entries, approximating the complete data distribution mode or mean.
+    - Marginal mode imputation replaces missing values with the most frequent observed value for categorical data.
+    - For continuous data, marginal means or modes of fitted distributions are used.
+    - Nearest-neighbor imputation leverages similarity in observed variables to select imputed values.
+    - Probabilistic imputation can use inference algorithms to infer conditional distributions over missing variables for more accurate imputations.
+  - **4.4.2 Expectation-Maximization**
+    - EM iteratively improves parameter estimates by alternating between imputing missing data (E-step) and maximizing likelihood given imputations (M-step).
+    - The E-step uses current parameters to infer distributions over missing entries using model-based inference or sampling.
+    - The M-step maximizes likelihood or posterior using completed or weighted data.
+    - EM converges to local optima and is commonly initialized with multiple restarts.
+    - EM extends naturally to latent variable models like Gaussian mixture models.
+  - **4.5 Summary**
+    - Parameter learning estimates model parameters from data via maximum likelihood or Bayesian methods.
+    - Beta and Dirichlet distributions serve as convenient conjugate priors enabling analytic Bayesian updates.
+    - Nonparametric learning methods adjust model complexity with data through kernels or other representations.
+    - Missing data complicates learning; techniques include imputation and EM for principled handling.
+  - **4.6 Exercises**
+    - Exercises cover maximum likelihood estimation for Laplace distributions and parameter estimation for Bayesian networks.
+    - Additional exercises involve posterior inference with Beta priors, various imputation methods, and Gaussian posterior computations.
+    - Solutions provide closed-form formulae and algorithmic reasoning.
+    - Exercises reinforce theoretical concepts and practical skills in parameter learning.

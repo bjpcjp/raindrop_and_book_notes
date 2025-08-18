@@ -1,15 +1,47 @@
-- Online Belief State Planning  
-  - Lookahead with Rollouts  
-    The section introduces lookahead with rollouts as an online method applicable directly to partially observed problems. It uses a generative model to sample next states, enabling handling of high-dimensional state and observation spaces. The method builds upon a function previously used in Algorithm 21.11 for sampling transitions and observations. For more details on rollout methods in POMDPs, see the survey by [Ross et al., 2008](https://jair.org/index.php/jair/article/view/10824).  
-  - Forward Search  
-    Forward search applies a recursive one-step lookahead in belief space for POMDPs, branching on actions and observations. It defines the Q-value recursively to a certain depth d, returning an approximate value when the depth limit is reached. While computational complexity grows exponentially in the depth and branching factors, domain knowledge can reduce effective branching by limiting action or observation consideration. Example implementations include machine replacement and crying baby problems. For foundational concepts, consult [Puterman, 1994](https://bookstore.siam.org/mpr/).  
-  - Branch and Bound  
-    Branch and bound extends to POMDPs by pruning parts of the forward search tree using upper and lower bounds on the value function. The method reuses algorithms from fully observable cases and relies on good bounds like the fast informed bound (upper) and point-based value iteration (lower) for efficiency. The resulting policy matches forward search if the bounds are valid. See the application in the crying baby problem. For further exploration, view [Bertsekas, 2012](http://web.mit.edu/dimitrib/www/dpchapter.html).  
-  - Sparse Sampling  
-    Sparse sampling approximates forward search by sampling a fixed number m of observations per action, avoiding summation over the full observation space. This reduces complexity from O(|A|^d |O|^d) to O(|A|^d m^d), making deeper searches more tractable. The method uses sampled observations and corresponding rewards to estimate Q-values recursively. Details align with those introduced for MDPs in earlier sections. See [Kearns, Mansour, and Ng, 2002](https://papers.nips.cc/paper_files/paper/2002/file/fb3d424419d044a47aee49fc3c31e152-Paper.pdf) for sparse sampling fundamentals.  
-  - Monte Carlo Tree Search  
-    Monte Carlo tree search (MCTS) for POMDPs operates over histories (action-observation sequences) instead of states, associating value estimates and counts with history-action pairs. The method builds a search tree alternating between action and observation nodes and uses an exploration-exploitation strategy similar to UCT, with an exploration constant c guiding exploration. MCTS is anytime and converges to the optimal action given sufficient samples. Rolling out from belief states incorporating prior knowledge improves performance. The POMCP algorithm extends these ideas. For in-depth understanding, refer to [Silver and Veness, 2010](https://papers.nips.cc/paper_files/paper/2010/file/0062b15f6e0351d19aebd9e0b42f2e58-Paper.pdf).  
-  - Determinized Sparse Tree Search  
-    Determinized sparse tree search reduces sampling by determinizing observations through a particle belief representation with fixed scenarios. It uses a determinizing matrix Φ to generate deterministic successors for each particle at each depth, collapsing uncertainty over observations and significantly shrinking the search tree complexity to O(|A|^d m). This method provides a sparse approximation of the true belief tree, maintaining a fixed set of scenarios for planning. See [Ye et al., 2017](https://jair.org/index.php/jair/article/view/11161) for details on the DESPOT algorithm.  
-  - Gap Heuristic Search  
-    Gap heuristic search guides belief exploration by focusing on beliefs with the largest difference (gap) between upper and lower bounds on value estimates. It iteratively improves bounds using heuristic selection of action-observation pairs and halts when the gap falls below a threshold or maximum depth is reached. Initial upper bounds often use best-action best-state heuristics, while rollout policies estimate lower bounds. This approach achieves computational savings by pruning and targeted exploration. For more, consult the description in point-based POMDP literature such as [Pineau et al., 2006](https://pure.mpg.de/rest/items/item_1651755_5/component/file_1651753/content).
+- **22 Online Belief State Planning**
+  - **22.1 Lookahead with Rollouts**
+    - Lookahead with rollouts samples next states randomly to estimate action value in partially observed problems.
+    - Uses a generative model for transitions, rewards, and observations supporting high-dimensional spaces.
+    - Builds on methods introduced in fully observable settings, adapted for belief states.
+    - Refer to S. Ross et al.'s survey on online POMDP planning algorithms for deeper insight.
+  - **22.2 Forward Search**
+    - Forward search extends one-step lookahead to arbitrary depths using recursive Bellman backups over beliefs.
+    - Computational complexity grows exponentially with depth as O(|A|^d |O|^d ), limiting practical depth.
+    - Uses approximate value functions (e.g., QMDP) as leaf node utilities to guide search.
+    - Observation and action branching can be pruned by domain knowledge or heuristics.
+  - **22.3 Branch and Bound**
+    - Branch and bound applies upper and lower bound pruning to reduce forward search complexity.
+    - Can use bounds from fast informed bound for upper bounds and point-based value iteration for lower bounds.
+    - Requires valid bounds to guarantee equivalence to full forward search results.
+    - Demonstrated on problems like the crying baby with depth-based pruning.
+  - **22.4 Sparse Sampling**
+    - Sparse sampling avoids summing over all observations by sampling a fixed number m of observations per action.
+    - Reduces complexity to O(|A|^d m^d ) in forward search approximations.
+    - Enables handling large observation spaces by statistical sampling.
+  - **22.5 Monte Carlo Tree Search**
+    - Extends MDP Monte Carlo Tree Search (MCTS) to POMDPs by associating values and counts with action-observation histories rather than states.
+    - Uses history trees alternating between action and observation nodes, storing Q(h, a) and N(h, a).
+    - Balances exploration and exploitation using a UCB-like formula with exploration parameter c.
+    - The root history updates as new observations arrive, allowing incremental search refinement.
+    - Convergence and variations are detailed in [Silver and Veness, 2010](https://papers.nips.cc/paper/2010/file/2ff97f64c14e9aa3a1ac730422eb5a0e-Paper.pdf).
+  - **22.6 Determinized Sparse Tree Search**
+    - Reduces sampling and tree size by determinizing observations via a scenario-based particle belief using a determinizing matrix Φ.
+    - Transitions and observations become deterministic along scenarios, decreasing tree size to O(|A|^d m) where m is number of scenarios.
+    - Implements particles with fixed scenarios and depth indices to deterministically traverse belief branches.
+    - Combines particle representation with forward search to reduce approximation complexity.
+    - Further details in [Ye et al., 2017](https://www.jair.org/index.php/jair/article/view/11197).
+  - **22.7 Gap Heuristic Search**
+    - Uses the gap between upper and lower bounds on value U^+(b) − U^−(b) to guide exploration in online search.
+    - Selects actions and belief branches that maximize this gap to improve value estimation efficiency.
+    - Employs best-action best-state upper bound and rollout-based lower bound heuristics.
+    - Allows early stopping when gap falls below a threshold, balancing computation and accuracy.
+  - **22.8 Summary**
+    - Summarizes key online planning approaches in POMDPs including lookahead, forward search, branch and bound, sparse sampling, MCTS, determinized sparse trees, and gap heuristic search.
+    - Emphasizes tradeoffs between computational complexity and practical depth/horizon.
+    - Notes that better bounds and rollout policies improve pruning and convergence.
+    - Online methods exploit limited reachable belief space for tractability.
+  - **22.9 Exercises**
+    - Provides exercises to practice forward search computations with approximate value functions.
+    - Illustrates sparse sampling action value calculations from sampled trajectories.
+    - Shows determinized sparse tree search particle updates using transition and observation probabilities.
+    - Reinforces theoretical concepts with concrete numeric examples.

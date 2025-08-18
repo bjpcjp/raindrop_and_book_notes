@@ -1,11 +1,42 @@
-- Actor-Critic Methods  
-  - Actor-Critic  
-    The actor-critic method optimizes a parameterized policy using gradient ascent and relies on a critic estimating value functions Uφ(s), Qφ(s, a), or Aφ(s, a). The actor updates the policy parameters θ to maximize expected returns via gradients involving the advantage function, while the critic minimizes the temporal difference residual loss to approximate the value function. Stability concerns arise due to interdependencies of θ and φ estimates, often addressed by differing update frequencies. Relevant resource: [Actor-Critic Algorithms — OpenAI Spinning Up](https://spinningup.openai.com/en/latest/algorithms/vpg.html#actor-critic).
-  - Generalized Advantage Estimation  
-    Generalized Advantage Estimation (GAE) balances bias and variance in advantage function estimation by combining multiple-step temporal difference residuals using an exponential weighting parameter λ ∈ [0,1]. GAE interpolates between high-bias, low-variance temporal difference and low-bias, high-variance full rollout estimates, improving sample efficiency. It computes policy gradients based on these weighted advantage estimates. Further reading: [Generalized Advantage Estimation (Schulman et al. 2016)](https://arxiv.org/abs/1506.02438).
-  - Deterministic Policy Gradient  
-    The deterministic policy gradient method optimizes continuous action policies producing deterministic outputs, using a critic parameterized action value function Qφ(s, a). The critic minimizes Bellman residuals, while the actor updates policy parameters θ using gradients derived via the chain rule combining ∇θ πθ(s) and ∇_a Qφ(s, a). Exploration often involves adding Gaussian noise to actions. Stability is enhanced by experience replay and target networks. External resource: [Deterministic Policy Gradient Algorithms (Silver et al. 2014)](https://proceedings.icml.cc/static/paper_files/icml/2014/Silver14.pdf).
-  - Actor-Critic with Monte Carlo Tree Search  
-    This method integrates Monte Carlo tree search (MCTS) into actor-critic frameworks for stochastic policies with discrete actions, using parameterized policy πθ(a|s) and value Uφ(s). MCTS guides exploration via an upper confidence bound that balances estimated action value and policy prior probabilities. The parameters θ and φ are updated to minimize cross-entropy and squared error losses against MCTS-derived policies and value estimates, respectively. This approach is inspired by AlphaGo Zero’s methodology. Reference: [Mastering the Game of Go Without Human Knowledge (Silver et al. 2017)](https://www.nature.com/articles/nature24270).
-  - Summary  
-    Actor-critic methods combine policy optimization with value function estimation, generally via gradient-based updates. The base actor-critic uses temporal difference residuals to estimate advantages, while generalized advantage estimation improves variance-bias trade-off. Deterministic policy gradients extend these methods to continuous action spaces with deterministic policies. Monte Carlo tree search methods enhance policy and value learning through structured online exploration guided by prior models. For comprehensive reinforcement learning frameworks, see [Sutton & Barto, Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html).
+- **13 Actor-Critic Methods**
+  - **13.1 Actor-Critic**
+    - Actor-critic methods combine a parameterized policy (actor) and a value function estimator (critic) and optimize both with gradient-based methods.
+    - The actor uses policy gradient ascent based on advantage estimates obtained via the critic.
+    - The critic minimizes the squared temporal difference residual between its estimate and the observed reward-to-go.
+    - Stability can be enhanced by updating the policy more frequently than the value function.
+    - Refer to [Policy Gradient Methods for RL with Function Approximation](https://papers.nips.cc/paper/1999/hash/464d828b85b67f66b9722a5b2166d7aa-Abstract.html) for foundational context.
+
+  - **13.2 Generalized Advantage Estimation**
+    - Generalized Advantage Estimation (GAE) uses exponentially weighted averages of k-step advantage estimations to balance bias and variance in policy gradient estimates.
+    - The parameter λ ∈ [0,1] controls the tradeoff between low variance (temporal difference residual, λ=0) and low bias (full rollout, λ=1).
+    - GAE computes advantages as weighted sums of temporal difference residuals along rollouts.
+    - Empirically, GAE improves policy and value function learning efficiency over the basic actor-critic method.
+    - See [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438) for algorithmic details and experiments.
+
+  - **13.3 Deterministic Policy Gradient**
+    - Deterministic policy gradient applies to continuous action spaces with deterministic policies and critics parameterized as action-value functions.
+    - The critic is updated by minimizing the temporal difference residual of Q-values.
+    - The actor’s gradient is computed using the chain rule combining policy Jacobian and action-value gradients.
+    - Exploration is promoted by adding Gaussian noise to deterministic actions, enhancing learning stability.
+    - See [Deterministic Policy Gradient Algorithms (Silver et al. 2014)](https://proceedings.mlr.press/v32/silver14.html) for theoretical grounding and applications.
+
+  - **13.4 Actor-Critic with Monte Carlo Tree Search**
+    - Integrates Monte Carlo tree search (MCTS) with actor-critic learning to improve policy and value function estimates.
+    - Uses an upper confidence bound that incorporates the learned policy to guide exploration in tree search.
+    - Updates policy parameters by minimizing the cross-entropy to the MCTS-derived policy distribution.
+    - Updates value function by minimizing squared error relative to MCTS value estimates.
+    - This approach resembles AlphaGo Zero’s method of combining planning and learning; see [Mastering the Game of Go Without Human Knowledge](https://www.nature.com/articles/nature24270).
+
+  - **13.5 Summary**
+    - Actor-critic methods optimize parameterized policies with the assistance of value-function estimators using gradient methods.
+    - Generalized advantage estimation reduces policy gradient variance by mixing multi-step temporal difference residuals.
+    - Deterministic policy gradients extend actor-critic methods to continuous action spaces with deterministic policies.
+    - Online planning methods like MCTS can enhance actor-critic training by guiding exploration and learning.
+    - For deeper understanding, consult original references cited in each method section.
+
+  - **13.6 Exercises**
+    - Exercises test comprehension on applying actor-critic methods, recognizing proper advantage functions, and computing gradients in deterministic policy gradients.
+    - Highlights that Monte Carlo tree search is less appropriate for continuous state spaces without discretization.
+    - Clarifies benefits and tradeoffs of temporal difference residuals versus rollout rewards for advantage estimation.
+    - Provides examples of gradient calculations for parameterized action-value functions.
+    - Useful for practice in applying theoretical concepts to concrete problems in reinforcement learning.
