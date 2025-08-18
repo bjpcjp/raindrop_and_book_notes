@@ -1,0 +1,49 @@
+[ADNN-ch13-flask](ADNN-ch13-flask.best.png)
+
+- **Advanced/Other Topics**
+  - **Part 13.1: Flask and Deep Learning Web Services**
+    - Neural networks must be exposed as web services for integration with Python and other languages.
+    - Flask is a popular Python library to deploy TensorFlow and other Python applications quickly as web services.
+    - Flask is ideal for development but not designed for high-volume production; Gunicorn or TensorFlow Serving is recommended for scaling.
+    - Example Flask applications include a simple "Hello World," an MPG prediction model, and an image classification API.
+    - [Flask Documentation](https://flask.palletsprojects.com/)
+  - **Flask Hello World**
+    - Demonstrates starting a simple Flask web service that listens on a specified port.
+    - Flask web server runs continuously waiting for client requests.
+    - Basic usage involves defining routes and returning simple responses like "Hello World."
+  - **MPG Flask**
+    - Demonstrates training a neural network on MPG dataset and saving it to an .h5 file.
+    - Inputs and their valid ranges are checked via JSON validation on incoming requests.
+    - Flask serves the saved model to predict MPG values using POSTed JSON data.
+    - Examples of client usage include Postman and Python requests.
+  - **Flask MPG Client**
+    - Shows how to consume Flask web services via HTTP POST requests.
+    - Includes using Postman with raw JSON and Python-based requests calls.
+    - Validates server responses and prints results or error messages.
+  - **Images and Web Services**
+    - Flask APIs can accept image uploads for classification (e.g., using MobileNet).
+    - Clients can upload files via Postman form data or Python requests.
+    - Responses include predicted classes and their probabilities.
+  - **Part 13.2: Interrupting and Continuing Training**
+    - Training interruption and continuation use checkpoints to save and reload model state.
+    - Utility functions enable unique output directories and logging of training progress.
+    - Includes example CNN training on MNIST with ModelCheckpoint callback to save weights by epoch and validation loss.
+    - Logger class redirects standard output and error to a log file during training.
+  - **Part 13.3: Using a Keras Deep Neural Network with a Web Application**
+    - Extends the image classification API by wrapping it in a ReactJS-based single-page web application.
+    - The web interface allows users to upload images and receive classifications interactively.
+    - Web application assets include HTML, CSS, and JavaScript files served by Flask.
+    - [ReactJS Official Site](https://reactjs.org/)
+  - **Part 13.4: When to Retrain Your Neural Network**
+    - Dataset drift occurs when the distribution of new data changes from the original training data.
+    - Retraining is important as new data arrives to maintain model relevance.
+    - Statistically detect drift using Kolmogorov-Smirnov (KS) test and by training classifiers to distinguish train vs. test data.
+    - Applies KS-test on the Sberbank Russian Housing Market dataset to identify features with significant distribution differences.
+    - Drift detection via Random Forest classifier with ROC AUC above 0.75 indicates likely drift.
+    - [Kaggle Sberbank Russian Housing Market](https://www.kaggle.com/c/sberbank-russian-housing-market)
+  - **Part 13.5: Using a Keras Deep Neural Network with a Web Application**
+    - Discusses deploying Keras neural networks on iOS devices using Apple’s CoreML framework.
+    - Conversion of Keras models (e.g., MobileNet) to CoreML-compatible format is performed using coremltools.
+    - Apple requires a Mac with XCode and an Apple Developer account for deployment.
+    - An example iOS application uses a converted model for camera-based single image classification.
+    - Relevant tutorials include "Running Keras models on iOS with CoreML" and Apple Vision API guides.

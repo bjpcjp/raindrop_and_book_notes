@@ -1,0 +1,223 @@
+[ADNN-TOC](ADNN-TOC.best.png)
+
+- **Python Preliminaries**
+  - **Part 1.1: Course Overview**
+    - Covers course assignments and introduces the instructor Jeff Heaton.
+    - Describes course resources and foundational concepts like deep learning and machine learning.
+    - Explains regression, classification, neural networks, and the importance of deep learning.
+    - Includes Python essentials such as installation, introduction, Jupyter Notebooks, versions, and a module assignment.
+  - **Part 1.2: Introduction to Python**
+    - Introduces basic Python programming concepts.
+  - **Part 1.3: Python Lists, Dictionaries, Sets and JSON**
+    - Explains lists, tuples, sets, dictionaries, and advanced list operations.
+    - Provides an introduction to JSON data format.
+  - **Part 1.4: File Handling**
+    - Describes reading CSV files, large CSV streams, text files, and images in Python.
+  - **Part 1.5: Functions, Lambdas, and Map/Reduce**
+    - Covers mapping, filtering, lambdas, and reducing functions in Python for data processing.
+
+- **Python for Machine Learning**
+  - **Part 2.1: Introduction to Pandas**
+    - Discusses handling missing values, outliers, and dropping irrelevant fields.
+    - Explains concatenating datasets, training-validation splitting, and saving/loading dataframes.
+    - Ends with a module assignment.
+  - **Part 2.2: Categorical and Continuous Values**
+    - Details encoding of continuous values and categorical variables using dummies, target encoding, and ordinal encoding.
+  - **Part 2.3: Grouping, Sorting, and Shuffling**
+    - Covers techniques for shuffling datasets, sorting, and grouping data.
+  - **Part 2.4: Apply and Map**
+    - Explains using map and apply functions with dataframes for feature engineering.
+  - **Part 2.5: Feature Engineering**
+    - Focuses on creating calculated fields and handling addresses, including use of Google API keys.
+
+- **Introduction to TensorFlow**
+  - **Part 3.1: Deep Learning and Neural Network Introduction**
+    - Introduces classification/regression tasks and neural network structure including neuron types (input, output, hidden, bias, context).
+    - Explains necessity of bias neurons and covers activation functions—modern (ReLU, softmax) and classic (step, sigmoid, hyperbolic tangent).
+    - Provides rationale for ReLU and includes a module assignment.
+  - **Part 3.2: Introduction to TensorFlow and Keras**
+    - Explains TensorFlow advantages and deep learning tools.
+    - Demonstrates TensorFlow linear algebra and Mandelbrot set examples.
+    - Introduces Keras, simple regression and classification examples, neural network hyperparameters, and output control.
+  - **Part 3.3: Saving and Loading a Keras Neural Network**
+    - Details methods for persisting and reloading models.
+  - **Part 3.4: Early Stopping in Keras to Prevent Overfitting**
+    - Describes early stopping techniques for classification and regression.
+  - **Part 3.5: Extracting Weights and Manual Network Calculation**
+    - Covers weight initialization and performing manual neural network computations.
+
+- **Training for Tabular Data**
+  - **Part 4.1: Encoding a Feature Vector for Keras Deep Learning**
+    - Describes generating feature matrices and labels for classification and regression neural networks.
+    - Concludes with module assignment.
+  - **Part 4.2: Multiclass Classification with ROC and AUC**
+    - Explains ROC charts for binary classification and multiclass classification error metrics.
+    - Details calculation of classification accuracy and log loss.
+  - **Part 4.3: Keras Regression for Deep Neural Networks with RMSE**
+    - Defines mean square error and root mean square error.
+    - Introduces lift charts as evaluation tools.
+  - **Part 4.4: Training Neural Networks**
+    - Covers backpropagation techniques including classic, momentum, batch, online, stochastic gradient descent, ADAM update, and method comparisons.
+    - Discusses specifying update rules in TensorFlow.
+  - **Part 4.5: Error Calculation from Scratch**
+    - Explains error calculations separately for regression and classification.
+
+- **Regularization and Dropout**
+  - **Part 5.1: Introduction to Regularization: Ridge and Lasso**
+    - Discusses L1 (Lasso) and L2 (Ridge) regularization fundamentals.
+    - Explains their application to linear regression and introduces ElasticNet regularization.
+  - **Part 5.2: Using K-Fold Cross-validation with Keras**
+    - Describes K-Fold techniques for regression and classification including stratified folds.
+    - Covers simultaneous use of cross-validation and holdout sets.
+  - **Part 5.3: L1 and L2 Regularization to Decrease Overfitting**
+    - Details how L1 and L2 regularization reduces overfitting in neural networks.
+  - **Part 5.4: Drop Out for Keras to Decrease Overfitting**
+    - Explains dropout technique implementation in Keras to mitigate overfitting.
+  - **Part 5.5: Benchmarking Regularization Techniques**
+    - Discusses additional resources on hyperparameter tuning.
+    - Covers bootstrapping for regression and classification.
+    - Offers benchmarking methods for comparing regularization implementations.
+
+- **Convolutional Neural Networks (CNN) for Computer Vision**
+  - **Part 6.1: Image Processing in Python**
+    - Teaches image creation from pixels, pixel-level transformations, and image standardization.
+    - Describes adding noise to images.
+    - Includes a module assignment.
+  - **Part 6.2: Keras Neural Networks for Digits and Fashion MNIST**
+    - Introduces computer vision and common datasets like MNIST digits, Fashion MNIST, and CIFAR.
+    - Covers convolutional and max pooling layers and TensorFlow integration.
+    - Provides data access, visualization, model training, and evaluation for digit and fashion datasets.
+  - **Part 6.3: Implementing a ResNet in Keras**
+    - Explains Keras Sequence versus Functional API.
+    - Reviews CIFAR dataset.
+    - Details ResNet V1 and V2 architectures.
+  - **Part 6.4: Using Your Own Images with Keras**
+    - Provides methods for applying Keras models to user-supplied images.
+  - **Part 6.5: Recognizing Multiple Images with Darknet**
+    - Describes YOLO algorithm principles and usage in Python.
+    - Covers installation, weight transfer, running DarkFlow, and includes a module assignment.
+
+- **Generative Adversarial Networks**
+  - **Part 7.1: Introduction to GANS for Image and Data Generation**
+    - Introduces GAN concepts and applications in image/data generation.
+  - **Part 7.2: Implementing DCGANs in Keras**
+    - Provides practical implementation details for Deep Convolutional GANs using Keras.
+  - **Part 7.3: Face Generation with StyleGAN and Python**
+    - Explains generating high-resolution faces using StyleGAN on Google Colab.
+    - Shows command line and Python execution methods.
+    - Examines latent vector manipulation and training custom GANs.
+  - **Part 7.4: GANS for Semi-Supervised Training in Keras**
+    - Describes semi-supervised classification and regression training workflows.
+    - Demonstrates application of semi-supervised regression.
+  - **Part 7.5: An Overview of GAN Research**
+    - Lists select GAN research projects for further study.
+
+- **Kaggle Data Sets**
+  - **Part 8.1: Introduction to Kaggle**
+    - Explains Kaggle ranking system and typical competition structure.
+    - Details competition scoring and submission preparation.
+    - Lists select competitions and provides a module assignment.
+  - **Part 8.2: Building Ensembles with Scikit-Learn and Keras**
+    - Covers evaluating feature importance using classification and regression input perturbation.
+    - Demonstrates neural network ensembles on biological response data.
+  - **Part 8.3: Architecting Network: Hyperparameters**
+    - Discusses hidden layers, neuron counts, activation functions, advanced activations, regularization, batch normalization, and training parameters.
+    - Encourages experimentation with hyperparameters.
+  - **Part 8.4: Bayesian Hyperparameter Optimization for Keras**
+    - Introduces Bayesian methods for optimizing Keras network hyperparameters.
+  - **Part 8.5: Current Semester’s Kaggle**
+    - Presents Kaggle competition examples using Iris and MPG datasets.
+    - Concludes with a module assignment.
+
+- **Transfer Learning**
+  - **Part 9.1: Introduction to Keras Transfer Learning**
+    - Defines transfer learning and provides an example application.
+    - Includes a module assignment.
+  - **Part 9.2: Popular Pretrained Neural Networks for Keras**
+    - Lists common pretrained models such as DenseNet, Inception, MobileNet, NASNet, ResNet, VGG, and Xception.
+  - **Part 9.3: Transfer Learning for Computer Vision and Keras**
+    - Explains procedures for transferring pretrained models to vision tasks.
+  - **Part 9.4: Transfer Learning for Languages and Keras**
+    - Covers language-based transfer learning in Keras.
+  - **Part 9.5: Transfer Learning for Keras Feature Engineering**
+    - Details feature engineering techniques leveraging transfer learning.
+
+- **Time Series in Keras**
+  - **Part 10.1: Time Series Data Encoding**
+    - Describes encoding methods suited for time series data.
+    - Ends with a module assignment.
+  - **Part 10.2: Programming LSTM with Keras and TensorFlow**
+    - Explains LSTM architecture and usage.
+    - Provides simple TensorFlow LSTM example and applies it to sunspots data.
+    - Suggests further reading on LSTMs.
+  - **Part 10.3: Text Generation with LSTM**
+    - Covers character-level text generation using LSTM networks.
+  - **Part 10.4: Image Captioning with Keras and TensorFlow**
+    - Lists required data for image captioning.
+    - Details dataset building, CV model selection, data generators, and glove embedding usage.
+    - Describes model building, training, caption generation, and performance evaluation on test data and personal photos.
+    - Includes a module assignment.
+  - **Part 10.5: Temporal CNN in Keras and TensorFlow**
+    - Presents a CNN example for temporal data using sunspots dataset.
+
+- **Natural Language Processing and Speech Recognition**
+  - **Part 11.1: Getting Started with Spacy in Python**
+    - Covers Spacy installation, tokenization, sentence parsing, and stop word handling.
+  - **Part 11.2: Word2Vec and Text Classification**
+    - Presents Word2Vec concepts and suggests software tools.
+  - **Part 11.3: What are Embedding Layers in Keras**
+    - Introduces embedding layers with simple examples.
+    - Details transferring and training embeddings.
+  - **Part 11.4: Natural Language Processing with Spacy and Keras**
+    - Explains word-level text generation techniques.
+  - **Part 11.5: Learning English from Scratch with Keras and TensorFlow**
+    - Details data acquisition, vocabulary building, training and test set preparation.
+    - Covers neural network compilation, training, accuracy evaluation, and adhoc queries.
+
+- **Reinforcement Learning**
+  - **Part 12.1: Introduction to the OpenAI Gym**
+    - Provides overview of OpenAI Gym environments and leaderboard.
+    - Explains how to render environments from Colab.
+  - **Part 12.2: Introduction to Q-Learning**
+    - Introduces Mountain Car problem and programmed car example.
+    - Explains reinforcement learning fundamentals and agent observation.
+    - Details inspection of Q-table.
+  - **Part 12.3: Keras Q-Learning in the OpenAI Gym**
+    - Covers Deep Q-Network (DQN) application to Cart-Pole.
+    - Lists hyperparameters, environment setup, agent design, policies, metrics, replay buffer, data collection, training, visualization, plots, and videos.
+  - **Part 12.4: Atari Games with Keras Neural Networks**
+    - Provides Atari 2600 hardware specs and OpenAI Lab environment setup.
+    - Details hyperparameters, Atari environments, agent creation, evaluation, replay buffer, random data collection, training, visualization, and videos.
+  - **Part 12.5: Application of Reinforcement Learning**
+    - Guides on creating custom environments, testing, hyperparameters, initialization, metrics, data collection, training, visualization, plotting, and videos.
+
+- **Advanced/Other Topics**
+  - **Part 13.1: Flask and Deep Learning Web Services**
+    - Shows Flask basics and development of MPG prediction web service.
+    - Includes client interface and image processing via web services.
+  - **Part 13.2: Interrupting and Continuing Training**
+    - Explains techniques to pause and resume neural network training.
+  - **Part 13.3: Using a Keras Deep Neural Network with a Web Application**
+    - Discusses integrating Keras models with web applications.
+  - **Part 13.4: When to Retrain Your Neural Network**
+    - Covers preprocessing using Sberbank Russian Housing Market data.
+    - Explains KS-statistic and detecting dataset drift through training.
+  - **Part 13.5: Using a Keras Deep Neural Network with a Web Application**
+    - Details converting Keras models to CoreML and building iOS CoreML applications.
+    - Provides further reading resources.
+
+- **Other Neural Network Techniques**
+  - **Part 14.1: What is AutoML**
+    - Defines AutoML and demonstrates running AutoML locally and on Google Cloud.
+    - Presents a simple AutoML system and sample program execution.
+  - **Part 14.2: Using Denoising AutoEncoders in Keras**
+    - Explains function approximation, multi-output regression, and simple autoencoder models.
+    - Describes single-image and multi-image autoencoding, image standardization, noise addition, and denoising autoencoder construction.
+  - **Part 14.3: Anomaly Detection in Keras**
+    - Covers reading and preprocessing KDD99 intrusion detection dataset.
+    - Details training autoencoders and anomaly detection procedures.
+  - **Part 14.4: Training an Intrusion Detection System with KDD99**
+    - Describes raw KDD-99 data ingestion, dataset analysis, feature encoding, and neural network training.
+  - **Part 14.5: New Technologies**
+    - Presents technology radars for emerging tools and programming languages.
+    - Discusses PyTorch relevance and future directions.

@@ -1,0 +1,33 @@
+[ADNN-ch02-pandas](ADNN-ch02-pandas.best.png)
+
+- **Chapter 2**
+  - **2.1 Part 2.1: Introduction to Pandas**
+    - Pandas provides high-performance data structures and analysis tools based on the dataframe concept from R.
+    - The Auto MPG dataset from the UCI repository is used to demonstrate loading, displaying, and manipulating dataframes.
+    - Methods such as replacing missing values, removing outliers, dropping fields, concatenating rows/columns, and splitting datasets are covered.
+    - Saving dataframes in CSV and Pickle formats is illustrated for portability and precision.
+    - Further reading: [Pandas Documentation](https://pandas.pydata.org/docs/)
+  - **2.2 Part 2.2: Categorical and Continuous Values**
+    - Data for neural networks must be numeric and typically encoded through normalization or one-hot encoding.
+    - Four data types are outlined: nominal, ordinal, interval, and ratio; each affects encoding approaches.
+    - Encoding techniques include z-score normalization for continuous data and dummy (one-hot) variables for categorical data.
+    - Target encoding and ordinal encoding offer alternative categorical encoding methods, with risks like overfitting.
+    - Further reading: [Target Encoding Done the Right Way](https://www.kaggle.com/code/ogrellier/python-target-encoding-for-categorical-features)
+  - **2.3 Part 2.3: Grouping, Sorting, and Shuffling**
+    - Grouping (similar to SQL GROUP BY) summarizes data by aggregating fields such as mean or count.
+    - Shuffling data is essential to prevent order bias in training and validation splitting.
+    - Sorting enables ordering data by one or more columns for inspection or preprocessing.
+    - Original data must be preserved before grouping to avoid information loss.
+    - Further reading: [Pandas GroupBy API](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html)
+  - **2.4 Part 2.4: Apply and Map**
+    - The map function transforms values in a single column based on mappings, such as converting numeric codes to descriptive names.
+    - The apply function runs a custom or lambda function across rows or columns for flexible feature calculations.
+    - A practical example uses IRS tax data to estimate average adjusted gross income by zipcode, combining grouping and weighted averages.
+    - Functional programming with apply and map facilitates complex feature engineering operations on dataframes.
+    - Further reading: [Pandas Apply Documentation](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html)
+  - **2.5 Part 2.5: Feature Engineering**
+    - Feature engineering can add calculated columns derived from existing data, e.g., converting weight from pounds to kilograms.
+    - External APIs like Google Maps can enrich data, exemplified by geocoding addresses to obtain latitude and longitude.
+    - Calculating distances between geographic points aids encoding locations as features for neural networks.
+    - Example given calculates distances from Washington University to other universities using the great circle distance formula.
+    - Further reading: [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding/start)
