@@ -1,0 +1,54 @@
+![AMA-ch04-more-search](AMA-ch04-more-search.best.png)
+
+- **Beyond Classical Search**
+  - **4.1 Local Search Algorithms and Optimization Problems**
+    - Local search algorithms evaluate and modify single or multiple current states without exploring full paths.
+    - They are memory-efficient and suitable for large or continuous state spaces where only the solution state matters.
+    - This category includes algorithms inspired by physics (simulated annealing) and biology (genetic algorithms).
+    - [Russell and Norvig, Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/)
+  - **4.1.1 Hill-climbing Search**
+    - Hill climbing moves greedily to the highest-valued neighbor and stops at local maxima.
+    - Common problems include getting stuck in local maxima, ridges, plateaux, and shoulders.
+    - Variants include stochastic hill climbing, first-choice hill climbing, and random-restart hill climbing.
+  - **4.1.2 Simulated Annealing**
+    - Simulated annealing combines hill climbing with a controlled probability of downhill moves governed by a temperature parameter.
+    - The process mimics the annealing of metals by slowly decreasing the temperature to escape local maxima.
+    - It is complete given a slow enough cooling schedule and has been applied extensively in VLSI layout and scheduling.
+  - **4.1.3 Local Beam Search**
+    - Local beam search keeps track of k states and explores their successors, concentrating on the most promising states.
+    - Stochastic beam search enhances diversity by probabilistically selecting successors.
+  - **4.1.4 Genetic Algorithms**
+    - Genetic algorithms evolve a population of states using selection based on a fitness function, crossover, and mutation.
+    - Representation is critical for effectiveness, with schemata playing a key role in identifying useful genetic building blocks.
+    - The crossover operator enables combination of beneficial components evolving independently.
+  - **4.2 Local Search in Continuous Spaces**
+    - Continuous spaces pose challenges such as infinite branching factors and discontinuities.
+    - State variables define an n-dimensional vector, and local search can proceed using discretization or gradient methods.
+    - Approaches include gradient ascent/descent, empirical gradients, line search, and Newton-Raphson methods.
+    - Constrained optimization, especially linear programming and convex optimization, admits polynomial-time algorithms under certain conditions.
+  - **4.3 Searching with Nondeterministic Actions**
+    - In nondeterministic environments, state transitions result in sets of possible outcomes rather than single states.
+    - Solutions are contingency plans (AND–OR trees) with branching based on percepts received.
+    - AND nodes represent environment outcomes; OR nodes represent agent's action choices.
+    - Cyclic plans (loops) may be needed if some actions are unreliable or repeatedly reversible.
+  - **4.4 Searching with Partial Observations**
+    - Partial observability means the agent cannot determine its exact physical state from percepts.
+    - The belief state is defined as the set of possible physical states consistent with the history of actions and percepts.
+    - Sensorless problems represent the extreme case with no percepts; actions update the belief state via prediction only.
+    - Partial sensing involves prediction, observation prediction, and belief state update stages for the belief state.
+    - Search algorithms applied to belief-state space can solve these problems; incremental search can improve efficiency.
+    - Agents maintain belief states using recursive state estimation combining prediction and update steps.
+  - **4.5 Online Search Agents and Unknown Environments**
+    - Online search interleaves action and computation to explore environments initially unknown to the agent.
+    - Exploration problems arise from ignorance of states and action outcomes.
+    - Competitive ratio measures the quality of an online search path relative to the optimal offline path.
+    - Dead ends and irreversible actions can prevent finding a goal in some unknown environments.
+    - Online depth-first search agents maintain maps and perform backtracking physically.
+    - Learning real-time A* (LRTA*) improves upon hill climbing by maintaining and updating heuristic estimates to escape local minima.
+    - Learning in online search involves building maps from action results and refining cost estimates incrementally.
+  - **4.6 Summary**
+    - The chapter extends search methods beyond classical assumptions to address local, nondeterministic, and partially observable domains.
+    - It covers local search in discrete and continuous spaces including genetic algorithms.
+    - It addresses nondeterministic and partially observable problems using contingency plans and belief states.
+    - Online search and exploration focus on agents acting under uncertain or unknown environment conditions.
+    - See [Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/) for further comprehensive details.

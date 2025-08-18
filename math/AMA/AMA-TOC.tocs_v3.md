@@ -1,0 +1,516 @@
+![AMA-TOC](AMA-TOC.best.png)
+
+- **I Artificial Intelligence**
+  - **1 Introduction**
+    - **1.1 What Is AI?**
+      - Defines artificial intelligence and its scope as the study and design of intelligent agents.
+      - Explains AI's goal to create machines that perform tasks requiring human intelligence.
+      - Discusses key capabilities such as reasoning, learning, and perception.
+      - Recommends [Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/) for further foundational understanding.
+    - **1.2 The Foundations of Artificial Intelligence**
+      - Covers interdisciplinary roots including computer science, psychology, philosophy, and neuroscience.
+      - Details fundamental concepts supporting AI development.
+      - Highlights computational theories essential to AI algorithms and models.
+    - **1.3 The History of Artificial Intelligence**
+      - Chronicles milestones from early symbolic AI to modern machine learning.
+      - Discusses influential events and figures shaping the AI field.
+      - Notes periods of AI optimism and AI winters.
+    - **1.4 The State of the Art**
+      - Summarizes current cutting-edge AI technologies and methodologies.
+      - Reflects on advancements in algorithms, hardware, and applications.
+      - Identifies ongoing challenges in AI research.
+    - **1.5 Summary, Bibliographical and Historical Notes, Exercises**
+      - Provides a concise review of chapter contents.
+      - Includes annotated references and further reading.
+      - Offers exercises for reinforcing key concepts.
+
+  - **2 Intelligent Agents**
+    - **2.1 Agents and Environments**
+      - Defines agents as entities that perceive and act upon an environment.
+      - Discusses different types of environments influencing agent design.
+      - Examines sensors and actuators as means of interaction.
+    - **2.2 Good Behavior: The Concept of Rationality**
+      - Describes rationality as choosing actions that maximize performance measure.
+      - Explains the role of knowledge and perception in decision-making.
+      - Details criteria for rational agents in varied environments.
+    - **2.3 The Nature of Environments**
+      - Explores environment properties such as observability, determinism, and dynamics.
+      - Classifies environments into categories that affect agent strategies.
+    - **2.4 The Structure of Agents**
+      - Outlines agent architectures including simple reflex, model-based, goal-based, and utility-based.
+      - Highlights components and internal structure enabling agent functionality.
+    - **2.5 Summary, Bibliographical and Historical Notes, Exercises**
+      - Recaps main ideas presented in the chapter.
+      - Lists historical context and bibliographical references.
+      - Provides exercises to apply agent concepts.
+
+- **II Problem-solving**
+  - **3 Solving Problems by Searching**
+    - **3.1 Problem-Solving Agents**
+      - Defines problem-solving agents as those that solve tasks via search and actions.
+      - Introduces the formulation of problems in terms of states and goals.
+    - **3.2 Example Problems**
+      - Describes classic AI problems like pathfinding and puzzles.
+      - Highlights problem characteristics influencing search approaches.
+    - **3.3 Searching for Solutions**
+      - Details search algorithms to explore problem spaces.
+      - Explains state space, nodes, and successors.
+    - **3.4 Uninformed Search Strategies**
+      - Presents blind search methods such as breadth-first and depth-first.
+      - Analyzes pros and cons of uninformed approaches.
+    - **3.5 Informed (Heuristic) Search Strategies**
+      - Introduces heuristics to guide search processes.
+      - Covers algorithms like A* and greedy best-first search.
+    - **3.6 Heuristic Functions**
+      - Explains properties of heuristics including admissibility and consistency.
+      - Describes techniques to design effective heuristics.
+    - **3.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes search methods and key properties.
+      - Provides literature references and problem-solving exercises.
+
+  - **4 Beyond Classical Search**
+    - **4.1 Local Search Algorithms and Optimization Problems**
+      - Describes iterative improvement techniques like hill climbing.
+      - Focuses on solving optimization problems using local search.
+    - **4.2 Local Search in Continuous Spaces**
+      - Extends local search methods to continuous domains.
+      - Discusses variants such as gradient descent.
+    - **4.3 Searching with Nondeterministic Actions**
+      - Addresses search in environments with stochastic outcomes.
+      - Introduces contingencies and strategy adjustments.
+    - **4.4 Searching with Partial Observations**
+      - Covers search where agent has incomplete environment data.
+      - Explores belief states and information gathering.
+    - **4.5 Online Search Agents and Unknown Environments**
+      - Studies agents that learn while searching in unknown contexts.
+      - Details exploration-exploitation trade-offs.
+    - **4.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Reviews advanced search concepts beyond classical approaches.
+      - Contains bibliographic pointers and exercises.
+
+  - **5 Adversarial Search**
+    - **5.1 Games**
+      - Defines games as adversarial problems with opponents.
+      - Distinguishes between deterministic and stochastic games.
+    - **5.2 Optimal Decisions in Games**
+      - Explains minimax algorithm for perfect play.
+      - Discusses utility evaluation in game trees.
+    - **5.3 Alpha–Beta Pruning**
+      - Describes pruning technique to optimize minimax.
+      - Shows complexity reduction while maintaining optimality.
+    - **5.4 Imperfect Real-Time Decisions**
+      - Considers time constraints limiting search depth.
+      - Introduces iterative deepening and heuristic evaluation.
+    - **5.5 Stochastic Games**
+      - Expands adversarial search to probabilistic scenarios.
+      - Covers expectimax search algorithm.
+    - **5.6 Partially Observable Games**
+      - Examines games with incomplete information.
+      - Discusses belief modeling and update.
+    - **5.7 State-of-the-Art Game Programs**
+      - Surveys top-performing AI in games like chess and Go.
+      - Highlights search enhancements and learning integration.
+    - **5.8 Alternative Approaches**
+      - Introduces methods beyond search, e.g., Monte Carlo tree search.
+    - **5.9 Summary, Bibliographical and Historical Notes, Exercises**
+      - Recaps adversarial search methods.
+      - Includes historical notes and practical exercises.
+
+  - **6 Constraint Satisfaction Problems**
+    - **6.1 Defining Constraint Satisfaction Problems**
+      - Defines CSPs as problems of assigning values under constraints.
+      - Characterizes variables, domains, and constraints.
+    - **6.2 Constraint Propagation: Inference in CSPs**
+      - Explains techniques to reduce domains via inference.
+      - Covers arc consistency and pruning methods.
+    - **6.3 Backtracking Search for CSPs**
+      - Describes systematic search with backtracking.
+      - Details heuristics to improve efficiency.
+    - **6.4 Local Search for CSPs**
+      - Presents stochastic local search for CSP solutions.
+      - Discusses min-conflicts heuristic.
+    - **6.5 The Structure of Problems**
+      - Explores problem properties influencing CSP difficulty.
+      - Highlights constraint graph analysis.
+    - **6.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes CSP solving approaches.
+      - Provides references and exercises.
+
+- **III Knowledge, reasoning, and planning**
+  - **7 Logical Agents**
+    - **7.1 Knowledge-Based Agents**
+      - Introduces agents using symbolic knowledge bases for reasoning.
+      - Describes declarative knowledge representation.
+    - **7.2 The Wumpus World**
+      - Uses Wumpus World as a test domain for logical reasoning.
+      - Demonstrates knowledge acquisition and inference.
+    - **7.3 Logic**
+      - Explains logic as a formal language for knowledge representation.
+      - Covers syntax and semantics fundamentals.
+    - **7.4 Propositional Logic: A Very Simple Logic**
+      - Defines propositional logic syntax and interpretation.
+      - Covers connectives and truth tables.
+    - **7.5 Propositional Theorem Proving**
+      - Details methods for deducing new truths from propositional assertions.
+      - Introduces proof techniques like resolution.
+    - **7.6 Effective Propositional Model Checking**
+      - Explains algorithmic approaches to verifying propositional formulas.
+      - Covers model checking for agent knowledge bases.
+    - **7.7 Agents Based on Propositional Logic**
+      - Discusses implementation of logical agents with propositional logic.
+      - Shows action selection via logical deduction.
+    - **7.8 Summary, Bibliographical and Historical Notes, Exercises**
+      - Provides summary and key references.
+      - Suggests exercises on logical agents.
+
+  - **8 First-Order Logic**
+    - **8.1 Representation Revisited**
+      - Extends knowledge representation from propositional to first-order logic (FOL).
+      - Emphasizes expressiveness with quantifiers and predicates.
+    - **8.2 Syntax and Semantics of First-Order Logic**
+      - Defines formal language and meaning of FOL expressions.
+      - Details terms, formulas, and interpretations.
+    - **8.3 Using First-Order Logic**
+      - Demonstrates application of FOL in knowledge bases.
+      - Covers constructing rich and general representations.
+    - **8.4 Knowledge Engineering in First-Order Logic**
+      - Discusses practical techniques for building FOL knowledge bases.
+      - Highlights design considerations and domain modeling.
+    - **8.5 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes FOL concepts and applications.
+      - Provides bibliographical notes and exercises.
+
+  - **9 Inference in First-Order Logic**
+    - **9.1 Propositional vs. First-Order Inference**
+      - Compares inference complexities in propositional and first-order logic.
+    - **9.2 Unification and Lifting**
+      - Explains unification algorithm for variable substitution.
+      - Describes lifting propositional inference to first-order level.
+    - **9.3 Forward Chaining**
+      - Describes data-driven inference method.
+      - Applies rules to known facts iteratively.
+    - **9.4 Backward Chaining**
+      - Explains goal-driven inference starting from query.
+      - Works backward through rules to find support.
+    - **9.5 Resolution**
+      - Details proof method based on contradiction.
+      - Provides a complete inference procedure for FOL.
+    - **9.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Reviews inference techniques.
+      - Lists references and practice problems.
+
+  - **10 Classical Planning**
+    - **10.1 Definition of Classical Planning**
+      - Defines planning as searching for action sequences achieving goals.
+      - Assumes fully observable, deterministic domains.
+    - **10.2 Algorithms for Planning as State-Space Search**
+      - Details search techniques applied to planning problems.
+      - Discusses forward and backward search methods.
+    - **10.3 Planning Graphs**
+      - Introduces graph-based planning representations.
+      - Explains efficient solution extraction procedures.
+    - **10.4 Other Classical Planning Approaches**
+      - Surveys alternative planning algorithms and heuristics.
+    - **10.5 Analysis of Planning Approaches**
+      - Compares advantages and limitations of each method.
+    - **10.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes planning fundamentals.
+      - Provides references and exercises.
+
+  - **11 Planning and Acting in the Real World**
+    - **11.1 Time, Schedules, and Resources**
+      - Covers planning with temporal constraints and resource management.
+    - **11.2 Hierarchical Planning**
+      - Describes breaking down tasks into manageable subgoals.
+    - **11.3 Planning and Acting in Nondeterministic Domains**
+      - Addresses uncertainty in actions and environment.
+    - **11.4 Multiagent Planning**
+      - Explores coordination among multiple agents.
+    - **11.5 Summary, Bibliographical and Historical Notes, Exercises**
+      - Recaps real-world planning challenges.
+      - Provides bibliographical notes.
+
+  - **12 Knowledge Representation**
+    - **12.1 Ontological Engineering**
+      - Introduces methods for defining concepts and relationships.
+    - **12.2 Categories and Objects**
+      - Discusses classification and instances in knowledge bases.
+    - **12.3 Events**
+      - Describes representation and reasoning about events.
+    - **12.4 Mental Events and Mental Objects**
+      - Covers modeling beliefs, desires, and intentions.
+    - **12.5 Reasoning Systems for Categories**
+      - Explains inference mechanisms over categories.
+    - **12.6 Reasoning with Default Information**
+      - Addresses reasoning under incomplete or typical assumptions.
+    - **12.7 The Internet Shopping World**
+      - Applies knowledge representation to e-commerce domains.
+    - **12.8 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes knowledge representation themes.
+      - Lists references and exercises.
+
+- **IV Uncertain knowledge and reasoning**
+  - **13 Quantifying Uncertainty**
+    - **13.1 Acting under Uncertainty**
+      - Motivates reasoning and decision making with incomplete knowledge.
+    - **13.2 Basic Probability Notation**
+      - Introduces fundamental probability concepts and notation.
+    - **13.3 Inference Using Full Joint Distributions**
+      - Explains probability calculations over all variable assignments.
+    - **13.4 Independence**
+      - Defines independence to simplify probability models.
+    - **13.5 Bayes’ Rule and Its Use**
+      - Presents Bayes’ theorem for probabilistic inference.
+    - **13.6 The Wumpus World Revisited**
+      - Applies probabilistic reasoning to the Wumpus World example.
+    - **13.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Reviews uncertainty quantification techniques.
+      - Includes references and exercises.
+
+  - **14 Probabilistic Reasoning**
+    - **14.1 Representing Knowledge in an Uncertain Domain**
+      - Describes modeling uncertain relationships with Bayesian networks.
+    - **14.2 The Semantics of Bayesian Networks**
+      - Details how Bayesian networks encode conditional dependencies.
+    - **14.3 Efficient Representation of Conditional Distributions**
+      - Explains compact storage and factorization in networks.
+    - **14.4 Exact Inference in Bayesian Networks**
+      - Covers algorithms to compute exact posterior probabilities.
+    - **14.5 Approximate Inference in Bayesian Networks**
+      - Presents sampling and heuristic approaches for tractability.
+    - **14.6 Relational and First-Order Probability Models**
+      - Extends probabilistic models to relational domains.
+    - **14.7 Other Approaches to Uncertain Reasoning**
+      - Surveys alternative frameworks like Dempster–Shafer and fuzzy logic.
+    - **14.8 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes probabilistic reasoning methods.
+      - Provides further reading and exercises.
+
+  - **15 Probabilistic Reasoning over Time**
+    - **15.1 Time and Uncertainty**
+      - Addresses uncertainty in dynamic and temporal domains.
+    - **15.2 Inference in Temporal Models**
+      - Discusses filtering, prediction, and smoothing algorithms.
+    - **15.3 Hidden Markov Models**
+      - Defines HMMs for modeling sequences with hidden states.
+    - **15.4 Kalman Filters**
+      - Presents continuous-valued state estimation techniques.
+    - **15.5 Dynamic Bayesian Networks**
+      - Generalizes temporal models with structured dependencies.
+    - **15.6 Keeping Track of Many Objects**
+      - Explores multi-object tracking complexity and methods.
+    - **15.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Recaps temporal probabilistic reasoning approaches.
+      - Lists references and exercises.
+
+  - **16 Making Simple Decisions**
+    - **16.1 Combining Beliefs and Desires under Uncertainty**
+      - Introduces decision making balancing probabilities and utilities.
+    - **16.2 The Basis of Utility Theory**
+      - Defines utility as numerical representation of preferences.
+    - **16.3 Utility Functions**
+      - Explains construction and interpretation of utility functions.
+    - **16.4 Multiattribute Utility Functions**
+      - Covers utility over multiple criteria and trade-offs.
+    - **16.5 Decision Networks**
+      - Introduces graphical models integrating decisions and uncertainties.
+    - **16.6 The Value of Information**
+      - Quantifies benefit of acquiring additional knowledge before choosing.
+    - **16.7 Decision-Theoretic Expert Systems**
+      - Applies decision theory to expert system design.
+    - **16.8 Summary, Bibliographical and Historical Notes, Exercises**
+      - Provides overview and references on decision making.
+
+  - **17 Making Complex Decisions**
+    - **17.1 Sequential Decision Problems**
+      - Models decisions over time considering state transitions.
+    - **17.2 Value Iteration**
+      - Details iterative algorithm to compute optimal policies.
+    - **17.3 Policy Iteration**
+      - Presents alternative algorithm based on policy improvement.
+    - **17.4 Partially Observable MDPs**
+      - Extends decision-making to incomplete state information.
+    - **17.5 Decisions with Multiple Agents: Game Theory**
+      - Introduces strategic interactions among rational agents.
+    - **17.6 Mechanism Design**
+      - Discusses designing incentives to achieve desired outcomes.
+    - **17.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes complex decision theory methods.
+      - Provides bibliographic sources and exercises.
+
+- **V Learning**
+  - **18 Learning from Examples**
+    - **18.1 Forms of Learning**
+      - Classifies supervised, unsupervised, and reinforcement learning.
+    - **18.2 Supervised Learning**
+      - Explains learning from labeled data sets.
+    - **18.3 Learning Decision Trees**
+      - Details algorithms for constructing decision tree classifiers.
+    - **18.4 Evaluating and Choosing the Best Hypothesis**
+      - Describes model evaluation metrics and selection criteria.
+    - **18.5 The Theory of Learning**
+      - Covers formal frameworks like PAC learning.
+    - **18.6 Regression and Classification with Linear Models**
+      - Presents linear methods for prediction and classification.
+    - **18.7 Artificial Neural Networks**
+      - Introduces multi-layer networks and backpropagation.
+    - **18.8 Nonparametric Models**
+      - Discusses models without fixed parameters like nearest neighbors.
+    - **18.9 Support Vector Machines**
+      - Describes maximum-margin classifiers using kernel methods.
+    - **18.10 Ensemble Learning**
+      - Explains combining multiple models to improve performance.
+    - **18.11 Practical Machine Learning**
+      - Outlines best practices in data preparation and evaluation.
+    - **18.12 Summary, Bibliographical and Historical Notes, Exercises**
+      - Recaps core learning methods.
+      - Lists further readings and exercises.
+
+  - **19 Knowledge in Learning**
+    - **19.1 A Logical Formulation of Learning**
+      - Formalizes learning as logical inference over examples.
+    - **19.2 Knowledge in Learning**
+      - Explores how prior knowledge improves learning efficiency.
+    - **19.3 Explanation-Based Learning**
+      - Details learning based on explanations from domain theories.
+    - **19.4 Learning Using Relevance Information**
+      - Discusses focusing on relevant features during learning.
+    - **19.5 Inductive Logic Programming**
+      - Introduces combining inductive learning with logic programming.
+    - **19.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes knowledge-enhanced learning.
+      - Provides references and exercises.
+
+  - **20 Learning Probabilistic Models**
+    - **20.1 Statistical Learning**
+      - Covers parameter estimation and model selection.
+    - **20.2 Learning with Complete Data**
+      - Details maximum likelihood and Bayesian methods with observed variables.
+    - **20.3 Learning with Hidden Variables: The EM Algorithm**
+      - Explains expectation-maximization for incomplete data.
+    - **20.4 Summary, Bibliographical and Historical Notes, Exercises**
+      - Reviews probabilistic model learning.
+      - Lists further reading and exercises.
+
+  - **21 Reinforcement Learning**
+    - **21.1 Introduction**
+      - Defines learning from reward feedback without labeled data.
+    - **21.2 Passive Reinforcement Learning**
+      - Describes policy evaluation under fixed behavior.
+    - **21.3 Active Reinforcement Learning**
+      - Explores learning optimal policies through exploration.
+    - **21.4 Generalization in Reinforcement Learning**
+      - Discusses methods to learn efficiently across states.
+    - **21.5 Policy Search**
+      - Presents direct search over policy space.
+    - **21.6 Applications of Reinforcement Learning**
+      - Provides examples across robotics, games, and control.
+    - **21.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes reinforcement learning principles.
+      - Provides exercises and bibliographic resources.
+
+- **VI Communicating, perceiving, and acting**
+  - **22 Natural Language Processing**
+    - **22.1 Language Models**
+      - Introduces probabilistic models for language understanding.
+    - **22.2 Text Classification**
+      - Covers categorizing documents using statistical methods.
+    - **22.3 Information Retrieval**
+      - Discusses indexing and searching large text corpora.
+    - **22.4 Information Extraction**
+      - Explains techniques for extracting structured data from text.
+    - **22.5 Summary, Bibliographical and Historical Notes, Exercises**
+      - Provides overview and references.
+
+  - **23 Natural Language for Communication**
+    - **23.1 Phrase Structure Grammars**
+      - Presents syntactic representations of sentences.
+    - **23.2 Syntactic Analysis (Parsing)**
+      - Details algorithms for parsing sentence structure.
+    - **23.3 Augmented Grammars and Semantic Interpretation**
+      - Integrates syntax and meaning for language understanding.
+    - **23.4 Machine Translation**
+      - Surveys approaches to automatic translation between languages.
+    - **23.5 Speech Recognition**
+      - Discusses converting spoken language to text.
+    - **23.6 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes topics and suggests readings.
+
+  - **24 Perception**
+    - **24.1 Image Formation**
+      - Explains physical and geometric principles underlying image capture.
+    - **24.2 Early Image-Processing Operations**
+      - Describes filtering and enhancement techniques.
+    - **24.3 Object Recognition by Appearance**
+      - Covers matching image patterns to known objects.
+    - **24.4 Reconstructing the 3D World**
+      - Discusses methods to infer depth and shape.
+    - **24.5 Object Recognition from Structural Information**
+      - Explains use of object parts and spatial relations.
+    - **24.6 Using Vision**
+      - Integrates vision for higher-level cognitive tasks.
+    - **24.7 Summary, Bibliographical and Historical Notes, Exercises**
+      - Reviews perception concepts and offers further study.
+
+  - **25 Robotics**
+    - **25.1 Introduction**
+      - Introduces robotics as embodied AI for operating in physical world.
+    - **25.2 Robot Hardware**
+      - Describes sensors, actuators, and physical components.
+    - **25.3 Robotic Perception**
+      - Covers sensing technologies and environment modeling.
+    - **25.4 Planning to Move**
+      - Details motion planning algorithms.
+    - **25.5 Planning Uncertain Movements**
+      - Addresses navigation under uncertainty.
+    - **25.6 Moving**
+      - Discusses control and execution of movement commands.
+    - **25.7 Robotic Software Architectures**
+      - Explains system organization for robot control.
+    - **25.8 Application Domains**
+      - Surveys fields where robots are applied.
+    - **25.9 Summary, Bibliographical and Historical Notes, Exercises**
+      - Provides summary and references.
+
+- **VII Conclusions**
+  - **26 Philosophical Foundations**
+    - **26.1 Weak AI: Can Machines Act Intelligently?**
+      - Explores the concept that machines can simulate intelligent behavior.
+    - **26.2 Strong AI: Can Machines Really Think?**
+      - Considers whether machines can possess genuine understanding.
+    - **26.3 The Ethics and Risks of Developing Artificial Intelligence**
+      - Discusses ethical considerations and potential dangers.
+    - **26.4 Summary, Bibliographical and Historical Notes, Exercises**
+      - Summarizes philosophical questions and resources.
+
+  - **27 AI: The Present and Future**
+    - **27.1 Agent Components**
+      - Reviews functional elements of intelligent agents.
+    - **27.2 Agent Architectures**
+      - Compares designs and structures for building agents.
+    - **27.3 Are We Going in the Right Direction?**
+      - Considers AI research progress and challenges.
+    - **27.4 What If AI Does Succeed?**
+      - Examines implications of advanced AI success.
+
+- **A Mathematical background**
+  - **A.1 Complexity Analysis and O() Notation**
+    - Introduces computational complexity concepts for algorithm analysis.
+  - **A.2 Vectors, Matrices, and Linear Algebra**
+    - Covers linear algebra basics pertinent to AI.
+  - **A.3 Probability Distributions**
+    - Summarizes probability theory foundations.
+
+- **B Notes on Languages and Algorithms**
+  - **B.1 Defining Languages with Backus–Naur Form (BNF)**
+    - Explains BNF syntax notation for language definitions.
+  - **B.2 Describing Algorithms with Pseudocode**
+    - Provides conventions for algorithm description.
+  - **B.3 Online Help**
+    - Discusses documentation and help resources.
+
+- **Bibliography**
+  - Comprehensive list of references cited throughout the text.
+
+- **Index**
+  - Detailed index of topics and keywords for quick reference.

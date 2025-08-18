@@ -1,0 +1,48 @@
+![AMA-ch14-probabilistic-reasoning](AMA-ch14-probabilistic-reasoning.best.png)
+
+- **Probabilistic Reasoning**
+  - **Representing Knowledge in an Uncertain Domain**
+    - Bayesian networks represent dependencies among variables using directed acyclic graphs annotated with conditional probability distributions.
+    - The network topology encodes conditional independence assumptions, simplifying specification of joint distributions.
+    - Example networks illustrate independence and causal relationships, such as the toothache and alarm scenarios.
+    - See [Pearl, 1988 - Probabilistic Reasoning in Intelligent Systems](https://bayesnet.cs.ucla.edu/PRnew.html).
+  - **The Semantics of Bayesian Networks**
+    - Bayesian networks represent the full joint distribution as the product of conditional probabilities of each variable given its parents.
+    - The chain rule connects joint distribution factorization to conditional independence implied by network structure.
+    - Conditional independence is also characterized topologically, notably by the Markov blanket.
+    - Refer to [Darwiche, 2009 - Modeling and Reasoning with Bayesian Networks](https://darwiche.ai/book/).
+  - **Efficient Representation of Conditional Distributions**
+    - Canonical distributions, like noisy-OR and deterministic nodes, reduce exponential parameter requirements of CPTs.
+    - Hybrid Bayesian networks incorporate continuous variables using linear Gaussian models and soft-threshold functions (probit and logit).
+    - Continuous-discrete dependencies are handled by parameterized conditional distributions over continuous parents.
+    - See [Bishop, 1995 - Neural Networks for Pattern Recognition](https://www.microsoft.com/en-us/research/people/cmbishop/#!neural-networks).
+  - **Exact Inference in Bayesian Networks**
+    - Inference computes posterior probabilities given evidence by summing out hidden variables via enumeration or variable elimination.
+    - Variable elimination exploits factor caching to avoid repeated calculations, improving efficiency over enumeration.
+    - Computational complexity is linear in singly connected (polytree) networks but generally NP-hard for multiply connected networks.
+    - Clustering (join-tree) algorithms trade space for speed to perform efficient inference over the entire network.
+    - Consult [Koller and Friedman, 2009 - Probabilistic Graphical Models](https://mitpress.mit.edu/books/probabilistic-graphical-models).
+  - **Approximate Inference in Bayesian Networks**
+    - Monte Carlo methods including rejection sampling and likelihood weighting generate samples to estimate posterior probabilities consistently.
+    - Likelihood weighting reduces sample rejection by weighting samples consistent with observed evidence.
+    - Markov Chain Monte Carlo methods (e.g., Gibbs sampling) generate samples by state-to-state transitions conditioned on Markov blankets.
+    - Theoretical guarantees rely on detailed balance and ergodicity to converge to true posterior distributions.
+    - See [Gilks et al., 1996 - Markov Chain Monte Carlo in Practice](https://www.crcpress.com/Markov-Chain-Monte-Carlo-in-Practice/Gilks-Richardson-Spiegelhalter/p/book/9780412055515).
+  - **Relational and First-Order Probability Models**
+    - Relational Probability Models (RPMs) extend Bayesian networks to first-order logic with shared templates and logical variables.
+    - RPMs define random variables by instantiating parameterized functions (e.g., Honest(c), Quality(b)).
+    - Context-specific independence and relational uncertainty (e.g., unknown authorship) can be modeled explicitly.
+    - Open-Universe Probability Models (OUPMs) allow reasoning over an unknown number of objects and identity uncertainty.
+    - Study [Milch et al., 2005 - BLOG: Probabilistic Models with Unknown Objects](https://www.cs.cmu.edu/~fgresher/blog/).
+  - **Other Approaches to Uncertain Reasoning**
+    - Truth-functional, rule-based uncertain reasoning methods like certainty factors have limitations in capturing dependencies and evidence interactions.
+    - Dempster–Shafer theory distinguishes uncertainty and ignorance by assigning probabilities to sets of possible worlds, but linking beliefs to decision-making is unresolved.
+    - Fuzzy set theory and fuzzy logic represent vagueness via graded truth values but lack the ability to express probabilistic correlations.
+    - Probabilistic interpretations of fuzzy predicates via hybrid Bayesian networks or random sets can capture fuzziness more effectively.
+    - See [Heckerman, 1986 - Probabilistic Interpretations for MYCIN’s Certainty Factors](https://ai.stanford.edu/~serafini/cs221/heckerman87.pdf).
+  - **Summary**
+    - Bayesian networks represent uncertain knowledge compactly as graphical models encoding conditional independence.
+    - Exact inference is tractable for polytrees but generally intractable; approximate methods like MCMC expand applicability.
+    - Combining probability with first-order logic leads to expressive relational models and open-universe frameworks.
+    - Alternative theories provide insights on ignorance and vagueness but have limitations compared to probabilistic approaches.
+    - Further exploration recommended in [Pearl, 1988] and [Koller and Friedman, 2009].

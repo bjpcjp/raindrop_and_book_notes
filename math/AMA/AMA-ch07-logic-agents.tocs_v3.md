@@ -1,0 +1,61 @@
+![AMA-ch07-logic-agents](AMA-ch07-logic-agents.best.png)
+
+- **Logical Agents**
+  - **Knowledge-Based Agents**
+    - Define knowledge base (KB) as a set of sentences representing assertions about the world using a knowledge representation language.
+    - Introduce TELL and ASK operations to add sentences and query knowledge, possibly involving inference.
+    - Present the generic knowledge-based agent architecture, involving updating KB with percepts, querying for actions, and updating KB with chosen actions.
+    - Contrast knowledge-level description with implementation-level details.
+    - Emphasize declarative knowledge approach and mention learning for autonomous agents.
+    - For further reading, see [Artificial Intelligence: A Modern Approach, Chapter 7](http://aima.cs.berkeley.edu/).
+  - **The Wumpus World**
+    - Describe wumpus world environment: a 4×4 grid with pits, a wumpus, and gold; agent senses stench, breeze, glitter, bump, and scream.
+    - Define PEAS description with performance measure, environment, actuators, and sensors.
+    - Emphasize partial observability and agent’s initial ignorance about pit and wumpus locations.
+    - Illustrate agent reasoning with percepts and knowledge leading to safe exploration through logical inference.
+    - Show importance of logical reasoning for safe navigation and knowledge updates.
+    - For environment simulation, consult [AIMA Section on Wumpus World](http://aima.cs.berkeley.edu/).
+  - **Logic**
+    - Define syntax as the set of well-formed sentences in a knowledge representation language.
+    - Define semantics as assigning truth values to sentences in possible worlds or models.
+    - Introduce notion of entailment: one sentence logically entails another if the latter is true in all models of the former.
+    - Describe inference as the process of deriving entailed sentences from known knowledge.
+    - Explain soundness (only entailed sentences derived) and completeness (all entailed sentences derivable).
+    - Discuss grounding of knowledge representations via sensors and learning.
+    - For foundations, see [Logic for AI](https://plato.stanford.edu/entries/logic-ai/).
+  - **Propositional Logic: A Very Simple Logic**
+    - Define propositional logic syntax: atomic proposition symbols and five logical connectives (¬, ∧, ∨, ⇒, ⇔).
+    - Specify semantics with truth assignments to proposition symbols and truth tables for connectives.
+    - Construct knowledge bases for the wumpus world, expressing relations between percepts and hidden states.
+    - Describe model checking entailment by enumerating all models to verify truth.
+    - Present efficient inference as a hard problem with exponential worst-case complexity.
+    - Refer to [Introduction to Propositional Logic](https://en.wikipedia.org/wiki/Propositional_calculus).
+  - **Propositional Theorem Proving**
+    - Introduce logical equivalence, validity, satisfiability, and deduction theorem.
+    - Present inference rules such as Modus Ponens and their soundness.
+    - Demonstrate proof construction for wumpus-world scenarios using inference rules.
+    - Introduce resolution inference rule and its generalization for clauses in conjunctive normal form (CNF).
+    - Describe conversion to CNF and the resolution-based theorem proving algorithm, including soundness and completeness.
+    - Highlight Horn clauses and definite clauses with specialized efficient inference algorithms (forward and backward chaining).
+    - For theorem proving techniques, see [Resolution in Automated Theorem Proving](https://en.wikipedia.org/wiki/Resolution_%28logic%29).
+  - **Forward and Backward Chaining**
+    - Describe forward chaining as data-driven reasoning: starting from known facts and applying rules to infer new facts.
+    - Show backward chaining as goal-driven reasoning: starting from the query and working backward through implications.
+    - Demonstrate efficiency and completeness of both methods for Horn clause knowledge bases.
+    - Highlight applications in logic programming and expert systems.
+    - For more detail, see [Forward and Backward Chaining](https://en.wikipedia.org/wiki/Forward_chaining).
+  - **Effective Propositional Model Checking**
+    - Present the Davis–Putnam–Logemann–Loveland (DPLL) algorithm: a backtracking search with heuristics like pure symbol and unit clause.
+    - Describe local search algorithms such as WalkSAT that use random walks and min-conflicts heuristics.
+    - Explain satisfiability threshold phenomena in random k-CNF problem distributions, relating difficulty and clause-to-variable ratio.
+    - Mention practical impact of modern SAT solvers handling problems with millions of variables.
+    - For SAT solving advances, consult [Handbook of Satisfiability](https://link.springer.com/book/10.1007/978-3-540-88474-4).
+  - **Agents Based on Propositional Logic**
+    - Construct wumpus world agents using propositional logic: axioms encode environment rules, percepts are time-indexed sentences.
+    - Introduce successor-state axioms to address the frame problem by expressing fluent changes and persistence efficiently.
+    - Use logical inference to estimate the current state and determine safe squares.
+    - Present a hybrid agent using logical inference for knowledge updates combined with problem-solving search for planning.
+    - Explain logical state estimation as belief state representation and discuss conservative approximations using 1-CNF formulas.
+    - Describe planning by encoding initial state, transitions, and goal into propositional formulas solvable by SAT solvers (SATPLAN).
+    - Address qualification and representational frame problems; emphasize scalability limitations solved by first-order logic.
+    - Recommended reading: [Automated Planning and Acting](https://mitpress.mit.edu/books/automated-planning-and-acting).

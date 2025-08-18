@@ -1,0 +1,31 @@
+![AMA-ch27-trends](AMA-ch27-trends.best.png)
+
+- **AI: The Present and Future**  
+  - **27.1 Agent Components**  
+    - Utility-based agent designs are the most general, incorporating sensors, actuators, internal state, and utilities.  
+    - Advances in sensors and actuators, including MEMS technology, have enabled AI systems to move toward embedded robotics.  
+    - Maintaining accurate state representations requires perception and probabilistic filtering algorithms combined with structured knowledge representations.  
+    - Projecting and selecting future actions depend on hierarchical behavior representations and decision-making under uncertainty.  
+    - Learning components use logical and statistical induction but struggle with constructing representations at higher abstractions.  
+    - For more details on probabilistic logic and filtering, see Section 14.6 and the related chapters on learning.  
+  - **27.2 Agent Architectures**  
+    - Hybrid architectures combine reflexive and knowledge-based deliberation, with compilation converting deliberative solutions to reflexes.  
+    - Agents must control deliberation time and select profitable computations, which is studied under real-time AI.  
+    - Anytime algorithms provide progressively better results and can be interrupted to yield usable decisions.  
+    - Decision-theoretic metareasoning controls computations by weighing their costs and benefits.  
+    - Reflective architectures enable the agent to reason about its own computations for improved decision making.  
+    - Further reading includes research on SOAR and THEO architectures and metareasoning literature by Russell and Horvitz.  
+  - **27.3 Are We Going in the Right Direction?**  
+    - AI goals range from perfect rationality to bounded optimality, with perfect rationality being infeasible in complex environments.  
+    - Calculative rationality guarantees eventual optimal decisions but not timely ones; bounded rationality models satisficing behavior.  
+    - Bounded optimality defines agents that perform best given computational resource limits and is considered a promising formal goal.  
+    - Asymptotic bounded optimality relaxes strict BO definitions by allowing scaling with improved hardware performance.  
+    - The complexity of BO programs suggests agents will have hybrid, adaptive, and complex structures optimized for their environments.  
+    - References include works by Simon on bounded rationality and research on bounded optimality by Russell and Subramanian.  
+  - **27.4 What If AI Does Succeed?**  
+    - AI success raises ethical challenges regarding the impact of intelligent computers on society.  
+    - Modest AI advances have already transformed teaching, software development, and enabled applications like speech recognition and robotics.  
+    - Medium-level AI capabilities could improve daily life via personal assistants and autonomous vehicles but may cause economic disruption.  
+    - Large-scale AI breakthroughs might threaten human autonomy and survival, necessitating integrated ethical considerations in AI research.  
+    - Historical comparisons show transformative technologies generally have overwhelming positive impacts despite some negatives.  
+    - For ethical discussions, see Section 26.3 and Turing’s foundational essay "Computing Machinery and Intelligence."

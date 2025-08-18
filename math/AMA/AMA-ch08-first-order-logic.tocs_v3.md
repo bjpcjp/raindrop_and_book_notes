@@ -1,0 +1,35 @@
+![AMA-ch08-first-order-logic](AMA-ch08-first-order-logic.best.png)
+
+- **8 First-Order Logic**
+  - **8.1 Representation Revisited**
+    - Knowledge representation languages need to be declarative, compositional, expressive, context independent, and unambiguous.
+    - Programming languages lack domain-independent inference mechanisms unlike propositional logic.
+    - Natural languages are expressive but have issues with ambiguity and context dependence.
+    - The Sapir–Whorf hypothesis states language influences thought with various empirical studies discussed.
+    - Further reading: [Barwise and Etchemendy (2002) - Logic Primer](https://mitpress.mit.edu/books/logic)
+  - **8.2 Syntax and Semantics of First-Order Logic**
+    - Models include a nonempty domain of objects and an interpretation mapping symbols to objects, relations, and functions.
+    - Syntax involves constant, predicate, and function symbols with arity, plus terms, atomic and complex sentences.
+    - Quantifiers ∀ and ∃ allow expressing properties over all or some objects, with connected semantics.
+    - Equality is treated as a built-in predicate to assert identity between objects.
+    - An alternative database semantics uses the unique-names and closed-world assumptions.
+    - Further reading: [Enderton (1972) - A Mathematical Introduction to Logic](https://www.elsevier.com/books/a-mathematical-introduction-to-logic/enderton/978-0-12-238452-3)
+  - **8.3 Using First-Order Logic**
+    - The TELL/ASK interface allows adding assertions and querying knowledge bases, with variable bindings from queries.
+    - The kinship domain vocabulary includes predicates for family relations and functions for Mother and Father.
+    - Numbers are defined recursively using Peano axioms with successor functions and addition axioms.
+    - Set theory axioms define sets, membership, unions, intersections, and equality.
+    - The wumpus world is concisely represented using quantified axioms for adjacency and percepts, improving over propositional logic.
+    - Further reading: [Manna and Waldinger (1985) - The Logical Basis for Computer Programming](https://mitpress.mit.edu/books/logical-basis-computer-programming)
+  - **8.4 Knowledge Engineering in First-Order Logic**
+    - The knowledge-engineering process includes task identification, knowledge acquisition, vocabulary selection, encoding axioms, encoding problem instances, posing queries, and debugging.
+    - An extended example in electronic circuits illustrates ontology design with gates, terminals, connections, signals, and axioms modeling their behaviors.
+    - Queries enable verification of circuit functionality and debugging via logical inference.
+    - The process emphasizes iterative refinement of vocabulary and axioms for correctness.
+    - Further reading: [Genesereth and Nilsson (1987) - Logical Foundations of Artificial Intelligence](https://pearsoncs.com/ai/)
+  - **8.5 Summary**
+    - First-order logic is more expressive than propositional logic due to ontological commitments to objects and relations.
+    - Its syntax builds on propositional logic by adding terms and quantifiers to represent and reason about objects.
+    - Models include objects and interpretations linking symbols to domain elements.
+    - Knowledge base development requires analysis, vocabulary design, and axiom encoding for effective reasoning.
+    - Further reading: [Robinson and Voronkov (2001) - Handbook of Automated Reasoning](https://mitpress.mit.edu/books/handbook-automated-reasoning)

@@ -1,0 +1,83 @@
+![AMA-ch16-beliefs-decisions](AMA-ch16-beliefs-decisions.best.png)
+
+- **Making Simple Decisions**
+  - **16.1 Combining Beliefs and Desires Under Uncertainty**
+    - Defines resulting states of actions as random variables due to nondeterministic environments.
+    - Formulates expected utility as the sum over possible outcomes weighted by their probabilities.
+    - Presents the principle of maximum expected utility (MEU) as the rational decision rule.
+    - Explains that computing expected utilities requires perception, learning, causal models, and planning.
+    - References Bayesian networks for probabilistic inference, e.g., [Bayesian Networks and Decision Making](https://en.wikipedia.org/wiki/Bayesian_network).
+  - **16.2 The Basis of Utility Theory**
+    - Introduces axioms of rational preferences: orderability, transitivity, continuity, substitutability, monotonicity, and decomposability.
+    - Shows these axioms imply the existence of a utility function consistent with preferences.
+    - Establishes that utilities are unique only up to positive affine transformations.
+    - Clarifies that expected utility of lotteries is the probability-weighted sum of outcome utilities.
+    - Recommends foundational texts like [von Neumann and Morgenstern (1944)](https://press.princeton.edu/books/paperback/9780691010997/theory-of-games-and-economic-behavior).
+  - **16.3 Utility Functions**
+    - Notes utility functions can be arbitrarily complex but real agent preferences tend to be systematic.
+    - Discusses preference elicitation techniques to assess utilities using standard lotteries.
+    - Introduces normalized utilities scaling best and worst outcomes to 1 and 0.
+    - Presents the micromort and QALY (quality-adjusted life year) as utility measurement units.
+    - Analyzes utility of money, emphasizing typically concave utility functions reflecting risk aversion.
+    - Defines risk-averse, risk-seeking, and risk-neutral behaviors based on utility curvature.
+    - Describes the optimizer’s curse, where selecting an action with maximum estimated utility leads to overoptimism.
+    - Explains decision theory as normative, contrasting observed human irrationalities like the Allais and Ellsberg paradoxes.
+    - Highlights concepts such as certainty effect, ambiguity aversion, framing effect, anchoring effect, and evolutionary psychology perspectives.
+    - Refers to [Kahneman and Tversky (1979)](https://doi.org/10.1126/science.187.4157.1068) for experimental evidence on irrationality.
+  - **16.4 Multiattribute Utility Functions**
+    - Deals with decision problems involving multiple attributes per outcome.
+    - Defines strict dominance and stochastic dominance for deterministic and uncertain cases respectively.
+    - Stochastic dominance requires cumulative distribution of one action to be everywhere better than another.
+    - Introduces preference independence and mutual preferential independence (MPI) among attributes.
+    - Shows MPI implies additive value functions, simplifying utility specification.
+    - Defines utility independence extending preference independence to lotteries.
+    - Introduces mutually utility independent (MUI) attributes leading to multiplicative utility functions.
+    - References [Keeney and Raiffa (1976)](https://www.cambridge.org/core/books/decisions-with-multiple-objectives/3063609C79005D5E3D24BF6D867F3AE3) for multiattribute utility theory.
+  - **16.5 Decision Networks**
+    - Introduces decision networks combining chance nodes, decision nodes, and utility nodes.
+    - Describes structure and graphical modeling for decisions with probabilistic outcomes and utilities.
+    - Shows simplified decision networks with direct action-utility functions as compiled forms.
+    - Details evaluation algorithm: set evidence, explore decision node values, compute posterior probabilities, calculate expected utilities, and select optimal action.
+    - Connects decision networks to Bayesian network inference for rational decision-making.
+    - Points to [Howard and Matheson (1984)](https://ai.stanford.edu/~yekutiel/papers/InfluenceDiagramTutorial.pdf) for foundational influence diagrams.
+  - **16.6 The Value of Information**
+    - Defines value of perfect information (VPI) as the expected utility improvement from learning exact outcome of a variable.
+    - Presents a general formula for VPI based on averaging over evidence outcomes.
+    - Explains intuition: information is valuable when likely to change the plan and the new plan improves expected utility.
+    - Proves VPI is always nonnegative and order independent but not additive.
+    - Describes myopic information-gathering agents selecting observations with maximal value per cost.
+    - Notes myopic agents may fail to recognize benefits of sequential observations but perform well in practice.
+    - Suggests using decision networks and VPI for efficient question ordering and stopping criteria in expert systems.
+    - Recommends [Ron Howard’s works on information value](https://www.sciencedirect.com/science/article/pii/0024630170900281) for deeper understanding.
+  - **16.7 Decision-Theoretic Expert Systems**
+    - Describes decision analysis as applied decision theory to high-stakes domains like medicine and engineering.
+    - Explains earlier expert systems focused on inference, while decision-theoretic systems incorporate utilities to recommend optimal actions.
+    - Highlights the pitfall of confusing likelihood and importance, countered by utility-based approaches.
+    - Presents a knowledge engineering process: create causal models, simplify, assign probabilities and utilities, verify, and perform sensitivity analysis.
+    - Gives an example of a medical expert system for aortic coarctation, illustrating model building and refinement.
+    - Emphasizes sensitivity analysis to assess robustness and prioritize data collection.
+    - References [Lucas (1996)](https://www.ijcai.org/Proceedings/96/Papers/125.pdf) for medical decision-theoretic expert system modeling.
+  - **16.8 Summary**
+    - Reinforces that probability theory covers beliefs, utility theory covers desires, and decision theory integrates both for rational action.
+    - Emphasizes MEU as core rational decision-making principle for agents under uncertainty.
+    - Notes multiattribute utility theory and stochastic dominance aid decisions involving multiple qualitative criteria.
+    - Highlights decision networks as a unifying formalism extending Bayesian networks for actions and utilities.
+    - Discusses the role of information value in guiding data acquisition before decisions.
+    - States decision-theoretic expert systems leverage utilities to prioritize questioning, recommend actions, and analyze sensitivity.
+  - **Bibliographical and Historical Notes**
+    - Historical origins traced to Port-Royal Logic (1662) and Bernoulli’s 1738 utility theory development.
+    - Summarizes axiomatic foundations by Ramsey, von Neumann and Morgenstern, Savage, and others.
+    - Covers empirical research on human risk behavior, value of life, QALYs, and micromorts.
+    - Details optimizer’s and winner’s curse phenomena in decision making.
+    - Discusses human irrationalities such as Allais and Ellsberg paradoxes and their experimental evidence.
+    - Addresses current developments in multiattribute utility modeling and qualitative probabilistic networks.
+    - Chronicles evolution of influence (decision) diagrams and algorithms for decision network evaluation.
+    - Reviews value of information theory and methods for information-gathering agents.
+    - Reviews AI history of decision-theoretic expert systems and Bayesian network integration.
+    - Suggests canonical references like [Howard and Matheson (1984)](https://ai.stanford.edu/~yekutiel/papers/InfluenceDiagramTutorial.pdf) and [Kahneman and Tversky (1979)](https://doi.org/10.1126/science.187.4157.1068).
+  - **Exercises**
+    - Contains exercises ranging from probability calibration, decision analysis scenarios, utility assessments, paradoxes in preference, to decision network modeling.
+    - Includes practical problems on stochastic dominance, Allais paradox, micromorts, exponential utilities, and value of information calculations.
+    - Provides data for utility elicitation and decision analysis practice, e.g., airport siting and medical treatment decisions.
+    - Encourages programming implementations for utility functions and decision agents.
+    - Offers references for verification and further experimentation in [user exercise sections].

@@ -1,0 +1,78 @@
+![AMA-ch26-philosophy](AMA-ch26-philosophy.best.png)
+
+- **Philosophical Foundations**
+  - **Weak AI: Can Machines Act Intelligently?**
+    - Weak AI hypothesis asserts machines can simulate intelligent behavior, founded at the 1956 AI workshop.
+    - Philosophers debate whether machines truly think, with objections including the qualification problem and mathematical limits.
+    - The Turing Test evaluates machine intelligence based on conversational behavior, but passing it remains unachieved by sophisticated judges.
+    - [Turing’s Original Paper](https://www.csee.umbc.edu/courses/471/papers/turing.pdf)
+  - **Arguments Against Strong AI**
+    - Argument from disability claims machines cannot perform many human behaviors such as kindness, humor, or love.
+    - Mathematical objections reference Gödel’s incompleteness theorem to argue machines are limited compared to humans.
+    - The qualification problem states human behavior is too complex to be fully encapsulated by rule-based machines.
+    - [Dreyfus Critique on GOFAI](https://pdfs.semanticscholar.org/6fe0/2ad7cd778781a0d6e2a3d3f788abce514a9c.pdf)
+  - **Embodied Cognition**
+    - Cognition depends on the agent being embodied and embedded in an environment, involving sensory and motor integration.
+    - Biological brains function as control systems for physical bodies interacting in real-world settings.
+    - Embodied cognition integrates robotics and perception as central, not peripheral, to understanding intelligence.
+    - [Andy Clark on Embodied Cognition](https://pdfs.semanticscholar.org/21af/9d5743da1e4f5354b111c77cfed792e6d9b0.pdf)
+- **Strong AI: Can Machines Really Think?**
+  - **Turing’s Argument from Consciousness**
+    - Objections to machines thinking focus on consciousness, awareness, and intentionality.
+    - Turing proposes a pragmatic “polite convention” to attribute thinking and consciousness based on demonstrated behavior.
+    - Examples show conversational tests where machines simulate understanding but raise questions about genuine awareness.
+    - [Turing’s 1950 Paper](https://www.csee.umbc.edu/courses/471/papers/turing.pdf)
+  - **Mind–Body Problem**
+    - Dualism posits mind and body as separate substances, creating interaction challenges.
+    - Physicalism identifies minds with physical brain states, allowing for strong AI in principle.
+    - Mental states are considered as intentional states that relate to brain states and environmental history (wide vs. narrow content).
+    - [Stanford Encyclopedia of Philosophy: Mind–Body Problem](https://plato.stanford.edu/entries/mind-body/)
+  - **Functionalism and the Brain Replacement Experiment**
+    - Functionalism defines mental states by their causal role and functional isomorphism between systems.
+    - Brain replacement thought experiment tests whether gradual neuron replacement by electronic devices preserves consciousness.
+    - Three conclusions include consciousness preservation, epiphenomenal consciousness, or experiment impossibility.
+    - [Philosophy of Mind: Functionalism](https://plato.stanford.edu/entries/functionalim/)
+  - **Biological Naturalism and the Chinese Room**
+    - Biological naturalism claims mental states arise from specific causal powers of neurons, not merely program execution.
+    - Searle’s Chinese Room argues that syntactic symbol manipulation alone cannot produce understanding or minds.
+    - The systems reply highlights that understanding may reside in the whole system, provoking debate.
+    - [Searle’s Chinese Room Argument](https://plato.stanford.edu/entries/chinese-room/)
+  - **Consciousness, Qualia, and the Explanatory Gap**
+    - Consciousness involves subjective experience or qualia, which challenge functionalist accounts.
+    - The explanatory gap highlights the difficulty relating physical brain states to subjective experience.
+    - The inverted spectrum thought experiment illustrates qualia’s possible variation independent of external behavior.
+    - [Daniel Dennett on Consciousness](https://ase.tufts.edu/cogstud/dennett/papers/chalmersdeb3.htm)
+- **The Ethics and Risks of Developing Artificial Intelligence**
+  - **Job Displacement and Economic Impact**
+    - AI has replaced some jobs but also created new ones, shifting from replacement expert systems to assistant agents.
+    - Automation affects labor markets by introducing higher-paying and more interesting jobs while also raising unemployment concerns.
+    - [AI and the Future of Work](https://www.brookings.edu/research/automation-and-artificial-intelligence-how-machines-affect-people-and-places/)
+  - **Leisure Time and Work Pressure**
+    - Predictions of shorter workweeks have not materialized; instead, information economy pressures increase work hours.
+    - High-bandwidth communication and intellectual property replication reward working harder to outperform competitors.
+    - AI contributes to innovation pace but also offers potential for automation to reduce human workload.
+    - [Future Shock by Alvin Toffler](https://archive.org/details/FutureShock)
+  - **Human Uniqueness and Moral Concerns**
+    - AI challenges human uniqueness in moral and philosophical terms, comparable to historical paradigm shifts in worldview.
+    - Concerns include the psychological and societal impact of AI eroding perceived human specialness.
+    - [Weizenbaum’s Critique of AI](https://mitpress.mit.edu/books/computer-power-and-human-reason)
+  - **AI Misuse and Surveillance**
+    - AI technologies can be exploited for warfare, repression, and mass surveillance, as demonstrated by battlefield and civic systems.
+    - Privacy trade-offs and civil liberties issues arise from ubiquitous AI-enabled monitoring.
+    - Approaches to balance privacy and security include transparency and reciprocal surveillance accessibility.
+    - [Ethics of AI and Surveillance](https://plato.stanford.edu/entries/ethics-ai/)
+  - **Accountability and Liability**
+    - Legal questions arise about responsibility for actions when AI systems assist or replace human decision-makers.
+    - Courts currently treat expert systems like reference tools, placing responsibility on human operators.
+    - Increasing autonomy of AI raises concerns about establishing legal personhood and transactional liabilities.
+    - [Artificial Intelligence and the Law](https://www.jail.journals.cambridge.org/)
+  - **Ultraintelligent Machines and Singularity**
+    - Ultraintelligent machines are defined as entities surpassing human intellect, potentially leading to an intelligence explosion.
+    - The technological singularity is a hypothesized rapid growth point after which human intelligence is surpassed.
+    - Challenges include limits of computability, impact on society, and ensuring AI friendliness and safety.
+    - [Technological Singularity by Vernor Vinge](https://www-rohan.sdsu.edu/faculty/vinge/misc/singularity.html)
+  - **Asimov’s Laws and Friendly AI**
+    - Asimov’s three laws of robotics aim to ensure safety and obedience to humans but raise issues in practical implementation.
+    - Designing AI with adaptable, evolving utility functions requires mechanisms to maintain friendliness and prevent harmful behavior.
+    - Historical and fictional examples illustrate the importance of safeguards and ethical constraints in AI development.
+    - [Friendly AI by Eliezer Yudkowsky](https://intelligence.org/files/FriendlyAI.pdf)

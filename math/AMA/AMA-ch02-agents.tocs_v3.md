@@ -1,0 +1,74 @@
+![AMA-ch02-agents](AMA-ch02-agents.best.png)
+
+- **2 Intelligent Agents**
+  - **2.1 Agents and Environments**
+    - An agent perceives its environment through sensors and acts via actuators.  
+    - Behavior is defined by the agent function mapping percept sequences to actions.  
+    - The vacuum-cleaner world exemplifies a simple environment with defined percepts and actions.  
+    - Internal agent programs implement abstract agent functions, distinguished from external behavior.  
+    - For further reading, see [Russell and Norvig - Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/).  
+  - **2.2 Good Behavior: The Concept of Rationality**
+    - A rational agent selects actions expected to maximize its performance measure given its percept sequence and prior knowledge.  
+    - Rationality depends on four factors: performance measure, prior knowledge, available actions, and percept history.  
+    - Rational agents are not omniscient but act optimally based on current knowledge and percepts.  
+    - Rationality includes information gathering and learning to improve decisions under uncertainty.  
+    - See [Pearl, Judea - Probabilistic Reasoning in Intelligent Systems](https://mitpress.mit.edu/books/probabilistic-reasoning-intelligent-systems) for related decision theory concepts.  
+  - **2.3 The Nature of Environments**
+    - Task environments are specified by the PEAS framework: Performance, Environment, Actuators, Sensors.  
+    - Environments vary across dimensions such as observability, agency, determinism, episodic vs. sequential, static vs. dynamic, discrete vs. continuous, and known vs. unknown.  
+    - Environment properties directly influence agent design and capabilities.  
+    - Multiple example environments clarify these properties (e.g., taxi driving, chess, medical diagnosis).  
+    - Additional material on environment classification is available at [Puterman, Mark L. - Markov Decision Processes](https://www.wiley.com/en-us/Markov+Decision+Processes%3A+Discrete+Stochastic+Dynamic+Programming-p-9780471727828).  
+  - **2.4 The Structure of Agents**
+    - The agent program runs on an architecture combining sensors and actuators to implement the agent function.  
+    - Four basic agent program types are described: simple reflex, model-based reflex, goal-based, and utility-based agents.  
+    - Simple reflex agents select actions based on current percepts without internal state, suitable for fully observable environments.  
+    - Model-based reflex agents maintain internal state to handle partial observability using a world model.  
+    - Goal-based agents use goals plus a model to select actions anticipating future states.  
+    - Utility-based agents maximize expected utility to resolve conflicting goals and stochastic environments.  
+    - Learning agents improve performance using feedback from their performance and environment.  
+    - Representations of components progress from atomic to factored to structured, increasing expressiveness and complexity.  
+    - For comprehensive insights, consult [Russell and Norvig - Artificial Intelligence: A Modern Approach](https://aima.cs.berkeley.edu/).  
+    - **2.4.1 Agent programs**
+      - Agent programs map current percepts to actions, distinguishing from agent functions mapping full percept histories.  
+      - Table-driven agent functions are conceptually correct but impractically large for real-world problems.  
+      - The challenge is to design compact programs that generate rational behavior without exhaustive tables.  
+    - **2.4.2 Simple reflex agents**
+      - Simple reflex agents use condition-action rules depending only on the current percept.  
+      - They operate well in fully observable environments but fail in partially observable ones.  
+      - Randomization can help escape infinite loops in some cases but is generally less effective than model-based approaches.  
+    - **2.4.3 Model-based reflex agents**
+      - Maintain an internal state updated via a model of how the world evolves and how actions affect it.  
+      - Enable handling of partially observable environments better than simple reflex agents.  
+      - Internal state may represent agent goals or history beyond immediate perceptual input.  
+    - **2.4.4 Goal-based agents**
+      - Use explicit goals describing desirable states to guide action selection.  
+      - Combine goals with a model to anticipate future outcomes and make decisions considering long-term consequences.  
+      - Provide greater flexibility than reflex agents in dynamic or changing environments.  
+    - **2.4.5 Utility-based agents**
+      - Maximize expected utility to handle conflicting goals and stochastic outcomes.  
+      - Internalize performance measures into utility functions aligning agent behavior with external criteria.  
+      - Rational under uncertainty by averaging over possible outcomes weighted by their probabilities.  
+    - **2.4.6 Learning agents**
+      - Comprise four components: performance element, learning element, critic, and problem generator.  
+      - The learning element adapts the performance element using critic feedback aligned with a fixed performance standard.  
+      - The problem generator encourages exploration to improve knowledge and long-term performance.  
+      - Learning allows operation in unknown environments and incremental improvement.  
+    - **2.4.7 How the components of agent programs work**
+      - Representations fall into atomic, factored, and structured types with increasing expressiveness.  
+      - Atomic states are indivisible black boxes, suitable for some search or decision models.  
+      - Factored states decompose into variables with values, enabling representation of uncertainty and complex attributes.  
+      - Structured representations describe objects, attributes, and interrelations, supporting rich knowledge and reasoning.  
+      - Increased expressiveness aids concise representation but adds complexity in reasoning and learning.  
+  - **2.5 Summary**
+    - Reaffirms agent as perceiver and actor, rationality as maximizing expected performance, and PEAS specification as a design foundation.  
+    - Highlights key environment properties that influence agent design.  
+    - Reviews agent program types from reflex agents to utility-based and learning agents.  
+    - Emphasizes that learning improves agent performance across environments.  
+  - **Bibliographical and Historical Notes**
+    - Traces concept of agents and rationality from Aristotle through AI, control theory, and cognitive science.  
+    - Notes early work focused on isolated AI components, with modern AI emphasizing whole-agent approaches.  
+    - Discusses foundational contributions to rationality, goal-based, utility-based, and learning agents.  
+    - Indicates the rising importance of multiagent systems and learning agents in research and applications.  
+    - References foundational works including McCarthy (1958), Newell and Simon (1972), Horvitz et al. (1988), and others.  
+    - For deeper historical context, see [Wooldridge, Michael - An Introduction to MultiAgent Systems](https://www.wiley.com/en-us/An+Introduction+to+MultiAgent+Systems-p-9780470519462).

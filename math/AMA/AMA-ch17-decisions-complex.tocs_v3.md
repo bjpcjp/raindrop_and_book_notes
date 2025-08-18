@@ -1,0 +1,62 @@
+![AMA-ch17-decisions-complex](AMA-ch17-decisions-complex.best.png)
+
+- **Making Complex Decisions**
+  - **17.1 Sequential Decision Problems**
+    - Defines Markov decision processes (MDPs) as models with states, actions, transition probabilities, and reward functions.
+    - Introduces policies as maps from states to actions to handle uncertainty and sequential decisions.
+    - Explains utility functions with additive and discounted rewards, emphasizing the use of discount factors.
+    - Describes optimal policies maximizing expected discounted rewards and the principle of maximum expected utility.
+    - Further reading: [Artificial Intelligence: A Modern Approach, Chapter 17](http://aima.cs.berkeley.edu/)
+  - **17.2 Value Iteration**
+    - Introduces the Bellman equation relating state utilities and optimal actions.
+    - Describes the value iteration algorithm as an iterative procedure to compute utilities converging exponentially fast.
+    - Proves convergence using contraction mappings and provides error bounds for early termination.
+    - Discusses policy loss bounds related to utility approximation errors.
+    - Further reading: [Puterman, M. L. (1994). Markov Decision Processes](https://www.wiley.com/en-us/Markov+Decision+Processes%3A+Discrete+Stochastic+Dynamic+Programming%2C+1st+Edition-p-9780471619779)
+  - **17.3 Policy Iteration**
+    - Describes policy iteration algorithm alternating policy evaluation and improvement steps.
+    - Explains policy evaluation by solving linear equations when policies fix actions per state.
+    - Discusses modified policy iteration using partial evaluation and asynchronous updates.
+    - Ensures convergence by demonstrating policy improvement and termination due to finite policy space.
+    - Further reading: [Howard, R. A. (1960). Dynamic Programming and Markov Processes](https://www.amazon.com/Dynamic-Programming-Markov-Processes-Optimization/dp/0262630525)
+  - **17.4 Partially Observable MDPs**
+    - Defines POMDPs by adding sensor models to transition models, making the environment partially observable.
+    - Uses belief states as probability distributions over physical states to represent the agent's knowledge.
+    - Shows that optimal policies depend on belief states and that POMDPs reduce to MDPs over continuous belief spaces.
+    - Explains value iteration for POMDPs using piecewise linear and convex value functions with α-vectors and dominance pruning.
+    - Presents online decision-making via dynamic decision networks with forward planning and filtering.
+    - Further reading: [Kaelbling et al. (1998). Planning and Acting in Partially Observable Stochastic Domains](https://doi.org/10.1007/s002910050015)
+  - **17.5 Decisions with Multiple Agents: Game Theory**
+    - Introduces game-theoretic analysis for agents interacting simultaneously under uncertainty.
+    - Defines single-move games with players, actions, payoff matrices, pure and mixed strategies.
+    - Explains dominant strategies, Nash equilibria, and their role in predicting rational agent behavior.
+    - Considers repeated games and the emergence of cooperation through strategies like tit-for-tat and perpetual punishment.
+    - Examines extensive-form games with sequential moves, partial observability, and information sets.
+    - Discusses computational complexity and abstractions for large games like poker.
+    - Further reading: [Osborne, M. J. (2004). An Introduction to Game Theory](https://global.oup.com/academic/product/an-introduction-to-game-theory-9780195128956)
+  - **17.6 Mechanism Design**
+    - Defines mechanism design as creating game rules so that rational agents acting selfishly maximize global utility.
+    - Reviews auction mechanisms: English (ascending-bid), sealed-bid first-price, and sealed-bid second-price (Vickrey) auctions.
+    - Describes properties such as efficiency, strategy-proofness, truth-revealing mechanisms, and revenue equivalence.
+    - Discusses challenges including collusion, bidder incentives, and multi-slot auctions with truthful payment rules.
+    - Introduces Vickrey-Clarke-Groves (VCG) mechanisms that incentivize truthful reporting and efficient allocation via taxes.
+    - Applies mechanism design to externalities, public goods, and problems like pollution control (tragedy of the commons).
+    - Further reading: [Nisan et al. (2007), Algorithmic Game Theory](https://www.cs.ucf.edu/~dmarino/ucf/cis6935/index_files/ngt.pdf)
+  - **17.7 Summary**
+    - Recaps key concepts: MDPs, sequential decision making, value and policy iteration, and discounting.
+    - Summarizes POMDP extensions, including belief states and dynamic decision networks.
+    - Reviews multiagent interaction via game theory, Nash equilibria, and mechanism design principles.
+    - Emphasizes the importance of optimal policies balancing risk and reward in uncertain environments.
+- **Bibliographical and Historical Notes**
+  - Chronicles the development of dynamic programming by Bellman and subsequent foundational work.
+  - Surveys reinforcement learning's role in popularizing MDPs in AI.
+  - Describes advances in factored and relational MDPs and the complexity of POMDP solution methods.
+  - Summarizes game theory history, key contributors (von Neumann, Nash), and its application to AI.
+  - Details mechanism design origins, auction theory, and economic applications.
+  - References foundational and modern texts for deeper exploration.
+- **Exercises**
+  - Exercises address computations of reachability and probabilities in stochastic environments.
+  - Tasks include analyzing MDP policies, rewards, and utility calculations.
+  - Problems cover POMDP belief updates, complexity analysis, and value iteration.
+  - Game-theoretic exercises include equilibrium computation, strategy dominance, and multiagent coordination.
+  - Mechanism design exercises entail auction theory, dominant strategies, and mechanism properties.

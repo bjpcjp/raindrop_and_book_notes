@@ -1,0 +1,145 @@
+![AMA-ch09-first-order-logic-inference](AMA-ch09-first-order-logic-inference.best.png)
+
+- **9.1 Propositional vs. First-Order Inference**
+  - **9.1.1 Inference rules for quantifiers**
+    - Universal Instantiation replaces universally quantified variables with ground terms to produce valid inferences.
+    - Existential Instantiation replaces existential quantifiers with new Skolem constants to name objects satisfying conditions.
+    - Existential Instantiation can be applied once per sentence, making the knowledge base inferentially equivalent but not logically equivalent.
+    - Further details on skolemization are in Section 9.5.
+    - See [Logic Rules and Quantifiers](https://en.wikipedia.org/wiki/Universal_instantiation) for more.
+  - **9.1.2 Reduction to propositional inference**
+    - First-order inference can be reduced to propositional inference by enumerating all ground-term instantiations.
+    - The method is sound and complete but can be computationally expensive or infinite when function symbols generate infinite terms.
+    - Herbrand’s theorem guarantees proofs exist over a finite subset of ground instances.
+    - Entailment in first-order logic is semidecidable; no general algorithm can always terminate with ‘no’.
+    - See Herbrand’s Theorem in [Stanford Encyclopedia of Philosophy](https://plato.stanford.edu/entries/logic-classical/#HerTha).
+- **9.2 Unification and Lifting**
+  - **9.2.1 A first-order inference rule**
+    - Generalized Modus Ponens extends modus ponens with substitutions (unifiers) that instantiate variables in premises and knowledge base.
+    - Universal and existential quantifiers require finding substitutions for both rule variables and knowledge base variables.
+    - This lifted inference avoids full propositionalization by applying only necessary substitutions.
+    - Refer to [Unification (Computer Science)](https://en.wikipedia.org/wiki/Unification_(computer_science)) for foundational concepts.
+  - **9.2.2 Unification**
+    - Unification finds the most general unifier (MGU) making two expressions identical, central to lifted inference.
+    - Standardizing apart (renaming variables) avoids conflicts during unification.
+    - Occur check prevents infinite recursive unifications, though it is sometimes omitted in logic programming.
+    - Unification algorithms recursively compare structures and apply substitutions.
+    - See Martelli and Montanari’s unification algorithm [here](https://doi.org/10.1145/365230.365243).
+  - **9.2.3 Storage and retrieval**
+    - Efficient fact storage uses predicate indexing and subsumption lattices to reduce unnecessary unification attempts.
+    - Subsumption lattices represent query generality and specialization; indexing stores sentences under all unifying queries.
+    - Index explosion is managed by limiting or adapting index creation based on query patterns.
+    - These techniques optimize the fetch operation crucial in resolution and logic programming.
+    - Further reading: Ullman’s *Principles of Database and Knowledge-Base Systems*.
+- **9.3 Forward Chaining**
+  - **9.3.1 First-order definite clauses**
+    - First-order definite clauses have a single positive literal and possibly several universally quantified literals in the premises.
+    - Many knowledge bases, such as Datalog databases (no function symbols), fit this format allowing polynomial-time inference.
+    - Example problem: deducing “West is a criminal” using definite clauses about selling weapons and hostiles.
+    - See Datalog description in [Abiteboul et al., 1995](https://mitpress.mit.edu/books/foundations-datatbases).
+  - **9.3.2 A simple forward-chaining algorithm**
+    - Iteratively applies rules by unifying premises with facts and adding inferred conclusions until fixed point or query satisfied.
+    - Renaming variables (standardizing) prevents ambiguity between clauses.
+    - Algorithm is sound and complete for definite clauses; decidable and efficient for Datalog.
+    - May not terminate if function symbols allow infinite term generation.
+    - Compare with propositional forward chaining in Chapter 7.
+  - **9.3.3 Efficient forward chaining**
+    - Pattern matching between rules and facts is NP-hard in general, corresponding to CSP complexity.
+    - Conjunct ordering heuristics (e.g., Minimum-Remaining-Values) reduce matching cost.
+    - Incremental forward chaining triggers rules only from facts newly added in the previous iteration.
+    - RETE algorithm preprocesses rules into networks to cache partial matches, improving efficiency drastically.
+    - Production systems and cognitive architectures such as SOAR use RETE networks for large rule sets.
+    - Magic sets rewrite rules forward chaining goal-directedly by restricting variable bindings to relevant sets.
+    - Further reading: Forgy’s RETE algorithm paper (1982).
+- **9.4 Backward Chaining**
+  - **9.4.1 A backward-chaining algorithm**
+    - Works backward from the goal, fetching clauses whose consequents unify with the goal and attempting to prove premises recursively.
+    - Implemented as a generator to return multiple solutions with accumulated substitutions.
+    - Depth-first search is space-efficient but incomplete due to infinite loops and redundant paths.
+    - Proof trees explicitly illustrate substitution propagation through recursive calls.
+    - See Scott and Strachey’s work on proof search for similar principles.
+  - **9.4.2 Logic programming**
+    - Prolog is the most popular logic programming language implementing backward chaining with definite clauses.
+    - Prolog syntax differs by placing variables uppercase and literals as `Head :- Body`.
+    - Unification, built-in arithmetic, side-effect predicates, and omission of the occur check distinguish Prolog from pure first-order logic.
+    - Prolog is efficient due to compilation and indexing but incomplete due to depth-first search.
+    - See [The Art of Prolog](https://mitpress.mit.edu/books/art-prolog) by Sterling and Shapiro for details.
+  - **9.4.3 Efficient implementation of logic programs**
+    - Efficient implementations use choice points, variable bindings on trails, and open-coded unification.
+    - The Warren Abstract Machine (WAM) serves as a common intermediate language for compilation.
+    - Continuations handle backtracking by representing next steps to try after successes.
+    - Parallelism exploits AND- and OR-parallelism across subgoals and clauses.
+    - Related: Antonis C. Kakas et al., “Logic Programming” in *AI: A Modern Approach*.
+  - **9.4.4 Redundant inference and infinite loops**
+    - Backward chaining suffers from infinite loops on left-recursive rules and redundant computation.
+    - Forward chaining avoids looping by reaching fixed points but may infer irrelevant facts.
+    - Memoization (tabled logic programming) caches subgoal results, combining backward chaining’s goal orientation with dynamic programming’s efficiency.
+    - Tabled logic programming is complete for Datalog.
+    - For practical use, see XSB system documentation (Swift & Warren).
+  - **9.4.5 Database semantics of Prolog**
+    - Prolog assumes unique names and closed-world assumption (facts not asserted are false).
+    - Contrasts with first-order logic, where unspecified facts might be true or false.
+    - Database completion axioms express these assumptions in FOL.
+    - This semantics enhances Prolog’s efficiency but limits expressiveness.
+    - See [Foundations of Databases](https://webdam.inria.fr/Alice/) by Abiteboul et al.
+  - **9.4.6 Constraint logic programming**
+    - Constraint Logic Programming (CLP) extends logic programming with constraints over domains and solvers integrated into inference.
+    - CLP supports infinite domains and richer constraints (e.g., linear inequalities).
+    - Enables sophisticated search strategies and better efficiency compared to classical backtracking.
+    - Metarules can customize inference control order.
+    - See Jaffar and Lassez (1987) for foundational CLP work.
+- **9.5 Resolution**
+  - **9.5.1 Conjunctive normal form for first-order logic**
+    - Conversion to CNF requires eliminating implications, moving negations inward, standardizing apart variables, Skolemization to remove existentials, dropping universal quantifiers, and distributing OR over AND.
+    - Skolem functions replace existential quantifiers with functions of universally quantified variables.
+    - CNF clauses have universally quantified variables assumed implicitly.
+    - This supports uniform application of resolution inference.
+    - Refer to Enderton’s *A Mathematical Introduction to Logic* for detailed procedures.
+  - **9.5.2 The resolution inference rule**
+    - First-order resolution generalizes propositional resolution by resolving complementary literals that unify via substitutions.
+    - Binary resolution operates on two literals, with factoring removing redundant literals, enabling completeness.
+    - Resolution steps combine clauses by unifying complementary literals and merging remaining literals.
+    - Examples demonstrate substitution and resolvent formation.
+    - Robinson (1965) introduced resolution and unification algorithms foundational to automated theorem proving.
+  - **9.5.3 Example proofs**
+    - Resolution proofs derive empty clause by resolving knowledge base clauses with negated query.
+    - Proof structures often form a single spine in Horn clause cases, mirroring backward chaining.
+    - More complex examples with Skolemization produce more branching proof trees.
+    - Constructive substitution bindings yield query answers; answer literals track solutions.
+    - Examples include crime scenario and cat-killing problem.
+    - See [Automated Deduction](https://doi.org/10.1017/CBO9780511613874) by Fitting for proof techniques.
+  - **9.5.4 Completeness of resolution**
+    - Resolution is refutation-complete: any unsatisfiable set of clauses leads to the empty clause derivation.
+    - Herbrand’s theorem ensures a finite unsatisfiable subset of ground instances exists if the original set is unsatisfiable.
+    - The lifting lemma guarantees ground proofs correspond to first-order proofs.
+    - Definitions include Herbrand universe, base, and saturation.
+    - This establishes first-order resolution as a foundation for theorem proving.
+    - See Robinson’s original paper and Genesereth & Nilsson (1987).
+  - **9.5.5 Equality**
+    - Equality requires special handling beyond standard resolution.
+    - Approaches: axiomatize equality properties and substitutivity, add inference rules like demodulation and paramodulation, or extend unification to equational unification.
+    - Demodulation substitutes terms based on unit equalities; paramodulation generalizes this to clauses with equalities.
+    - Equational unification allows unifying terms modulo equational axioms (e.g., commutativity).
+    - Complete equality reasoning requires these extensions.
+    - For details, see Baader and Snyder (2001), and Knuth-Bendix completion methods.
+  - **9.5.6 Resolution strategies**
+    - Unit preference restricts resolution steps to those involving unit clauses, enhancing efficiency; complete for Horn clauses.
+    - Set of support strategy limits resolutions to involve clauses related to the negated goal to focus proof search; maintains completeness if chosen properly.
+    - Input and linear resolution strategies restrict resolutions to maintain completeness and reduce search breadth.
+    - Subsumption removes clauses subsumed by more general ones to reduce search space.
+    - Efficient strategies and heuristics enable modern theorem provers to tackle large problems.
+    - Overview in Wos et al. (1992) and Robinson & Voronkov (2001).
+  - **Practical uses of resolution theorem provers**
+    - Theorem provers verify hardware and software correctness, synthesizing systems from specifications.
+    - Examples include CPU verification, encryption algorithm proofs, and spacecraft control software.
+    - Automated deduction has produced novel mathematical proofs and solved longstanding open problems.
+    - Important systems include OTTER, SPIN, VAMPIRE, and Coq.
+    - See Havelund et al. (2000) for spacecraft software verification.
+- **9.6 Summary**
+  - First-order inference reduces to propositional inference but can be inefficient due to infinite grounding.
+  - Unification enables lifted inference rules like generalized Modus Ponens improving efficiency.
+  - Forward and backward chaining algorithms are both complete for definite clauses; Datalog inference is decidable and efficient.
+  - Prolog adopts backward chaining with operational optimizations but suffers from incompleteness without memoization.
+  - Resolution with CNF forms a complete proof procedure for first-order logic, with equality handled via special mechanisms.
+  - Modern theorem proving applies resolution strategies for practical efficiency in software, hardware verification, and mathematics.
+  - For extended learning, see [Russell & Norvig, AI: A Modern Approach](http://aima.cs.berkeley.edu).

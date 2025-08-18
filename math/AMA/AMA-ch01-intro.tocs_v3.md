@@ -1,0 +1,144 @@
+![AMA-ch01-intro](AMA-ch01-intro.best.png)
+
+- **1 INTRODUCTION**
+  - **INTELLIGENCE**
+    - Intelligence enables perception, understanding, and manipulation of a complex world by limited matter.
+    - AI attempts not only to understand intelligence but also to build intelligent entities.
+    - AI is a universal field relevant to any intellectual task.
+    - For further reading, see [Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/) by Russell and Norvig.
+  - **1.1 WHAT IS AI?**
+    - AI definitions are classified along two dimensions: thought vs. behavior and human-like vs. rationality-based.
+    - Human-centered approaches rely on empirical science; rationalist approaches use mathematics and engineering.
+    - Four main approaches have been historically pursued: acting humanly, thinking humanly, thinking rationally, and acting rationally.
+    - The chapter introduces each approach in detail.
+  - **1.1.1 Acting humanly: The Turing Test approach**
+    - The Turing Test evaluates intelligence by whether a computer can imitate human written communication.
+    - Passing requires natural language processing, knowledge representation, automated reasoning, and machine learning.
+    - A total Turing Test includes perception and robotics, requiring computer vision and robotics.
+    - AI researchers focus on underlying principles rather than just passing the test.
+    - See [Turing's original paper](https://www.cs.virginia.edu/~robins/Turing_Paper_1936.pdf) for more.
+  - **1.1.2 Thinking humanly: The cognitive modeling approach**
+    - Cognitive modeling attempts to build computer programs mimicking human thought processes.
+    - Approaches include introspection, psychological experiments, and brain imaging.
+    - It is supported by cognitive science, combining AI modeling with human behavioral data.
+    - Modern cognitive science separates modeling from claiming equivalence with human mechanisms.
+  - **1.1.3 Thinking rationally: The “laws of thought” approach**
+    - Based on logic and syllogisms from Aristotle, focusing on irrefutable reasoning steps.
+    - Logicist tradition uses formal logic notations and theorem proving to model AI reasoning.
+    - Main challenges are representing informal knowledge formally and computational resource limits.
+    - Logic provides theoretical foundation but practical efficiency is problematic.
+  - **1.1.4 Acting rationally: The rational agent approach**
+    - Rational agents act to maximize expected outcomes based on their knowledge.
+    - This approach generalizes laws of thought and incorporates reflexes and uncertain reasoning.
+    - It aligns with knowledge representation, reasoning, natural language generation, and learning.
+    - Focus is on general principles rather than human mimicry.
+    - See Chapter 5 and 17 for limited rationality in practice.
+  - **1.2 THE FOUNDATIONS OF ARTIFICIAL INTELLIGENCE**
+    - AI has interdisciplinary roots in philosophy, mathematics, economics, neuroscience, psychology, computer engineering, control theory, and linguistics.
+    - Each discipline contributed questions, viewpoints, and techniques fundamental to AI’s development.
+  - **1.2.1 Philosophy**
+    - Philosophy addressed formal rules of reasoning, origins of knowledge, and mind-body dualism.
+    - Key contributors include Aristotle, Hobbes, Descartes, Bacon, Locke, Hume, and logical positivists.
+    - Early treatment of knowledge as observation-linked and minds as computational processes.
+    - See [Stanford Encyclopedia of Philosophy: Philosophy of Mind](https://plato.stanford.edu/entries/philosophy-mind/).
+  - **1.2.2 Mathematics**
+    - Formalized logic starting from Boolean logic and first-order logic.
+    - Established the limits of computation, including undecidability and incompleteness (Gödel’s theorems).
+    - Developed concepts of computability (Turing machines, Church-Turing thesis) and tractability (complexity theory).
+    - Probability theory developed principles for reasoning under uncertainty.
+    - See [Computability and Logic](https://www.cambridge.org/core/books/computability-and-logic/AD897A989656F838EC8E6F2116A36094) by Boolos et al.
+  - **1.2.3 Economics**
+    - Formalized decision theory combining probability and utility to maximize expected payoff.
+    - Developed game theory for multi-agent interaction scenarios.
+    - Introduced Markov decision processes for sequential decisions.
+    - Influential economists include Adam Smith, von Neumann, Morgenstern, and Herbert Simon.
+    - See [Decision Theory](https://plato.stanford.edu/entries/decision-theory/).
+  - **1.2.4 Neuroscience**
+    - Established the brain as the seat of cognition and consciousness.
+    - Identified neurons as fundamental units; brain regions correspond to functions.
+    - Modern imaging (EEG, fMRI) enables observation of brain activity.
+    - Raw computational resources of the brain compare favorably with supercomputers.
+    - See [Neuroscience: Exploring the Brain](https://global.oup.com/ushe/product/neuroscience-exploring-the-brain-9781451109540).
+  - **1.2.5 Psychology**
+    - Early empirical study of human and animal cognition and behavior.
+    - Behaviorism focused on observable stimulus-response; cognitive psychology reintroduced mental processes.
+    - Cognitive science integrates computational models with behavioral experiments.
+    - See [Cognitive Science Society](https://cognitivesciencesociety.org/).
+  - **1.2.6 Computer engineering**
+    - Developed modern digital electronic computers during WWII.
+    - Influential early computers include Heath Robinson, Colossus, Z-3, ENIAC.
+    - Provided hardware and software foundations including programming languages like Lisp.
+    - Contributions include time-sharing, automatic storage management, symbolic and functional programming.
+    - See [Computer History Museum](https://computerhistory.org/).
+  - **1.2.7 Control theory and cybernetics**
+    - Studied self-regulating systems using feedback to maintain goals.
+    - Control theory applies calculus and matrix algebra for continuous systems.
+    - Cybernetics linked regulatory mechanisms to cognition and intelligence.
+    - AI escapes control theory limits by addressing discrete, symbolic, and complex reasoning problems.
+    - See [Feedback Control Theory](https://web.mit.edu/2.14/www/Handouts/BasicControl.pdf).
+  - **1.2.8 Linguistics**
+    - Linguistics established the formal study of language structure and creativity.
+    - Chomsky’s theories introduced formal syntactic models amenable to computation.
+    - Computational linguistics grew as a hybrid with AI for natural language understanding and processing.
+    - Semantic and contextual knowledge is necessary beyond syntax for real understanding.
+    - See [Noam Chomsky’s Syntactic Structures](https://archive.org/details/SyntacticStructures).
+  - **1.3 THE HISTORY OF ARTIFICIAL INTELLIGENCE**
+    - Detailed the timeline from early neural models (1943) through distinct eras of AI development.
+    - Key milestones include the Dartmouth Conference (1956) which officially founded AI.
+    - Cycles of optimism, setbacks, and renewed approaches shaped AI’s evolution.
+  - **1.3.1 The gestation of artificial intelligence (1943–1955)**
+    - McCulloch and Pitts proposed artificial neural networks modeled on brain neurons.
+    - Hebbian learning rule introduced as a mechanism for connection strength update.
+    - Early neural computer SNARC built in 1950.
+    - Alan Turing proposed the Turing Test and ideas of machine learning and genetic algorithms.
+  - **1.3.2 The birth of artificial intelligence (1956)**
+    - Dartmouth conference organized by John McCarthy coined “Artificial Intelligence.”
+    - Attendees included Newell and Simon who presented the Logic Theorist, an early reasoning program.
+    - AI distinguished from related fields by focusing on human-like intelligence and complex environments.
+  - **1.3.3 Early enthusiasm, great expectations (1952–1969)**
+    - Programs like GPS imitated human problem solving to demonstrate intelligence.
+    - Symbol system hypothesis proposed that intelligence arises from symbolic data manipulation.
+    - Early expert systems for theorem proving, checkers, and language understanding were developed.
+    - Lisp programming language and time-sharing systems advanced AI development environments.
+  - **1.3.4 A dose of reality (1966–1973)**
+    - Overoptimistic predictions led to disappointment; limitations such as combinatorial explosion became apparent.
+    - Difficulties arose from lack of background knowledge and computational intractability.
+    - Criticism included Lighthill report causing funding cuts, and perceptron limitations exposed by Minsky and Papert.
+  - **1.3.5 Knowledge-based systems: The key to power? (1969–1979)**
+    - Shift to knowledge-intensive systems using domain-specific expertise enhanced AI power.
+    - DENDRAL and MYCIN expert systems demonstrated this approach in chemistry and medical diagnosis.
+    - Incorporation of uncertainty management (certainty factors) was important.
+    - Natural language understanding required deeper general world knowledge for disambiguation.
+  - **1.3.6 AI becomes an industry (1980–present)**
+    - Commercial deployments of expert systems occurred, such as DEC’s R1 system for order configuration.
+    - High-profile projects like Japan’s Fifth Generation and US MCC emerged but fell short of goals.
+    - The AI industry boom was followed by an “AI Winter” due to unmet expectations.
+  - **1.3.7 The return of neural networks (1986–present)**
+    - Rediscovery of back-propagation algorithm sparked renewed neural network research.
+    - Connectionist models challenged symbolic and logicist AI approaches.
+    - Current view sees connectionist and symbolic methods as complementary.
+  - **1.3.8 AI adopts the scientific method (1987–present)**
+    - AI research increasingly emphasizes formal mathematical foundations and empirical validation.
+    - Fields like speech recognition transitioned to rigorous models such as hidden Markov models.
+    - Bayesian networks and decision theory gained acceptance for probabilistic reasoning.
+    - Cross-disciplinary integration of AI with statistics, optimization, and control advanced.
+  - **1.3.9 The emergence of intelligent agents (1995–present)**
+    - Renewed focus on building complete rational agents capable of autonomous sensing and acting.
+    - Real-world applications include internet-based agents and robotic cars.
+    - Integration of uncertainty management and economics led to multi-agent system research.
+    - Some founders urge renewed pursuit of human-level AI (HLAI) and Artificial General Intelligence (AGI).
+  - **1.3.10 The availability of very large data sets (2001–present)**
+    - Access to large corpora and data sets enables learning-based solutions surpassing handcrafted knowledge.
+    - Examples include word-sense disambiguation and photo inpainting via massive data-driven methods.
+    - Data availability reduces the knowledge engineering bottleneck.
+    - See [Data Mining: Concepts and Techniques](https://www.sciencedirect.com/book/9780123814791/data-mining).
+  - **1.4 THE STATE OF THE ART**
+    - AI applications include autonomous vehicles, speech recognition, robotic planning, expert diagnostic systems, and game playing.
+    - AI systems operate in real-world environments such as Mars exploration, logistics, internet search, and consumer robotics.
+    - AI contributes to significant industrial, military, and commercial advances.
+  - **1.5 SUMMARY**
+    - AI involves diverse approaches, focusing primarily on rational agents acting to maximize expected utility.
+    - Multiple scientific disciplines contributed foundational concepts and tools.
+    - The field experienced cycles of enthusiasm and setbacks but recently matured with integrated theories and empirical methods.
+    - AI has evolved into rigorous science informed by foundational mathematics and cross-disciplinary integration.
+    - See [AAAI](https://aaai.org/) for community resources and further reading.

@@ -1,0 +1,47 @@
+![AMA-apxa-math](AMA-apxa-math.best.png)
+
+- **A.1 Complexity Analysis and O() Notation**
+  - **A.1.1 Asymptotic Analysis**
+    - Algorithm efficiency is abstracted using input size n and counting computational steps, such as operations executed.
+    - O() notation describes upper bounds of running time ignoring constants, facilitating comparison of algorithms at scale.
+    - The analysis distinguishes best, worst, and average cases, though average case requires assumptions on input distribution.
+    - For foundational understanding, see [Introduction to Algorithms (Cormen et al.)](https://mitpress.mit.edu/books/introduction-algorithms).
+  - **A.1.2 NP and Inherently Hard Problems**
+    - Problem complexity class P includes all problems solvable in polynomial time, while NP includes those verifiable in polynomial time.
+    - NP-complete problems are the hardest in NP, and the central open question is whether P = NP.
+    - Co-NP and #P are complementary and counting complexity classes, respectively, with different problem hardness properties.
+    - PSPACE problems require polynomial space and may be harder than NP-complete problems.
+    - For in-depth theory, consult [Computational Complexity (Papadimitriou)](https://www.elsevier.com/books/computational-complexity/papadimitriou/978-0-12-044905-1).
+
+- **A.2 Vectors, Matrices, and Linear Algebra**
+  - **Vectors**
+    - Vectors are ordered sequences of values with operations such as elementwise addition and scalar multiplication.
+    - Vector length is computed by the square root of the sum of squared elements; dot product sums products of corresponding elements.
+    - Vectors can represent points or arrows in Euclidean space, with operations relating to geometric interpretation.
+  - **Matrices**
+    - Matrices are rectangular arrays with row and column indices; matrix addition and scalar multiplication operate elementwise.
+    - Matrix multiplication requires compatible dimensions and is associative but not commutative.
+    - The identity matrix has ones on the diagonal and zeros elsewhere, serving as the multiplicative identity.
+    - The transpose switches rows and columns; the inverse exists only for nonsingular matrices and can be computed in O(n³) time.
+  - **Solving Linear Systems**
+    - Systems of linear equations are solved via matrix inversion and multiplication; the matrix equation is A x = b.
+    - Matrix inversion and multiplication yield solutions when the inverse exists.
+    - For examples and computational techniques, see [Linear Algebra and Its Applications (Lay)](https://www.pearson.com/us/higher-education/program/Lay-Linear-Algebra-and-Its-Applications-5th-Edition/PGM56317.html).
+
+- **A.3 Probability Distributions**
+  - **Probability Basics**
+    - Probability measures events between 0 and 1, summing to 1 across all outcomes, with disjoint event probabilities additive.
+    - Random variables are uppercase, values lowercase; conditional probability is ratio of joint to marginal probability.
+    - Independence means conditional probability equals unconditioned probability.
+  - **Probability Density Functions (PDF)**
+    - For continuous variables, PDFs define probability densities as limits of probabilities over infinitesimal intervals.
+    - PDFs must be nonnegative and integrate to 1 over their domain.
+    - Cumulative distribution functions (CDF) measure probability up to a value by integrating the PDF.
+  - **Gaussian Distributions**
+    - The Gaussian (normal) distribution is defined by mean μ and standard deviation σ with bell-shaped curve formula.
+    - Multivariate Gaussians extend to vectors with mean vector and covariance matrix.
+    - The central limit theorem states that sample means approximate a normal distribution as sample size grows.
+  - **Statistical Measures**
+    - Expectation (mean) is the weighted average by probability; RMS is the square root of mean of squared values.
+    - Covariance measures joint variability between variables; covariance matrix extends to vectors of variables.
+    - For foundational knowledge, see [Probability and Random Processes (Ross)](https://www.wiley.com/en-us/Introduction+to+Probability+Models%2C+11th+Edition-p-9780124079489).
