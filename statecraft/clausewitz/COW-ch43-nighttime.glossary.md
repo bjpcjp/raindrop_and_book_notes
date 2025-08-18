@@ -1,0 +1,21 @@
+- **Advance-guard** — The forward units of an army tasked with reconnaissance and initial engagement, protecting the main force from surprise.  
+- **Assailant** — The attacking force in a combat or military operation.  
+- **Bivouac** — A temporary, often improvised, military camp without tents or permanent structures.  
+- **Combat** — An engagement or battle between opposing military forces.  
+- **Defender** — The force occupied with holding a position or resisting an attack.  
+- **Encampment** — A place where troops are camped, often with organized tents or huts.  
+- **Envelopment** — A tactical maneuver aiming to surround or flank an enemy force.  
+- **Fractional part (of an Army)** — A smaller segment or subdivision of an army formation or force.  
+- **Moral force** — The psychological strength, will, and morale that influence soldiers’ behavior in battle.  
+- **Night attack** — A military attack conducted during nighttime to achieve surprise or other tactical advantages.  
+- **Outpost** — A small military detachment or position placed forward to observe or delay the enemy.  
+- **Patrol** — A small unit sent out to gather information, provide security, or engage the enemy if necessary.  
+- **Reconnaissance** — The exploration or scouting of an area to gather information about enemy forces or terrain.  
+- **Side (of the enemy)** — Refers to one party within a combat scenario; either the assailant or the defender.  
+- **Stealthy approach** — A method of moving troops quietly and carefully to avoid detection before an attack.  
+- **Surprise** — A condition achieved by attacking when and where the enemy is unprepared, causing confusion and disadvantage.  
+- **Tactical subject** — Matters related to the actual conduct and management of battles and engagements.  
+- **Tactics** — The art and science of arranging and employing troops in battle.  
+- **Turning (an enemy)** — Maneuvering to pass around the enemy’s flank or rear to gain a positional advantage.  
+- **Unexpected blows** — Sudden and unforeseen attacks intended to catch the enemy off guard.  
+- **Withdrawal** — The organized movement of troops away from the enemy or a position.

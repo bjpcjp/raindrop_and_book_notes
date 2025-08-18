@@ -1,0 +1,1 @@
+Grand strategy is the art of looking beyond immediate battles to focus on long-term goals, using foresight, political awareness, and subtle planning to achieve lasting victory. By maintaining clear objectives, widening perspective, severing underlying causes, and taking indirect routes, a grand strategist shapes both events and perceptions to secure ultimate success.

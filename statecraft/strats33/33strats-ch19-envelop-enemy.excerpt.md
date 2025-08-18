@@ -1,0 +1,1 @@
+Envelopment is a strategy of applying relentless, multi-directional pressure to surround and psychologically dominate an opponent, leaving them no room to maneuver or hope for counterattack. History shows that successful envelopment exploits the enemy’s vulnerabilities and mindset to crush their willpower, making defeat inevitable even against technologically superior foes.

@@ -1,0 +1,30 @@
+- **Ambush** — A surprise attack from a concealed position used to catch the enemy off guard.  
+- **Army** — A large organized group of soldiers trained for war.  
+- **Attack** — An offensive operation to engage and overpower the enemy.  
+- **Baggage trains** — Supply and equipment convoys accompanying an army.  
+- **Battle** — A sustained fight between armed forces.  
+- **Campaign** — A series of military operations intended to achieve a specific objective.  
+- **Capital** — The city or town that serves as the seat of government for a kingdom or state.  
+- **Defense** — The protection of territory or assets against attack.  
+- **Feudal nobles** — Aristocratic lords holding land and power during the Warring States Period.  
+- **Flag** — A piece of cloth with distinctive colors or patterns used to represent a group or army.  
+- **Fortifications** — Defensive military constructions built to protect a position.  
+- **General** — A high-ranking army officer in command of troops.  
+- **Jing River** — A geographical landmark referenced as a gorge through which an army advances.  
+- **King** — The sovereign ruler of a kingdom or state.  
+- **Li** — A traditional Chinese unit of distance, approximately 0.3 miles.  
+- **Military advisor** — A strategic expert who advises commanders on warfare tactics.  
+- **Mouth of the gorge** — The exit or entrance point of a narrow valley through which armies move.  
+- **Pang Juan** — A Wei general and rival to Sun Bin mentioned in the strategy.  
+- **Prince Tian Ji** — A Qi general who led forces under Sun Bin’s strategy.  
+- **Qi** — An ancient Chinese kingdom during the Warring States Period.  
+- **Siege** — Military encirclement of a fortified place to compel surrender.  
+- **Strategy** — A carefully devised plan of action to achieve a military goal.  
+- **Sun Bin** — Renowned military strategist and advisor to the king of Qi.  
+- **Sun Zi** — The ancient author of *The Art of War,* an early Chinese military text.  
+- **Tidal wave** — Metaphor for an overwhelming, unstoppable force.  
+- **Trap** — A planned ambush to capture or destroy enemy forces.  
+- **Troops** — Soldiers collectively considered as a unit.  
+- **Wei** — An ancient Chinese kingdom often engaged in warfare during the Warring States Period.  
+- **Warring States Period** — An era in ancient China marked by constant warfare among competing states.  
+- **Zhao** — Another ancient Chinese kingdom subject to sieges and attacks during this period.

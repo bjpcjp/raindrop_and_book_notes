@@ -1,0 +1,27 @@
+- **Autocrat** — A ruler who depends on a small coalition of essential supporters to maintain power, often limiting public goods to preserve control.  
+- **Bailout** — Financial assistance, including loans, debt forgiveness, or aid, used to rescue a government or economy facing crisis.  
+- **Big Coalition** — A large group of essential backers a leader depends on for support, typically found in democratic regimes.  
+- **Clean Drinking Water** — A basic public good whose availability correlates positively with coalition size and democratic governance.  
+- **Civic Minded** — Describes a leader motivated by the public good or community welfare rather than purely political survival.  
+- **Coalition** — The group of essential supporters whose loyalty is critical for a leader’s hold on power.  
+- **Discretionary Money** — Funds a leader controls after satisfying the coalition’s demands, used for further policy or personal goals.  
+- **Disasters (Natural)** — Events like earthquakes or tsunamis which reveal differences in governance quality through their aftermath and relief efforts.  
+- **Essentials** — Key supporters in a coalition necessary for a leader’s political survival.  
+- **Freedom** — Fundamental rights such as free speech, free press, and assembly, typically abundant in large-coalition democracies.  
+- **Hobbesian State of Nature** — A condition described as solitary, nasty, poor, brutish, and short, reflecting life without effective governance.  
+- **Interchangeables** — Ordinary citizens or supporters outside the core coalition, who must be sufficiently contented to prevent revolt.  
+- **Leadership Survival** — The ongoing political maintenance of power by balancing benefits to coalition and masses.  
+- **Literate** — The ability to read and write, often limited by autocratic regimes to prevent dissent.  
+- **Large Coalition** — Another term for a big coalition; regimes requiring broad support, often democratic, promoting public goods and freedoms.  
+- **Low Coalition (Small Coalition)** — Regimes dependent on few essentials, often autocratic with limited public goods and suppressed freedoms.  
+- **Natural Resources (Revenue Sources)** — Non-tax sources of income for rulers, such as oil wealth or foreign aid, that can reduce reliance on taxing citizens.  
+- **Political Survival** — The strategy of allocating resources to appease essential supporters and prevent mass uprising.  
+- **Public Goods** — Benefits provided by governments, including education, health care, infrastructure, and freedoms, whose nature depends on coalition size.  
+- **Public Goods for the Public Good** — Public benefits that genuinely improve societal welfare, characteristic of large-coalition democracies.  
+- **Public Goods Not for the Public’s Good** — Public benefits provided mostly to sustain autocratic rule, serving coalition members and not the masses.  
+- **Regulatory Reform** — Changes in laws and rules accompanying bailouts to improve governance, usually enacted by large-coalition democracies.  
+- **Road Infrastructure** — Roads built primarily to facilitate market access; in autocracies, often purposely limited or designed to restrict regional power.  
+- **Selectorate** — The pool of potential coalition members from whom the essential supporters are chosen.  
+- **Small Coalition** — A coalition comprising few essential supporters; common in autocratic regimes with limited public goods and restricted freedoms.  
+- **State of Nature** — A concept from Hobbes describing life without government as chaotic and dangerous.  
+- **Winning Coalition** — The subset of the selectorate whose support is necessary for a leader to hold office.

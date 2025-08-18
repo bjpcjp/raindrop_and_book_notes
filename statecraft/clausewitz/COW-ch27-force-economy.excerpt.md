@@ -1,0 +1,1 @@
+Effective management in war requires continuously ensuring that all forces are actively engaged, as leaving any part idle wastes resources worse than ineffective action. This principle emphasizes the importance of coordinated cooperation among all parts to maximize impact and avoid neutralizing one's own strength.

@@ -1,0 +1,15 @@
+- **Angle of lines of operation** — The geometrical relationship between lines in military maneuvers, influencing movement strategies.  
+- **Base of operations** — The position or location from which military operations are conducted, influenced by geography and logistics.  
+- **Combat** — The use of armed conflict within strategy to achieve military objectives.  
+- **Geometrical element** — Mathematical aspects such as angles and shapes related to troop movements and positioning.  
+- **Geographical elements** — Physical features of terrain like hills, rivers, woods, roads, and commanding points that affect military actions.  
+- **Lines of operation** — Paths along which military forces advance or maneuver toward objectives.  
+- **Moral elements** — Psychological and ethical factors that affect the morale and spirit of troops and commanders.  
+- **Military force** — The entirety of armed personnel and equipment at a commander’s disposal.  
+- **Organisation** — The structured arrangement and coordination of military units and arms.  
+- **Physical elements** — Tangible military assets including troop numbers, weapons, and equipment.  
+- **Proportion of the three arms** — The balance and composition among infantry, cavalry, and artillery forces.  
+- **Statistical elements** — Factors related to supply, logistics, and resource availability.  
+- **Supply** — All means and resources needed to support and sustain military operations.  
+- **Three arms** — The three main branches of the military typically involved in combat: infantry, cavalry, and artillery.  
+- **Warfare realities** — The complex, interconnected conditions and factors present in actual military operations.

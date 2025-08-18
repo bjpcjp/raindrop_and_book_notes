@@ -1,0 +1,21 @@
+- **Act before you are ready** — Taking decisive action despite incomplete preparation to seize the initiative and force creativity under pressure.  
+- **Death-at-your-heels tactic** — Embracing the constant presence of death to cultivate urgency, seriousness, and intense focus in one's actions.  
+- **Death ground** — A situation where there is no escape or retreat, compelling individuals or armies to fight with utmost desperation and spirit.  
+- **Death-ground strategy** — Intentionally placing oneself or one's forces in no-retreat situations to eliminate fallback options and provoke maximum effort.  
+- **Desperation** — A psychological state of having nothing to lose, which can fuel extraordinary courage and determination.  
+- **Distraction** — Losing focus by thinking about future possibilities or escape routes, weakening present engagement and effectiveness.  
+- **Enter new waters** — Leaving comfortable, familiar situations for unknown challenges to negate fallback options and ignite urgency.  
+- **Fatal position** — A hopeless or enclosed position where survival is only possible through desperate effort.  
+- **Focus on the present** — Engaging fully with immediate tasks and challenges without being distracted by past regrets or future hopes.  
+- **Hate as fuel** — Using external animosity or opposition as motivation to perform better and fight harder.  
+- **No-return tactic** — Removing the means of retreat or escape to force commitment and maximize focus on success.  
+- **Outside pressure** — External forces or conditions that compel urgency and prompt decisive action.  
+- **Psychological death ground** — Any mental or situational circumstance where options are severely limited, inducing pressure and urgency.  
+- **Restlessness** — Maintaining constant motion and dissatisfaction to avoid complacency and sustain high energy levels.  
+- **Safety net** — A fallback option or plan that divides focus and reduces commitment to current challenges.  
+- **Sense of urgency** — A heightened awareness of limited time and high stakes that drives intensified effort and focus.  
+- **Stake everything on a single throw** — Committing all resources and future prospects to a single decisive action to create urgency.  
+- **Timidity** — Hesitation or reluctance to fully commit due to fear or safety concerns, leading to weak, ineffective actions.  
+- **Urgency** — The compelling need to act promptly and decisively in response to pressing circumstances.  
+- **Using death to live fully** — Embracing mortality to give meaning and intensity to each action.  
+- **Withdrawal of options** — Deliberately removing escape routes or alternatives to increase focus and commitment.

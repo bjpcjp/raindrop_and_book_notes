@@ -1,0 +1,24 @@
+- **According with** — Yielding to the enemy's desires or expectations to lure them into mistakes and exploit weaknesses.  
+- **Aggravated attack** — An impulsive or rash offensive move exposing the attacker’s strategy and vulnerabilities.  
+- **Bilateral principle of application** — Using the opponent’s personality or force as a tool for their own subjugation, turning their strength against them.  
+- **Counterattack** — A strategy of waiting for the enemy's initial move, then exploiting their exposed weaknesses through a swift and unexpected response.  
+- **Defensive posture** — Maintaining a guarded, flexible position to observe and react to the enemy’s moves without revealing one’s own strategy.  
+- **Disguised aggression** — Appearing weak or confused to bait an enemy into overextending or attacking rashly, setting up a trap.  
+- **Elasticity (JuJitsu principle)** — Opposing hardness with softness by adapting to and redirecting the enemy’s force rather than meeting it head-on.  
+- **Feigning flight** — A deceptive retreat used to lure the enemy into a vulnerable pursuit, then counterattacking when their lines are broken.  
+- **Holder-back strategy** — Deliberately refraining from initiating an attack, allowing the enemy to act first and become vulnerable.  
+- **Jujitsu** — The "soft art" of self-defense focusing on patience, flexibility, and using an opponent’s aggression against them.  
+- **Mirroring (Shinkage technique)** — Imitating an opponent’s moves exactly to confuse, frustrate, and find the moment to counterattack.  
+- **Mobility** — Using speed and flexibility of smaller forces to evade and strike effectively, particularly against larger, slower enemies.  
+- **Patience** — The ability to hold back impulsive reactions, wait for the right moment, and capitalize on the opponent's mistakes.  
+- **Psychological warfare** — Manipulating the mental state of opponents to provoke rash attacks and panic, undermining their discipline and cohesion.  
+- **Rapid transition to attack** — The critical moment of switching swiftly from defense to offense to exploit enemy vulnerability.  
+- **Reversal** — Changing tactics from defensive to offensive and vice versa as circumstances demand to maintain unpredictability and advantage.  
+- **Seizing the enemy’s spear** — Using the opponent’s own attack or intention as a weapon against them, a metaphor from Japanese swordsmanship.  
+- **Stillness** — Maintaining calm and immobility to avoid exposing one’s position or intention and to frustrate an impulsive enemy.  
+- **Subtlety** — Using indirect, deceptive, and nuanced moves that mask true intentions and make counterattacks more effective.  
+- **Temerity** — Rashness or recklessness, often exploited by patient opponents who bait aggressors into premature action.  
+- **Weakness as strength** — Using apparent vulnerability as a ploy to lure opponents into overconfidence and mistakes.  
+- **Waiting strategy** — Deliberate delay in responding or initiating action to let the opponent commit first and reveal their plan.  
+- **Wiles of war** — Ancient Chinese strategies emphasizing cunning, deception, and exploiting enemy psychology rather than brute force.  
+- **Yielding (JuJitsu principle)** — Allowing the opponent’s force to proceed while redirecting or neutralizing it, turning it to one’s advantage.

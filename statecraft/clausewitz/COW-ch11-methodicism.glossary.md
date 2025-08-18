@@ -1,0 +1,16 @@
+- **Command** — A motive of action equivalent to a law in the subject of the will; an order directing conduct.  
+- **Directions** — Determinations of action influencing numerous minor and unimportant circumstances below the level of general laws.  
+- **Instruction** — Specific determinations guiding action in particular contexts, similar to directions but often more detailed.  
+- **Law** — In cognition, the relation of things and their effects; in action, a command or prohibition, though inherently subjective and not absolute in War.  
+- **Maxim** — A subjective principle containing personal relations, valued only by the individual who formulates it.  
+- **Method** — A recurring, selected mode of acting chosen from several possibilities, calculated on the average probability of cases.  
+- **Methodicism (Methodismus)** — Adherence to methods rather than to general principles or particular prescriptions, applied mostly to probable or average cases.  
+- **Objective Principle** — A principle based on objective truth, universally valid for all persons.  
+- **Principle** — The spirit or sense of law guiding judgment and action, less definite than law and allowing for flexible application; can be objective or subjective.  
+- **Regulation** — Prescribed instructions or rules, often concerning formations, drills, or field service, that prepare troops for action.  
+- **Rule** — Either synonymous with principle allowing exceptions or a means to infer a hidden truth from a particular sign, guiding a specific course of action.  
+- **Rules of War** — Prescriptions or observations, often based on specific visible circumstances, leading to tactical or operational conclusions.  
+- **Subjective Principle** — A principle influenced by personal or individual relations, often called maxim, with value specific to one person.  
+- **Tactic Principle** — Guiding ideas informing military action that are not absolute but always considered in decision-making, e.g., sparing forces for the final struggle.  
+- **Theory of the Conduct of War** — The body of knowledge wherein principles, rules, prescriptions, and methods crystallize to guide war actions.  
+- **Will (in action)** — The faculty by which law becomes a motive, equated with command or prohibition.

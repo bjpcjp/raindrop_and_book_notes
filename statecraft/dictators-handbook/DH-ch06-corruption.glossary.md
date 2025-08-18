@@ -1,0 +1,31 @@
+- **Absolute Corruption** — The intensified form of corruption where corruption empowers leaders absolutely, closely tied to absolute power.  
+- **Autocrat** — A ruler with near-absolute power, typically dependent on a small loyal coalition for political survival.  
+- **Big Coalition** — A large group of essential supporters required by leaders in democratic or broad-based regimes to win and maintain power.  
+- **Bribery** — Offering money or favors to influence votes or actions, commonly seen in small-coalition regimes and organizations like the IOC and FIFA.  
+- **Caliphate** — An Islamic state led by a caliph, historically known for significant household income expenditure, exemplifying kleptocracy.  
+- **Civic-minded Leader** — A leader who uses discretionary funds to improve people’s lives rather than personal enrichment.  
+- **Coalition** — A group of essential supporters whose loyalty is necessary for a leader’s political survival.  
+- **Corporate Fraud** — Dishonest reporting or misrepresentation of financial performance, often committed by executives under pressure in large-coalition corporations.  
+- **Discretionary Funds** — Revenue that a leader can spend without having to buy coalition loyalty, used either for personal enrichment or public goods.  
+- **Essential Coalition** — The minimal set of loyal backers required for a leader to maintain power; smaller in autocracies, larger in democracies.  
+- **Good Deed Doers** — Leaders genuinely motivated to improve public welfare, who may fail without coalition accountability.  
+- **Haul of Fame** — Leaders who succeed in stealing or enriching themselves immensely without losing power.  
+- **Hall of Fame** — Leaders who successfully govern and improve their societies while maintaining power.  
+- **Hall of Shame** — Well-intentioned leaders who fail in governance and whose policies lead to disaster or their downfall.  
+- **Illegal Vote-buying** — The practice of buying electoral support through bribery or favors, prevalent in small-coalition governed bodies.  
+- **Kleptocracy** — Government run by theft and personal enrichment at the expense of the state and its citizens.  
+- **Large Coalition** — See Big Coalition; an electoral base consisting of many essentials, typical of democracies.  
+- **Legal Approaches to Corruption** — Laws and penalties aimed at curbing corruption, often ineffective or counterproductive in small-coalition systems.  
+- **Lobbying/Private Goods** — Distribution of benefits or favors to individuals or groups within the coalition to maintain loyalty.  
+- **Looting** — The act of leaders stealing state resources for personal gain.  
+- **Loyal Coalition Members** — Essential backers who receive private goods to secure their political support.  
+- **Mafia** — An organized crime family structured around a small coalition, analogous to certain corporate or political structures.  
+- **Medium Coalition** — A coalition size larger than small but smaller than large; not explicitly defined but implies degree of essentials.  
+- **Natural Resource Wealth** — Assets like oil or minerals that provide governments with revenues potentially used for coalition rewards or personal enrichment.  
+- **Private Benefits (Private Goods)** — Resources allocated exclusively to coalition members to secure loyalty, rather than to the public at large.  
+- **Public Goods** — Benefits provided by governments or leaders to the entire population rather than to specific coalition members.  
+- **Small Coalition** — A narrow group of supporters essential to leader survival, common in autocratic or monopolistic regimes.  
+- **Selectorate** — The pool of individuals from which a leader’s essential coalition is drawn, often large and interchangeable in democracies.  
+- **Transparency International** — Organization that rates government corruption worldwide, showing higher corruption in small coalition regimes.  
+- **Vote-buying** — The exchange of private rewards for electoral support, prevalent where coalitions are small and concentrated.  
+- **Whistle-blower** — An individual who exposes corruption or abuse, often at great personal risk.

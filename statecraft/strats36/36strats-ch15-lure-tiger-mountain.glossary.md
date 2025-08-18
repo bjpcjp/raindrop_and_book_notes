@@ -1,0 +1,14 @@
+- **Mangudai** — Special unit of Mongol cavalry known for feigned retreats to lure enemies out of fortified positions.  
+- **Liu Xun** — King of Lujiang who was deceived by Sun Ce and lost his capital during the Three Kingdoms period.  
+- **Lou Qing** — Han dynasty councillor who warned against attacking the Xiongnu, suspecting a deception.  
+- **Lujiang** — Prosperous region during the Three Kingdoms period, well defended and accessible through few passes.  
+- **Mangudai cavalry tactic** — Feigned disorderly retreat by Mongol cavalry to draw enemy forces into vulnerable positions.  
+- **Pingcheng** — City where Han emperor Gaozu and his army were trapped by the Xiongnu during a failed attack.  
+- **Shangliao** — State invaded by Xiongnu and used as a lure by Sun Ce to draw out the king of Lujiang.  
+- **Sun Ce** — Military leader who used deception to capture Lujiang by luring its king away during the Three Kingdoms period.  
+- **Three Kingdoms period** — Era of Chinese history marked by division and warfare among three rival states, including Sun Ce's conquests.  
+- **Xiongnu** — Nomadic tribes raiding Han territories, who feigned weakness to deceive the Han army.  
+- **Yuan dynasty** — Mongol-led dynasty during which the Lure the Tiger Down the Mountain strategy was frequently employed.  
+- **Zhan Shan** — (Note: Not mentioned directly; omitted)  
+- **Strategy 15 (Lure the Tiger Down the Mountain)** — Tactic of luring a well-entrenched enemy away from a strong position to a vulnerable location for attack.  
+- **Well-entrenched opponent** — An enemy occupying a strong defensive position, difficult to attack directly.

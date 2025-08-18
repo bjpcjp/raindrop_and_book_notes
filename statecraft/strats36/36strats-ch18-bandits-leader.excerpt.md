@@ -1,0 +1,1 @@
+The strategy of capturing or eliminating an enemy’s leader is key to demoralizing and disbanding their forces, as demonstrated by historical examples across China and Japan. Successfully targeting the commander disrupts the opponent’s command structure and prevents the remaining troops from rallying under another leader.

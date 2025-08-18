@@ -1,0 +1,30 @@
+- **Ambush** — A surprise attack from a concealed position, used to gain tactical advantage.
+- **Art of War** — Classic Chinese military treatise attributed to Sun Zi, emphasizing strategy and tactics.
+- **Buddhist monk** — A member of a religious order in Buddhism, symbolizing renunciation and retreat from worldly affairs.
+- **Chu** — An ancient Chinese state involved in the Battle of Bi against Jin.
+- **Compromise** — A middle-ground solution or concession, considered a partial defeat in warfare.
+- **Daoist sages** — Ancient Chinese philosophers advocating for harmony with natural order and "non-action."
+- **Defeat** — The loss or failure in battle or conflict.
+- **Diploma** — A document or certificate symbolizing authority or legitimacy.
+- **Escape** — Withdrawal from a losing situation to preserve forces for future opportunities.
+- **Emperor Huidi** — Ming Dynasty ruler who escaped a coup by disguising himself as a Buddhist monk.
+- **Emperor Hong Wu** — Founder of the Ming Dynasty who left secret instructions to his descendants.
+- **Emperor Ying Zong** — Fourth Ming Dynasty emperor after Huidi, involved in verifying Huidi’s survival.
+- **Eunuch** — A castrated male servant in royal courts, often a trusted advisor.
+- **Jin** — An ancient Chinese state, opponent of Chu during the Battle of Bi.
+- **Ming Dynasty** — Chinese dynasty during which Emperor Huidi’s story took place.
+- **Non-action** — Daoist principle of not forcing outcomes, but following the natural flow of events.
+- **Personal bodyguards** — Trusted soldiers providing protection to dignitaries during meetings.
+- **Precision** — Careful attention to timing and positioning to avoid disaster in battle.
+- **Rear guard action** — Defensive maneuver during retreat to protect withdrawing forces.
+- **Regroup** — To reorganize and consolidate forces after a setback.
+- **Retreat** — Strategic withdrawal to avoid total defeat and preserve strength.
+- **Surrender** — Complete submission to the enemy, equating to total loss.
+- **Spring and Autumn Period** — Era of Chinese history marked by frequent warfare and political shifts.
+- **Strategy 36** — "If All Else Fails, Retreat," one of the Thirty-Six Strategies of Ancient China.
+- **Ten ingots of silver** — Symbolic treasure representing resources or support in crisis.
+- **The Battle of Bi** — Conflict between Chu and Jin states illustrating caution versus rashness.
+- **Wang Chu** — Historical figure who used clever escape tactics when facing execution.
+- **Warring States Period** — Later stage in Chinese history characterized by intense warfare among states.
+- **Xiān Gu** — Jin commander executed for ignoring warnings and losing the Battle of Bi.
+- **Shi Hui** — Jin commander who wisely chose to retreat and saved most of his troops.

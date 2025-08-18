@@ -1,0 +1,24 @@
+- **Action (Gefecht)** — A minor combat or engagement not involving decisive forces.  
+- **Battle (Schlacht)** — A decisive conflict of the main armies fought with all forces to achieve a decisive victory; the real center of gravity of war.  
+- **Battle Order** — The arranged disposition of forces suitable for convenient use during battle, no longer of decisive importance alone.  
+- **Breaking Up of Formation** — In earlier warfare, the critical event deciding a battle when an army’s coherent structure is disrupted.  
+- **Commanders’ Moral Power** — The mental and emotional strength of leaders affecting reports, decisions, and outcomes of engagements.  
+- **Combat** — A term often used interchangeably with minor fights or actions but less decisive than a battle.  
+- **Decision of the Battle** — The moment when victory is clearly determined, often by breaking formation or the conquest of a key position.  
+- **Engagement (Treffen)** — An encounter or clash of troops that may precede or lead up to a battle; less decisive than a battle.  
+- **Fresh Reserves** — Untouched troops retaining moral vigor and critical for continuing the fight or deciding to retreat.  
+- **Key Point (of position)** — A critical geographical feature whose loss often determines the fate of a defensive battle.  
+- **Loss of Ground** — An indicator of lost moral force and overall deterioration in battle position.  
+- **Manner of Decision** — The way in which victory or defeat unfolds and is recognized in battle.  
+- **Moral Force** — The morale and fighting spirit of troops, especially reserves, vital to sustaining combat effectiveness.  
+- **Night (as factor)** — Typically ends battles; provides better conditions for retreat than continued fighting.  
+- **Obstinacy (Foolish Obstinacy)** — Perseverance beyond reason, which can lead to needless loss and is criticized in warfare.  
+- **Partial Combats** — Smaller clashes within the overall battle influencing cumulative results and morale.  
+- **Retreat** — Strategic withdrawal from battle when further fighting would lead to disaster; related to diminishing reserves and untenable positions.  
+- **Resolution to Give Up** — The decision by a commander to cease fighting, usually when forces are clearly insufficient or retreat becomes necessary.  
+- **Slow Disturbance of Equilibrium** — The gradual shift in advantage during a battle rather than sudden swings or oscillations.  
+- **Strategic Culmination** — The point in a campaign where decisive battles or engagements occur.  
+- **Tactical Signs of Defeat** — Scene elements such as lost artillery, scattered battalions, ineffective fire, and endangered retreat lines signaling likely defeat.  
+- **Turn of Fortune** — A sudden favorable or unfavorable event that may change the course of battle, though rare.  
+- **Victory (Decisive Victory)** — A conclusive success achieved through the full engagement of main forces aiming to end the conflict decisively.  
+- **Wavering Line of Fire** — A sign of weakening troop morale and coordination, indicative of deteriorating battle conditions.

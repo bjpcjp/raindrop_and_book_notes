@@ -1,0 +1,15 @@
+- **Army** — A military force whose discipline, fitness, and conduct have developed into a common method across European states.  
+- **Chief Moral Powers** — The combination of Commander’s talents, Military Virtue of the Army, and National Feeling that influence an army’s effectiveness.  
+- **Command** — The ability of a General to direct troops, with varying effectiveness depending on the terrain.  
+- **Discipline** — The training and orderliness in an army essential for collective action and effectiveness.  
+- **Enthusiasm** — A component of national spirit reflecting zeal and passion expressed by soldiers.  
+- **Faith** — Belief and trust in the cause or leadership, part of the national spirit of an army.  
+- **General** — The military leader whose talents are most exhibited in complex, undulating terrain.  
+- **Military Virtue** — The moral qualities and courage that hold soldiers together and maintain the cohesion of the army.  
+- **National Feeling** — The collective enthusiasm, zeal, faith, and opinion that motivate an army, especially crucial in mountain warfare.  
+- **Oblique Order** — A specialized military tactic used by Frederick the Second, exemplifying command art.  
+- **Popular Levies** — Troops raised from the general population, most effective in mountainous regions due to reliance on individual initiative.  
+- **Training** — The process by which an army gains expertness and disciplined courage.  
+- **Undulating Country** — Terrain with hills and valleys where a General’s talents have the most opportunity to influence.  
+- **War Conduct** — The methods and strategies developed over time that guide military operations.  
+- **Zeal** — Intense enthusiasm or eagerness, part of the national spirit driving soldiers’ morale.

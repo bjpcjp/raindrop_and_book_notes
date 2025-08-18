@@ -1,0 +1,24 @@
+- **Boycott** — A collective refusal to buy or use goods or services as a form of protest or to force change.  
+- **Central Position** — A strategic location or position between enemy forces, allowing control and division of opposing groups.  
+- **Divide and Conquer** — A strategy of breaking a large, powerful enemy or problem into smaller, weaker parts to defeat them individually.  
+- **Divide et Impera (Divide and Rule)** — A governing strategy to control groups by encouraging competition and division among subgroups.  
+- **External Lines** — Longer routes an enemy must travel to support separate forces, as opposed to shorter interior lines controlled by a central force.  
+- **Faction** — A subgroup within a larger organization that pursues its own interests, often threatening overall unity.  
+- **Interior Lines** — Shorter, central routes used by a force positioned between divided enemy groups, enabling faster movement and reinforcement.  
+- **Joint** — The weakest connection points between parts of an enemy group or structure, vulnerable to attack or disruption.  
+- **Momentum** — The growing strength or force behind an advancing army or movement, which can be blunted by division and early attack.  
+- **Morale** — The enthusiasm and confidence of a group, important but transient as a defense against division.  
+- **Napoleonic Strategy** — Military tactics focusing on isolating parts of an enemy force and attacking them sequentially from a central position.  
+- **Power Base** — A subgroup or faction within a larger group whose influence may pose a threat to unity or leadership.  
+- **Probing Cavalry Patrols** — Cavalry units sent to gather intelligence on enemy locations and strength.  
+- **Psychological Warfare** — Strategies aimed at undermining the enemy’s confidence, cohesion, and will to fight, often by sowing doubt and fear.  
+- **Sons of Liberty** — A colonial American group formed to oppose British policies and taxes through protest, demonstrations, and boycotts.  
+- **Stamp Act** — A British law imposing taxes on American colonists through required stamped legal documents, sparking protest.  
+- **Strategic Division** — The deliberate and controlled splitting of forces or problems into smaller, manageable parts for tactical advantage.  
+- **Strategy** — The overall plan or method for achieving long-term goals, especially in conflict or competition.  
+- **Subgroup** — A smaller faction within a larger group that forms around shared interests or identities.  
+- **Support Base** — The people or subgroups that provide backing and legitimacy to a leader or cause.  
+- **Taxation Without Representation** — A slogan articulating the grievance of being taxed by a government without having elected representatives.  
+- **Townshed System** — British imposed taxes on American colonies following the repeal of the Stamp Act, fueling further resistance.  
+- **Unity** — The state of being united or joined as a whole, critical to group strength and defense.  
+- **Wedge** — A tactic used to create division or dissension by inserting a disruptive element between opposing groups or within a group.

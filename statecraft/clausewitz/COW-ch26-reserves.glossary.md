@@ -1,0 +1,13 @@
+- **Capital result** — The main and decisive outcome of a strategic or tactical action.  
+- **Combat** — An engagement or battle between opposing forces, either partial or total.  
+- **General Commanding** — The officer in charge of directing forces in a tactical action.  
+- **Partial combat** — A smaller-scale engagement whose outcome contributes to the overall result of the total combat.  
+- **Reserve** — A force held back from immediate action for specific purposes, such as prolonging combat or unforeseen events.  
+- **Strategic act** — An action planned and executed at the level of overall strategy, often linked to tactical operations.  
+- **Strategic reserve** — Forces retained at the strategic level to address unforeseen events during a campaign, though its use is limited and sometimes considered inconsistent.  
+- **Strategic Command** — Leadership responsible for making decisions at the strategic level, including the management of reserves and contingency planning.  
+- **Supreme decision** — The critical and final decision in a strategic operation by which all forces should be actively employed.  
+- **Tactical reserve** — Forces held back at the tactical level, under direct command, to respond to immediate battlefield needs or unforeseen tactical developments.  
+- **Tactics** — The art and science of deploying and maneuvering forces in battle, more concerned with immediate physical engagement and responsiveness.  
+- **Total combat** — The complete engagement encompassing all partial combats, the collective outcome of which determines strategic consequences.  
+- **Unforeseen events** — Unexpected developments during a campaign or battle for which reserves may be held in readiness.

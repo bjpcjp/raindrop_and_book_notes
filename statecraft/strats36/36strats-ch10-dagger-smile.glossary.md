@@ -1,0 +1,18 @@
+- **Black heart** — One’s true intentions hidden behind a benign façade.  
+- **Chu** — An ancient Chinese state involved in the courtesan story.  
+- **Courtesan** — A woman sent by the king of Wei to charm the king of Chu.  
+- **Emperor Renzong** — Yuan dynasty ruler whose death sparked court turmoil in 1320.  
+- **General Yang of Qin** — Invaded the state of Wei and laid siege to the city of Wu.  
+- **Heshi** — Elder brother who became emperor after the suspicious death of his younger brother.  
+- **King of Chu** — The ruler who took delight in a beautiful courtesan sent by Wei.  
+- **King of Wei** — The ruler during General Yang’s invasion and siege of Wu.  
+- **Minister Ying** — Wei official who tried to negotiate peace with General Yang but was captured.  
+- **Niang (Queen Zheng Xiu)** — Queen of Chu who befriended the courtesan to mask jealousy.  
+- **Prince Huai** — Banished prince who was installed as emperor but tried to give throne to his elder brother.  
+- **Prince Heshi** — The elder brother who became emperor after his younger brother's death.  
+- **Six Secret Teachings of the Tai Gong** — Ancient text emphasizing strategic charm and deception.  
+- **Thick face, black heart (Ho Lian, Hei Xin)** — Chinese proverb about hiding schemes behind innocence and having hidden intentions.  
+- **Thirty-Six Strategies** — Ancient Chinese strategies of warfare and intrigue, including “Hide Your Dagger Behind A Smile.”  
+- **Wu** — The city in the state of Wei that was besieged by General Yang.  
+- **Warring States Period** — Era in ancient China when these events and strategies originated.  
+- **Yuan Dynasty** — Chinese dynasty during which the succession intrigue involving Prince Huai and Heshi occurred.

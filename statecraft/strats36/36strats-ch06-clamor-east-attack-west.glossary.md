@@ -1,0 +1,23 @@
+- **Baima** — A small city situated to the rear of Cao Cao's army, strategically important in the Battle of Guandu.  
+- **Bokhara** — A city deep within the Muslim Empire, reached by Genghis Khan’s army after crossing the Kyzyl Kum Desert.  
+- **Cao Cao** — Notoriously cunning Chinese strategist and warlord during the Three Kingdoms Period.  
+- **Clamor in the East, Attack in the West** — A military strategy involving creating a diversion in one area while attacking another unexpected location.  
+- **Desert (Kyzyl Kum)** — A reputedly impassable desert crossed by Genghis Khan’s troops to surprise the enemy.  
+- **Feint** — A deceptive maneuver meant to mislead the enemy about the true point of attack.  
+- **Fergana Valley** — The eastern edge of the Muslim Empire where Genghis Khan split his army during the conquest.  
+- **Forced march** — A rapid military advance undertaken to surprise or outmaneuver the enemy.  
+- **Genghis Khan** — The Mongol leader who used diversionary tactics and endurance marches to conquer the Muslim Empire.  
+- **Guandu** — The battle in A.D. 200 between rival warlords Yuan Shao and Cao Cao.  
+- **Kokan** — The area attacked by two divisions of Genghis Khan's army during the conquest of the Muslim Empire.  
+- **Mohammed (Shah Alaed-Din)** — The ruler of the Muslim Empire defeated by Genghis Khan’s forces.  
+- **Night maneuver** — A surprise tactical movement conducted under cover of darkness.  
+- **Official (Song Dynasty story)** — A government official who observed a feint by thieves to distract from a real robbery.  
+- **Supply lines** — Routes used to deliver resources and reinforcements to an army.  
+- **Teahouse** — The front part of an inn where the Song Dynasty official stayed and observed suspicious activity.  
+- **Three Kingdoms Period** — An era in Chinese history marked by warfare and strategic battles such as Guandu.  
+- **Tsuyama (Ye)** — Yuan Shao’s old stronghold city used as a feint target by Cao Cao.  
+- **Unexpected attack** — Attacking an enemy where they least expect it to gain strategic advantage.  
+- **Van (vanguard)** — The front part of an army which can be weakened if forces are spread thin.  
+- **Yuan Dynasty** — Historical period during which Genghis Khan conducted his campaigns in the Muslim Empire.  
+- **Yuan Shao** — Rival warlord defeated by Cao Cao at the Battle of Guandu through deception.  
+- **Ye** — City used by Cao Cao to trick Yuan Shao into dividing his forces.

@@ -1,0 +1,35 @@
+- **Alchemy** — A medieval chemical science and philosophy aiming to transform base metals into noble metals like gold or silver.  
+- **Arm** — A metaphor for military strength or weaponry.  
+- **Cauldron** — A vessel used in alchemy or cooking, symbolic of transformation.  
+- **Chang'an** — The ancient capital city of China, significant in Han Dynasty history.  
+- **Chu** — A powerful ancient Chinese state defeated and annexed by the Qin dynasty.  
+- **Daoists** — Followers of Daoism, a Chinese philosophical and religious tradition emphasizing harmony with the Dao (the Way).  
+- **Defeat from Within** — A strategy of infiltrating and subverting an enemy by posing as an ally or subordinate.  
+- **Empress Lu** — Wife of the first Han emperor, who held power and whose family was later destroyed by Liu clan rivals.  
+- **Enemy's Camp** — The territory, organization, or stronghold of an adversary.  
+- **Emperor's Throne** — The position of supreme power in ancient Chinese dynasties.  
+- **General Wei Po** — A Han Dynasty general who used deception to seize military command.  
+- **Governor of Wu** — A local ruler who welcomed Xiang Liang and later intended to join the rebellion against Qin.  
+- **Guard Relaxation** — A moment when an opponent becomes complacent or vulnerable.  
+- **Imperial Seals** — Symbolic tokens of authority used in Han China to authenticate orders and command troops.  
+- **Jia Wuzhi** — A Ming Dynasty alchemist who deceived Rich Man Pan by pretending to turn lead into silver.  
+- **King of Qi** — A Chinese noble from the Liu clan who attempted to reclaim power during the Han dynasty.  
+- **Liu Clan** — The ruling family of the Han Dynasty, opposed by the Lu family after Empress Lu's death.  
+- **Lu Family** — The family of Empress Lu, who were overthrown by the Liu clan.  
+- **March Forward When There Is No Road** — A metaphor for advancing without proper support or means.  
+- **Ming Dynasty** — A ruling dynasty in China known for cultural and technological achievements.  
+- **Plays the Guest** — Assuming a subordinate or outsider role to gain advantage.  
+- **Qin Dynasty** — The first imperial dynasty of China noted for its authoritarian rule and unification of warring states.  
+- **Retreat a Foot** — A metaphor for strategic withdrawal when facing strong opposition.  
+- **Silver Breeder** — A claimed alchemical substance said to transform lead into silver.  
+- **Songjiang Region** — A historical region in China during the Ming Dynasty, setting for the Pan and Jia Wuzhi story.  
+- **State of Wu** — One of the states during the Warring States period where Xiang Liang sought asylum.  
+- **Strategy 30: Exchange The Role Of Guest For That Of Host** — A tactic of gaining advantage by infiltrating the enemy as a guest and then seizing control.  
+- **Subordinate Position** — A lower or less powerful standing used strategically to undermine an opponent.  
+- **Surrender** — An act of yielding power or territory to an enemy, sometimes used as a deceptive strategy.  
+- **Tiger Seals** — Authenticating tokens split between ruler and commander to legitimize military orders in Han China.  
+- **Tao Te Ching** — An ancient Chinese text attributed to Lao Zi, central to Daoist philosophy.  
+- **Wandering Sages** — Traveling wise men or scholars reputed for knowledge, especially in alchemy or philosophy.  
+- **Xiang Liang** — A Chu general who infiltrated and overthrew the governor of Wu to lead a rebellion against Qin.  
+- **Xiang Yu** — Nephew of Xiang Liang, who played a key role in assassinating the Wu governor.  
+- **Yin and Yang (Metaphor)** — Implied dualities such as guest and host or retreat and advance in strategic thinking.

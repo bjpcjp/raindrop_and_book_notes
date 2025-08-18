@@ -1,0 +1,24 @@
+- **Autocracy** — A system of government where power is concentrated in the hands of a single ruler or a small group, often maintained through force and patronage.
+- **Coalition** — A group of essential supporters whose loyalty is necessary to maintain a leader’s hold on power.
+- **Democracy** — A political system characterized by large winning coalitions, rule by the majority, and selection of leaders through elections.
+- **Essential supporters** — The critical members of a coalition whose backing is indispensable for a leader to remain in power.
+- **Fratricide** — The killing of one’s own siblings, historically used as a method to secure succession and eliminate rivals in monarchical systems.
+- **Incumbent** — The current holder of a political office or position of power.
+- **Interchangeables (Selectorate)** — The broader set of individuals eligible to support or select a leader but whose loyalty is less critical.
+- **Inherited succession** — The transfer of power within a family, typically from parent to child, which helps maintain established coalitions.
+- **Institutional change** — Modifications to political or governance structures that can alter the size and composition of winning coalitions.
+- **Loyalty buying (Pay to play)** — The practice of rewarding supporters with payments or privileges to secure their continued backing.
+- **Monarchy** — A form of governance in which a single ruler, usually a king or queen, holds power often passed down through inheritance.
+- **Mortality (Leader death)** — The unavoidable risk factor that can cause the removal of an incumbent leader and open paths for challengers.
+- **Negotiated succession** — A transition of power arranged through political agreements or designated heirs rather than open competition or violence.
+- **Noncommissioned officers** — Middle-ranking military personnel who can play pivotal roles in coups or power seizures.
+- **Opposition coalition** — Groups or individuals mobilized to challenge the incumbent leader or regime.
+- **Patronage** — The distribution of resources and favors by leaders to their supporters to maintain loyalty.
+- **Political repression** — The use of force or coercion by a regime to suppress opposition or mass uprisings.
+- **Public goods** — Benefits or services provided by the government that are available to all citizens regardless of political support.
+- **Rebellion** — An uprising by people or groups to overthrow the current regime, often successful when coalition loyalty is weak.
+- **Selectorate** — The group of people who have some say in choosing or supporting the leader; often divided into essentials, influentials, and interchangeables.
+- **Seizure of government apparatus** — The rapid takeover of key state institutions like the military and treasury to consolidate power.
+- **Small coalition systems** — Political systems where a leader maintains control through a relatively small number of essential backers.
+- **Succession crisis** — A contest or conflict arising over who will replace a deceased or deposed leader.
+- **Winning coalition** — The subset of the selectorate whose support a leader must secure through rewards or coercion to maintain power.

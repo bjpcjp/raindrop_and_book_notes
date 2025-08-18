@@ -1,0 +1,1 @@
+Allowing a retreating enemy an escape route weakens their resolve to fight to the death, ultimately lowering morale and leading to surrender or easier victory. Historical examples from ancient China demonstrate that pressing a cornered foe often results in fierce resistance, while permitting withdrawal can facilitate conquest with minimal casualties.

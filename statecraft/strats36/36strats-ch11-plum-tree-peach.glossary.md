@@ -1,0 +1,19 @@
+- **Cao Cao** — A prominent warlord during the Three Kingdoms Period known for his strict military discipline and leadership.
+- **Debt absolution** — The act of forgiving outstanding debts, as a tactic to win fealty and loyalty from the populace.
+- **Fan Li** — General of the state of Yue who used psychological tactics against King Helu's forces.
+- **Fealty** — Loyalty or allegiance, especially that of a subject to a lord.
+- **Feng Xuan** — Retainer of Lord Meng Zhang who cleverly secured the loyalty of the people of Xue.
+- **King Helu of Wu** — Ruler who personally led the army against Yue, contrary to Sun Zi’s advice.
+- **Lao Zi** — Ancient Chinese philosopher and author of the Tao Te Ching, quoted regarding contentment and knowing limits.
+- **Lord Meng Zhang** — Noble who was sent back to govern his fief after losing favor but whose subjects remained loyal.
+- **Plum Tree** — Metaphorical term representing a lesser or sacrificial loss in strategy.
+- **Peach** — Metaphorical term representing the primary or more valuable goal to be preserved.
+- **Prisoner soldiers** — Condemned criminals recruited to serve as expendable troops in battle.
+- **Sacrifice** — Voluntarily giving up something lesser to achieve a greater objective.
+- **Scapegoat strategy** — A tactic where one party suffers losses or consequences to protect the larger group.
+- **Smaller measuring cup** — A covert method used to reduce soldiers’ rations surreptitiously.
+- **State of Yue** — The opposing state where Fan Li served during the Warring States Period.
+- **Supply sergeant** — Officer responsible for rations who was executed for cheating soldiers.
+- **Thirty-Six Strategies** — Ancient Chinese collection of military tactics including sacrifice and deception.
+- **Warring States Period** — Historical era in China marked by warfare, during which these strategies were developed.
+- **Wu army** — The military forces of the state of Wu, defeated by Fan Li’s tactics.

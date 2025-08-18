@@ -1,0 +1,25 @@
+- **Coup d’État** — A sudden, decisive exercise of force in politics, especially the violent overthrow or alteration of an existing government by a small group.
+- **Defensive Warning System** — Mechanisms or procedures designed to detect and respond to threats against the government, particularly during a coup.
+- **Duvalier Formula** — A specific economic or political model referenced in the context of repression or political control.
+- **Ethnic Minorities** — Groups within a population that differ in ethnicity from the majority, often significant in political loyalty and power dynamics.
+- **Forces of Intervention** — Military or paramilitary units that can be mobilized to influence or control political outcomes.
+- **Infiltration Strategy** — Tactics used to embed agents or supporters within key structures of the armed forces or government.
+- **Intelligence “Noise”** — Extraneous or misleading information complicating the analysis of security threats.
+- **Loyalist Forces** — Military or paramilitary groups faithful to the current government or regime during a coup attempt.
+- **Mass Communications** — Systems and methods used to disseminate information to the public, important in shaping public perception during political crises.
+- **Military Academy Class** — Group of officers trained together whose career progress may impact political loyalty and power.
+- **Operational Sequence** — The planned order and timing of actions during the execution of a coup.
+- **Physical Targets** — Strategic locations such as communication centers or military bases critical to controlling a city or state.
+- **Planning of the Coup** — The preparatory phase involving strategy development, target selection, and resource allocation.
+- **Political Survival Limit on Taxation** — Economic threshold beyond which a government risks losing political support due to fiscal policies.
+- **Police Telecommunication Facilities** — Communications infrastructure used by law enforcement agencies.
+- **Real Government** — The actual holders of power and influence, which may differ from the formal or official government entities.
+- **Statistics on Coups** — Data and analytical summaries regarding frequency, success rates, and regional distribution of coups over time.
+- **Strategy of the Coup** — The overall approach and rationale guiding the selection of methods and targets in a coup attempt.
+- **Successful vs. Failed Coups** — The outcome distinction that determines whether a coup achieves its objectives or is suppressed.
+- **Tactical Aspects** — Practical, on-the-ground methods and techniques employed to carry out the coup.
+- **Timing of the Coup** — The precise timing coordinated to maximize effectiveness and minimize resistance.
+- **Telecommunication Facilities** — Communication systems critical for government control and rapid response during political upheaval.
+- **Voting and Command Structures** — The formal and informal hierarchies of control within military and government organizations.
+- **Western Influence** — External political or strategic interests that may impact coup dynamics, often referenced in regional studies.
+- **Zones of Control** — Areas or institutions targeted or secured during the coup to establish authority.

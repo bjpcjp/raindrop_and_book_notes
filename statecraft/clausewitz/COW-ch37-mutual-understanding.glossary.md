@@ -1,0 +1,24 @@
+- **Battle** — A large-scale combat involving organized armies, based on mutual consent but primarily driven by strategic and political objectives beyond mere desire to fight.  
+- **Cartel of defiance** — A concept related to the formal challenge or refusal to engage in battle, now largely obsolete due to modern warfare dynamics.  
+- **Consent** — Mutual agreement required between commanders or armies for a battle to take place, reflecting willingness rather than mere physical engagement.  
+- **Defensive side** — The army or force holding a position and having the right to avoid battle by retreating while maintaining moral credit for willingness to fight.  
+- **Enemy** — The opposing force or commander in a military conflict.  
+- **Entrenched camp** — A fortified military position considered unassailable in historical warfare, with battle only possible when an enemy leaves such a camp.  
+- **General** — The commander responsible for seeking out and engaging the enemy in battle, especially in modern warfare where decisive battle-seeking is expected.  
+- **Higher will** — The political or strategic authority that directs the conduct of war beyond the immediate objectives of battlefield engagement.  
+- **Mutual consent** — The foundational requirement for a duel or battle, implying agreement to engage by both parties.  
+- **Night surprise** — A rare military tactic involving attacking an enemy at night, decreasing their ability to respond effectively.  
+- **Offensive side** — The attacking force responsible for initiating battle and compelled to seek a decisive victory.  
+- **Order of battle** — The organized formation and disposition of troops prepared for combat, especially important in historical large-scale battles.  
+- **Political objectives** — The broader aims or goals a war or battle serves, beyond the immediate tactical desire to defeat the enemy.  
+- **Position** — The physical location held by an army, often connected with strategic advantages or defensive strength.  
+- **Practicable country** — Terrain suitable for open battle, free from natural or artificial hindrances that impede large troop formations.  
+- **Retreat** — The strategic withdrawal of an army from its position without engaging in battle, sometimes used to avoid combat when conditions are unfavorable.  
+- **Rhōdomontade** — Boastful or exaggerated talk, especially used to criticize empty claims about offering battle or willingness to fight.  
+- **Siege** — Military operation that involves surrounding and isolating an enemy position, often used to compel battle or surrender.  
+- **Standings armies** — Permanent, professional military forces characteristic of early modern warfare.  
+- **Surrounding the enemy** — A tactic to cut off an enemy’s retreat and force them into battle or surrender.  
+- **Surprise** — A military tactic designed to attack the enemy unexpectedly to gain advantage.  
+- **Tactical obstacle** — Geographic or other barriers that complicate troop movements or battlefield engagements.  
+- **War** — A broader conflict encompassing multiple battles and political goals, in which battles function as subunits or decisive combats.  
+- **Willingness to fight** — The moral or psychological readiness of a force or commander to engage in battle, not always tangible in action.

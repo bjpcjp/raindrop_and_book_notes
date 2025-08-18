@@ -1,0 +1,29 @@
+- **Ambush** — A surprise attack from a concealed position, often after luring the enemy into a trap.  
+- **Cao Cao** — Warlord of the Wei kingdom during the Three Kingdoms period of China.  
+- **Court advisors** — Officials who offer advice to rulers or generals in governance or military matters.  
+- **Defector** — A person who abandons their own side or country in favor of an opposing one.  
+- **Feigned injury** — Pretending to be wounded to deceive an opponent by appearing weak or non-threatening.  
+- **Fire ships** — Boats set ablaze and sent toward enemy fleets or positions to cause destruction.  
+- **Huang Gai** — Senior naval commander of the Wu state who feigned injury to deceive Wei spies.  
+- **Ingratiate** — To gain favor or acceptance through deliberate actions or false displays.  
+- **Moling** — The walled city where Sun Ce besieged his enemy during the late Han dynasty.  
+- **Nikujutsu** — (Not mentioned; excluded)  
+- **Parading insults** — Taunting or provoking an enemy by openly displaying contempt to incite a reaction.  
+- **Seppuku** — Ritual Japanese suicide by disembowelment, often to preserve honor.  
+- **Shogun** — The military ruler or military dictator in feudal Japan.  
+- **Six Secret Teachings of the Tai Gong** — An ancient Chinese military text containing strategies including feigning injury.  
+- **Spy** — A person who secretly gathers intelligence about an enemy or rival.  
+- **Strategy** — A carefully planned action or series of actions designed to achieve a specific goal, especially in warfare.  
+- **Sun Ce** — Renowned general of late Han dynasty China who used feigned injury to trap his enemies.  
+- **Tormenting taunts** — Provocative verbal attacks meant to lure an opponent into an unfavorable action.  
+- **Tokugawa period** — An era in Japan characterized by peace and strict social order, during which the story of Juzo and Tonbe took place.  
+- **Tonbe** — Assassin who chose friendship over duty and conspired to fake the death of Kaei Juzo.  
+- **Walled city** — A city protected by defensive walls, often difficult to assault directly.  
+- **Wei kingdom** — One of the three major states during the Three Kingdoms period in China, ruled by Cao Cao.  
+- **Zhou Yu** — Chief advisor for the Wu state who orchestrated the feigned injury strategy to defeat Wei.  
+- **Strategy of Injuring Yourself** — A military tactic involving pretending to be hurt to deceive, lull, or ingratiate oneself with the enemy.  
+- **Ritual suicide** — A culturally significant self-inflicted death such as seppuku performed for honor or at request.  
+- **Floating platform** — A naval formation created by chaining ships together to create stable ground on water.  
+- **Mutual enemy** — A common adversary shared by two opposing parties, used as a ruse for feigned injury to win trust.  
+- **Rumor** — Unverified information spread among people, often used strategically to mislead or manipulate.  
+- **Animal mimicry of injury** — Natural behavior in some species to fake weakness as a survival or predatory tactic.

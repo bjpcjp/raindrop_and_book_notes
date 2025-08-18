@@ -1,0 +1,1 @@
+The strategy "Befriend A Distant Enemy To Attack One Nearby" emphasizes leveraging alliances with distant adversaries to weaken closer threats by exploiting their conflicting interests. Historical examples demonstrate how winning over or cooperating with enemies of an enemy can neutralize immediate dangers and preserve one’s own power.

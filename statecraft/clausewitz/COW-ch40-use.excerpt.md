@@ -1,0 +1,1 @@
+The central aim of war is the destruction of the enemy’s military force, principally achieved through great and decisive battles where the General-in-Chief commands in person. These battles represent the concentrated effort of the campaign, requiring energy, resolution, and strategic skill in timing, location, and troop direction to maximize their decisive impact.

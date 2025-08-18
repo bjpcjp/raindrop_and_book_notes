@@ -1,0 +1,24 @@
+- **Chang Han** — King of Yang, commander sent by Xiang Yu to block Gaozu’s forces at the walkway terminus.  
+- **Direct attack** — An obvious, straightforward military assault that the enemy anticipates and prepares for.  
+- **Duke of Bei** — A title held by Liu Qi (later Gaozu) when he became a general before founding the Han dynasty.  
+- **Encampment** — A temporary military camp fortified with trenches and stockades for defense or deception.  
+- **Feint** — A deceptive maneuver intended to draw enemy attention without committing to a full attack.  
+- **Gaozu** — Posthumous title of Liu Bang, founder of the Han Dynasty, who used strategic deception against Xiang Yu.  
+- **Han Xin** — A general under Gaozu who attacked Xiang Yu’s forces from the rear in the Chencang campaign.  
+- **Indirect attack** — A surprise or unexpected assault designed to catch the enemy off guard and divide their forces.  
+- **King of Han** — Title given to Liu Qi (Gaozu) when assigned the kingdom of Han before declaring himself emperor.  
+- **Liu Bang** — Personal name of Gaozu, founder of the Han Dynasty, used posthumously and during reign with certain restrictions.  
+- **Oda Nobunaga** — A powerful Japanese warlord who became famous for a surprise rear attack during the 1560 battle against Imagawa Yoshimoto.  
+- **Ouyu** — A border town of the kingdom of Zhao, besieged by Qin in 270 B.C.  
+- **Qin** — Ancient Chinese dynasty and kingdom that besieged Ouyu and fought against Zhao and later rebelled against.  
+- **Qin general** — The opposing commander during the Ouyu siege who was deceived by Zhao She’s feint.  
+- **Shed Your Skin Like the Golden Cicada** — An additional strategic tactic referenced for Gaozu’s later maneuvers.  
+- **Spies** — Agents sent to observe the enemy, whose information can be used to deceive or anticipate moves.  
+- **Stockades** — Defensive barriers made of stakes or posts, used in military fortifications.  
+- **Sun Zi (Sun Tzu)** — Ancient Chinese military strategist and author of *The Art of War*, quoted on direct and indirect methods.  
+- **Strategy 8: Openly Repair the Walkway, Secretly March to Chencang** — A tactic involving a visible, misleading preparation concealing the true military movement.  
+- **Surprise attack** — An assault that comes from an unexpected direction or at an unexpected time, catching the enemy unprepared.  
+- **Warlord** — A military leader who controls a region or territory, often through force, such as Xiang Yu or Oda Nobunaga.  
+- **Xiang Yu** — Warlord of western Chu who sought control over the Qin empire and opposed Gaozu.  
+- **Zhao** — The kingdom bordering Qin; involved in the Ouyu siege scenario.  
+- **Zhao She** — Advisor and general of Zhao who proposed and executed a deceptive relief of the siege of Ouyu.

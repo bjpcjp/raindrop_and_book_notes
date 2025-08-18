@@ -1,0 +1,11 @@
+- **Authority** — The perception that opponents avoid conflict because it is against their interests or due to being misled into thinking so.  
+- **Brinkmanship** — Deliberately creating a recognizable, partially uncontrollable risk to force an adversary to accommodate or back down.  
+- **Deterrence** — Strategies that discourage attack by creating the impression of strength or threat, often through visible, decisive actions.  
+- **Paranoia (Playing on people's natural paranoia)** — Indirect actions designed to make opponents uneasy and uncertain about your intentions, leading them to overestimate risks in attacking you.  
+- **Perception** — How opponents view your strength or weakness, which strongly influences their decisions to attack or back off.  
+- **Reverse intimidation** — A defensive and strategic tactic involving unexpected, aggressive responses or actions designed to unsettle and deter aggressors.  
+- **Reputation** — The cultivated image over time that signals toughness, ruthlessness, or unpredictability, deterring potential attackers before confrontation.  
+- **Surprise with a bold maneuver** — Taking unexpected, daring actions to confuse enemies and suggest hidden strength, causing them to reassess and hesitate.  
+- **Unpredictability (Seeming unpredictable and irrational)** — Acting in ways that suggest you are capable of irrational or extreme behavior, making opponents wary of provoking you.  
+- **Veiled menace** — Implicit or indirect threats that create uncertainty and fear without explicit confrontation.  
+- **Violent demonstration** — Visible acts of aggression or force used sparingly to build or reinforce a threatening reputation.

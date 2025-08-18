@@ -1,0 +1,1 @@
+War transcends the traditional categories of Art and Science as it is a dynamic conflict between living, reacting forces rooted in social and political life rather than mechanical or idealized activity. Consequently, while war can be examined through theory, it is fundamentally distinct from arts or sciences due to its nature as a struggle of human interests settled by bloodshed.

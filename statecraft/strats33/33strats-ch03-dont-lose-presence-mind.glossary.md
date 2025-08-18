@@ -1,0 +1,28 @@
+- **Adversity** — Difficult or unpleasant situations that test one's mental toughness and presence of mind.  
+- **Aggressiveness** — An intensified confidence and decisiveness in battle, overcoming caution and hesitation.  
+- **Authority** — The courage and confidence gained from prior experience and practice.  
+- **Being self-reliant** — Relying on one's own judgment, skills, and decisions to maintain control and confidence.  
+- **Calm judgment** — The ability to assess situations clearly without being overwhelmed by emotions or panic.  
+- **Counterbalance strategy** — Techniques that strengthen the mind against emotional reactions during crises.  
+- **Detachment** — Mental distance from chaos and emotional turmoil, enabling clear perception and decision-making.  
+- **Emotional creatures** — The human tendency to be influenced by feelings rather than rational thought, especially under stress.  
+- **Fingerspitzengefuhl (fingertip feel)** — An intuitive, rapid decision-making ability rooted in deep knowledge and experience.  
+- **Heat of battle** — The intense, stressful conditions where emotions threaten rational thought and presence of mind.  
+- **Honor and dignity** — Motivating factors that help individuals overcome fear and maintain composure under pressure.  
+- **Hara no dekita hito** — A person with a developed "centre," possessing calmness, discipline, and presence of mind fit for leadership.  
+- **Hara no nai hito** — A person lacking inner balance who easily loses composure and cannot lead effectively.  
+- **Inner axis** — The mental and emotional core that prevents one from being overwhelmed by fear or confusion.  
+- **Intimidation** — A feeling or tactic that threatens to destabilize presence of mind by causing fear or submission.  
+- **Mental discipline** — Internal training and toughness that enable control over emotions and focused responses.  
+- **Momentum** — The driving force of aggressive, confident action that carries one through adversity.  
+- **Presence of mind** — The capacity to stay calm, confident, and decisive under unexpected and difficult circumstances.  
+- **Preparation** — Detailed foresight and planning that provide control and detachment in high-pressure situations.  
+- **Self-control** — The ability to maintain calmness and rationality during times of stress or emotional upheaval.  
+- **Self-doubt** — A mental weakness that erodes confidence and presence of mind, often leading to hesitation or retreat.  
+- **Suffer fools gladly** — The skill of tolerating foolish or disruptive people without losing patience or composure.  
+- **Surprise** — The advantage gained by acting unexpectedly to unsettle opponents and exploit their emotional weaknesses.  
+- **Toughness** — The strength of character built through experience and adversity to resist emotional overwhelm.  
+- **Unintimidate yourself** — The practice of seeing intimidating figures as ordinary people to reduce fear and maintain composure.  
+- **Vision** — A clear, detailed plan or mental image that guides confident action even in chaotic situations.  
+- **Waiting** — Hesitation in battle often driven by fear, leading to missed opportunities and possible defeat.  
+- **Wavering** — Losing resolve and presence of mind, often caused by emotional turmoil or fear of failure.

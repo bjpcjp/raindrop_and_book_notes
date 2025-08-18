@@ -1,0 +1,30 @@
+- **Advance-guard** — A detachment of troops sent ahead of the main force to secure or reconnoiter the route and engage the enemy if necessary during pursuit.  
+- **Battle** — A combat between armed forces determining military advantage or victory.  
+- **Carnage** — The large-scale killing of troops, often referring to unnecessary or excessive bloodshed after victory is decided.  
+- **Complete dissolution** — The total collapse and disintegration of an army's organization and fighting capacity.  
+- **Decisive victory** — A victory that conclusively defeats or routs the enemy, allowing unimpeded advantage or pursuit.  
+- **Deposit of trophies** — Physical spoils or prizes collected following a successful pursuit after battle.  
+- **Detachment** — A portion of an army separated from the main body, potentially vulnerable after defeat.  
+- **Energy of pursuit** — The vigor and determination with which a victorious army follows a defeated enemy to maximize the effects of victory.  
+- **First pursuit** — The immediate phase of pursuit commencing when the defeated army abandons its position, generally lasting one day including the following night.  
+- **Flank** — The side of a military formation or position; turning an enemy’s flank is a maneuver to attack from the side.  
+- **General relations** — The overall strategic situation and external factors influencing a commander’s decisions during or after a battle.  
+- **Hesitating pursuit** — A cautious or reluctant follow-up after victory, often due to exhaustion, morale, or fear of counterattack.  
+- **Ideal pursuit** — A vigorous, continuous chase including strong advance-guards, often extending beyond ordinary limits to destroy the enemy force.  
+- **Interception** — Maneuvering to block or cut off the retreat or resupply of a defeated army during pursuit.  
+- **March in advance** — Movement made by a retreating army during the night to gain distance and avoid immediate engagement.  
+- **Mental vigor** — The intellectual and psychological capacity of a commander or troops to act decisively beyond immediate exhaustion or temptation to rest.  
+- **Night pursuit** — Continuing the pursuit of a defeated army during nighttime, considered risky due to loss of cohesion and increased uncertainty.  
+- **Parallel march** — A maneuver during pursuit where the victor moves laterally to cut off the defeated army’s line of retreat or resources.  
+- **Physical exhaustion** — Decline in bodily strength and stamina commonly experienced by both victorious and defeated troops after battle.  
+- **Pursuit** — The act of following a defeated enemy to exploit victory by inflicting additional losses or capturing resources.  
+- **Rear-guard** — A detachment protecting the retreating army’s rear to delay or fend off pursuing forces.  
+- **Refreshment** — Replenishment of troops’ energy and supplies, including rest and issuance of ammunition after combat.  
+- **Retreat** — The strategic withdrawal of an army to avoid further combat or to reorganize after defeat.  
+- **Second act of victory** — The pursuit phase following battle that often determines the lasting value and impact of the victory.  
+- **Sensuous creature** — The human element of soldiers and commanders influenced by physical needs, fatigue, and morale.  
+- **Stragglers** — Soldiers who have fallen behind the main body during retreat or pursuit, vulnerable to capture.  
+- **Strong position** — A geographically or tactically advantageous location used to check or resist enemy pursuit.  
+- **Thirst for glory** — The commander’s ambition and determination that may drive energetic pursuit despite physical and moral obstacles.  
+- **Trophies** — Captured equipment, supplies, or prisoners that symbolize and materialize the success of a victory and pursuit.  
+- **Vigorous pursuit** — An aggressive, sustained chase involving multiple arms of the military force aimed at destroying or fully routing the enemy.

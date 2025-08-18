@@ -1,0 +1,1 @@
+The strength of an army depends on the commander’s talents, the military virtue of the army, and its national spirit, though it is difficult to determine which is most important. Their influence varies with terrain: national spirit excels in mountains, military discipline in open country, and a general’s skill is best showcased in undulating, intersected terrain.

@@ -1,0 +1,27 @@
+- **Authority** — The power to command and make decisions, best exercised by a single leader to maintain unity and control.  
+- **Chain of Command** — The hierarchical structure through which orders, information, and decisions flow within an organization.  
+- **Clear Orders** — Commands that are precise, concise, and inspiring, enabling individuals to act with confidence and initiative.  
+- **Communication Breakdown** — Failure in the flow of information and orders, leading to confusion and ineffective action.  
+- **Control** — The ability to guide and influence a group’s actions without micromanaging or appearing authoritarian.  
+- **Directed Telescope** — A method of obtaining timely, specific information through trusted agents bypassing formal channels.  
+- **Division of Leadership** — Sharing command authority among multiple leaders, often leading to inefficiency and failure.  
+- **Efficiency** — Streamlining processes, reducing waste, and ensuring quick information flow to maintain operational effectiveness.  
+- **Groupthink** — The irrational and cautious decision-making tendency in groups driven by politics, conformity, and risk aversion.  
+- **Leadership Style** — The manner in which a leader exercises authority, issues orders, and manages subordinates and teams.  
+- **Loyalty** — Commitment of team members to the leader's vision and to each other, vital for unity and cohesion.  
+- **Micromanagement** — Excessive control over minor details by a leader, often leading to lost perspective and inefficiency.  
+- **Participation** — Involving team members in discussions and decisions, balanced to avoid weakening unity of command.  
+- **Political Animals** — Individuals within an organization who prioritize personal agendas, create factions, and threaten cohesion.  
+- **Protege** — A trusted deputy trained and empowered to act with initiative, reflecting the leader’s style and vision.  
+- **Remote Control Leadership** — Exercising command indirectly through deputies who embody the leader’s values and strategy.  
+- **Responsibility Acceptance** — The capacity of team members to own decisions and act independently within the leader’s framework.  
+- **Selfishness (Natural)** — The innate tendency of individuals to prioritize their own interests unless guided by strong leadership.  
+- **Shadow Brigade** — A covert network of loyal agents used to gather information and exert influence outside formal channels.  
+- **Staff Streamlining** — Reducing redundant roles and simplifying reporting structures to improve decision-making speed.  
+- **Stalemate** — A deadlock situation where opposing forces are unable to advance, often due to poor communication and leadership.  
+- **Strategy** — A comprehensive plan of action designed to achieve a specific military or organizational objective.  
+- **Subordinates** — Members of a team or organization who receive orders and execute tasks under a leader’s authority.  
+- **Team Cohesion** — The degree of unity and shared commitment among members necessary for coordinated action.  
+- **Unity of Command** — A fundamental leadership principle that a single person must have ultimate authority to prevent divided efforts.  
+- **Vague Orders** — Indecisive or ambiguous commands that lead to confusion and ineffective execution.  
+- **War Department Dysfunction** — Organizational inefficiency caused by rivalries, overlapping roles, and resistance to reform.

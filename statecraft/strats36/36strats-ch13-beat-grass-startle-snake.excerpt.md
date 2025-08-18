@@ -1,0 +1,1 @@
+"Beat the Grass to Startle the Snake" is a strategic principle that involves provoking an opponent to reveal their intentions and weaknesses through a feigned attack or distraction. Historical examples from China and Japan demonstrate how testing reactions can expose hidden plans and decisively influence the outcome of conflicts.

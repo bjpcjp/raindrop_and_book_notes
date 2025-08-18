@@ -1,0 +1,1 @@
+Friction in war arises from countless small and unpredictable difficulties caused by individuals, chance events, and adverse conditions, making even the simplest tasks extraordinarily challenging. A strong will, experience, and practical judgment are essential for a general to overcome this invisible force and achieve effective command amid the complexities of real warfare.

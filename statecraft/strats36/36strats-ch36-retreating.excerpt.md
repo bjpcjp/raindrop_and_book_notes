@@ -1,0 +1,1 @@
+The strategy emphasizes that when faced with overwhelming odds or inevitable defeat, the best course of action is to retreat and regroup rather than fight to destruction, preserving lives and future opportunities. Historical examples illustrate how prudent withdrawal can prevent total loss and enable eventual recovery or survival.

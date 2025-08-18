@@ -1,0 +1,30 @@
+- **Agreements** — Formal or informal arrangements negotiated to achieve strategic or political goals, often involving compromise or deception.  
+- **Alien culture** — The concept that every individual has a unique mindset and worldview that must be understood on its own terms, rather than projected with one’s own biases.  
+- **Appeal to self-interest** — A tactic of offering incentives or rewards to gain loyalty or cooperation, which may fail if misapplied or when trust is lacking.  
+- **Art of intelligence** — The skill of gathering, interpreting, and using information about opponents' psychology, intentions, and behaviors to gain strategic advantage.  
+- **Bait** — Something tempting or flattering offered to manipulate someone into a desired action or revealing their true intentions.  
+- **Behavioral patterns** — Habitual ways in which individuals act that can reveal deeper character traits or future behaviors.  
+- **Civilized values** — Norms such as law, order, and avoidance of violence that may not be universally shared and can be misapplied in foreign contexts.  
+- **Crisis moments** — Situations of high tension when individuals are more likely to reveal authentic emotions, weaknesses, or intentions.  
+- **Double agent / Internal spy** — A person who is within an enemy’s ranks yet provides intelligence to another side, often proving more reliable due to insider access.  
+- **Emotional blind spot** — A psychological weakness or vulnerability in a person’s character that can be exploited strategically.  
+- **Formlessness** — A state of being unpredictable and inscrutable to prevent others from accurately reading or anticipating one’s actions.  
+- **Friend or foe distinction** — The ability to correctly identify allies and enemies through keen observation and understanding of human nature.  
+- **Intelligence gathering** — The process of collecting information about opponents, including their mindset, behaviors, and strategies.  
+- **Interpretation of intelligence** — The critical analysis of gathered information to determine its true meaning and strategic value.  
+- **Mask / Masked opposite** — A personality trait or behavior used to conceal the opposite, real feelings or intentions.  
+- **Narcissism** — The tendency to project one’s own values, desires, or emotions onto others, leading to misreading and strategic errors.  
+- **Observation** — Careful watching of opponents’ actions, expressions, and subtle signals to discern hidden thoughts and intentions.  
+- **Psychological weakness** — Aspects of an opponent’s personality or mindset that can be manipulated to destabilize or defeat them.  
+- **Projection** — The error of assuming others think, feel, or will act as oneself does, causing misunderstandings.  
+- **Reading people** — The ability to perceive and interpret the true emotions, intentions, and character of others, often from subtle cues.  
+- **Shadow** — The secret or hidden side of a person, including fears, desires, and weaknesses, accessible only by close psychological insight.  
+- **Signals** — Unconscious or subtle cues (such as tone, facial expression, or behavior) that reveal inner states or intentions.  
+- **Spies** — Agents who collect intelligence covertly, but whose information must be carefully interpreted due to potential bias or deception.  
+- **Strategic deception** — The deliberate use of misinformation, disguise, or manipulation to mislead opponents and gain advantage.  
+- **Survival skill** — The capability to understand and anticipate others’ actions as essential for success and self-preservation in conflict.  
+- **Timely intelligence** — Up-to-date information crucial for adapting strategies in response to changing enemy behavior.  
+- **Transparency** — The extent to which a person's true intentions and feelings are visible or can be inferred by others.  
+- **Unhinging the mind** — The strategic goal of destabilizing an opponent’s psychological state to impair their decision-making.  
+- **Weakness for the opposite sex** — A specific psychological vulnerability exploited in personal or political manipulation.  
+- **Will to deceive** — The conscious intent to mislead others, often involving projecting false images of strength or weakness.

@@ -1,0 +1,1 @@
+The strategy "Shed Your Skin Like The Golden Cicada" involves creating an illusion to deceive the enemy during a retreat, allowing one to escape and regroup while leaving behind a convincing facade. Historical examples from ancient China and Japan demonstrate how this tactic effectively diverted pursuers and ensured survival against overwhelming odds.

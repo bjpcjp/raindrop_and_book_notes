@@ -1,0 +1,28 @@
+- **Absolutism** — The doctrine of unlimited political power vested in a single ruler, often associated with the pope's claimed infallibility and authority.  
+- **Ad hominem** — A personal attack strategy targeting an opponent's character rather than engaging with their arguments.  
+- **Ally** — A supportive party that shares interests and assists in political or military struggles.  
+- **Antichrist** — A term used by Luther to characterize the pope, accusing him of being the embodiment of evil opposing Christian truth.  
+- **Cat's-paw** — An agent used to perform morally questionable actions on behalf of another to conceal the latter’s involvement.  
+- **Censure (excommunication)** — The formal expulsion or condemnation of an individual by an authority, such as the church’s banishment of a heretic.  
+- **Exterior maneuver** — A strategic use of morality and psychological tactics outside the battlefield to gain advantage by controlling moral and public opinion.  
+- **Hypocrisy** — The act of professing moral standards or beliefs while acting in contradiction to them, often exploited as a moral weakness in opponents.  
+- **Indulgences** — Church-issued payments or acts believed to reduce punishment for sins and time in purgatory; key target of Luther's critique.  
+- **Inoculation (moral)** — Preemptive measures taken to protect oneself from accusations by addressing vulnerabilities before attacks occur.  
+- **Legitimacy (moral)** — The perception that a cause or authority is justifiable, righteous, and deserving of support.  
+- **Moral high ground** — A superior ethical position claimed in conflict to gain public support and discredit adversaries.  
+- **Moral offensive** — An active effort to attack and undermine an opponent’s moral standing and reputation.  
+- **Moral taint** — A lasting negative association placed upon an opponent’s reputation, often related to perceived injustice or hypocrisy.  
+- **Moral terrain** — The conceptual arena where claims of justice, righteousness, and ethical superiority are contested.  
+- **Moral warrior** — An individual or group that consciously (or unconsciously) uses morality as a strategic weapon in conflict.  
+- **Printing press (technology)** — The medium that facilitated rapid dissemination of ideas, notably used by Luther to spread his theses.  
+- **Public opinion** — The collective attitudes or beliefs of the general populace that influence the course of political or military struggles.  
+- **Reformation** — The religious and political movement initiated by Luther that challenged the Catholic Church’s authority and practices.  
+- **Self-interest** — The pursuit of one’s own advantage or benefit, often underlying ostensibly moral causes.  
+- **Strategic morality** — The tactical use of moral claims and perceptions to gain political or military advantage.  
+- **The Ninety-five Theses** — Luther’s original document challenging the theological basis for indulgences and church authority.  
+- **Underdog positioning** — Portraying oneself as the victim or weaker party to elicit sympathy and moral support.  
+- **Usurpation** — The unlawful or illegitimate seizure of power, a charge leveled against figures like Julius Caesar and the church by opponents.  
+- **Victim narrative** — Framing oneself as a harmed party to justify actions and gain moral support.  
+- **Wars of morality** — Conflicts driven by ethical or religious zeal, often longer and bloodier due to perceived absolute stakes.  
+- **Wars of self-interest** — Conflicts primarily motivated by practical gains such as land, resources, or power.  
+- **Winnable war** — A conflict in which strategic advantages, including moral leverage, are employed to achieve victory.

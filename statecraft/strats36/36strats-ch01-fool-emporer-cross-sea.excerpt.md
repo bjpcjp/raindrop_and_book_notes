@@ -1,0 +1,1 @@
+Strategy 1, "Fool the Emperor to Cross the Sea," emphasizes the importance of lowering an opponent’s guard by appearing relaxed and unconcerned, thereby inducing complacency before launching a swift and unexpected attack. Historical examples illustrate how maintaining a façade of inactivity and normalcy can lead to surprise victories by catching the enemy off guard.

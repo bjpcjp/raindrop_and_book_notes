@@ -1,0 +1,22 @@
+- **Combat** — The engagement between opposing forces aimed at the destruction of the enemy’s Army.  
+- **Conception of Victory** — Consists of the greater loss of the enemy in physical power, moral power, and their open avowal of inferiority by relinquishment of intentions.  
+- **Destruction of the Enemy’s Army** — A relative diminution of enemy forces greater than that suffered by one’s own side, including losses in men, materials, and morale.  
+- **Direct Gain** — The absolute advantage obtained from the mutual destruction during combat, including consequential losses after enemy withdrawal.  
+- **Flight** — A disorderly retreat or rout following severe loss of moral force, resulting in incapacity to continue resistance.  
+- **Giving Up the Object** — The open acknowledgment of defeat and renouncement of one’s military aims in the combat.  
+- **Loss of Moral Force** — The weakening or breaking of courage, order, cohesion, and confidence during battle that chiefly decides the combat’s outcome.  
+- **Loss of Physical Force** — The reduction in actual men, horses, and artillery due to casualties sustained in combat.  
+- **Measuring of Strength** — The bloody and destructive process of evaluating opposing forces’ physical and moral power in combat.  
+- **Moral Effects** — The psychological and emotional consequences of combat results on troops, commanders, governments, and public opinion.  
+- **Moral Forces** — Intangible elements like courage, order, confidence, and cohesion essential for sustaining combat effectiveness.  
+- **Objects of Combat** — The goals pursued in battle, primarily the destruction of the enemy force; other objectives are excluded in this context.  
+- **Physical Losses** — Casualties in killed, wounded, horses, and artillery during the actual combat phase.  
+- **Prisoners and Captured Guns** — Tangible trophies and measures of victory representing irreversible enemy losses.  
+- **Relative Diminution** — The comparative reduction in combat effectiveness and forces between opposing sides.  
+- **Retreat** — An organized withdrawal from combat that does not necessarily imply relinquishing the objective.  
+- **Rout** — A decisive defeat characterized by a collapse in moral force, leading to chaotic flight and loss of combat ability.  
+- **Trophies** — Captured prisoners and artillery serving as lasting evidence and measure of victory.  
+- **Victory** — The condition where one side retains greater physical and moral power, compelling the enemy’s surrender or renunciation of battle aims.  
+- **Weak Remnants** — Disorganized and exhausted enemy forces vulnerable to further destruction after initial combat ends.  
+- **Withdrawal** — The enemy’s disengagement from the battlefield, not automatically signaling defeat or loss of object.  
+- **Winning the Ground** — The possession of the battlefield after combat, indicating moral superiority and reduced enemy moral forces.

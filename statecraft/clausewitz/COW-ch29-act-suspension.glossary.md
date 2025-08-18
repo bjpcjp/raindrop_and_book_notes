@@ -1,0 +1,28 @@
+- **Act of Warfare** — The continuous process of advancing and attacking between opposing armies, characterized by mutual destruction and motion.  
+- **Aggressor** — The party in a war with a positive political objective who initiates offensive actions.  
+- **Apprehension** — The cautious awareness of potential dangers and risks that can cause hesitation in military actions.  
+- **Armed Neutrality** — A state during war where opposing forces maintain a menacing posture but avoid significant engagement or conflict.  
+- **Defender** — The party in a war whose objective is primarily to resist or prevent the aggressor’s advances, characterized by a negative or reactive stance.  
+- **Defensive Form** — The strategic advantage or added strength gained by assuming a defensive position as opposed to attacking.  
+- **Dread of Danger** — Psychological resistance or hesitation caused by fear of harm, influencing delay or inaction in warfare.  
+- **Energy (in War)** — The necessary force, initiative, and activity required to move the act of war forward effectively.  
+- **Human Inertia (moral world)** — The natural timidity or reluctance in people to take decisive action due to fear or responsibility.  
+- **Impulses (military)** — Motivations or incentives that drive commanders to initiate offensive or defensive maneuvers.  
+- **Imperfect Knowledge** — The limited and uncertain information each commander has about their own and the enemy’s position, affecting decisions.  
+- **Intermittent Movement** — The non-continuous, stop-and-start nature of military operations, alternating between action and defensive waiting.  
+- **Intrinsic Force** — The natural, elemental power of war that drives armies to act aggressively and continuously unless checked.  
+- **Moral Weakness** — The human fear and hesitation that temper the otherwise fierce and relentless nature of war.  
+- **Mutual Destruction** — The reciprocal damaging interaction between opposing armies, inherent in the nature of warfare.  
+- **Normal Condition (of Army in War)** — The typical state of an army remaining inactive or standing still during much of the conflict.  
+- **Political Object** — The underlying goals or aims of each party in war, usually distinguishing aggressor from defender.  
+- **Positive Action** — Aggressive military operations undertaken to achieve a desired objective.  
+- **Probability of Future Action** — The anticipation or expectation of future moves by either side that influences current decisions.  
+- **Resistant Force** — Forces, chiefly psychological like fear and caution, that oppose or delay military action.  
+- **Sagacity (Anxious)** — Careful, watchful judgment employed during pauses or defensive periods within campaigns.  
+- **Suspension of War** — A temporary pause or standstill in military operations, regarded as contradictory to war’s nature.  
+- **Tame Mode of War** — A restrained, cautious form of warfare characterized by limited hostility and minimal aggressive action.  
+- **Variation of Circumstances** — The changing conditions over time that affect the balance of power and initiative between opposing armies.  
+- **Waiting (in War)** — The deliberate choice to delay offensive action, often due to calculated caution or unfavorable conditions.  
+- **Watchfulness** — The cautious observation and defensive posture maintained between active engagements.  
+- **Weaponless Posture** — A figurative term for inactivity or lack of forward movement during warfare.  
+- **Warfare (Nature)** — The inherent tendency of war to be a dynamic, destructive contest between incompatible forces.

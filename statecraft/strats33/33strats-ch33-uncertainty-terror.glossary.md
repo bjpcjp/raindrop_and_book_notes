@@ -1,0 +1,26 @@
+- **Al Qaeda** — Islamic terrorist group responsible for the September 11, 2001 attacks; exemplifies modern terrorism leveraging asymmetry and media impact.  
+- **Assassins** — Name derived from "hashshashin," originally referring to Nizari Ismaili sect killers who used targeted killings to instill fear and political power.  
+- **Asymmetry** — The strategic imbalance where a smaller, weaker group leverages unconventional tactics like terror against a much larger enemy.  
+- **Chain reaction strategy** — Terrorist tactic of provoking fear and overreaction to create ongoing instability, chaos, and political division.  
+- **Chaos** — Disorder and confusion intentionally caused by terror acts to paralyze a society’s will and strategic planning.  
+- **Counterstrategy** — Methods aimed at neutralizing terror by maintaining rationality, avoiding overreaction, and employing patient intelligence work.  
+- **Fear** — A psychological state exploited by terrorists to disrupt populations and leadership, leading to paralysis or irrational responses.  
+- **Hasan-i-Sabah** — Leader of the Nizari Ismailis who pioneered early organized terrorism through assassinations to carve out political power.  
+- **Hashshashin** — Arabic term meaning "users of hashish," referring to Ismaili assassins known for their devotion and ritual killings.  
+- **Narodnaya Volia (People’s Will)** — 19th-century Russian radical group that developed modern terrorism tactics including bombings and assassination attempts aimed at political change.  
+- **Panic** — Collective emotional state of intense fear and irrationality triggered by terror acts, spreading rapidly through groups.  
+- **Paranoia** — Suspicious mindset cultivated by unpredictable terror acts, leading to distrust and social division within targeted groups.  
+- **Political base** — The public or group support terrorists often lack, making their strategies reliant on inciting fear rather than mass mobilization.  
+- **Propaganda of the deed** — Terrorist concept that violent acts generate publicity and political influence beyond the immediate physical damage.  
+- **Public sphere** — The societal and communicative space where fear and uncertainty from terror spread, amplified by media coverage.  
+- **Reign of Terror** — Period during the French Revolution when terror was used to suppress opposition and unify authority through fear.  
+- **Sultan Sanjar** — Muslim ruler who fell victim to terror-induced paranoia and ultimately negotiated peace with the Ismailis.  
+- **Strategic terror** — Use of unpredictable, sporadic violence to influence political outcomes by creating uncertainty and overwhelming fear.  
+- **Surprise** — A critical element in terror tactics, where unpredictable timing and targets maximize psychological impact.  
+- **Terror** — Extreme fear used as a weapon to incapacitate willpower and planning capacity of victims through sporadic violence.  
+- **Terrorism** — The deliberate use of violence and intimidation against civilians or authorities to achieve political, religious, or ideological aims.  
+- **Terrorists’ lack of ties** — The isolation of terrorist groups from the general public, often leading to overestimation of power and strategic missteps.  
+- **Victim’s rationality** — The mental balance and calm required to resist fear and avoid panic-driven errors after terror attacks.  
+- **V-1 and V-2 rocket attacks** — German World War II terror campaign targeting London to disrupt morale, ultimately countered by British leadership uniting the public.  
+- **Weathermen & Red Brigades** — Examples of 20th-century terrorist groups disconnected from broad public support and often strategically ineffective.  
+- **Willpower paralysis** — Psychological effect of terror that temporarily incapacitates individuals or groups from coherent action or resistance.

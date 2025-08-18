@@ -1,0 +1,29 @@
+- **Campaign** — A series of military operations intended to achieve a strategic objective over a period of time.  
+- **Combat** — The actual fighting or engagement between opposing forces, whether brief (tactical) or extended (strategic).  
+- **Crises (in combat)** — The critical moment of disorder and weakness during or immediately after battle when fresh forces are decisive.  
+- **Exertion** — The physical or mental effort exerted by troops, contributing to fatigue and reduction in combat effectiveness.  
+- **Fatigue** — Weariness or exhaustion experienced by troops due to continuous activity, affecting their endurance and performance.  
+- **Fire combat** — Tactical engagement primarily involving firearms, characterized by successive, rather than simultaneous, applications of force.  
+- **Fresh troops** — Soldiers not previously engaged or exhausted in combat, possessing full energy, ammunition, and morale.  
+- **Historical example (Napoleon’s 1812 Campaign)** — Demonstrates the principle of concentrating forces at a decisive point, illustrating limits and risks of excessive concentration.  
+- **Losses** — The reduction in effective troop strength caused by combat, fatigue, sickness, or privation.  
+- **Mechanical shock** — The conceptual ideal of simultaneous, forceful collision between opposing armies, representing the primary model of engagement.  
+- **Moral superiority** — The psychological advantage gained by victorious troops after a successful engagement, influencing subsequent actions.  
+- **Partial combat** — A localized or limited engagement within a larger battle or campaign, where required force can be roughly estimated.  
+- **Practical experience** — The accumulated knowledge from prior engagements and campaigns, used to evaluate theoretical military principles.  
+- **Privation** — The lack or deprivation of essentials such as food and shelter, significantly affecting troops during a campaign.  
+- **Reserve (tactical)** — Troops held back from immediate fight to be employed successively, primarily to oppose fresh enemy forces.  
+- **Reserve (strategic)** — Forces held back as a fresh, unused component of overall strategy, distinct from tactical reserves, contributing to overarching success.  
+- **Shock** — The immediate, forceful collision of opposing forces in battle, ideally involving the simultaneous use of all available power.  
+- **Simultaneous application of forces** — The strategic principle that all available troops should be employed at once to achieve decisive results.  
+- **Space** — The physical area over which military operations take place, influencing troop distribution, fatigue, and supply.  
+- **Strategy** — The overarching plan of war governing the simultaneous use of all forces towards a defined objective beyond immediate combat.  
+- **Successive action of forces** — The tactical use of troops in stages or sequences, often necessary in fire combat and prolonged engagements.  
+- **Tactical result** — The outcome of engagements within the immediate scope of battle, often influenced by short-term disorder and fresh troops.  
+- **Tactics** — The art of employing forces in battle, often involving successive application and management of reserves within combat.  
+- **Time (in strategy and tactics)** — A factor differently weighted; critical in tactics due to fatigue and exhaustion, but less material in strategy due to mass and renewal of forces.  
+- **Total combat** — The complete war effort, aggregating all individual engagements to produce an overall strategic outcome.  
+- **Transition from tactical to strategic effects** — The moment when partial combat results coalesce into overarching strategic consequences, typically after battle disorder ceases.  
+- **Troop concentration** — The massing of soldiers at key points, balancing the potential for decisive action against risks of privation and exhaustion.  
+- **Weakening (of forces)** — The reduction in combat effectiveness due to losses, fatigue, privation, or disorganization.  
+- **Wind and weather** — Environmental factors that impact the condition and effectiveness of troops during a campaign.

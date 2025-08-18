@@ -1,0 +1,1 @@
+The index highlights key political and military figures, parties, and events primarily focused on Middle Eastern and African contexts, including the role of armed forces in coups and political transitions. It emphasizes themes such as military loyalty, recruitment, internal espionage, and the interplay between colonial legacies and emergent democracies.

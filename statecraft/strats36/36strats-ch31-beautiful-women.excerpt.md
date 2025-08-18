@@ -1,0 +1,1 @@
+The Strategy of Beautiful Women uses allure and jealousy to sow discord and weaken an enemy from within by distracting rulers, provoking aggression among males, and inciting rivalry among females. Historical examples demonstrate how this psychological tactic exploited human emotions to undermine focus, morale, and cohesion, ultimately facilitating victory through internal strife.

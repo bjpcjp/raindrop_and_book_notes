@@ -1,0 +1,35 @@
+- **Ambassador** — A diplomatic agent sent to represent a state’s interests and conduct negotiations.  
+- **Bivouacked** — Camped temporarily without tents or cover, usually in a military context.  
+- **Blinding rainstorm** — A heavy rainstorm reducing visibility, used strategically for concealment.  
+- **Castle** — A fortified building or stronghold used for defense and control.  
+- **Confess** — To admit guilt or involvement, often under interrogation or pressure.  
+- **Court intrigues** — Secret schemes and plots among political or royal courtiers to gain power.  
+- **Dethrone** — To remove a king, emperor, or ruler from power.  
+- **Escape** — The act of breaking free from confinement or pursuit.  
+- **Fighting spirit** — The inner determination and will to continue fighting or resisting an opponent.  
+- **Flotilla** — A small fleet of ships or boats operating together, often in military attack.  
+- **Fortune** — Luck or favorable circumstances, often personified or interpreted as destiny.  
+- **Guest** — A visitor invited to attend a gathering, such as a dinner or meeting.  
+- **Hostile forces** — Enemy troops engaged in combat or conflict.  
+- **Imperial order** — A command issued by the emperor or highest authority in a monarchy.  
+- **Interrogate** — To question someone formally and thoroughly, especially to obtain information or confession.  
+- **Island** — A piece of land surrounded by water, often used strategically in military contexts.  
+- **King** — The male ruler of a kingdom or state.  
+- **Loyal subjects** — Citizens or followers who are faithful and devoted to their ruler.  
+- **Martial coup** — A sudden overthrow of power, often by military force.  
+- **Metal vat** — A large metal container, used here as an instrument of torture or coercion.  
+- **Moonless night** — A night without moonlight, often used to provide stealth for military operations.  
+- **Pirates** — Seafaring robbers or mercenaries hired for transportation or attacks.  
+- **Plot** — A secret plan or scheme, often to overthrow or harm a ruler or government.  
+- **Prisoner** — Someone held captive or detained, often awaiting judgment or interrogation.  
+- **Prime minister** — The chief executive officer or senior minister of a government.  
+- **Regret** — To feel sorrow or disappointment about a past decision.  
+- **Retainer** — A person serving a lord or noble, often a warrior or official.  
+- **Scuttle** — To deliberately sink a ship to prevent its use by the enemy.  
+- **Suicide** — The act of intentionally taking one’s own life.  
+- **Strategy** — A planned method or approach to achieve a specific goal, especially in warfare.  
+- **Troops** — Soldiers organized for military service.  
+- **Usurp** — To seize power or position unlawfully or by force.  
+- **Virtuous ruler** — A leader known for moral excellence and benevolence.  
+- **Warlord** — A military leader exercising civil power in a region.  
+- **Warring States Period** — A historical era in ancient China marked by constant military conflict among rival states.

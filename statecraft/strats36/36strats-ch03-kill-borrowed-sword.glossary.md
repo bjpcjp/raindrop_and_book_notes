@@ -1,0 +1,28 @@
+- **Agent** — A person sent to carry out a mission, such as delivering messages or carrying out espionage.  
+- **Ally** — A person or state cooperating with another for mutual benefit, often in conflict situations.  
+- **Army Staff** — The group of senior military officers responsible for planning and directing military operations.  
+- **Assassinate** — To deliberately kill a prominent or important individual, often for political reasons.  
+- **Border Guards** — Officials responsible for monitoring and securing the borders of a state or territory.  
+- **Borrowed Sword** — Using another's strength, resources, or power to achieve one's own goals.  
+- **Decree** — An official order or proclamation issued by an authority.  
+- **Defect** — To abandon one's country or cause in favor of an opposing one.  
+- **Espionage** — The practice of spying to obtain secret information.  
+- **Execute** — To put someone to death, especially as a legal punishment.  
+- **General** — A high-ranking military officer commanding large units or forces.  
+- **Juniors Officers** — Lower-ranking military officers with limited experience and command responsibility.  
+- **King of the Jungle** — A symbolic title denoting the dominant or most powerful animal (used metaphorically in the fox and tiger tale).  
+- **Lion’s Share** — (Implied) The largest portion or most significant prize.  
+- **Minister** — A high-ranking government official, often advising or carrying out state policies.  
+- **Neutralize** — To render ineffective or harmless, especially an enemy or threat.  
+- **Rumour** — Unverified information spread among people, often to influence belief or opinion.  
+- **Spies** — Individuals who secretly gather information about enemies or rivals.  
+- **Strategy** — A plan or method designed to achieve a specific goal, especially in conflict.  
+- **Strength** — The power or resources available for use in achieving objectives.  
+- **Suspicion** — Belief or feeling that someone may be guilty of wrongdoing.  
+- **Tiger** — In the folk tale, a powerful animal representing brute strength.  
+- **Trickery** — The use of deceit or cunning to achieve a goal.  
+- **Traitor** — Someone who betrays their loyalty or country.  
+- **Treacherous** — Being disloyal or betraying trust.  
+- **Vote of Confidence** — (Implied) An act showing trust or belief in someone's loyalty or ability.  
+- **Woods** — Forested area used as setting in the folk tale.  
+- **Yield** — To give way or surrender, often by force or persuasion.

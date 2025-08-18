@@ -1,0 +1,25 @@
+- **Army camp** — The location where the army prepares and assembles before marching or battle.  
+- **Beheaded** — Execution by cutting off the head, used as a military or legal penalty.  
+- **Banquet** — A formal large meal or feast often used for political or social gatherings.  
+- **Duke Jing of Qi** — A ruler during the Spring and Autumn Period who appointed Sima Rangchu as general.  
+- **Empress Dowager Lu** — Wife of Gaozu who seized power after his death, ruling through intrigue and force.  
+- **Execution** — The carrying out of a death sentence as punishment or enforcement of law.  
+- **Folk song** — Traditional song used here as a metaphor or indirect criticism in a court setting.  
+- **Gaozu** — Founder of the Han Dynasty and first emperor of the Han Empire.  
+- **General of the Army** — Military leader appointed to command the troops during campaigns.  
+- **Hundred Surnames** — Expression used to designate the collective Chinese people.  
+- **Innuendo** — A subtle or indirect remark or hint, especially disparaging or incriminating.  
+- **Judge's pardon** — An official forgiveness granted to absolve someone from punishment.  
+- **Law of the army** — Rules and discipline governing military conduct and order.  
+- **Liu clan** — The imperial family of Han Dynasty, involved in power struggles with Empress Lu's clan.  
+- **Military protocol** — Established customary rules and formal procedures followed in the army.  
+- **Multiplication of lies** — The concept that repeated falsehoods gain acceptance as truth.  
+- **Provost marshal** — Military officer responsible for maintaining discipline and carrying out punishments.  
+- **Sima Rangchu** — General appointed by Duke Jing of Qi, known for strict discipline.  
+- **Spring and Autumn Period** — Era in ancient China characterized by political fragmentation and warfare.  
+- **Strategy 26** — “Point At The Mulberry But Curse The Locust Tree,” a tactic of indirect accusation.  
+- **Supervisor of the army** — Official appointed to oversee and monitor the general and troops.  
+- **Thirty-Six Strategies** — Ancient Chinese collection of tactics and stratagems used in politics and warfare.  
+- **Warning by analogy** — A method of reprimanding or controlling without direct confrontation or accusation.  
+- **Zhang Liang** — Advisor to Emperor Gaozu who counseled on handling conspiracies.  
+- **Zhuang Jia** — Arrogant supervisor of the army who was executed for arriving late to duty.

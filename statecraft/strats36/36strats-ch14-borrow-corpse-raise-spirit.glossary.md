@@ -1,0 +1,19 @@
+- **Cao Cao** — Warlord who captured the last Han emperor Xiandi, ruled through him as a puppet, later founded the Cao Wei dynasty.  
+- **Child Emperors** — Six puppet emperors installed by Empress Lu during the Han Dynasty under her regency.  
+- **Empress Lu** — Han Dynasty empress who bought and installed puppet child emperors on the throne, ruling as regent for eight years.  
+- **Fushu** — Eldest son of Qin Shihuangdi, rightful heir who was forced to commit suicide by forged imperial orders.  
+- **Han Dynasty** — Chinese dynasty that succeeded the Qin, notable for its emperors and eventual decline into warlord fragmentation.  
+- **Huidi** — Emperor of the Han dynasty who died without an heir, leading to a succession crisis manipulated by Empress Lu.  
+- **Imperial Harem** — Section of the palace where the young Qin emperor Huhei was kept occupied by Li Si and Zhao Gao.  
+- **Li Si** — Chief minister in Qin Dynasty who conspired to keep the first emperor's death secret and control the throne.  
+- **Mikoshi** — Portable shrine carried by Yamabushi monks during battles, believed to house a deity's spirit and used as psychological warfare.  
+- **Meng Tian** — Loyal general to Fushu who was also forced to commit suicide due to the forged imperial order.  
+- **Qin Dynasty** — The first imperial dynasty of China, founded by Qin Shihuangdi, known for its harsh rule and short duration.  
+- **Qin Shihuangdi** — First emperor of China, feared death, used immortal elixirs, died secretly, triggering a power struggle.  
+- **Retired Emperor** — Last Han emperor Xiandi, used as a puppet by Cao Cao before his assassination.  
+- **Strategy (in Warrior’s Way)** — The use of falsehoods or deception aimed at winning without causing harm, which then becomes true.  
+- **Three Kingdoms Period** — Era following the Han Dynasty's collapse, characterized by fragmentation into competing warlord states.  
+- **Xiandi** — Last emperor of the Han Dynasty, captured and used as a puppet by Cao Cao.  
+- **Yagyu Munenori** — Author of the Family Book On The Art Of War, quoted about the use of falsehood in strategy.  
+- **Yamabushi** — Warrior monks in 11th-century Japan who maintained armed monastic communities and used psychological tactics in warfare.  
+- **Zhao Gao** — Eunuch in Qin Dynasty who conspired with Li Si to hide the emperor’s death and manipulate succession.

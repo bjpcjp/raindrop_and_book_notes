@@ -1,0 +1,1 @@
+Feigning madness serves as a strategic disguise to conceal one's true strength and intentions, causing opponents to underestimate and overlook the threat. This tactic buys time and misdirects hostile attention, allowing one to plan and execute eventual victory.

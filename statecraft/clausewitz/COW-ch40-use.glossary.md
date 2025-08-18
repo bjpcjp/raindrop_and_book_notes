@@ -1,0 +1,29 @@
+- **Acme of Strategic Ability** — The highest point of military skill demonstrated in preparing for and executing a great battle, including choosing place, time, troop direction, and utilizing success.  
+- **Annexation-principle** — The concept that the destruction (annihilation) of the enemy’s military force is the ultimate goal of battle.  
+- **Battle** — A large, general engagement of military forces aimed principally at destroying the enemy’s army; regarded as the concentrated focus of war.  
+- **Battle of Leuthen** — A historical example cited as an exception to the principle that larger numbers generally yield greater results in battle.  
+- **Combat** — A smaller or minor engagement between forces that may sometimes yield disproportionate results.  
+- **Conception of War** — The fundamental idea or understanding of war, emphasizing the destruction of the enemy as the main purpose.  
+- **Defender** — The party in a conflict primarily aiming to resist and respond to the attacker, often having no other effectual means than battle to meet their needs.  
+- **Destruction of the Enemy’s Military Force** — The principal objective in war and battle, achieved mainly through great battles.  
+- **Decision** — The decisive outcome or turning point in a campaign or war, often produced by a great battle, though not always exclusively.  
+- **Energy** — The quality needed by a commander for quick decision-making, steady resolve, and a spirit of enterprise in warfare.  
+- **Flank** — The side position of a military formation; turning or attacking an enemy’s flank generally produces greater success.  
+- **General-in-Chief** — The senior commander who personally leads the great battle and places greater confidence in his own command than in subordinates.  
+- **Great Battle** — A battle involving the principal mass of the forces in a campaign or war that offers the best opportunity for a decisive victory.  
+- **Great Decision** — A crucial and often first decisive result in a campaign, typically brought about by a great battle.  
+- **Humanity in War** — The moral recoil and horror felt by commanders at the bloodshed and slaughter inherent in battle.  
+- **Importance of Battle** — The recognition that a great battle is the central point and most important means for achieving the destruction of the enemy.  
+- **Intrinsic Courage** — Innate bravery necessary to undertake and persevere in a great battle.  
+- **Intensity of Victory** — The magnitude or completeness of a victory, contributing to its decisiveness.  
+- **Moral World Dynamic Law** — The principle that a commander’s boldness and willingness to risk danger influence the character and outcome of the battle.  
+- **Nature of the Country** — The geographical features of a battlefield, such as broken or hilly terrain, which affect the success of a battle.  
+- **Offensive** — The attacking side in warfare, which primarily employs battle to achieve positive objectives.  
+- **Order of Battle** — The tactical formation and arrangement of forces during a battle, influencing the effectiveness of the engagement.  
+- **Parallel Fronts** — A formation where armies face each other directly without attempting to attack or turn a flank, usually producing less decisive results.  
+- **Pursuit** — The act of following and attacking a defeated enemy; effectiveness depends on the cavalry superiority of the victor.  
+- **Relative Strength** — The comparative size and power of opposing armies, influencing the potential success of a battle.  
+- **Relative Proportions of Arms** — The balance between infantry, cavalry, and artillery in the involved forces, affecting battle outcomes.  
+- **Skilful Determination** — The adept selection of place, time, and troop direction intended to maximize the effectiveness of a great battle.  
+- **Subordinates** — Officers or commanders under the general-in-chief who hold less confidence from him in great battles.  
+- **Victory** — The successful result of a battle, ideally leading to the destruction of the enemy’s military force and a great decision.

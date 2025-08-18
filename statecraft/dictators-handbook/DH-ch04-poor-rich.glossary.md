@@ -1,0 +1,24 @@
+- **Agricultural Marketing Boards** — Organizations in autocracies that fix prices for farmers’ goods to indirectly tax them by forcing sales at set prices, with the boards profiting from reselling at higher market prices.  
+- **Autocracy** — A system of government characterized by a small winning coalition, secrecy in financial dealings, and high taxation aimed at enriching a limited group of supporters.  
+- **Borrowing** — The practice by leaders of acquiring funds by debt to reward coalition members now, often at the expense of future governments that must repay it.  
+- **Coalition** — The essential support group whose loyalty a leader must secure through rewards, often varying in size between autocracies and democracies.  
+- **Corruption** — The sanctioned or tolerated extraction of funds by officials or supporters for personal gain, often used as a political tool in autocracies.  
+- **Democracy** — A political system with a large winning coalition where taxation and government finance are more transparent and leaders are constrained in raising taxes too high.  
+- **Debt Forgiveness** — The cancellation or reduction of state debt, which can enable autocrats to borrow more freely without reforming governance.  
+- **Discretionary Spending** — Funds left over after paying coalition rewards and public goods; leaders may use this for pet projects or save it as rainy-day funds.  
+- **Extraction** — The direct acquisition of resources like natural minerals or oil by states, which provides revenue independent of taxation and labor.  
+- **Indirect Taxation** — Taxes collected on goods or services (e.g., sales taxes), often passed on to consumers, commonly used in autocracies to minimize administrative costs.  
+- **Internal Revenue Service (IRS)** — The U.S. government agency responsible for tax collection, governed by rules and subject to an independent judiciary.  
+- **Opaque Accounting** — Deliberate secrecy and chaotic bookkeeping in autocracies to obscure wealth flows and keep supporter payments low.  
+- **Political Survival** — The leader’s primary goal to remain in power, achieved by acquiring and distributing revenue to maintain the coalition’s loyalty.  
+- **Privatized Tax Collection** — Outsourcing tax collection to third parties who pay for the right to collect taxes, often resulting in brutal extraction and corruption.  
+- **Public Goods** — Benefits provided by governments that serve the entire population, funded by taxation but distinct from private rewards to coalition members.  
+- **Resource Curse** — The paradox where countries with abundant natural resources often experience slower growth, more conflict, and autocratic governance.  
+- **Secrecy** — The intentional withholding of information about state finances in autocracies to prevent rival promises and maintain control over rewards.  
+- **Small Coalition** — A limited number of essential supporters in autocracies who receive concentrated benefits, enabling high taxation and borrowing.  
+- **Tax Burden** — The extent of taxes imposed on the population, constrained by economic productivity and coalition tolerance.  
+- **Tax Collection Costs** — Expenses associated with gathering taxes, which can limit the amount of revenue a state can feasibly extract.  
+- **Tax Farmer** — A private individual or group who pre-pays for the right to collect taxes and then extracts maximum revenue from a territory.  
+- **Taxation** — The levying of compulsory contributions on citizens or goods to generate state revenue, used to fund coalition rewards and public goods.  
+- **Transparent Treasury** — Financial systems in democracies characterized by accountability and clarity in revenues and expenditures.  
+- **Winning Coalition** — The subset of the population whose support is necessary for a leader to stay in power, influencing the level and type of taxation and spending.

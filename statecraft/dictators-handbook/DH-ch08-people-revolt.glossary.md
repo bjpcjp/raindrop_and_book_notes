@@ -1,0 +1,30 @@
+- **Africa Economies and the Politics of Permanent Crisis** — A book by Nicolas Van de Walle examining economic and political challenges in Africa from 1979 to 1999.  
+- **Alastair Smith** — A political scientist and co-author of works on political survival and institutional change cited in the chapter.  
+- **Andrejs Plakans** — Author of *The Latvians: A Short History*, a work on Latvian history referenced in the chapter.  
+- **Asia (Burma/Myanmar)** — A focus region in the chapter, particularly regarding political crises and mismanagement of natural resources.  
+- **BBC Wide-Angle Documentary Series** — A source cited, specifically "Eyes of the Storm," exploring Burmese history and political turning points.  
+- **Bruce Bueno de Mesquita** — Political scientist noted for contributions to the theory of political survival and international politics.  
+- **Comparative Political Studies** — Academic journal where key related research by Bueno de Mesquita and Smith was published.  
+- **Democracy** — A political system discussed in contexts such as Mexico’s emergence and disaster likelihood in regimes.  
+- **Economist** — Magazine source referenced for analysis on political and economic events.  
+- **Ghana** — African country examined for its political transformation under the PNDC and related historical reflections.  
+- **Hong-she Zhong-gui (Red China)** — Chinese publication cited for a translated quotation illuminating historical political context.  
+- **Institute of Peace and Conflict Studies** — Organization publishing research on Myanmar’s resource mismanagement.  
+- **J. B. Danquah Memorial Lectures** — Lecture series in Ghana, source of insights on contemporary Ghanaian history.  
+- **Julien Levesque** — Author of an issue brief on Myanmar’s natural resource management.  
+- **Latvia** — Country referenced regarding Soviet-era political repression and leadership challenges.  
+- **Mau Mau** — Referenced anti-colonial uprising with historical survey from 1960 (Kenya).  
+- **Mexico** — Country discussed in context of democratic opening and political transformation.  
+- **Nat Nuno-Amarteifio** — Former Mayor of Accra, Ghana, interviewed for insights into political developments.  
+- **New York Times** — Newspaper providing historical and political reports cited multiple times.  
+- **Nicolas Van de Walle** — Author specializing in African political economy and crises.  
+- **PBS** — Public broadcasting service producing documentaries on political history, including Burma.  
+- **Per Capita GDP** — Economic indicator used from World Bank data to assess economic conditions.  
+- **Political Economy of Ghana** — Edited volume containing analyses on Ghana’s political and economic changes.  
+- **PNDC (Provisional National Defence Council)** — Military government in Ghana central to discussions on political transformation.  
+- **Randolph M. Siverson** — Co-author of *The Logic of Political Survival*.  
+- **Samuel Dillon** — Co-author of *Opening Mexico*, examining democratization.  
+- **The Logic of Political Survival** — Book analyzing factors influencing political leaders’ survival strategies.  
+- **The People's Revolt** — Chapter title indicating focus on political uprisings and movements.  
+- **World Bank’s World Development Indicators** — Data source for economic indicators like per capita GDP.  
+- **Yung Wei** — Translator credited for providing a key Chinese quotation included in the chapter.

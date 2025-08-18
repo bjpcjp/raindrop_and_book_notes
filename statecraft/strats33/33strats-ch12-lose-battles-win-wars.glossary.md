@@ -1,0 +1,26 @@
+- **Campaign** — A series of connected military or strategic operations planned to achieve a long-term goal beyond individual battles.  
+- **Emotions** — Internal feelings that can cloud rational judgment, often disrupting strategic thinking.  
+- **Grand Strategy** — The art of planning and executing long-term, multidimensional campaigns that focus on ultimate goals rather than individual battles.  
+- **Indirection** — A strategic approach involving subtle, deceptive moves designed to mislead the opponent and secure an advantage.  
+- **Initiative** — The ability to act first or control the tempo of a campaign, preventing the enemy from dictating responses.  
+- **Long-term Consequences** — The future effects and results of present actions, considered crucial in grand strategic planning.  
+- **Military Strategy** — The planning and conduct of military operations focused on winning battles and managing forces.  
+- **Objectives** — Specific, realistic goals that guide strategic decisions and actions.  
+- **Opponent** — The competitor or enemy against whom a strategy is devised and executed.  
+- **Policy** — The guiding principles or goals underpinning strategic actions, often political in nature.  
+- **Political Ramifications** — The effects that decisions and actions have on public opinion, alliances, and power dynamics.  
+- **Preemptive Action** — Striking early at emerging threats to prevent them from becoming larger problems.  
+- **Public Opinion** — The collective attitudes and beliefs of a population that can influence the outcome of conflicts.  
+- **Reaction** — Immediate, often emotional, responses to events that can derail strategic planning.  
+- **Resolution** — A firm determination combined with caution and readiness in strategic action.  
+- **Roots** — The fundamental causes or sources of power that must be targeted to decisively end conflicts or problems.  
+- **Strategy** — A plan of action designed to achieve a specific goal, often reactive and short-term without deeper vision.  
+- **Strategist** — An individual skilled in planning and guiding actions toward long-term victory and goal realization.  
+- **Subordination of Emotions** — The process of controlling feelings to maintain clarity and perspective in decision-making.  
+- **Symbols** — Actions or objects that carry deeper political, cultural, or psychological significance in conflict.  
+- **Tactical Victory** — Success in individual battles or engagements, which may not contribute to overall strategic success.  
+- **Television War** — A conflict heavily influenced by media coverage, affecting public perception and political support.  
+- **Vision** — The capacity to see beyond immediate circumstances, including anticipating future events and consequences.  
+- **Wider Perspective** — Expanding awareness to include cultural, political, social, and global factors in strategic planning.  
+- **Wisdom** — The quality of applying knowledge and experience with good judgment, especially in warfare and politics.  
+- **Winning the War** — Achieving ultimate objectives through sustained, comprehensive strategy rather than isolated battles.

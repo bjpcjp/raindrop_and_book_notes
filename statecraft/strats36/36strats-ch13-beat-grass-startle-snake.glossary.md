@@ -1,0 +1,18 @@
+- **Daimyo** — The rough equivalent of a feudal baron or warlord in Japan.  
+- **Defection** — Switching allegiance from one side to another, especially during battle.  
+- **Feint** — A deceptive or pretended blow, thrust, or other movement to mislead an opponent.  
+- **Field of battle** — The physical terrain and conditions where a battle takes place.  
+- **Harquebusier** — A soldier armed with a harquebus, an early type of firearm.  
+- **Ink smearing** — A tactic used to reveal guilt by marking suspects’ hands, exposing who touched a concealed object.  
+- **Magistrate** — A civil officer or judge who administers the law, here referring to Chen Shuku investigating theft.  
+- **Puppet emperor** — A ruler controlled by others, lacking real power, as in the case of Huhei during the Qin Dynasty.  
+- **Probe** — To investigate or explore carefully in order to reveal hidden facts or insights.  
+- **Sekigahara** — The site of the decisive 1600 battle that led to the establishment of the Tokugawa Shogunate in Japan.  
+- **Shogun** — The military dictator in Japan who wielded real power, especially under the Tokugawa dynasty.  
+- **Strategy** — A plan of action designed to achieve a long-term or overall aim in conflict or competition.  
+- **Tensions** — The state of strained relations or unresolved conflict between opposing groups.  
+- **Tokugawa leyasu** — The Japanese warlord who became Shogun, founding the Tokugawa dynasty after the Battle of Sekigahara.  
+- **Trap** — A tactic used to lure and capture or expose an adversary or suspect.  
+- **Waiting at Horagatoge** — A strategic maneuver involving delaying action to choose the winning side before committing.  
+- **Weakness** — A point where an opponent lacks strength or is vulnerable to attack or exploitation.  
+- **Zhao Gao** — A notorious eunuch in the Qin Dynasty who manipulated the court and orchestrated purges to consolidate power.

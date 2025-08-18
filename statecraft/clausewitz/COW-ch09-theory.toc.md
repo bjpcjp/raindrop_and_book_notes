@@ -1,0 +1,51 @@
+```markdown
+# Table of Contents
+
+- II. On The Theory Of War  
+  - 1. The First Conception of the “Art of War”  
+  - 2. True War First Appears in the Art of Sieges  
+  - 3. Then Tactics Tried to Find Its Way in the Same Direction  
+  - 4. The Real Conduct of War Only Made Its Appearance Incidentally and Incognito  
+  - 5. Reflections on Military Events Brought About the Want of a Theory  
+  - 6. Endeavours to Establish a Positive Theory  
+  - 7. Limitation to Material Objects  
+  - 8. Superiority of Numbers  
+  - 9. Victualling of Troops  
+  - 10. Base  
+  - 11. Interior Lines  
+  - 12. All These Attempts Are Open to Objection  
+  - 13. As a Rule They Exclude Genius  
+  - 14. The Difficulty of Theory as Soon as Moral Quantities Come Into Consideration  
+  - 15. The Moral Quantities Must Not Be Excluded in War  
+  - 16. Principal Difficulty of a Theory for the Conduct of War  
+    - 17. First Speciality—Moral Forces and Their Effects (Hostile Feeling)  
+    - 18. The Impressions of Danger (Courage)  
+    - 19. Extent of the Influence of Danger  
+    - 20. Other Powers of Feeling  
+    - 21. Peculiarity of Mind  
+    - 22. From the Diversity in Mental Individualities Arises the Diversity of Ways Leading to the End  
+    - 23. Second Peculiarity—Living Reaction  
+    - 24. Third Peculiarity—Uncertainty of All Data  
+  - 25. Positive Theory Is Impossible  
+  - 26. Means Left by Which a Theory Is Possible (The Difficulties Are Not Everywhere Equally Great)  
+  - 27. Theory Must Be of the Nature of Observations Not of Doctrine  
+  - 28. By This Point of View Theory Becomes Possible, and Ceases to Be in Contradiction to Practice  
+  - 29. Theory Therefore Considers the Nature of Ends and Means—Ends and Means in Tactics  
+  - 30. Circumstances Which Always Attend the Application of the Means  
+    - 31. Locality  
+    - 32. Time of Day  
+    - 33. Weather  
+  - 34. End and Means in Strategy  
+  - 35. Circumstances Which Attend the Application of the Means of Strategy  
+  - 36. These Form New Means  
+  - 37. Strategy Deduces Only From Experience the Ends and Means to Be Examined  
+  - 38. How Far the Analysis of the Means Should Be Carried  
+  - 39. Great Simplification of the Knowledge Required  
+  - 40. This Explains the Rapid Growth of Great Generals, and Why a General Is Not a Man of Learning  
+  - 41. Former Contradictions  
+  - 42. On This Account All Use of Knowledge Was Denied, and Everything Ascribed to Natural Talents  
+  - 43. The Knowledge Must Be Made Suitable to the Position  
+  - 44. The Knowledge in War Is Very Simple, But Not, at the Same Time, Very Easy  
+  - 45. Of the Nature of This Knowledge  
+  - 46. Science Must Become Art  
+```

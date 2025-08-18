@@ -1,0 +1,23 @@
+- **Ambush** — A surprise attack from a hidden position, used to catch the enemy off guard.  
+- **Chu** — A powerful state during the Warring States Period in ancient China, eventually conquered by Qin.  
+- **Element of surprise** — A strategic advantage gained by attacking unexpectedly when the enemy is unprepared.  
+- **Emperor Tai Zhong** — Tang Dynasty emperor involved in the origin story of Strategy 1; feared crossing large bodies of water.  
+- **Habituation** — Psychological phenomenon where repeated exposure to a stimulus decreases sensitivity to it.  
+- **King of Chu** — The ruler of the state of Chu during the Qin invasion.  
+- **Khan** — The leader of the Xiongnu nomadic horsemen.  
+- **Li Mu** — Chinese general known for defensive strategies against Xiongnu raids on Yanmen.  
+- **Li Xing** — Qin general who suffered a humiliating defeat against Chu.  
+- **Mán Tiān Guò Hǎi** — The original name of Strategy 1: "Fool the Emperor to Cross the Sea."  
+- **Morale** — The confidence, enthusiasm, and discipline of a group, especially troops.  
+- **Nomadic horsemen (Xiongnu)** — Nomadic tribes from Central Asian steppes who raided northern Chinese territories.  
+- **Qin** — The ambitious state in ancient China that unified the warring states and established the first empire.  
+- **Qin Shihuangdi** — The first emperor of unified China, formerly king of Qin.  
+- **Retreating army** — Troops moving away from the battlefield, typically vulnerable to attacks.  
+- **Samurai** — A Japanese warrior class, featured in a folk tale illustrating Strategy 1.  
+- **Strategy 1 - Fool the Emperor to Cross the Sea** — A tactic of deception to lower an opponent's guard by acting as if nothing unusual is happening.  
+- **Surprise attack** — A sudden assault made when the enemy least expects it to gain an advantage.  
+- **Taizu of Tang (Emperor Tai Zhong)** — Another name for Tang Dynasty emperor involved in the story of fooling the emperor.  
+- **Wang Jian** — Renowned Qin general who used deception and patience to defeat Chu.  
+- **Warring States Period** — Era in ancient China characterized by warfare among states before unification under Qin.  
+- **Xiongnu** — A confederation of nomadic tribes who frequently raided Chinese borders during the Warring States Period.  
+- **Yellow Sea** — Body of water off China coast that Emperor Tai Zhong feared crossing, inspiring the strategy’s origin story.

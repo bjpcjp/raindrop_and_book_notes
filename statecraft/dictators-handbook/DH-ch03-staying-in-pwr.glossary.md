@@ -1,0 +1,25 @@
+- **Board of directors** — A group of individuals, including insiders, grey members, and outsiders, responsible for appointing, retaining, or removing CEOs in a corporation.  
+- **Bloc voting** — A voting system where group leaders deliver the votes of their communities or organizations, effectively controlling electoral outcomes.  
+- **Coalition** — A group of supporters whose backing is essential for a leader to gain or maintain power; can be small or large depending on the system.  
+- **Competent rivals** — Skilled or capable individuals in a leader’s coalition who may pose a threat to the leader’s position.  
+- **Delegate positions** — Seats or roles in a governing body that are appointed or nominated rather than directly elected, often used to reduce the number of essentials a leader depends on.  
+- **Democracy** — A political system characterized by elections and larger coalitions, where survival depends on satisfying a broad electorate.  
+- **Essentials** — The small group of key supporters a leader must keep loyal to maintain power, typically including senior management and board members in corporations.  
+- **Gerrymandering** — The manipulation of electoral district boundaries to favor an incumbent or particular party, thereby reducing the risk of electoral defeat.  
+- **Grey members** — Board members who are friends or relatives of the CEO but are not employees (insiders) or completely independent (outsiders).  
+- **Interchangeables** — The large pool of nominal supporters or voters who have the theoretical right to choose leaders but whose individual support is not critical.  
+- **Insiders** — Board members or key supporters who are employees of a corporation or part of a governing group; typically more loyal to the leader.  
+- **Loyalty** — The key characteristic required from coalition members to ensure a leader’s survival in power.  
+- **Multiparty democracy** — A democratic system where multiple parties compete, though usually one or two dominate due to electoral or coalition dynamics.  
+- **Outsiders** — Board members or political actors not employed by or closely connected to the leader or corporation, often favored by shareholders for oversight.  
+- **Packed board** — A board of directors reconstituted by a new CEO to include more loyal members and exclude opponents.  
+- **Patronage** — The practice of distributing rewards, favors, or resources to supporters in exchange for political loyalty or votes.  
+- **Political coalition** — An alliance of individuals or groups supporting a leader, often modified after gaining power to ensure future loyalty.  
+- **Proxy fight** — A contest by shareholders to change the composition of a company’s board of directors, often challenging the CEO’s control.  
+- **Public goods** — Benefits provided equally to all coalition members or shareholders, such as dividends or increased stock value.  
+- **Rigged election** — An election manipulated to ensure the incumbent’s victory, often involving restricted suffrage or controlled outcomes.  
+- **Selectorate** — The broader pool of individuals eligible to support or select a leader, including essentials, influentials, and interchangeables.  
+- **Shuffling** — The process of reorganizing a leader’s coalition or board membership to strengthen loyalty and remove threats.  
+- **Small coalition** — A governing group comprising a limited number of essential supporters that makes it easier for a leader to maintain power.  
+- **Stock options** — Private benefits given to corporate board members or executives, often as part of compensation to secure loyalty.  
+- **Winning coalition** — The subset of the selectorate whose support is necessary for a leader to gain and retain power.

@@ -1,0 +1,18 @@
+- **Art of War (limited sense)** — The theory of the conduct and employment of armed forces, focusing on the use of prepared means for the object of war.  
+- **Cantonments** — Dispositions of troops for better refreshment and quarters; strategic in position and extent, tactical in internal organization for readiness to fight.  
+- **Campaign** — A series of military operations aimed at a strategic objective (implied concept related to planning and use of forces).  
+- **Combat** — A single, complete act of fighting, forming the basic unit of military action governed by personal command and determined by the crisis passed.  
+- **Conduct of War** — The art and theory of making use of given military means in fighting, encompassing formation, conduct, and combination of combats.  
+- **Equipment** — Weapons and gear provided to individual combatants for fighting; preparation for combat but distinct from the fight itself.  
+- **Maintenance of the Military Force** — Activities that sustain the military force, including subsistence, care of the sick, supply, and repair of arms and equipment.  
+- **March (within combat)** — Manoeuvring or movement integral to combat, combined closely with the use of weapons.  
+- **March (outside combat)** — Execution of strategic measures to position forces for battle, governed by both strategic and tactical considerations.  
+- **Military Force** — Armed troops equipped and prepared to fight; the means used in war.  
+- **Preparation for War** — All activities related to the creation, discipline, and maintenance of military forces preceding actual combat.  
+- **Strategy** — The theory of the use of combats and their combination for the overall objective of the war, determining where, when, and with what forces battles are fought.  
+- **Subsistence** — Provision of food and necessary supplies to troops, a maintenance activity that influences but is distinct from the conduct of combat.  
+- **Supply (of arms and equipment)** — Periodic replenishment and repair of military gear necessary for maintaining the fighting force; primarily a maintenance activity.  
+- **Tactics** — The theory of the use of military forces in individual combats, focusing on the formation and conduct of separate battles.  
+- **Troops** — Armed forces or soldiers engaged in fighting; the primary element of military force.  
+- **Use of Military Force** — The employment of armed forces in combat, distinguished from preparatory and maintenance activities.  
+- **War (proper sense)** — Fighting itself, the direct contest involving moral and physical strength in the element of danger.

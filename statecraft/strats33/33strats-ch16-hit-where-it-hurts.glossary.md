@@ -1,0 +1,21 @@
+- **Center of Gravity** — The core source of power and support on which an enemy’s entire structure depends; attacking it causes disproportionate damage and collapse.  
+- **Command-and-Control Center** — The operational brain of a group or army that processes information and makes crucial decisions.  
+- **Decentralized Enemy** — An opponent with multiple centers of gravity requiring disruption of communication between these centers to create chaos.  
+- **Economic Base** — The fertile lands or resources that provide the material wealth supporting an enemy state or army.  
+- **Hit-and-Run Raids** — Tactical strikes aimed at wearing down an enemy through quick, repeated attacks without full-scale engagement.  
+- **Imperceptible Power** — The hidden or subtle foundations of strength that lie beneath an enemy’s visible displays of force.  
+- **Misdirection** — A strategy of confusing or distracting an enemy to conceal one's real intentions or targets.  
+- **Operational Brain** — See Command-and-Control Center.  
+- **Physical Manifestation of Power** — The visible aspects of power such as armies, weaponry, and displays of strength that can be deceptive.  
+- **Pillars of Collapse** — Critical supports or foundations of power that, when destroyed, lead to the enemy’s downfall.  
+- **Public Goodwill** — The support and approval of the population that sustains a government or military effort.  
+- **Reversal** — The principle that every living entity or group has a center of gravity, and attacking that center always disrupts its power; there is no reversal to this truth.  
+- **Soft Underbelly** — The vulnerable area or weakness in an enemy’s defense, often found beneath their most visible strength.  
+- **Strategic Vision** — The ability to perceive the enemy’s center of gravity and devise plans accordingly, often beyond conventional thinking.  
+- **Supply Lines** — Sources and routes through which an army obtains money, materials, and reinforcements.  
+- **Support System** — The underlying structure and resources supporting a group’s power and coherence.  
+- **Targeting the Center** — The strategic act of striking the enemy’s most vital and protected source of power to cripple them effectively.  
+- **Threatening Treasured Assets** — A strategy that forces an enemy to divert forces to defend what they most highly value.  
+- **Unpredictability** — A source of power that, if neutralized or turned against the enemy, becomes a vulnerability.  
+- **Wiles of War** — The use of clever tactics, surprises, and understanding of the enemy’s true sources of strength to win conflict.  
+- **Winning Strategy** — The approach that best exploits the enemy’s vulnerabilities while protecting one’s own centers of gravity.

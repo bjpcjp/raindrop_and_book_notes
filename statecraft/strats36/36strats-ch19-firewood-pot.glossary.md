@@ -1,0 +1,29 @@
+- **Banquet** — A social gathering used strategically to defeat or capture the enemy without direct conflict.  
+- **Battering Ram Broken by a Sleeping Mat** — A metaphor for defeating strength through subtle, indirect means rather than brute force.  
+- **Cavalry** — A division of mounted soldiers used in surprise attacks or infiltration.  
+- **Emperor** — The sovereign ruler, whose regalia and symbols signify legitimate authority.  
+- **Elite Cavalry** — Highly trained soldiers used for special operations such as sabotage behind enemy lines.  
+- **Empire** — A group of unified territories under a single ruler, such as an emperor or king.  
+- **Flag of the Red Bird Constellation** — Imperial insignia that only the emperor could display, symbolizing supreme authority.  
+- **Forces (Military)** — The collective armed units under a command engaged in battle or defense.  
+- **General Yuan Shao** — A warlord during China's Three Kingdoms Period, known for his defeat due to supply disruption.  
+- **Imperial Pennants** — Flags symbolizing imperial power, worn or displayed by an emperor.  
+- **Imperial Permission** — Formal authorization from a nominal sovereign for military or political action.  
+- **King of Qin** — A ruler who used indirect strategy to avoid direct confrontation and weaken enemies.  
+- **King of Wei** — A king who aspired to become emperor but was brought down by political intrigue and alliance shifts.  
+- **Largest Scale Battles** — Conflicts involving multiple armies and complex strategic maneuvers.  
+- **Manpower** — The human resources or soldiers available to an army or faction.  
+- **Palace** — A large, imposing residence built to symbolize imperial status and power.  
+- **Provisions** — Supplies and resources essential for sustaining an army in battle.  
+- **Qi (Kingdom)** — A powerful kingdom that aligned with neighboring lords to overthrow the king of Wei.  
+- **Sowing Discord** — Creating internal conflict and distrust within an enemy's ranks to weaken their unity.  
+- **Strategic Points** — Key locations whose control is critical to the overall strength of a military force.  
+- **Supplies** — Vital materials, including food and equipment, necessary for continuing military operations.  
+- **Taking Firewood From Under the Pot** — The strategy of undermining an opponent by attacking the source of their strength indirectly.  
+- **Twelve Lords** — The coalition of regional barons supporting or opposing the king of Wei.  
+- **Unity of Allegiance** — The loyalty and support of allied forces or lords, crucial for maintaining power.  
+- **Warring States Period** — An era of Chinese history marked by warfare and political intrigue among competing states.  
+- **Wei Yang** — The strategist who used deception and political manipulation to defeat the king of Wei.  
+- **Wooden Sword** — A disguised weapon used to gain advantage through trickery in duels.  
+- **Yamato Takeru** — A Japanese hero who used deception to defeat a stronger outlaw without direct confrontation.  
+- **Zhou Dynasty Emperor** — A nominal ruler with little actual power during the Warring States Period.

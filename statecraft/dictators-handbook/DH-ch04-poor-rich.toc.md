@@ -1,0 +1,54 @@
+```markdown
+# Table of Contents
+
+- Steal from the Poor, Give to the Rich
+  - Introduction  
+  - Challenges of Refilling the Treasury
+    - Liberia Case Study: Prince Johnson and Samuel Doe  
+    - Ottoman Empire Succession and Treasury Control  
+    - Secrecy and Chaotic Bookkeeping in Autocracies  
+    - Transparency in Democracies  
+- Taxation  
+  - Leaders’ Perspective on Taxes  
+  - Constraints on Taxation  
+    - Work Incentives  
+    - Burden on Essential Backers  
+    - Tax Collection Costs  
+  - Taxation and Economic Activity  
+  - Taxation Strategies in Autocracies vs. Democracies  
+  - Case Studies:  
+    - Reaganomics and Tax Rate Debates  
+    - Mexico’s Tax Take and Democratization  
+  - Tax Burden on Different Income Levels  
+  - Wealth and Political Backing: Zimbabwe and Kenya Examples  
+- Tax Collectors  
+  - Tax Collection in Democracies  
+  - Challenges in Autocracies  
+  - Indirect Taxation  
+    - Agricultural Marketing Boards  
+    - Ghana’s Cocoa Marketing Board  
+- Privatized Tax Collection  
+  - Tax Farming in the Caliphate  
+  - Outsourcing Tax Collection and Corruption  
+  - Political Utility of Corruption  
+- Extraction  
+  - Resource Curse  
+  - Case Study: Nigeria’s Oil Wealth and Economic Decline  
+  - Economic and Social Impacts of Resource Wealth  
+  - Resource Curse and Political Incentives  
+  - Effects on Democratization  
+- Borrowing  
+  - Political Incentives for Borrowing  
+  - Coalition Size and Debt Incentives  
+  - Historical Trends in Debt Accumulation  
+  - Limits Imposed by Markets  
+  - Debt Defaults and Political Appeals  
+- Debt Forgiveness  
+  - History and Critique of Debt Relief Programs  
+  - Case Studies: Ethiopia, Belarus, Angola, Nicaragua, Mozambique  
+  - Impact of Democratization on Debt Reduction  
+  - Policy Recommendations  
+- Summary of Funds Acquisition and Spending  
+  - Taxation, Extraction, and Borrowing  
+  - Spending: Public Goods, Private Rewards, and Discretionary Funds
+```

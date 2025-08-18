@@ -1,0 +1,35 @@
+- **Army** — The military force engaged in battle, composed of soldiers and officers, whose morale and physical strength are affected by victory or defeat.  
+- **Battle** — A combat engagement between opposing military forces, whose outcome influences the moral and physical state of the armies involved.  
+- **Battles, great** — Large-scale engagements which have significant effects beyond immediate losses, impacting morale, strategy, and the course of a campaign.  
+- **Campaign** — A series of military operations aimed at a strategic objective, influenced by the outcomes and effects of individual battles.  
+- **Character (of the people or state)** — The intrinsic qualities and resilience of a nation or its military, shaping how it reacts to victory or defeat.  
+- **Commander** — The leader of an army, whose talent, boldness, and spirit influence the consequences of a victory or defeat.  
+- **Defeat** — The condition and effects experienced by the vanquished army and nation after losing a battle, including moral collapse and physical losses.  
+- **Effect of victory** — The comprehensive impact of a battle’s outcome on armies, nations, and the campaign, especially the moral elevation of the victor and depression of the defeated.  
+- **Enemy** — The opposing force in a conflict, whose superiority becomes evident through the loss of battle.  
+- **External assistance** — Support beyond the immediate military force required to restore balance after a defeat.  
+- **Father of victory** — Not explicitly used but implied as the combined physical and moral efforts culminating in a decisive win (see “force of victory”).  
+- **Forces, moral** — The psychological energy, confidence, and spirit of armies and nations affected by battle outcomes.  
+- **Forces, physical** — The tangible strength of troops, including numbers of men, casualties, and artillery.  
+- **Fortune** — The role of chance or luck in warfare, which can be mitigated but never wholly eliminated.  
+- **General** — A senior military officer responsible for planning and directing battles and campaigns.  
+- **Great battle** — A decisive and highly significant engagement intended to bring about a pivotal result in a war.  
+- **Hardships** — The difficulties endured in war, such as fatigue and exposure, which ally with defeat to deteriorate army effectiveness.  
+- **Loss of ground** — The territorial retreat or concession that accompanies a defeated army’s downfall.  
+- **Losses (killed, wounded, prisoners, artillery)** — The quantifiable detriments in men and matériel sustained by armies during a battle.  
+- **Military spirit** — The collective morale and fighting will of an army or nation, crucial in resisting the effects of defeat.  
+- **Moral effect** — The psychological impact of victory or defeat on the energies and morale of soldiers and nations.  
+- **New enemies** — The compounded difficulties and obstacles encountered during a retreat or after defeat.  
+- **Physical force** — See “Forces, physical.”  
+- **Prostration** — The state of collapse and despair following defeat, affecting the whole nation or army.  
+- **Reaction (to defeat or victory)** — The secondary responses elicited in a state or army following the initial effects of battle outcomes, potentially leading to recovery or further loss.  
+- **Resources** — Remaining military and moral means available to recover after a defeat.  
+- **Retreat** — The withdrawal of an army after losing a battle, often accompanied by disorder and fatigue.  
+- **Shock, moral** — The sudden and severe psychological impact of defeat on a nation or army.  
+- **Spirit of determination** — The resolve required by individuals and nations to overcome the discouragement of defeat.  
+- **Tension, mental** — The heightened psychological state experienced by commanders and soldiers before and during a great battle.  
+- **Trophies** — Captured materiel or symbols of victory that reinforce the moral effect of success.  
+- **Victory** — The successful outcome of a battle that produces both immediate and far-reaching physical and moral effects.  
+- **Victory’s effects, intensity** — The strength of the consequences of victory, which increases with the size and concentration of forces engaged.  
+- **War** — The larger context of armed conflict in which battles, victories, and defeats occur, inherently involving human weaknesses.  
+- **Will to resist** — The capacity of an army and nation to moderate and withstand the momentum of an enemy’s victory through continued acts of defiance.

@@ -1,0 +1,16 @@
+- **Cao Cao** — A powerful warlord and opponent in the Three Kingdoms period, whose forces were tricked by Kong Ming’s arrow strategy.  
+- **Commander Wang Chun** — Jin dynasty naval commander who led a successful attack on the kingdom of Wu.  
+- **Duke Zhou Yu** — A military leader during the Three Kingdoms period who sought Liu Bei’s assistance against Cao Cao.  
+- **Empress Dowager Teng** — Han dynasty empress who appointed General Yu Xu to raise an army against the Qiang barbarians.  
+- **General Yu Xu** — Han dynasty general who used deception to defeat the Qiang barbarians at Yaoku pass.  
+- **Jian Ye** — The capital city of the kingdom of Wu during the Three Kingdoms period.  
+- **Kong Ming** — Also known as Zhuge Liang, a famed strategist who used deception to obtain over one hundred thousand arrows from Cao Cao’s forces.  
+- **Qiang barbarians** — Nomadic group that revolted and invaded Han territory during the later Han dynasty.  
+- **Renowned advisor Kong Ming** — Another reference to Zhuge Liang, known for his strategic brilliance and inventive tactics.  
+- **Sima Yan** — The usurper who ended the Wei kingdom by founding the Jin dynasty.  
+- **Sun Bin** — Ancient military strategist referenced for contrast in fire signal tactics.  
+- **Sun Hao** — The last king of Wu, known for neglecting state affairs and causing the kingdom’s decline.  
+- **Thirty-Six Strategies** — A collection of ancient Chinese military tactics and principles, including "Tie Silk Blossoms To The Dead Tree."  
+- **Tie Silk Blossoms To The Dead Tree** — Strategy to use artifice and disguise to mislead the enemy about strength or value.  
+- **Yaoku Pass** — Strategic mountain pass held by Qiang barbarians during their rebellion against Han China.  
+- **Zhuge Liang** — See Kong Ming; famed Three Kingdoms strategist known for his cunning tactics and diplomacy.

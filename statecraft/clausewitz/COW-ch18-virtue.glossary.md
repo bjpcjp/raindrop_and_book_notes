@@ -1,0 +1,26 @@
+- **Bravery** — A natural gift in some men, necessary but not sufficient for military virtue; must be directed by obedience and order within an Army.  
+- **Business of War** — A distinct and specialized pursuit requiring understanding, obedience, order, and method separate from other human activities.  
+- **Corporate Spirit (Esprit de Corps)** — The collective spirit or bond within an Army that unites individual military virtues into a cohesive whole.  
+- **Enthusiasm** — Passion or zeal for the profession of war; it energizes military virtue but does not constitute it.  
+- **Generalship** — The genius and superior talents of a Commander who guides the whole Army but cannot lead every part individually.  
+- **Genius of the Commander** — The strategic and leadership qualities enabling the direction of large forces; complements military virtue in parts.  
+- **Guild** — A metaphor for the military community bound by regulations, customs, and a shared "Spirit of War."  
+- **Hamiltonian Military Virtue** — (Not explicitly named but implied) A moral power characterized by obedience, order, rule, and method prevailing over unbridled force.  
+- **Honor of its Arms** — The prevailing idea or creed that embodies and constantly reminds the Army of its duties and virtues.  
+- **Individuality of War** — The unique, separate nature of war as a profession that resists full integration with civilian life.  
+- **Military Virtue** — A definite moral quality in a standing Army characterized by obedience, discipline, confidence, endurance, and pride; a higher directive power beyond mere bravery or enthusiasm.  
+- **Natural Qualities** — The innate traits of a warlike people such as bravery, aptitude, endurance, and enthusiasm that can substitute for military virtue in national risings.  
+- **Order** — A fundamental demand on military virtue requiring discipline, obedience, and methodical conduct.  
+- **Physical Powers** — The bodily robustness and endurance acquired through exercise and privations, likened to muscles of an athlete.  
+- **Plodding Earnestness** — Steady, hardworking seriousness maintaining discipline but insufficient alone to create true military virtue.  
+- **Popular Enthusiasm** — Mass public zeal or national fervor that can sometimes compensate for lack of military virtue.  
+- **Pride** — A quality within a military body fostering confidence and respect for leaders and the profession.  
+- **Standing Army** — A professional, permanent military force requiring military virtue to function effectively; distinguished from temporary or national militias.  
+- **Spirit of War** — The corporate and individual frame of mind embodying martial discipline, honor, and the unique nature of warfare.  
+- **Spirit of an Army** — The collective moral strength and unity derived from military virtue and corporate spirit.  
+- **Success** — Victory or achievement in war which may or may not depend on military virtue but is enhanced by it.  
+- **Temper of an Army** — The general disposition or mood, which differs from the more profound and stable military spirit.  
+- **Training and Exercise** — The means by which soldiers gain confidence, endurance, and expert understanding necessary for military virtue.  
+- **Warrior's Duty** — The responsibility to overcome toil and danger, guided by the honor and rules of the military profession.  
+- **Warlike Qualities** — Bravery, aptitude, endurance, and enthusiasm; natural or cultivated traits necessary for military function.  
+- **Working of Military Virtue** — The result of campaigns, victories, and sustained activity under great leaders that mature the moral power of an Army.

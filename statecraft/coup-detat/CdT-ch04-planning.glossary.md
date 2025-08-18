@@ -1,0 +1,30 @@
+- **Airports** — Transport facilities critical to controlling inflow and outflow of people and forces during a coup; can be neutralized by blocking runways or canceling flights.  
+- **Ceremonial Figures** — Government leaders with symbolic roles who generally are not arrested during a coup but can be used to legitimize the new regime if safely controlled.  
+- **Communication Facilities** — Technical infrastructure like radio, television, telephone, and Internet used for mass and internal communication, essential to control or neutralize during a coup.  
+- **Counter-Coup** — An armed or political reaction aiming to reverse a successful coup d’état.  
+- **Focal Traffic Points** — Strategic intersections or locations in a capital city used to establish and maintain control during a coup.  
+- **General Strike** — Coordinated work stoppage by trade unions or workers that can significantly challenge the consolidation of power post-coup.  
+- **Inner Council** — Small group of key government figures controlling coercive means such as police and armed forces, targeted for arrest or isolation during a coup.  
+- **Insurrectional Parties** — Revolutionary or underground political parties focused on overthrowing the existing system, often with paramilitary organization and centralized leadership.  
+- **Internet and Social Media** — Modern communication platforms crucial for political mobilization; can be partially neutralized by cutting power or blocking networks.  
+- **Jihadi Movements** — Radical Islamist groups combining religious, political, and military leadership, often violent and against pluralism.  
+- **Machine Parties** — Political parties operating as vote-for-reward organizations within a democratic framework, rendered powerless during a coup due to institutional suspension.  
+- **Mass Media** — Includes radio, television, and press; control over these is essential for broadcasting authority and managing public perception during a coup.  
+- **Mass Demonstrations** — Large public gatherings potentially organized by political forces against a coup, often relying on infrastructure like transport and communication.  
+- **Parabureaucratic Parties** — Parties in one-party states acting as extensions or supervisors of the state bureaucracy, lacking mass militancy but possibly involved in intelligence activities.  
+- **Personalities in Government** — Key individuals in political leadership, especially those controlling force and coordination, classified for arrest or neutralization during a coup.  
+- **Physical Facilities** — Strategic buildings and infrastructure such as government palaces, military and police headquarters, and communication centers essential for control in a coup.  
+- **Political Forces** — Groups outside formal government that influence political decisions, including parties, unions, religious and ethnic groups.  
+- **Political Parties** — Organized groups competing for power with varying levels of militancy and organization; their threat level depends on their capability to mobilize opposition rapidly.  
+- **Police Telecommunications** — Independent communication networks used by police or internal security forces, requiring sabotage or neutralization during a coup.  
+- **Presidential Government** — Form of government where the head of state is also the main decision-maker (e.g., United States, France).  
+- **Prime-Ministerial Government** — Form of government where the head of state has a ceremonial role and the prime minister holds real decision-making power (e.g., United Kingdom, Italy).  
+- **Radio and Television Facilities** — Prime means of government communication and public influence, often multiple and difficult to seize; must be controlled or neutralized for effective information monopoly.  
+- **Religious Organizations** — Groups with social and sometimes significant political influence that can mobilize opposition; their leadership is sensitive to handle during a coup.  
+- **Roadblocks** — Defensive positions set up at key city perimeter and roads to control movement, prevent loyalist intervention, and isolate opposition during a coup.  
+- **Social Media** — Contemporary platform used for public mobilization or agitation, requiring control or neutralization to prevent opposition coordination in a coup.  
+- **Strongman Government** — A regime ruled by a military or police leader who may hold no formal position but controls power through force and manipulation of formal leaders.  
+- **Symbolic Buildings** — Government or cultural edifices whose control signals authority and legitimacy during a coup, often seized to influence public perception.  
+- **Trade Unions** — Organized labor movements with potential to mobilize strikes and political action; their structure and militancy determine their threat level during a coup.  
+- **Troops Loyal to Government** — Armed forces units that remain faithful to the pre-coup regime and pose potential military opposition.  
+- **Wait-and-See Element** — Military or political actors who initially remain neutral or undecided in a coup, whose support can be decisive.

@@ -1,0 +1,1 @@
+The appendix provides comprehensive data on coups d’état worldwide from 1945 to 2010, including their frequency, success rates, main parties involved, and regional and temporal distributions. It highlights variations in coup outcomes by party type and region, showing an overall global success rate of approximately 49%.

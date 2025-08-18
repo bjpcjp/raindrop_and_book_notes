@@ -1,0 +1,22 @@
+- **Clausewitz** — Prussian military theorist who defined war as the exercise of force for political objectives and influenced European military thought.  
+- **Equilibrium of forces** — A balance of military power among nations that maintains peace so long as it persists.  
+- **Expediency** — The principle that war is unrestrained by law except the practical necessity to achieve political goals.  
+- **Hague Conference** — An international meeting aimed at peace but failing to prevent militarization and eventual war.  
+- **Life-History of Nations** — The concept of nations’ development and survival through conflict, akin to Darwinian evolution.  
+- **Molecular tension** — The heightened, unstable state of nations ready to explode into conflict like a pressurized steam boiler.  
+- **Napoleonic lessons** — Strategic and military principles derived from Napoleon’s campaigns, studied and applied by later European armies.  
+- **National Colours (black, red, white)** — German flag colors symbolizing “through night and blood to light,” representing struggle and victory.  
+- **Organisation** — The peacetime preparation of military forces to rapidly mobilize all resources for decisive conflict.  
+- **Political object** — The specific goal or purpose that war aims to achieve.  
+- **Prussian military efficiency** — The result of a century of training and patriotism, enabling rapid and effective mobilization and action.  
+- **Resultant thought wave** — The collective, conditioned mental response of a large, trained population to government leadership or call to arms.  
+- **Self-sacrifice** — A key national quality fostering military readiness and patriotic duty.  
+- **Socialist leaders** — Political figures whose influence was curtailed in Germany due to government efforts to maintain army discipline and order.  
+- **Steel Trust** — Carnegie’s industrial monopoly, metaphorically compared to business competition paralleling warfare.  
+- **Survival of the fittest** — The Darwinian concept applied to nations and war, where success depends on strength rather than moral superiority.  
+- **Tension (molecular)** — A metaphor for the precarious state of readiness and potential outbreak of war in Europe.  
+- **Treaty and arbitration delays** — Formal diplomatic procedures seen as unjustified hindrances to military readiness and action.  
+- **Unity of command and control** — The increased certainty and precision in directing large forces brought about by modern communications.  
+- **Von der Goltz doctrine** — The idea that a statesman who hesitates to strike first when war is inevitable commits a crime against his country.  
+- **War** — The exercise of force for political aims, driven by necessity rather than morality, and governed by principles of survival and expediency.  
+- **Waterloo** — A historical battle referenced as a starting point for analyzing the continuity of European military strategy post-Napoleon.

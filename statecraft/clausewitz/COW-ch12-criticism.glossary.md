@@ -1,0 +1,27 @@
+- **Army** — A large organized body of armed personnel engaged in war.
+- **Art of War** — The science and practice of conducting warfare.
+- **Cause** — A factor or reason that produces an effect in a series of events.
+- **Circumstances** — The conditions or facts affecting a situation or event.
+- **Concealment of motives** — The deliberate hiding of true intentions behind actions.
+- **Critical inquiry** — The process of investigating causes and effects to support or explain theory.
+- **Critical investigation** — The tracing and weighing of causes and means to establish truths.
+- **Critical narration** — Historical reporting that goes beyond mere chronology to analyze events.
+- **Critical review** — The examination and judgment of actions and means considering causes and effects.
+- **Criticism** — The application of abstract truth to real events, involving praise, censure, and analysis.
+- **Demonstration** — A clear and convincing proof established through critical or theoretical examination.
+- **Effect** — The outcome or result produced by causes or means in an event.
+- **Historical investigation** — Research aimed at establishing and verifying facts in history.
+- **Historical research** — The systematic inquiry into past events and data.
+- **Historical results** — Findings from past events that may or may not provide instruction.
+- **Means** — Methods or instruments used to achieve a particular end or objective in warfare.
+- **Motive** — The internal reason or cause prompting an action, often concealed or lost to history.
+- **Probability** — The likelihood or chance of a particular outcome occurring.
+- **Result** — The final outcome or consequence of a series of causes and actions.
+- **Searcher for causes** — The part of criticism focused on identifying the reasons behind events.
+- **Sound theory** — A well-founded system of universal truths essential for effective criticism.
+- **Supposition** — An assumption taken without direct proof, used to limit investigation or understanding.
+- **Talents** — Natural aptitude or genius required to discern essential connections and discover alternatives.
+- **Testing of means** — The process of assessing whether employed methods achieved the intended objectives.
+- **Theory** — A system of universal truths derived from analytical inquiry, supporting and guiding criticism.
+- **Truth** — Positive, undeniable fact or principle discovered through rigorous investigation or theory.
+- **Wider view** — The broader perspective encompassing all relevant factors known to criticism beyond the actor’s scope.

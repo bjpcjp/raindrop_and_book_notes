@@ -1,0 +1,21 @@
+- **Battle** — The actual delivery of the blow in combat; the moment of direct engagement in war.  
+- **Boldness** — A quality intensified by stratagem when all other considerations are forsaken, aiding desperate efforts.  
+- **Craftiness** — A form of sly skill or deceit in strategy, useful but less essential than clear perception and courage.  
+- **Deceit** — An act hiding its object; stratagem is a form of deceit without directly breaking a promise or word.  
+- **False reports** — Misleading information sent purposely to deceive the enemy; generally of little strategic effect.  
+- **Forces** — The troops or resources under a commander’s control; their strength affects the applicability of stratagem.  
+- **Heart** — Symbolizes necessary qualities such as courage and integrity which should not be sacrificed for craftiness.  
+- **Mobility** — The ability to move freely and quickly, essential for stratagem but often lacking on the strategic chessboard.  
+- **Plans and orders (make-believers)** — Deceptive commands or arrangements intended to mislead, but usually ineffective strategically.  
+- **Prudence** — Careful judgment or sagacity; often inadequate alone in desperate military situations.  
+- **Salvation by stratagem** — The use of surprise and concealment as a last resort when conventional means fail.  
+- **Self-interest** — A category of persuasion or motivation unrelated to stratagem, which relies on concealment rather than direct influence.  
+- **Sleight of hand (ideas and actions)** — Wit parallels conceptual deception, stratagem parallels deceptive actions.  
+- **Strategy** — The art of skillfully using tactical blows and regulating combat, primarily focused on direct action rather than trickery.  
+- **Stratagem** — A concealed intention or deceitful plan that causes the enemy to err by themselves, relying on subtle deception rather than direct falsehood.  
+- **Strong will** — An unwavering determination that supports strategic activity alongside ambition and stratagem.  
+- **Surprise** — The element of catching the enemy off-guard, always involving some degree of stratagem.  
+- **Tactics** — The actual execution and delivery of force in battle, distinct from the broader planning in strategy.  
+- **Wily one** — A figure who uses inexpensive means, such as words or declarations, to deceive others outside of military strategy.  
+- **Will** — The inner drive and determination necessary for strategy and the effective use of stratagem.  
+- **Wit** — A form of intellectual craftiness that conceals its intention, analogous to stratagem but with ideas rather than actions.

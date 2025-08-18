@@ -1,0 +1,29 @@
+- **Act of Violence** — The use of physical force intended to compel an opponent to fulfill one's will in war.  
+- **Aim of Military Action** — The objective prescribed by military operations, often an equivalent to the political object for concluding peace.  
+- **Attack** — A form of war action aimed at initiating hostilities; generally weaker compared to defence and differing in kind.  
+- **Chance** — The element of unpredictability and luck, deeply connected to war and its outcomes.  
+- **Defence** — The form of war action focused on resisting attack; typically stronger than offence.  
+- **Disarmament** — The immediate object of hostilities to render the enemy incapable of further resistance.  
+- **Duration** — The necessary time required to accomplish a transaction or action in war.  
+- **Equilibrium of Forces** — A balance where opposing parties possess equal products of motive and power, often resulting in peace or waiting for a favorable moment.  
+- **Extreme Effort** — The utmost exertion of force and will in war to overpower the adversary; a theoretical ideal rarely achieved in reality.  
+- **First Reciprocal Action** — The initial mutual escalation of violence between opposing forces leading to an extreme.  
+- **Game** — A metaphor for war highlighting its probabilistic nature, dependence on chance, and interplay of courage and rashness.  
+- **Human Element** — The influence of courage, boldness, self-reliance, and rashness on war, which creates a margin for the accidental.  
+- **Impulse of Polarity** — The antagonistic interests of opposing parties which may lead to either action or suspension, depending on situation.  
+- **Military History** — The study of past wars, best understood by viewing war as a political instrument and instrument influenced by diverse motives.  
+- **Motives of War** — The underlying causes driving nations to war, ranging from instinctive hostility to hostile intention.  
+- **Political Object** — The original motive or goal of war, which determines the aim and scale of military efforts.  
+- **Polarity** — The principle describing opposing interests in war; valid fully only in true opposites such as victory or defeat.  
+- **Preparation for War** — The accumulation and readiness of means and forces before war, influencing intensity of first decisions.  
+- **Probabilities** — The calculation of likely outcomes based on real-world facts and imperfect knowledge, guiding decisions in war.  
+- **Reciprocal Action** — Mutual reactions between opponents that intensify conflict and force a progression toward extremes; includes first, second, and third stages.  
+- **Second Reciprocal Action** — The mutual effort to disarm or overthrow the enemy, where defeat of one means subjugation by the other.  
+- **Suspension of Action** — A pause in hostilities often caused by waiting for a more favourable moment or due to superior defensive strength.  
+- **Third Reciprocal Action** — The enhancement of efforts proportional to the opponent’s resistance and will, pushing forces toward an extreme.  
+- **Theory of War** — The study and conception of war that balances violence, chance, and political objectives as interconnected forces.  
+- **Will (Strength of Volition)** — The determination or motivation to apply force in war, closely linked to the strength of motives and difficult to measure.  
+- **War** — An act of violence on an extensive scale intended to compel an opponent to submit to one's will; a serious political instrument.  
+- **War as a Political Instrument** — The continuation of political commerce and diplomacy by violent means, subject to political objectives.  
+- **War of Extermination** — A war pursued with maximum force aiming at the complete destruction of the enemy.  
+- **Weaponry and Technology** — The material means by which violence is applied in war, constantly improved to increase destructive power.

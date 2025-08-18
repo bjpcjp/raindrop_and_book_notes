@@ -1,0 +1,17 @@
+- **Chang Yi** — A wandering strategist who employed the Strategy of Beautiful Women to gain wealth and a position of employment.  
+- **Chen Ping** — Advisor to Han emperor Gaozu who used a painting of a beautiful princess to cause jealousy and lift a siege.  
+- **Dong Zhuo** — Ruthless warlord and tyrant during the Three Kingdoms Period, who was assassinated through a plot involving the Strategy of Beautiful Women.  
+- **Emperor Gaozu** — The first Han emperor who was trapped by Xiongnu horsemen and saved by Chen Ping’s strategy.  
+- **Jin** — A state known for its beautiful and graceful women during the Warring States Period.  
+- **King of Chu** — A ruler who initially rejected strategist Chang Yi but later offered him money to bring back beautiful women.  
+- **Lu Bu** — Valiant warrior and adopted son of Dong Zhuo, who was manipulated through the Strategy of Beautiful Women to betray Dong Zhuo.  
+- **Pingcheng** — City where Emperor Gaozu and his forces took refuge during the siege by the Xiongnu.  
+- **Queen Nan** — One of the king’s favorite wives, fearful of losing favor to women Chang Yi was to bring back.  
+- **Sable Cicada** — Sing-song girl who aided Wang Yun by becoming part of the Strategy of Beautiful Women to bring down Dong Zhuo.  
+- **Seven Military Classics** — Ancient Chinese military texts that include the Strategy of Beautiful Women (Strategy 31).  
+- **Sima Fa** — Author of the Seven Military Classics who described using women to increase the enemy's indulgences.  
+- **Strategy of Beautiful Women** — Military tactic involving sending beautiful women to cause distraction, jealousy, and discord within enemy ranks.  
+- **Tai Gong’s Six Secret Teachings** — Ancient military treatise advising the use of gifts and beautiful women to dissipate enemy will.  
+- **Wang Yun** — Governor of Wei who used the Strategy of Beautiful Women, with the help of Sable Cicada, to assassinate Dong Zhuo.  
+- **Warring States Period** — Era in Chinese history (circa 475-221 BCE) marked by states vying for power using various strategies including the Strategy of Beautiful Women.  
+- **Xiongnu** — Nomadic tribesmen who besieged Emperor Gaozu and his forces at Pingcheng.

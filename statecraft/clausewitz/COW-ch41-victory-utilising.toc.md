@@ -1,0 +1,47 @@
+```markdown
+# Table of Contents
+
+- XII. Strategic Means Of Utilising Victory
+  - Introduction: The merit of strategy in preparing victory
+  - The necessity of pursuit to complete victory
+  - Conditions of armies post-battle
+    - Exhaustion and disorganisation of both sides
+    - Limitations on pursuit due to reinforcements or fatigue
+  - The General’s challenge: human nature and command will
+  - The first pursuit: scope and duration
+    - Degrees of first pursuit
+      - Cavalry-only pursuit
+      - Advance-guard pursuit composed of all arms
+      - Pursuit by the victorious Army itself
+    - Impact of nightfall on pursuit operations
+    - Risks and reluctance of night fighting and pursuit
+    - Cases of exceptional vigorous night pursuit
+  - Historical context of pursuit in warfare
+    - Conventional restrictions in earlier wars
+    - Examples of vigorous pursuits by notable commanders
+    - Modern shifts enhancing pursuit’s importance
+  - Cases of limited pursuit and their causes
+    - Examples: Gorschen, Bautzen, Gross Beeren, Dennewitz, Laon, Borodino
+      - Detailed discussion of Borodino
+  - The importance of energy in pursuit for victory’s value
+  - Beyond first pursuit: the real career of victory
+    - General character of further pursuit stages
+  - Further stages of pursuit: three degrees
+    - Simple following or pursuing
+    - Hard pursuit: continuous pressure and attacks on rear-guard
+    - Parallel march to intercept the enemy’s objective
+  - Effects of pursuit on enemy morale and disorganisation
+    - Impact of forcing night marches on the defeated
+    - Planning marches and positions to maximize pursuit effect
+    - Practical difficulties and burdens on pursuing forces
+  - The rarity and difficulty of hard pursuit; examples from history
+  - Parallel march strategies and enemy countermeasures
+    - Three enemy responses to interception attempts
+    - Risks of detours and evasion by the pursued
+    - Moral consequences of continuous engagement
+  - Instances of effective pursuit and necessary command qualities
+  - Dangers of excessive caution and evasion by defeated forces
+  - Operational considerations for pursuit and division of forces
+  - Final comments on pursuit’s strategic power and historical examples
+    - Key battles: Jena 1806, Ratisbonne 1809, Leipsic 1813, Belle-Alliance 1815
+```

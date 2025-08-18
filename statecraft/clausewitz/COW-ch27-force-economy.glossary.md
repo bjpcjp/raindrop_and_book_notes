@@ -1,0 +1,16 @@
+- **Action** — Any purposeful military activity; even seemingly purposeless activity can serve to keep forces employed and weaken the enemy.
+- **Algebraical Formulae** — Mathematical expressions used to define precise curves such as circles and ellipses, contrasted metaphorically with the unpredictability of war.
+- **Co-operation of Forces** — The principle that all parts of a military must work together concurrently to avoid waste and maximize effectiveness.
+- **Dead Forces** — Troops or resources that are on the march or idle during the enemy’s fight, rendering them temporarily ineffective or neutralized.
+- **Delicate Tact of Judgment** — A refined and intuitive decision-making skill developed through quick perception and thoughtful reflection.
+- **Economic Use of Forces** — The concept of avoiding waste by ensuring that no part of an army remains inactive while the enemy engages.
+- **Idle Forces** — Units not currently engaged in action, considered a waste if they remain inactive during combat.
+- **Mental Appliance** — A simplified conceptual tool or principle used to guide judgment and action in complex situations like war.
+- **Natural Quickness of Perception** — Innate ability to rapidly and accurately understand complex situations.
+- **Neutralised Troops** — Forces unable to contribute to the conflict at a given moment, effectively inactive and unproductive.
+- **Principle of Economy of Forces** — The strategic idea that all available forces should be actively employed to prevent waste and maximize combat effectiveness.
+- **Reflection** — The process of thoughtful consideration that refines natural judgment.
+- **Road of Reason** — The path of logical and prudent decision-making, which accepts some ambiguity rather than rigid mathematical precision.
+- **Simplification of Law** — Reducing complex rules to essential, characteristic points to facilitate practical decision-making.
+- **Staff (Mental Staff)** — A supporting method or principle used as a tool to lean on when making judgments in war.
+- **Waste of Forces** — The ineffective use of military resources, especially through inactivity when engagement is required.

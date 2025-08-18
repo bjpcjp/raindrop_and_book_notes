@@ -1,0 +1,23 @@
+- **Annexation** — The process of absorbing territories into a larger political or administrative unit, often through conquest or occupation.  
+- **Assegai** — A heavy, broad-bladed spear invented by King Shaka Zulu for close-quarter combat.  
+- **Cleansing rituals** — Traditional rituals performed by Zulu warriors after battle, required before they could fight again or rejoin the tribe.  
+- **Chest** — The central part of the Zulu battle line used to hold and pin the enemy force during encirclement.  
+- **Circle (in warfare)** — A strategic formation symbolizing unity and used by the Zulus to surround and annihilate opponents.  
+- **Encirclement** — A military strategy involving surrounding the enemy on all sides to cut off escape routes and reduce their options.  
+- **Envelopment** — A tactic aimed at surrounding opponents physically or psychologically, creating relentless multi-directional pressure.  
+- **Horns (of the beast)** — The flanking parts of the Zulu battle line that move to encircle the enemy from the sides and rear.  
+- **Impetuous** — Acting hastily or without careful thought, a trait exploited by enveloping strategies.  
+- **Isandlwana** — The location of a significant 1879 battle where the Zulu army encircled and defeated British forces.  
+- **Loins** — The reserve force in the Zulu battle formation, held back for a decisive counterattack or coup de grâce.  
+- **Maneuvering** — The movement or strategic positioning of troops or resources in battle or conflict.  
+- **Psychological encirclement** — The act of surrounding an opponent’s mind, limiting their hope and strategic options mentally.  
+- **Psychological pressure** — Stress or fear induced by multi-directional threats leading to panic and mistakes.  
+- **Reserve force** — Troops held back from the front lines to exploit weaknesses or reinforce at critical moments.  
+- **Strategic mismatch** — Employing novel tactics that outclass and confuse enemies still using outdated methods.  
+- **Tidewater** — An independent pipeline company that competed with Rockefeller’s Standard Oil during the 1870s oil wars.  
+- **Trickery** — Deceptive tactics, including feigned retreat or false appearances, used to lure enemies into traps.  
+- **Vaporous feeling of vulnerability** — An elusive, hard-to-pin-down sense of exposure and weakness in an opponent.  
+- **War cries** — Loud, fear-inducing shouts or sounds used by warriors to intimidate and signal an attack.  
+- **Zigzag pipeline** — An indirect route built to bypass and avoid control or interference by an opposing force.  
+- **Zulu army** — A warrior force known for discipline, use of assegai spears, and novel tactics such as encirclement.  
+- **Zulu encirclement formation** — The "horns, chest, and loins" pattern used to pin enemies and then surround them completely.

@@ -1,0 +1,28 @@
+- **Changping** — Site of a major battle in 259 B.C. between Qin and Zhao armies during the Warring States period.  
+- **Court intrigue** — Political machinations or plots within a royal court to undermine opponents.  
+- **Dagger** — A short knife used as a weapon, referenced in accusations against General Li Mu.  
+- **Emperor Fu Jian** — Qin emperor who personally led an army against Jin forces in 383 CE during the Six Dynasties period.  
+- **Fortifications** — Defensive military constructions used to protect armies or strategic locations.  
+- **General Li Mu** — Renowned Zhao general falsely accused of treason and compelled to commit suicide in 228 B.C.  
+- **General Xie Shi** — Jin general who used deception against Qin forces during a river crossing battle in 383 CE.  
+- **Han Cang** — Jealous homosexual lover and advisor of King Yu of Zhao who slandered General Li Mu.  
+- **King Yu of Zhao** — Ruler of Zhao during the late Warring States period, influenced by Han Cang.  
+- **Lure the Tiger Down the Mountain** — Strategy involving feigning retreat to lure an enemy from a strong position.  
+- **Qin** — Rising kingdom during the Warring States period and later imperial dynasty, known for military expansion.  
+- **Qin general Wang Jian** — Qin general who engaged in court intrigue to remove Zhao's military leadership.  
+- **Retreat (feigned)** — Military tactic of pretending to withdraw to tempt an enemy into a vulnerable position.  
+- **River crossing vulnerability** — The military disadvantage experienced when an army crosses a river and is exposed.  
+- **Rotten timbers** — Metaphorical term for corrupt or incompetent leaders undermining an organization or state.  
+- **Six Dynasties Period** — Era in Chinese history around 220–589 CE marked by fragmentation and warfare.  
+- **Skirmishes** — Small or preliminary battles preceding larger engagements.  
+- **Spies** — Agents who gather intelligence or spread misinformation in enemy camps.  
+- **Strategy 25** — The Thirty-Six Strategies titled "Replace The Beams With Rotten Timbers," focusing on undermining enemy leadership.  
+- **Stalemate** — Military situation where neither side can make progress or force a decisive action.  
+- **Supply depot** — Storage area for provisions and equipment crucial to sustaining an army.  
+- **The Art of War** — Classic Chinese military treatise by Sun Zi emphasizing the importance of generalship.  
+- **Treason** — Crime of betraying one's country or sovereign, often punishable by death.  
+- **Wang Jian** — Qin general noted for using sabotage and intrigue to defeat Zhao.  
+- **Wars of the Warring States Period** — Conflicts among Chinese states prior to the unification under Qin (approx. 475–221 B.C.).  
+- **Zhao** — A major state during the Warring States period, ultimately conquered by Qin.  
+- **Zhao Kuo** — Son of general Zhao She, appointed leader of Zhao forces whose lack of practical military experience contributed to defeat.  
+- **Zhao She** — Famous Zhao general and father of Zhao Kuo, who doubted his son's ability as a commander.

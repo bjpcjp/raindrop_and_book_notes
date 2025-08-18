@@ -1,0 +1,15 @@
+- **Action** — The phase of war involving decisive movement or effort toward a positive objective by one or both parties.  
+- **Activity** — Military measures and operations undertaken during both states of rest and tension; varies in significance depending on the overall state of war.  
+- **Combat** — The fundamental basis for decisions during tension, involving engagements of forces to resolve conflict.  
+- **Decision** — The outcome of tension where one party either concedes or achieves their objective, leading to movement or rest.  
+- **Equilibrium** — A state of rest in war where neither party pursues a new active objective, resulting in balanced relations of forces and interests.  
+- **Error** — Mistakes or faulty actions in war that have limited consequences in equilibrium but can be decisive during tension.  
+- **Internal Friction** — Obstacles or difficulties within a military force that must be overcome during movement or action.  
+- **Movement** — The phase following decision in which forces act in the chosen direction until encountering new resistance or limitations.  
+- **Oscillation** — Minor, ineffective shifts within a state of equilibrium, lacking strategic significance.  
+- **Rest** — Periods in war when active conflict is paused and no party pursues decisive objectives, corresponding to equilibrium.  
+- **State of Crisis** — The critical condition of forces during tension and motion where active engagement and decision-making occur.  
+- **Strategic Attack** — A planned offensive action intended to gain advantage or force a decision during tension.  
+- **Tension** — The state when opposing parties actively pursue conflicting objectives, preparing for or engaging in decision-making combat.  
+- **Theatrical Exhibition** — Military actions primarily carried out for reasons other than decisive effect, such as honor or vanity, often during equilibrium.  
+- **War-forces, Moral and Physical** — The combined tangible and intangible strengths of a military force considered during equilibrium and tension.

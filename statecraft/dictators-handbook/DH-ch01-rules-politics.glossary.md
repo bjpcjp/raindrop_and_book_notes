@@ -1,0 +1,17 @@
+- **Absolutism** — A form of government in which a single leader holds all power, although in practice no leader rules unilaterally.  
+- **Coalition** — The subset of the real selectorate whose support is essential for a leader to remain in power.  
+- **Democracy** — A system of governance characterized by large numbers of essential supporters and interchangeables, typically involving broad public participation in elections.  
+- **Dictatorship** — A government based on a small winning coalition supported by a larger pool of interchangeables and usually a small group of influentials.  
+- **Electoral College** — A group of electors who formally select the president in the United States; part of the real selectorate.  
+- **Essentials (Winning Coalition)** — The critical supporters a leader must maintain loyalty from to survive in office; their number influences how power is maintained.  
+- **Influentials (Real Selectorate)** — The group that actually chooses the leader from the nominal selectorate; more influential than interchangeables but less critical than essentials.  
+- **Interchangeables (Nominal Selectorate)** — The broad pool of people with some legal say in choosing a leader, often including all eligible voters, but individually with little effective power.  
+- **Kleptocracy** — A regime that uses public resources and revenues to enrich a small coalition of supporters at the expense of the general population.  
+- **Monarchy** — A system of government traditionally headed by a single ruler, such as a king or queen, often involving a small selectorate and coalition.  
+- **Nominal Selectorate** — The entire body of potential supporters who have legal rights to participate in leader selection, but whose individual influence is minor.  
+- **Private Goods** — Benefits given exclusively to specific supporters or members of the winning coalition to purchase loyalty.  
+- **Public Goods** — Benefits or services provided by the government or leader that are available to all members of the broader population.  
+- **Real Selectorate** — The subset of the nominal selectorate who actually have influence over selecting the leader.  
+- **Selectorate** — The collective term for the groups of people involved in leader selection: nominal selectorate (interchangeables), real selectorate (influentials), and winning coalition (essentials).  
+- **Taxation** — The process of extracting revenue from constituents, which leaders use either to fund public goods or to reward supporters.  
+- **Winning Coalition** — The essential group of supporters whose loyalty is necessary for a leader to maintain power; generally smaller than the real and nominal selectorates.

@@ -1,0 +1,1 @@
+The fundamental principle of strategy is to maintain a strong, concentrated force rather than dividing it unnecessarily, reserving detachment only for urgent and justified reasons. Avoiding fragmentation ensures strength at the decisive point and prevents errors stemming from conventional practices without clear rationale.

@@ -1,0 +1,21 @@
+- **Art** — The faculty of "doing" or carrying out actions; concerned with creation and production rather than mere knowledge.  
+- **Art of War** — The execution and practice of war, involving judgment and action; contrasted with the Science of War but neither fully conforming to traditional arts or sciences.  
+- **Business Competition** — A conflict of human interests and activities comparable to war, involving rivalry but settled through economic means rather than bloodshed.  
+- **Cognition** — The faculty of knowing or perceiving, distinct from judgment or the power to act.  
+- **Handicraft** — Considered an inferior form of art, characterized by rigid laws; inaccurately applied historically to war.  
+- **Human Mind** — The seat of perception and judgment, blending elements of Art and Science.  
+- **Judgment** — The faculty marking the transition from pure cognition to Art; involves decision-making and interpretation.  
+- **Knowledge** — The acquisition of information or understanding, forming the object of Science rather than Art.  
+- **Laws (in Arts and Sciences)** — Systematic principles governing activities; rigid in mechanical arts, less so in ideal arts, often inadequate for the complexity of war.  
+- **Mechanical Arts** — Activities involving will exerted on inanimate matter, governed by definite rules and laws.  
+- **Perception** — The mind’s or senses' faculty to receive information, involving both cognition and judgment.  
+- **Power** — The ability or capacity to perform or do, contrasted with mere knowledge.  
+- **Practical Action (Doing)** — The exercise of power or ability to produce effects; the essence of Art.  
+- **Science** — The systematic pursuit of knowledge or investigation without the necessity of action; includes pure sciences underlying practical arts.  
+- **Science of War** — The theoretical knowledge about war, distinct from its practice but insufficient alone to explain or guide it.  
+- **Social Life** — The realm in which war exists as a conflict of great human interests, beyond the scope of Arts and Sciences.  
+- **State Policy** — The broad political activity that shapes and contains war, likened to business competition on a large scale.  
+- **Theory** — An inquiring intellectual framework aimed at illuminating a subject’s inner relations, combining knowledge and potential guidance for action.  
+- **War** — A conflict of living, reacting forces involving bloodshed and great interests; neither fully an Art nor a Science, but part of social interaction.  
+- **War as Conflict** — An active struggle against a living, reacting force, unlike actions on inanimate or passive subjects.  
+- **Will** — The exertion of conscious intent or volition, distinguished in war by acting against an active, resisting opponent.

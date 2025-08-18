@@ -1,0 +1,28 @@
+- **A-team** — A larger, sophisticated team formed to seize major defended objectives, consisting of civilian penetration, diversion, covering fire, and assault groups.  
+- **Active phase** — The decisive stage of the coup when forces seize objectives or neutralize facilities.  
+- **Ambush** — A military tactic aiming to inflict maximum damage without controlling passage, opposite of a blocking force.  
+- **Armored fighting vehicles** — Heavily armed and armored military vehicles used by covering fire groups to deter resistance.  
+- **Assault group** — The largest component of an A-team, composed of combat-proficient members assigned to lead the main assault.  
+- **Blocking forces** — Troops deployed to prevent passage of loyalist forces into a city, aiming to deter or stop them with minimum damage.  
+- **Blocking position** — A defensive setup designed to control and prevent the movement of loyalist forces using roadblocks and natural barriers.  
+- **Civilian penetration group** — A small element of an A-team in civilian clothes who enter targets disguised as visitors to assist seizure or diversion.  
+- **Composite force** — A force made up of many small subunits rather than large organic units, offering security against usurpation post-coup.  
+- **Covering fire group** — A small group within A-teams providing firepower demonstrations and protecting approach routes to deter loyalist resistance.  
+- **Diffuse infiltration** — Subversion of many small subunits across different brigades, creating dispersed loyal teams.  
+- **Diversion group** — A component of A-teams tasked with creating disturbances or attacking secondary targets to draw loyalist forces away from main objectives.  
+- **Inner group** — The core conspirators involved in planning and leading the coup, often accompanying teams targeting political figures.  
+- **Loyalist forces** — Troops and police remaining loyal to the pre-coup regime and opposed to the coup.  
+- **Natural barriers** — Physical features such as bridges, tunnels, or urban areas used to channel and control enemy movement.  
+- **Observation line (screen)** — A forward element in the blocking position that detects and attempts to penetrate dismounted loyalist troops before they reach main defenses.  
+- **Operational leadership** — Command personnel responsible for leading the main defensive blocking forces, ensuring effective and disciplined resistance.  
+- **Palace guards** — Politically reliable troops or police loyal to the regime, often ethnically or religiously affiliated with rulers and hard to infiltrate.  
+- **Political personalities** — Key individuals targeted for arrest by B-teams during the coup.  
+- **Sabotage teams (C-teams)** — Small units tasked with technical sabotage of selected facilities during the coup.  
+- **Secondary target** — A less important objective used by diversion groups to distract loyalist forces from primary targets.  
+- **Screen** — Military term equivalent to an observation line used to detect and delay enemy forces before main defenses.  
+- **Security level** — The degree of safety from leaks, defections, and detection, enhanced by mutual surveillance within subverted units.  
+- **Subverted forces** — Military or police units infiltrated and influenced to support the coup.  
+- **Symbolic roadblocks** — Initial obstacles set to dissuade loyalist forces through appeals to orders and comradeship before escalating deterrence.  
+- **Teeth** — The main defensive forces in a blocking position responsible for physically stopping loyalist troops.  
+- **Usurpation of power** — The risk of military allies seizing control from the coup leaders after the coup’s success.  
+- **Vehicle transport teams** — Small teams equipped with jeeps and accompanying personnel for arrests or sabotage operations.

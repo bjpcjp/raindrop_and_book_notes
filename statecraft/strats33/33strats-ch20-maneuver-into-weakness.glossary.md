@@ -1,0 +1,26 @@
+- **Attrition Warfare** — A traditional style of warfare focusing on wearing down the enemy by destroying their forces through superior numbers, technology, or direct battle.
+- **Branches (Plan with branches)** — Alternative courses of action included in a plan that allow for flexibility and adaptation to changing enemy responses or unforeseen events.
+- **Center of Gravity** — The core strength or key element of the enemy's power that, if neutralized or destroyed, can lead to their defeat.
+- **Chaos** — Disorder and confusion created intentionally in the enemy’s system to disrupt their ability to reason and respond effectively.
+- **Dilemma** — A strategic situation presenting the enemy with only bad options to respond to a maneuver, forcing them into a lose-lose choice.
+- **Dislocate** — The maneuver tactic of removing or separating enemy forces from decisive positions, making them ineffective in battle.
+- **Disorder** — The breakdown of the enemy’s ability to understand or predict intentions, often induced through ambiguous or misleading maneuvers.
+- **Friction** — The inevitable chaos, confusion, and unexpected problems that occur during conflict or complex situations.
+- **Identify (Enemy Identification)** — The process of understanding and anticipating the enemy’s positions, intentions, and possible reactions.
+- **Infinite Capacity for Taking Pains** — The thoroughness and meticulous planning required to coordinate complex maneuvers and manage multiple elements simultaneously.
+- **Luck (Created Luck)** — The notion that luck in conflict is manufactured through detailed planning, adaptation, and the ability to exploit opportunities.
+- **Manoeuvre (Maneuver)** — The strategic movement that puts opponents into positions of weakness before direct battle, minimizing costs and maximizing advantage.
+- **Maneuver Warfare** — A method of war emphasizing mobility, deception, and positioning to weaken and confuse the enemy rather than destroy them outright.
+- **Mobility** — The ability to move freely and project power across distances, enabling swift and flexible responses.
+- **Mutekatsu-ryu** — A concept meaning "winning without fighting," representing victory through strategy and maneuver rather than direct combat.
+- **Plan with Branches** — A plan designed with several alternative courses of action to adapt quickly and rationally to unpredictable changes.
+- **Process (Strategic Process)** — The focus in maneuver warfare on the steps and dynamics leading up to battle rather than the battle itself.
+- **Psychological Pressure** — The weakening effect on the enemy’s morale and decision-making caused by dislocation, confusion, and bad choices.
+- **Reversal** — Using sudden, unexpected moves or attacks, such as envelopments or frontal blows, as part of broader maneuver strategies.
+- **Room to Maneuver** — Having physical and psychological space enabling free movement, flexibility, and open options rather than being confined or constrained.
+- **Shock** — The impact on enemy morale and cohesion caused by rapid, unexpected maneuvers or attacks.
+- **Situational Analysis** — Detailed examination of the context, circumstances, and forces involved to identify the best avenues for maneuver.
+- **Sun-tzu** — Ancient Chinese strategist who codified maneuver warfare principles emphasizing indirect strategies and minimizing costs.
+- **Wild-goose chase** — A deceptive maneuver that leads the enemy to pursue false information or move in useless directions.
+- **Winner Without Fighting** — The highest form of strategy aiming to subdue the enemy through positioning and maneuver rather than direct conflict.
+- **Zero-Sum Battle** — A confrontation viewed as a static moment with clear winners and losers, often emphasized in attrition cultures and opposed by maneuver warfare philosophy.

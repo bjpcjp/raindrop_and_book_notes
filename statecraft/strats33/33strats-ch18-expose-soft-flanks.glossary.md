@@ -1,0 +1,24 @@
+- **Attack from the flank** — A strategy of attacking the side or rear of an enemy, exploiting their vulnerability rather than confronting them head-on.  
+- **Bait** — A tactic used to lure opponents into exposing their weaknesses or overextending themselves.  
+- **Clemency** — The act of showing mercy or leniency toward defeated enemies to disarm hostility and gain allies.  
+- **Curtain, strategical** — A natural barrier such as a river or mountain range used to isolate an enemy from reinforcements.  
+- **Direct frontal attack** — A head-on confrontation that typically stiffens resistance and strengthens the opponent’s defense.  
+- **Distraction** — Drawing the enemy’s focus to one area to conceal the real point of attack.  
+- **Dividing the army** — Splitting forces to engage enemies in multiple places or to disguise true intentions.  
+- **Enveloping force** — A military unit positioned to encircle or flank the enemy, especially after the enemy is committed frontally.  
+- **Flank** — The side or rear part of an opponent’s forces or position considered their most vulnerable point.  
+- **Flanking maneuver (manœuvre sur les derrières)** — A tactical movement to attack the enemy from the side or rear, often after a feint frontal engagement.  
+- **Front** — The obvious or visible position or attitude that an individual or army shows to the world, often masking vulnerabilities.  
+- **Indirect approach** — A method of attack or influence that avoids direct confrontation, aiming instead to weaken resistance by surprise or deception.  
+- **Line of natural expectation** — The direction or approach an opponent anticipates; attacking along it consolidates their defense.  
+- **Moral to physical ratio** — Napoleon’s principle that psychological factors are three times more important than physical ones in battle.  
+- **Occupying the flank** — Tactically positioning oneself on the enemy’s side or aligning with their causes to reduce hostility and resistance.  
+- **Pendulum swing** — A shift in the momentum or advantage between opposing forces in a campaign or battle.  
+- **Reserves** — Troops kept back from the front lines to be deployed where needed, especially against unexpected threats.  
+- **Salient, weak** — A projecting part of a defensive line that is vulnerable to being outflanked.  
+- **Shock** — The sudden impact caused by an unexpected attack, leading to confusion and weakness in the enemy.  
+- **Strategical curtain** — A natural barrier used to cut off the enemy’s retreat or supply lines.  
+- **Support base** — The social, political, or military backing that underpins an individual’s or group’s power.  
+- **Turning strategy** — The approach of distracting an opponent frontally to then strike from an unexpected side or rear.  
+- **Vulnerable flank** — The exposed side or position of a person, army, or political figure that can be exploited.  
+- **Weak salient** — A narrow or extended part of an enemy’s front line that makes their flanks longer and more exposed.

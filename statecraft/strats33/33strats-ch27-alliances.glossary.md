@@ -1,0 +1,25 @@
+- **Alliance Game** — A strategy of constantly shifting alliances based on mutual self-interest, using allies as temporary tools to advance one’s own goals without emotional attachment.  
+- **Alliance** — A strategic partnership formed to compensate for deficiencies, share resources, or advance mutual interests; should be based on self-interest rather than loyalty or emotion.  
+- **Autonomy** — The ability to maintain independence and rationality within a group or alliance without becoming emotionally entangled or controlled.  
+- **Bloodless warfare** — Using alliances and manipulation to weaken opponents indirectly, avoiding direct conflict or warfare.  
+- **Center of gravity** — The position of influence and attention achieved by being simultaneously part of a group and autonomously engaged.  
+- **Dissension** — Conflict or disagreement within alliances or groups that weakens their unity and effectiveness.  
+- **False alliance** — A relationship formed out of immediate emotional need that compromises autonomy and forces fusion with the group dynamic.  
+- **Flux** — A state of constant change that necessitates flexible alliances and opportunistic strategies.  
+- **Friendship** — An emotional bond that can complicate strategic alliances and lead to entanglements; to be separated from practical needs in alliance-building.  
+- **Gauntlet** — A metaphor for obstacles or challenges that must be overcome, often requiring strategic alliances.  
+- **Independent identity** — The self-distinctiveness maintained while interacting with others, essential to avoid losing autonomy in alliances.  
+- **Mutual self-interest** — The foundation of strong alliances, where each party gains something they cannot achieve alone.  
+- **Negative entanglements** — Problematic or binding commitments in alliances that limit freedom or draw one into unwanted conflicts.  
+- **Network of alliances** — A dynamic, shifting collection of relationships used to achieve goals with minimal direct effort.  
+- **Obligation** — A subtle psychological debt created when helping others, which can be leveraged strategically in alliances.  
+- **Power gap** — A deficiency or weakness in resources or capabilities that alliances help to fill.  
+- **Realism** — A clear-eyed, strategic understanding that alliances are tools for advancing interests rather than emotional connections.  
+- **Sowing dissension** — Deliberately creating mistrust or conflict within enemy alliances to weaken or break them.  
+- **Strategic alliance** — A calculated partnership formed with a clear focus on advancing specific objectives and mutual benefits.  
+- **Subtle obligation** — A psychological indebtedness created by gifts or help that influences an ally’s actions without overt enforcement.  
+- **Temporary tools** — Allies viewed pragmatically as resources that can be used and discarded as needs change.  
+- **Trust** — An emotional attachment or expectation that can weaken strategic flexibility in alliances.  
+- **Using people** — The natural and necessary act of leveraging others’ resources or abilities to further personal goals.  
+- **Web of alliances** — An intricate and manipulative network of partnerships used to control or influence larger political or social outcomes.  
+- **Winter of patience** — A period of waiting or careful preparation before striking in the alliance strategy context.

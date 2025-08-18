@@ -1,0 +1,24 @@
+- **Accuracy** — The quality of being correct or precise, especially important in judging information in war.  
+- **Authority** — The power or right to give orders, make decisions, and enforce obedience, often challenged during warfare.  
+- **Courage** — The mental or moral strength to face danger, fear, or difficulty with resolve.  
+- **Decision** — A conclusion or resolution reached after consideration, critical in determining war efforts.  
+- **Effort** — The physical or mental energy exerted to achieve a particular purpose.  
+- **Endurance** — The ability to withstand hardship or adversity over time.  
+- **Exertion** — The act of applying physical or mental effort.  
+- **Failure** — Lack of success in achieving a goal, often resulting from misjudgments or impressions.  
+- **Impressions** — Immediate perceptions or feelings that can influence decisions, often misleading in war.  
+- **Information** — Data or intelligence that can be true, false, or misleading, affecting wartime decisions.  
+- **Moral Strength** — Inner fortitude or resolve that supports perseverance against adversity.  
+- **Negligence** — Failure to take proper care in doing something, leading to mistakes in war.  
+- **Patience** — The capacity to accept or tolerate delay or trouble without getting angry or upset.  
+- **Perseverance** — Steadfastness in doing something despite difficulty or delay in achieving success.  
+- **Plan** — A detailed proposal for achieving an objective, often tested by reality in war.  
+- **Precipitation** — Acting hastily or without careful consideration, often causing errors.  
+- **Privations** — Hardships or sufferings resulting from the absence of basic comforts or necessities.  
+- **Serenity** — The state of being calm, peaceful, and untroubled, especially in planning or observation.  
+- **Stability** — The quality of being steady and unchanging, crucial for leadership in war.  
+- **Strength of Will** — The mental determination needed to persist through challenges.  
+- **Tact** — Skill in handling difficult situations or people without offending or upsetting them.  
+- **War** — Armed conflict characterized by unpredictability, misinformation, and constant challenges.  
+- **Whirlpool of Impressions** — A metaphor for the confusing mix of true and false information and emotions affecting commanders.  
+- **Willpower** — The control exerted to do something or restrain impulses, essential for perseverance.

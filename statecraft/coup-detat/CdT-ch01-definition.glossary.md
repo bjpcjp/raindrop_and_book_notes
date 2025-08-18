@@ -1,0 +1,8 @@
+- **Civil War** — Warfare between elements of the armed forces and/or population within a state, often denied by involved parties and sometimes described as foreign aggression or other conflicts.
+- **Coup d’État** — The infiltration of a small but critical segment of the state apparatus used to displace the government from its control over the remainder; a politically neutral seizure of power without mass participation or widespread warfare.
+- **Liberation** — The overthrow of a government by foreign military or diplomatic intervention, often seen by supporters as freeing the state from undesirable rule.
+- **Palace Revolution** — An illegal seizure of power involving insiders manipulating or replacing the ruler, conducted from within the government or ruling family.
+- **Pronunciamiento** — A ritualized Spanish and South American military takeover led by the army as a whole aiming to ascertain or protect the "national will," often conservative, sometimes liberal, and similar to some African coups.
+- **Putsch** — A coup attempt by a formal armed forces body under appointed leadership, often wartime or postwar, distinct from coups involving civilians or factions.
+- **Revolution** — A movement initiated by uncoordinated popular masses aiming to change social and political structures and leadership, typically leftist in orientation.
+- **War of National Liberation / Insurgency** — Armed internal conflict aiming to establish a rival political or ethnic state structure, often ethnically based and not aimed at seizing power within the existing state.

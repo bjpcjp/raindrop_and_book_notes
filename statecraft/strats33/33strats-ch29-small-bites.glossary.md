@@ -1,0 +1,25 @@
+- **BBC Radio** — British broadcasting service used by de Gaulle to communicate with French loyalists.  
+- **Chien/Development (Gradual Progress)** — I Ching hexagram symbolizing slow, steady growth through step-by-step development.  
+- **Committee** — Governing body formed by de Gaulle for postwar Free France, ultimately controlled solely by him.  
+- **De Gaulle, Charles** — French general who used piecemeal strategy to regain France’s honor and power during WWII.  
+- **Fait accompli strategy** — Taking small, irreversible actions quickly without warning to achieve a larger goal unnoticed.  
+- **Fighting France** — Military force formed by de Gaulle to lead the liberation of France from German occupation.  
+- **French Resistance** — Underground movement against German occupation, eventually unified under de Gaulle’s control.  
+- **Free France** — Political and military organization led by de Gaulle operating outside German-occupied France.  
+- **General Henri Giraud** — French general chosen by Allies as an alternative to de Gaulle, eventually sidelined.  
+- **Jean Moulin** — Official selected by de Gaulle to unify the French Resistance under a coherent structure.  
+- **Mediation (Self-defense claim)** — Tactical pretense used to justify aggressive actions as necessary defensive measures.  
+- **Piecemeal conquest** — Strategy of slowly acquiring territory or power in small increments to avoid resistance.  
+- **Political conservatism** — Human tendency to avoid conflict and resist change, key to success of fait accompli.  
+- **Power grab** — An overt attempt to seize control rapidly, often provoking strong opposition.  
+- **Resistance movement** — Collective opposition against an occupying force, particularly during WWII France.  
+- **Short attention spans** — Human trait leveraged by fait accompli strategy to disguise larger ambitions.  
+- **Small bites** — Incremental acquisitions or actions taken that individually attract little resistance.  
+- **Status quo** — Existing state of affairs, which fait accompli strategy uses to make new acquisitions seem normal.  
+- **Strategic patience** — Deliberate slow and steady approach to expanding power to avoid provoking opponents.  
+- **Sun (I Ching trigram)** — Symbolizes penetration and external progress in gradual development.  
+- **Taking territory** — Physically or politically acquiring control over land or authority in incremental steps.  
+- **Underdog appearance** — Tactical facade of limited ambition or power to reduce perceived threat and opposition.  
+- **Vichy government** — French regime collaborating with Germans during WWII, opposed by de Gaulle’s Free France.  
+- **Winston Churchill** — British Prime Minister during WWII, initially cautious about supporting de Gaulle.  
+- **World War II (WWII)** — Global conflict context for de Gaulle’s rise using fait accompli and piecemeal conquest.

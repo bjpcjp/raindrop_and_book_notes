@@ -1,0 +1,26 @@
+- **Art of Ultimate Control** — mastering the influence over others’ moods, tempo, and stakes to shape any conflict or relationship dynamic in your favor.  
+- **Assume Passive Control** — making opponents believe they are in charge, reducing their resistance and lowering their guard.  
+- **Battle of Wills** — the ongoing struggle between parties to define who holds control in an interaction or conflict.  
+- **Baiting** — provoking an opponent to react rashly or make mistakes by manipulating their emotions or expectations.  
+- **Control** — the ability to influence or determine the nature, pace, and direction of a relationship or conflict.  
+- **Control the Dynamic** — shaping the overall environment and conditions of conflict so that opponents act within your desired frame.  
+- **Ceding Power** — willingly giving control to others, which paradoxically can be a subtle form of authority or strategic positioning.  
+- **Emotional Influence** — manipulating opponents’ emotions to create fear, panic, aggression, or frustration, leading to missteps.  
+- **Forcing Strategies** — aggressive or insidious tactics that compel others to act according to your plan.  
+- **Helplessness** — a psychological state avoided by most people, where one lacks power or influence, often driving the struggle for control.  
+- **Initiative** — the first move or aggressive action that seizes control of the unfolding situation or conflict.  
+- **Manipulative Passive Control** — subtle, unconscious, or disguised forms of control used by individuals through behaviors like withdrawal, anxiety, or victimhood.  
+- **Maneuvering** — the strategic act of guiding opponents’ actions and framing the conflict on your terms.  
+- **Mental Control** — dominating an opponent’s mindset, leading to predictable emotional reactions and mistakes.  
+- **Movement of Tempo** — controlling the pace of the conflict or interaction to unsettle opponents and keep them reactive.  
+- **Passive Authority** — influence gained by allowing others to believe they have control while covertly directing outcomes yourself.  
+- **Pressing Down the Pillow** — a martial strategy principle that forbids allowing an opponent to take the initiative, emphasizing constant control.  
+- **Reversal** — a situation where attempts to appear non-controlling actually constitute a form of control.  
+- **Shift the Battlefield** — changing the context, location, timing, or terms of conflict to one’s advantage and to opponents’ disadvantage.  
+- **Stalemate** — a deadlock or impasse where both sides lack progress, requiring creative disruption to regain control.  
+- **Subtle Control** — indirect influence that may appear innocent or unconscious but effectively governs outcomes.  
+- **Tempo** — the rhythm or speed at which a conflict or interaction unfolds, critical for control.  
+- **Terrain** — the physical or metaphorical environment in which a conflict takes place, including time, place, issues, and participants.  
+- **Utilization Technique** — a method of employing an opponent’s passive resistance or manipulations as tools for influencing or controlling them.  
+- **Will to Power** — the natural human drive to gain control and avoid feelings of helplessness.  
+- **Wrest Control** — taking back or asserting dominance over the direction and framing of a conflict or relationship.

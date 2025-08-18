@@ -1,0 +1,32 @@
+- **Activity** — Energetic movement or action by the Commander necessary to attempt surprise.  
+- **Adversary** — The opposing party in a conflict or war.  
+- **Art of War** — The discipline encompassing strategy, tactics, and principles of conducting war.  
+- **Assailant** — The attacking force or party in a military engagement.  
+- **Attack** — A deliberate military action intended to surprise or overwhelm the enemy.  
+- **Battle** — A large-scale engagement between opposing military forces.  
+- **Campaign** — A series of military operations aimed at achieving a particular objective.  
+- **Confusion** — A state of disorder and lack of coordination in the enemy’s forces caused by surprise.  
+- **Defensive** — Conducting military operations aimed at resisting an attack or holding position.  
+- **Distribution of forces** — The arrangement or deployment of troops to gain tactical or strategic advantage.  
+- **Energy** — The Commander’s vigor and determination necessary for effective operations and surprise.  
+- **Execution** — The act of carrying out plans or orders, where surprises can often fail due to friction.  
+- **Friction** — The natural resistance and difficulties experienced in executing military operations.  
+- **Government** — The authority directing war efforts, whose decisiveness affects the possibility of surprise.  
+- **Individuality of leaders** — The distinct personal actions of commanders, often revealed or magnified in surprise.  
+- **Laudon** — A general mentioned as example in historical military surprises.  
+- **March** — The movement of troops from one location to another, which can be used to attempt surprise.  
+- **Moral effect** — The psychological impact of surprise on enemy morale and cohesion.  
+- **Numerical superiority** — Having greater numbers relative to the enemy at decisive points in combat.  
+- **Policy** — The highest level of war planning and decision-making, where surprise is more difficult to achieve.  
+- **Preponderance** — Superiority in numbers or force concentration at a critical point.  
+- **Principle (of Surprise)** — The fundamental idea that surprise supports achieving superiority and demoralizing the enemy.  
+- **Rapid resolution** — Quick decision-making critical in exploiting opportunities for surprise.  
+- **Rapid march** — Fast troop movement intended to gain advantage or achieve surprise.  
+- **Secrecy** — Concealment of plans and movements, vital for achieving surprise.  
+- **Strategy** — The overall plan and conduct of war, where surprise is harder but still possible.  
+- **Surprise** — A sudden and unexpected action aiming to disorient and defeat the adversary.  
+- **Tactical defense** — Defensive operations focusing on smaller-scale engagements where surprise is key.  
+- **Tactics** — The art of deploying and maneuvering troops on the battlefield, where surprise is more feasible.  
+- **Theatre of war** — The geographic area where military operations take place.  
+- **Unity** — Cohesion and coordinated effort in command that surprise tends to disrupt.  
+- **Wrong measure** — A faulty or inappropriate action leading to failure rather than successful surprise.

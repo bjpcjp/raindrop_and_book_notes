@@ -1,0 +1,1 @@
+Effective strategy lies in identifying and attacking an enemy's center of gravity—the critical source of their power and support—rather than engaging directly with their apparent strength. By undermining these foundational pillars, such as resources, alliances, or leadership, a superior strategist can cause the opponent’s entire structure to collapse.

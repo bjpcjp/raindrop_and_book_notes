@@ -1,0 +1,23 @@
+- **Ch'i** — A Chinese concept of vital energy or life force present in all living things, which can be concentrated or dissipated within groups, affecting morale and spirit.  
+- **Collective spirit** — The shared emotional and motivational energy within a group that drives unity and common purpose.  
+- **Cohesive group** — A united and bonded group where members identify with each other and work together towards a shared goal.  
+- **Group conscience** — A mutual awareness among group members of acceptable and unacceptable behavior, leading to self-regulation within the group.  
+- **Group dynamic** — The interactions and psychological forces influencing the behavior and motivation of people within a group.  
+- **Group myth** — The shared stories, traditions, victories, and symbols that build pride and identity among a group’s members.  
+- **Harshness** — Strictness or severity in leadership, often through high standards or rare punishments, used to motivate without destroying morale.  
+- **Leadership by example** — The practice of leaders showing commitment and sacrifice alongside their followers to inspire and motivate them.  
+- **Man management** — The skill of motivating, uniting, and controlling people in an organization or army, including maintaining morale and discipline.  
+- **Material needs** — Basic physical requirements such as food, comfort, and pay, fundamental for maintaining motivation and loyalty.  
+- **Mercenary** — A soldier or follower driven primarily by pay or personal gain rather than commitment to a cause.  
+- **Morale** — The emotional and mental condition of a group that influences its willingness and ability to perform.  
+- **Motivation** — The internal or external factors that stimulate people to act towards a goal or cause.  
+- **Mutiny** — A rebellion or refusal to obey orders, often fueled by poor morale or discontent.  
+- **Personal sacrifice** — The leader’s willingness to endure danger or hardship along with followers to strengthen loyalty and motivation.  
+- **Punishment** — Disciplinary measures taken to correct or deter undesirable behavior, used sparingly and meaningfully in effective leadership.  
+- **Rallying cause** — A compelling, progressive idea or enemy that unites a group and gives members a sense of purpose beyond themselves.  
+- **Reward** — Positive recognition or compensation given rarely and with significance to maintain motivation and appreciation.  
+- **Selfishness** — The natural human tendency to prioritize personal interest over group interest, which leaders must manage or redirect.  
+- **Spirit of energy** — The vitality and enthusiasm within a group, crucial for overcoming difficulties and achieving success.  
+- **Suspense (in leadership)** — The deliberate withholding of frequent praise or punishment to keep followers striving and motivated.  
+- **Unity of will** — The alignment of intentions and goals among group members that ensures effective cooperation and victory.  
+- **Work ethic** — A collective attitude emphasizing hard work, discipline, and persistence as foundational to achieving success.

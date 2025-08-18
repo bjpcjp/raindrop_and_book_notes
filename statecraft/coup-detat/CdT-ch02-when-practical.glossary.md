@@ -1,0 +1,29 @@
+- **Algerian War** — The conflict between France and Algerian independence fighters that deeply destabilized France’s Fourth Republic in the 1950s.  
+- **American-style president** — A president with wide executive powers, as opposed to parliamentary systems where executive power is more limited.  
+- **ASU (Arab Socialist Union)** — A nominal ruling party in Egypt that acted as a rubber stamp for dictator Gamal Abdel Nasser in the 1960s.  
+- **Buddhist orders (Hinayana and Mahayana)** — Buddhist sects whose political alignments influenced US policy decisions during the Vietnam coup era.  
+- **Coup d’état** — A sudden seizure of political power, usually by a small group, often bypassing legal or constitutional procedures.  
+- **Democrazia Cristiana (DC)** — Italy’s dominant centrist political party from 1948 to 1994, characterized by frequent coalition governments and corruption.  
+- **Fifth Republic (France)** — The French political regime established in 1958 under Charles de Gaulle, with a strong presidency and revised constitution.  
+- **Fourth Republic (France)** — The French government system from 1946 to 1958, marked by political instability and frequent changes of government.  
+- **Industrial megacorporation** — Large, dominant business enterprises that can wield significant economic and political power within a country.  
+- **Legitimacy (political)** — The recognized right and acceptance of a government or regime to exercise authority.  
+- **Local government (representative)** — Democratically elected administrative units below the national level, generally absent in economically backward countries.  
+- **Military advisers** — Foreign military personnel assigned to assist and influence domestic armed forces, affecting a country’s political independence.  
+- **Multiparty system** — A political system where multiple political parties have the capacity to gain control of government offices, often causing instability.  
+- **National Assembly (Egypt)** — Egypt’s legislative body during Nasser’s era, often acting as a rubber stamp for executive decisions.  
+- **Organic unity (state)** — The political cohesion and centralized control within a state, necessary for a coup to succeed by seizing the main power center.  
+- **Political center** — The main decision-making hub of a state where political power is concentrated and can be seized in a coup.  
+- **Political participation** — The degree to which citizens are involved in political processes, from voting to active engagement in governance.  
+- **Political independence** — The sovereignty of a state’s internal political processes free from undue influence or control by foreign powers.  
+- **Political legitimacy principle** — The widely recognized concept that governmental power derives from lawful and accepted origins.  
+- **Political resistance to coup** — The active opposition by elites or the public to attempts of power seizure, often rooted in legitimacy or regional loyalty.  
+- **Regional entities** — Subnational groups or areas with distinct political power, sometimes autonomous or controlling the state center by proxy.  
+- **Sectional interests** — Powerful economic or social groups such as giant corporations or mining companies that influence or control political power.  
+- **Six-Day War (1967)** — The Arab-Israeli conflict resulting in a decisive defeat for Egypt and increased Soviet control over Egyptian military affairs.  
+- **South Kasai province (Congo)** — A region marked by competing political factions and limited control from the central Congolese government post-independence.  
+- **Traditional chiefs** — Local hereditary leaders who often play significant roles in governance within tribes or clans in less developed societies.  
+- **Union for the New Republic (UNR Party)** — Charles de Gaulle’s political party formed in 1958 that won a majority in France’s first elections under the Fifth Republic.  
+- **Underdeveloped economy** — Economies characterized by low industrialization, poverty, illiteracy, and limited political participation among the masses.  
+- **Vichy regime** — The authoritarian French government collaborating with Nazi Germany during World War II.  
+- **Xi Jinping** — Chinese Communist Party leader elevated in 2012 to a position of unprecedented power, tasked with addressing party corruption and ideology loss.

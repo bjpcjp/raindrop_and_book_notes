@@ -1,0 +1,19 @@
+- **Activity in War** — Movement within a resistant and unpredictable environment that complicates even the simplest actions.  
+- **Army** — The organized military force composed of individuals whose collective performance is affected by friction.  
+- **Chance** — The unpredictable elements and incidents in war that cannot be calculated or foreseen.  
+- **Discipline** — The binding force that unites soldiers into cohesive units but cannot eliminate all friction caused by individuals.  
+- **Experience in War** — Practical knowledge and judgment developed through exposure to real war conditions, essential for overcoming friction.  
+- **Friction** — The invisible, pervasive force in war caused by countless small difficulties and chance events that hinder operations and make execution difficult.  
+- **General** — The military leader whose strong will, experience, and judgment are crucial to overcoming friction and managing war effectively.  
+- **Iron Will** — A powerful, determined spirit capable of overcoming the accumulated difficulties and obstacles caused by friction.  
+- **Judgment** — The ability to assess situations correctly and make suitable decisions amid the unpredictable conditions of war.  
+- **Machine (Military machine)** — The army and all its components viewed as a system that appears simple but is complex due to individual parts causing friction.  
+- **Mediocrity (Line of)** — The minimal standard of effective performance in war, difficult to maintain due to friction.  
+- **Petty Circumstances** — The numerous small and often overlooked factors that create friction and complicate war efforts.  
+- **Precision in Results** — The unrealistic expectation of exact outcomes in war, often thwarted by friction and chance.  
+- **Resistance** — The opposing forces and adverse conditions in war that impede movement and action.  
+- **Tact** — The practiced and instinctive skill of adapting actions and decisions to fit the specific circumstances and challenges encountered in war.  
+- **Theory (Military theory)** — Abstract, often dry teachings about war that fail to account for friction and the realities of actual combat.  
+- **Tiredness (Bodily exertions)** — The physical strain of war on soldiers, contributing to delays and disorder and increasing friction.  
+- **War on paper** — Theoretical and simplistic representations of war that do not capture the complexities and frictions of actual combat.  
+- **Weather** — An element of chance that affects visibility, timing, mobility, and effectiveness of military operations.

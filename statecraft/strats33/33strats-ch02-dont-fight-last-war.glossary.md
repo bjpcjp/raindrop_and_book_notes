@@ -1,0 +1,32 @@
+- **Battle of Jena** — The 1806 battle where Napoleon defeated the Prussian army, highlighting the failure of outdated military tactics.
+- **Baiken** — An undefeated samurai who fought with a sickle and chained steel ball, ultimately defeated by Musashi.
+- **Briefing** — A strategy session where the Prussian generals debated tactics before going to war.
+- **Carl von Clausewitz** — Prussian military theorist who emphasized adaptability and the unpredictable "friction" of war.
+- **Creative strategist** — A military leader or thinker who adapts flexibly to changing circumstances rather than relying on fixed rules.
+- **Defeat into Victory** — Concept that generals must learn from failure but quickly discard regrets to command effectively again.
+- **Erwin Rommel** — German field marshal in North Africa who noted American troops adapted better to desert warfare than British troops.
+- **Friction** — Clausewitz’s term for the unpredictable difference between plans and reality in battle.
+- **Fujiwara** — (implied reference) A historical family or traditional system, contrasted with flexible fighting methods.
+- **Fable of the Bat and the House-Ferrets** — Aesop’s tale illustrating the survival value of adaptability and changing tactics.
+- **Guerrilla warfare** — A mobile, unpredictable combat strategy that avoids fixed defense lines and static tactics.
+- **Hohenlohe, Friedrich Ludwig** — Prussian general whose adherence to old methods contributed to defeat by Napoleon.
+- **I Ching** — Ancient Chinese text emphasizing adaptability and following the ever-changing present while maintaining an inner directive.
+- **Jomini, Baron Antoine-Henri de** — Military theorist criticized for rigidly applying formulas to Napoleon’s otherwise bold and flexible tactics.
+- **Last war** — The tendency to repeat past tactics or strategies, often leading to failure in new situations.
+- **Matashichiro** — Samurai challenger defeated by Musashi, representing predictable, rigid combat.
+- **Mental fluidity** — The ability to keep the mind flexible, open, and responsive to present circumstances.
+- **Miyamoto Musashi** — Legendary Japanese swordsman who won duels by tailoring strategy to the moment and opponent.
+- **Napoleon Bonaparte** — French general and emperor noted for rapid, flexible, and opportunistic warfare.
+- **Oblique order** — A Frederick the Great tactic used rigidly by Prussian generals, proving ineffective against Napoleon.
+- **Present moment** — The immediate reality in which one must act creatively, unburdened by past patterns.
+- **Reexamine beliefs** — Strategy to discard rigid principles and be open to new circumstances.
+- **Reverse course** — Deliberately acting contrary to expectations or habitual patterns to disrupt opponents and refresh thinking.
+- **Spirit of the times** — Understanding and adapting to ongoing cultural, technological, or social trends to stay relevant in strategy.
+- **Static mind** — A mind stuck in old ideas, past experiences, or habitual thinking that impedes effective action.
+- **Strategy** — The art of adapting resources and actions to shifting circumstances rather than following fixed rules.
+- **Sun Tzu** — Ancient Chinese military strategist emphasizing that each victory must respond to unique and changing circumstances.
+- **Ted Williams** — Baseball player who exemplified the principle of forgetting past successes or failures to remain focused on the present.
+- **Takuan** — Japanese philosopher advocating a mind empty of attachments, like a gourd floating and shifting freely.
+- **The Book of Five Rings** — Musashi’s treatise on strategy focusing on adaptability and continual mental renewal.
+- **The last war** — A metaphor for clinging to obsolete strategies and mental habits, leading to failure in present conflicts.
+- **Vo Nguyen Giap** — North Vietnamese general who treated every victory as if it were a failure to avoid complacency and ensure adaptability.

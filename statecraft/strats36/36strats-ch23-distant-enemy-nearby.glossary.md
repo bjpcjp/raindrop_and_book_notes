@@ -1,0 +1,31 @@
+- **Advisor** — A trusted counselor who provides strategic or tactical advice to a ruler or leader.  
+- **Army** — An organized military force prepared for war.  
+- **Bandits** — Criminal groups that terrorize and pillage rural areas, often disrupting order.  
+- **Barons** — Noble vassals who hold land and owe allegiance to a higher lord or king.  
+- **Border** — The dividing line between two territories or states.  
+- **Capital** — The city or town that serves as the seat of government of a state.  
+- **City** — An urban area controlled or governed by a state or ruler.  
+- **Corrupt government** — A governing body involved in dishonest or fraudulent activities.  
+- **Enemy** — A person, group, or state that opposes or attacks another.  
+- **Envoy** — A messenger or representative sent on a diplomatic mission.  
+- **Forces** — Military troops or armed groups engaged in conflict or defense.  
+- **Governor/Official** — An appointed or elected leader responsible for administration in a specific region.  
+- **Hostile forces** — Military groups acting aggressively against another state or entity.  
+- **Inimical** — Acting in opposition; hostile or antagonistic.  
+- **King** — The male sovereign ruler of a state or territory.  
+- **Land annexation** — The act of acquiring territory by extending sovereignty.  
+- **Loyalty** — Faithfulness or allegiance to a sovereign, ruler, or cause.  
+- **Military siege** — The act of surrounding and attacking a fortified place to compel surrender.  
+- **Neighboring states** — Countries or territories that share a common boundary.  
+- **Pardon** — Official forgiveness for past offenses.  
+- **Prime minister** — The chief minister in charge of government affairs, advising the king or ruler.  
+- **Province** — A territorial subdivision governed as part of a country.  
+- **Recruits** — New members enlisted into an army or organization.  
+- **Robber bands** — Groups engaged in organized theft and violence in the countryside.  
+- **Siege** — A military blockade of a city or fortress to force it to surrender.  
+- **State** — A politically organized territory with a centralized government.  
+- **Strategic alliance** — Partnership formed between distant enemies to target a common nearby adversary.  
+- **Troops** — Soldiers or armed forces sent into action.  
+- **Vassals** — Individuals who owe allegiance and service to a superior lord or monarch.  
+- **Weapons** — Tools or instruments used in combat or defense.  
+- **Warlord** — A military leader exercising civil power in a region during times of conflict.

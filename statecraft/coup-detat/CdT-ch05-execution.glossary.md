@@ -1,0 +1,24 @@
+- **A-Targets** — Heavily protected facilities such as presidential palaces, central police stations, and army headquarters that require sophisticated teams to seize using infiltration, diversion, or assault.  
+- **B-Targets** — Technical facilities like telecommunications centers and radio/television stations that are usually lightly guarded and are targeted for neutralization or minor sabotage by small teams.  
+- **C-Targets** — Key individuals targeted for arrest to prevent their use of command authority or charisma against the coup; require small, often covert teams.  
+- **Blocking positions** — Defensive roadblocks or perimeter controls established to isolate loyalist forces, consisting of symbolic first lines and stronger secondary defensive lines to deter or delay loyalist movements.  
+- **Coup d’état** — A sudden, decisive, and often military seizure of state power by striking at the organizational heart of the state with total commitment and speed.  
+- **Hard-core loyalist forces** — Military or security units loyal to the existing regime that have not been infiltrated and must be isolated and neutralized during the coup to prevent intervention.  
+- **Infiltration** — The covert penetration of armed forces, police, or security apparatus to subvert or neutralize their effectiveness in opposing a coup.  
+- **Lead time** — The necessary time allotted to each team to reach their specific target by the designated zero hour of the coup.  
+- **Legitimacy** — The perception or acceptance of lawful authority of the new regime; often addressed post-coup through political, symbolic, or diplomatic means despite the inherent illegality of coups.  
+- **Neutralization** — Actions taken to render part of the regime’s defenses or political forces ineffective or cooperative with the coup without direct combat.  
+- **Noise** — False, obsolete, irrelevant, or misleading information that obscures true intelligence signals and hampers security agencies' analysis.  
+- **Operational sequence** — The planned order and timing by which coup teams and actions proceed to maximize surprise and effectiveness.  
+- **Political accommodation** — The practice of offering policies or assurances to specific groups to secure their support or neutrality after a coup.  
+- **Post-coup stabilization** — Measures undertaken immediately after a coup to maintain control, prevent internal usurpation, stabilize bureaucracy, and gain public acceptance.  
+- **Premature recognition** — Foreign acknowledgment of a new regime before the old regime has fully lost control, sometimes considered an act of aggression in international law.  
+- **Promise of promotion** — A psychological tactic used to maintain cohesion among coup participants by offering career advancement prospects to prevent internal dissent.  
+- **Radio/television seizure** — Capturing mass media outlets to control information flow and broadcast the coup’s messages, essential for shaping public perception.  
+- **Security agencies** — State institutions responsible for surveillance and counterintelligence that pose a threat to coup planners by attempting to detect and forestall the coup.  
+- **Simultaneous penetration** — Coordinated timing of coup teams’ entry into a designated area to overwhelm and confuse loyalist early warning systems.  
+- **Strategic offensive** — The broad goal of changing political power, even while tactically holding defensive positions such as blocking loyalist forces.  
+- **Tactical defensive** — The use of defensive positioning and delaying tactics during the coup’s active phase to neutralize loyalist forces without initiating combat.  
+- **Total commitment** — The principle that all available forces must be used decisively in the single brief active phase of the coup, with no reserves held back.  
+- **Use of force** — The controlled and minimal application of armed force during a coup, emphasizing rapid seizure, avoidance of unnecessary combat, and psychological advantage.  
+- **Zero hour** — The precise moment when the active phase of the coup commences and teams begin their operations to seize targets.

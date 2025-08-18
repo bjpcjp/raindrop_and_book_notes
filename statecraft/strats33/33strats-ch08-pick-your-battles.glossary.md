@@ -1,0 +1,30 @@
+- **Armada** — A large fleet of warships, notably used to describe the Spanish fleet sent to invade England in 1588.  
+- **Battle of Asculum** — A key battle in 279 B.C. where Pyrrhus won a costly victory against Rome, leading to the term "Pyrrhic victory."  
+- **Battle of Heraclea** — The 280 B.C. battle in which Pyrrhus first defeated the Roman legions using war elephants.  
+- **Deception** — A military tactic involving misinformation, intelligence gathering, and propaganda to confuse or mislead the enemy.  
+- **Economy (Perfect Economy)** — The strategic use of minimal but effective expenditure of resources and effort to achieve maximum results in warfare.  
+- **Elephants** — War animals used by Pyrrhus to intimidate and disrupt Roman forces during battle.  
+- **English Navy** — England's small, agile naval force that played a crucial role in defeating the Spanish Armada.  
+- **Espionage (Spy Network)** — The gathering and use of intelligence on enemy movements and plans, notably developed by Queen Elizabeth I.  
+- **Guerrilla Tactics** — Hit-and-run, mobile warfare used by smaller forces to negate an enemy’s superior technology or numbers.  
+- **Hannibal** — A historic military strategist known for adapting his ends to his means, emphasizing resource-based strategy.  
+- **Hit-and-Run Tactics** — Guerrilla-like maneuvers designed to make the opponent waste resources and energy chasing or responding.  
+- **Italian Banker Loans** — Financial support system critical to Spain’s war effort, disrupted by English attacks on treasure ships.  
+- **King Pyrrhus of Epirus** — Greek warrior king who fought Rome but suffered costly victories that depleted his forces.  
+- **Limitations** — Natural or imposed constraints on energy, resources, and abilities that shape strategy and outcomes.  
+- **Lord Howard of Effingham** — Commander of the English fleet during the Spanish Armada campaign.  
+- **Military Dictatorship** — Pyrrhus's method of consolidating power in Tarentum to quickly raise and train an army.  
+- **Operation Desert Storm** — 1991 U.S. military campaign showcasing a combination of advanced technology and inventive tactics.  
+- **Perfect Economy of Motion** — The concept of expending the least effort to achieve the most effective results, inspired by natural efficiency.  
+- **Philip II of Spain** — King determined to restore Catholicism and invade England, responsible for the Spanish Armada.  
+- **Pyrrhic Victory** — A costly victory in which the toll on the victor is so severe it is tantamount to defeat.  
+- **Queen Elizabeth I** — English monarch who rebuilt England's power through trade, economy, and strategic naval and intelligence efforts.  
+- **Roman Legions** — Disciplined military units of Rome that proved resilient despite losses to Pyrrhus.  
+- **Spanish Treasure Ships** — Vessels carrying gold and silver from the New World, targeted by Sir Francis Drake to weaken Spain financially.  
+- **Sparta** — Greek city whose culture influenced Tarentum and indirectly brought Pyrrhus into the Italian conflict.  
+- **Spy Network** — An elaborate system of intelligence agents used by Elizabethan England to monitor Spanish plans.  
+- **Tarentum** — Wealthy Italian city that called on Pyrrhus for military aid against Rome but tricked him with no standing army.  
+- **Trade and Economic Stability** — The foundation of England’s strength under Elizabeth I, emphasizing resources over direct military confrontation.  
+- **War Elephant** — A powerful and intimidating weapon of war used effectively by Pyrrhus against the Romans.  
+- **Warriors** — Individuals who embrace limits and leverage their strengths carefully to outlast opponents.  
+- **Weaknesses** — Vulnerabilities in an enemy’s resources, morale, or strategy that can be exploited for advantage.

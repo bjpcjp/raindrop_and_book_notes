@@ -1,0 +1,19 @@
+- **Ability** — The skill or competence required to plan and execute military operations effectively.  
+- **Ancillary object** — A secondary objective in combat that serves to individualize a battle but is less important than the primary object of destroying the enemy's forces.  
+- **Art of arranging battles** — The strategic method of sequencing and positioning battles to achieve overall military success.  
+- **Combat** — The direct fighting between armed forces with the aim of destruction or conquest of the enemy.  
+- **Counter-stroke** — A responsive attack by the enemy intended to disrupt or frustrate a prepared military plan.  
+- **Destruction (of the enemy’s force)** — The killing, wounding, or otherwise rendering the enemy unable to continue fighting.  
+- **Direct destruction** — Tactical results involving immediate damage to enemy forces on the battlefield.  
+- **Energy (in military conduct)** — The vigor and decisiveness in conducting operations, essential for success and glory in war.  
+- **Enemy** — The opposing armed force engaged in combat against one's own military forces.  
+- **Great tactical results** — Significant battlefield successes that can lead to substantial strategic advantages.  
+- **Military force** — The organized armed personnel of a State used for fighting in war.  
+- **Political object** — The ultimate goal or purpose of a war, often beyond mere military victory.  
+- **Simple attack** — A straightforward, easily executed military action emphasizing speed over complexity.  
+- **Special object (of combat)** — A specific aim of an individual battle that contributes to the larger strategic objective.  
+- **Strategic act** — A military operation aimed at achieving broader war objectives, composed of multiple combats.  
+- **Strategy** — The planning and directing of large-scale military operations and campaigns.  
+- **Tactical success** — Immediate battlefield victory or accomplishment that directly affects the wider strategy.  
+- **Tactical results** — Outcomes achieved at the battlefield level, including the destruction or disruption of enemy forces.  
+- **Will (of the enemy)** — The determination or capacity of the enemy to continue fighting and resist defeat.

@@ -1,0 +1,20 @@
+- **Character** — Tenacity of conviction resulting in firmness in opinions and decisions, reflecting mental stability and constancy.  
+- **Coup d’oeil** — The rapid discovery of a truth or correct judgment under conditions of uncertainty, especially in battle.  
+- **Energy** — The strength of the motive that excites action, often fueled by impulses such as the thirst for honor or renown.  
+- **Firmness** — Resistance of the will against a single, powerful impression or blow.  
+- **Force of Character** — A quality denoting consistent and deeply rooted conviction, essential for stability in decision-making.  
+- **Indifference to Danger** — A form of courage stemming from physical constitution, contempt of death, or habit, considered a permanent condition.  
+- **Intellect** — The capacity for understanding and reasoning, essential for navigating uncertainty and complexity in war.  
+- **Military Genius** — An harmonious association of mental and soul powers directed towards war, involving several qualities combined rather than a single trait.  
+- **Moral Courage** — Courage in the face of responsibility or judgment, distinct from courage against physical danger.  
+- **Orisinn (Sense of Locality)** — The natural mental ability to form a vivid, geometrical idea of terrain and to orient oneself accurately within it.  
+- **Physical Courage** — Courage in presence of bodily danger, including indifference to danger and courage inspired by motives like patriotism.  
+- **Presence of Mind** — The readiness and rapidity of mental action when confronted with unexpected situations or sudden danger.  
+- **Resolution** — The mental habit of decisiveness, overcoming doubt and hesitation especially in difficult or uncertain situations.  
+- **Self-Command** — The power to control oneself and maintain reason and judgment in the midst of intense emotional excitement.  
+- **Sense of Dignity** — A deeply seated desire to act as a rational and understanding being, supporting self-command and equilibrium.  
+- **Staunchness** — The sustained resistance of the will over a prolonged series of challenges, supported by systematic deliberation.  
+- **Strength of Mind (or Soul)** — The ability to maintain serenity and clear judgment amidst powerful emotions and extreme conditions.  
+- **Thirst for Honour and Renown** — A noble and constant feeling that motivates leaders to exert extraordinary effort in war.  
+- **Uncertainty** — The inherent unpredictability in war, requiring penetrating intellect and judgment to manage.  
+- **Will** — The faculty of volition that, when combined with courage and understanding, results in energy, firmness, and resolution in command.

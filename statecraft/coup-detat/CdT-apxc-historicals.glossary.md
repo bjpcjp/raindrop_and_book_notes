@@ -1,0 +1,27 @@
+- **Air force faction** — A group within the air force involved in coup attempts.  
+- **Army faction** — Military groups or units primarily responsible for leading or attempting coups.  
+- **Army and political faction** — Combined military and political groups involved in coup activities.  
+- **Army and tribal faction** — Military groups allied with tribal factions involved in coups.  
+- **Army and rebel faction** — Armed forces collaborating with rebel groups in coup attempts.  
+- **Army and police faction** — Collaboration between the army and police forces in coups.  
+- **Civilian faction** — Non-military, civilian groups involved in coup activities.  
+- **Foreign mercenaries** — Hired soldiers from outside a country participating in coups.  
+- **Foreign-supported faction** — Groups aided by external powers to carry out coup attempts.  
+- **Judge/judicial faction** — Legal or judiciary members participating in coups.  
+- **Left-wing army faction** — Military groups with leftist political ideologies engaged in coups.  
+- **Left-wing political faction** — Political groups with leftist ideologies involved in coups.  
+- **Militant faction** — Armed and often non-state groups participating in coups.  
+- **Naval faction** — Units of the navy involved in coup d’états.  
+- **Opposition faction** — Groups opposing the current regime involved in coup attempts.  
+- **Political faction** — Political groups (non-military) leading or supporting coups.  
+- **Political party faction** — Subsections of political parties engaging in coup actions.  
+- **Prince/king/royal faction** — Members of royal or monarchical families involved in coups.  
+- **President** — Head of state who can lead or be involved in coup events.  
+- **Prime minister** — Head of government involved in or targeted by coups.  
+- **Rebel faction** — Insurgent or non-state armed groups attempting to overthrow governments.  
+- **Ruling Military Council** — The existing military government or leadership during coup activities.  
+- **Tribal faction** — Ethnic or tribal groups engaged in or supporting coups.  
+- **Troop mutiny** — Spontaneous rebellion or disobedience by soldiers against their own command.  
+- **Unsuccessful (failed) coup** — A coup attempt that does not succeed in overthrowing the regime.  
+- **Successful coup** — A coup attempt that successfully overthrows or replaces existing government authority.  
+- **Western-backed/foreign-led faction** — Groups supported or led by foreign governments in coups.

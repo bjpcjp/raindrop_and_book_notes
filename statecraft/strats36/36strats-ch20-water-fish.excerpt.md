@@ -1,0 +1,1 @@
+The strategy "Trouble the Water to Catch the Fish" involves creating confusion and distraction to psychologically wear down the enemy, making them vulnerable to a decisive attack. Historical examples from ancient China demonstrate how unusual and unexpected tactics can disrupt enemy perception, leading to strategic victories.

@@ -1,0 +1,1 @@
+Sacrificing lesser interests or individuals can secure greater long-term goals, as demonstrated by historical examples where short-term losses or scapegoats enabled overall victory or loyalty. The strategy warns against clinging to everything simultaneously, advocating instead for strategic sacrifices to preserve and strengthen more important objectives.

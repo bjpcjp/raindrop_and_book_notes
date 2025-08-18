@@ -1,0 +1,26 @@
+- **Balancing reports** — The process by which conflicting reports are scrutinized to reveal a probable truth.  
+- **Chief** — The commanding officer who must remain firm and rely on his convictions despite misleading information.  
+- **Chasm between conception and execution** — The gap between initial plans made with limited information and the reality encountered during implementation in war.  
+- **Doubt** — The uncertainty experienced by commanders when their expectations differ from sensory impressions on the battlefield.  
+- **False information** — Reports or data that are untrue, including lies, exaggerations, and errors.  
+- **Firm reliance on self** — Trusting one's own judgment and plans despite contradictory evidence or pressure.  
+- **Good judgment** — The ability to discriminate between truths and falsehoods in information, based on experience and knowledge.  
+- **Information** — All knowledge about the enemy and their country that forms the foundation for ideas and actions in war.  
+- **Inexperienced officers** — Commanders more vulnerable to accepting false information due to lack of experience and judgment.  
+- **Law of probability** — Using likelihood and probability as guiding principles to evaluate uncertain or contradictory reports.  
+- **Magnification of bad news** — The human tendency to exaggerate negative reports and lend them more credence than positive ones.  
+- **Methodical reflection** — Deliberate and systematic thinking used to form ideas and plans beyond initial sensory impressions.  
+- **Misperception** — The distortion of reality in the heat of war caused by sensory impressions overpowering rational thought.  
+- **Nature of information** — Its inherent unreliability, changeability, and the difficulty of trusting it fully.  
+- **Necessity of skepticism** — The advice that information should be viewed with suspicion due to its frequent inaccuracy.  
+- **Probable truth** — The most likely interpretation of conflicting or doubtful information after careful scrutiny.  
+- **Reports** — Pieces of communicated information, often contradictory, doubtful, or false, that influence decisions in war.  
+- **Timidity of men** — A factor that amplifies untruths by spreading fear and uncertainty.  
+- **Trustworthiness** — The reliability or credibility of information, which is often lacking in war.  
+- **Undecided troops/officers** — Those who doubt their plans or are swayed by others' suggestions due to changing battlefield realities.  
+- **Uncertain information** — Data or reports whose accuracy or truthfulness is doubtful.  
+- **Urgent haste** — The pressure that forces commanders to make decisions quickly, sometimes based on false information.  
+- **War edifice** — The metaphorical structure of war plans and actions, built on uncertain and often unreliable information.  
+- **Weight of sensory impression** — The strong influence of immediate perception on judgment, often outweighing rational analysis.  
+- **Wishful inclination from fear to hope** — A deliberate mental adjustment commanders may make to maintain balance by favoring hopeful outlooks over fearful ones.  
+- **Writers of systems and compendiums** — Authors who give generic advice about suspicion in warfare information without deeper insight.

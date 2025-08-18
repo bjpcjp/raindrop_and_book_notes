@@ -1,0 +1,29 @@
+- **Abwehr** — The secret intelligence and counter-espionage service of the German General Staff during WWII, led by Wilhelm Canaris.  
+- **Andre Breton** — Leader of the Paris avant-garde surrealist movement in the late 1920s and early 1930s.  
+- **Battering rams** — Siege engines used in old-fashioned warfare to breach fortress walls.  
+- **Benjamin Franklin** — Quoted as saying, "Three may keep a secret if two of them are dead," illustrating the difficulty of keeping conspiracies.  
+- **Black Orchestra (Schwarze Kapelle)** — A secret group organized by Canaris aiming to assassinate Adolf Hitler.  
+- **Citadel** — The massive fort in Hue, Vietnam, taken by the North Vietnamese during the Tet Offensive using inner-front strategy.  
+- **Confederates** — Allies or sympathizers inside an enemy’s ranks who assist in undermining it from within.  
+- **Dai** — A religious missionary or trusted agent, as Husayn Qai-ni for Hasan, used to win converts and influence.  
+- **Deep infiltration** — Strategy of penetrating enemy ranks to gather intelligence and cause internal disruption.  
+- **Epeius** — Builder of the Trojan wooden horse used to infiltrate Troy.  
+- **Inner front** — The vulnerable, internal part of a fortress, group, or organization targeted for subversion or attack.  
+- **Ismailism** — A branch of Shiite Islam practiced by Hasan, who took over the castle of Alamut.  
+- **Lines of circumvallation and contravallation** — Siege tactics involving encircling a fortress to cut off supplies and escape routes.  
+- **Lotus strategy ("Blooming lotus")** — Asian military tactic focusing attacks on the center or vulnerable core from within, rather than on the enemy’s exterior defenses.  
+- **Luis Bunuel** — Spanish surrealist filmmaker who directed *Un Chien Andalou*, associated with Salvador Dali and Breton.  
+- **Marshal Pietro Badoglio** — Former Italian General Staff chief whose arrest triggered German intelligence concern over Italy’s loyalty.  
+- **Operation Sealion** — Nazi Germany’s planned but never executed invasion of England in WWII.  
+- **Paranoiac-critical method** — Salvador Dali's artistic approach involving detailed interpretation of dream images.  
+- **Priam** — King of Troy who authorized bringing the wooden horse inside the city walls.  
+- **Salvador Dali** — Influential surrealist artist who infiltrated and later divided the Paris surrealist movement for personal gain.  
+- **Seljuk empire** — Medieval Muslim empire opposed by Hasan and the Nizari Ismailis.  
+- **Six Secret Teachings** — Ancient Chinese military text advocating treachery and deception by seeming to obey while secretly opposing.  
+- **Sullen conspiracies** — Covert plots among disgruntled insiders, vulnerable due to large number of participants and human nature risks.  
+- **Sun-tzu** — Ancient Chinese military strategist who advised subduing enemies without direct battle, emphasizing internal weakening.  
+- **Surrealism** — Avant-garde cultural movement founded by Breton aiming to unlock the unconscious mind through art and literature.  
+- **Tet Offensive** — 1968 surprise attack by North Vietnamese forces, utilizing infiltration and internal sabotage to capture Hue’s Citadel.  
+- **Trojan Horse** — A deceptive wooden horse used by Greeks to infiltrate Troy, representing the ultimate inner-front strategy.  
+- **Tunnel warfare** — Digging beneath walls or fortifications to undermine defenses from within.  
+- **Wilhelm Canaris** — German Rear Admiral and chief of the Abwehr who secretly worked to undermine Hitler’s regime from within.

@@ -1,0 +1,21 @@
+- **Absolute defence** — Defence of a place with the aim of never giving it up.  
+- **Alarms** — Actions intended to wear out the enemy indirectly by causing him to expend resources or effort.  
+- **Battle** — A large combat where the destruction of the enemy’s force predominates as the main objective.  
+- **Combat** — A mutual engagement between forces; can have various objectives such as destruction, possession, or deception.  
+- **Conquest** — The act of taking possession of a place or object.  
+- **Defence of a place** — Combat aimed at holding a specific location against the enemy.  
+- **Defence of an object** — Combat aimed at protecting a specific target other than a place.  
+- **Destruction of enemy’s forces** — The principal object in most combats, aiming to weaken or annihilate opposing military power.  
+- **Demonstrations** — Military actions intended to deceive or prevent the enemy from moving freely, indirectly achieving strategic aims.  
+- **False conclusion** — The misleading impression an enemy is led to draw as the real objective of a combat, used in reconnaissance or demonstrations.  
+- **Fractioning of forces** — Dividing military forces, which leads to multiplying combats.  
+- **Indiscriminate combat** — Engagements seen as necessary losses or minor encounters, not driven by major strategic objectives.  
+- **Offensive combat** — Engagements initiated with aims such as destroying enemy forces, conquering places, or seizing objects.  
+- **Objectives of combat** — The underlying reasons for engaging in combat: destruction, possession, or deception.  
+- **Post defence (advanced posts and rear guards)** — Temporary defence actions aimed at holding positions only for a limited time.  
+- **Recognition (Reconnaissance)** — Engagements intended to provoke the enemy to reveal their position or strength.  
+- **Relative defence** — Defence conducted when holding a position temporarily, often to delay the enemy or protect retreating forces.  
+- **Shavings (losses)** — Minor casualties or damages in small battles considered as inevitable and incidental to greater engagements.  
+- **Strategic situation** — The overall military context in which the frequency and nature of combats take place.  
+- **Tactics** — The art of arranging forces and making dispositions based on the immediate objects of combat.  
+- **War** — A process of mutual destruction between opposing forces.

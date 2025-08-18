@@ -1,0 +1,25 @@
+- **Boldness** — A noble military virtue representing courage and resolution that propels action beyond calculated reasoning; essential for success in war and manifests as a creative power when overcoming hesitation.
+- **Caution** — Prudence and foresight that stand opposed to boldness; generally stronger in higher ranks but often mingled with timidity in most people.
+- **Decision** — The ability to choose and commit to an action under pressure and uncertainty, relying heavily on boldness at the highest command levels.
+- **Disobedience** — The rejection or contempt of orders from superior authority; considered a dangerous evil in war, worse than misguided boldness.
+- **Effeminacy of feeling** — A propensity toward comfort and softness in a people, seen as a cause of degeneracy and weakness in a nation rising in prosperity.
+- **Foresight** — The cautious and reflective anticipation of outcomes; often opposed to boldness and more prevalent as command rank rises.
+- **Force (mass)** — Collective power of large groups, restrained and guided by military order and hierarchy, in which boldness acts like a latent spring.
+- **General** — A high-ranking military officer whose boldness must be tempered with reflection and responsibility toward preserving others and the whole.
+- **Genius** — Exceptional military talent combining quick judgment and boldness to adhere to higher strategic calculations.
+- **Hesitation** — A state of doubt or indecision that inherently weakens the opposing force when encountered by boldness.
+- **Honor** — (Implied) The noble quality underlying boldness and courage in military conduct.
+- **Intelligence (in war)** — The reflective and discerning capacity that guides boldness, especially in higher command, ensuring it is purposeful rather than reckless.
+- **Judgment (tact of)** — Rapid, insightful evaluation used by generals to apply boldness within the limitations of probability and necessity.
+- **Military service regulations** — Rules and norms serving as second nature to masses, limiting the need for individual boldness at lower levels.
+- **Necessity** — The compelling force arising from immediate or distant dangers or needs, which can motivate bold action or simply resolute behavior.
+- **Obedience** — The foundational principle in war, maintaining order and discipline by requiring submission to superior orders above all else.
+- **Prudence** — Careful and cautious conduct, often equated with timidity when excessive, and standing in contrast to boldness.
+- **Rank** — The hierarchical position within the army, where higher rank demands more reflection and less impulsive boldness.
+- **Resolution** — Firmness of purpose driven by necessity or danger; distinguished from boldness by being motivated more by external pressure than internal impulse.
+- **Spirit of boldness** — The prevailing attitude of courage and daring within an army or nation, either innate or cultivated through successful warfare.
+- **Strategy** — The high-command art of planning and directing overall war efforts, generally the province of generals who combine boldness with intelligence.
+- **Tact** — The ability to apply boldness with precision and appropriate timing for optimal effect.
+- **Timidity** — Fear or excessive caution that limits boldness and reduces effectiveness in both individuals and masses.
+- **War** — The natural domain of boldness, where this virtue is most necessary and justifiable, as it creates opportunity beyond pure calculation.
+- **Weakness** — Lack of boldness or resolve, often leading to hesitation and disadvantage in military engagements.

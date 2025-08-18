@@ -1,0 +1,27 @@
+- **Acquiescence** — The act of accepting or submitting quietly, often used to maintain appearances in political or social struggles.  
+- **Alienation** — The process by which a person becomes isolated from others, often as a result of defensive or insecure behavior.  
+- **Ambition** — A strong desire for personal advancement or success, often driving rivalry and scheming in internal conflicts.  
+- **Apparent Superiority** — The social facade or mask people present to hide insecurity or weakness, which can be subtly challenged to provoke overreaction.  
+- **Blame** — Assigning responsibility for failure or mistakes, often avoided by using indirect tactics so rivals take the fall themselves.  
+- **Covert Action** — Secret or hidden maneuvers employed to undermine opponents without direct confrontation.  
+- **Defensive Behavior** — Actions driven by insecurity or fear that push others away and reveal vulnerability.  
+- **Disguise** — The use of civility, charm, or diplomacy to mask true intentions in internal competition.  
+- **Doubt** — A state of uncertainty instilled in rivals to destabilize their confidence and provoke errors.  
+- **Emotional Overreaction** — Exaggerated response to subtle provocations revealing weaknesses and causing self-sabotage.  
+- **Facade** — The outward appearance of politeness or cooperation that conceals underlying hostility or manipulation.  
+- **Gamesmanship** — The art of psychological maneuvering to gain advantage by unsettling or confusing opponents subtly.  
+- **Insecurity** — A feeling of uncertainty or inferiority that can be exploited to create defensive and self-destructive behavior.  
+- **Internal Warfare** — The unconventional, covert conflict among supposed colleagues and allies vying for position and advantage.  
+- **One-Down** — The psychological state of feeling inferior or subordinate in a relationship or social interaction.  
+- **One-Up** — The position of advantage or superiority gained by subtle and indirect manipulation of rivals.  
+- **One-Upmanship** — The strategic art of making rivals feel inferior or uncertain, provoking mistakes without direct confrontation.  
+- **Overreaction** — The disproportionate response to a minor or subtle provocation, leading to a rival’s downfall.  
+- **Parody** — A subtle imitation used to mock and undermine an opponent by exposing flaws without direct attack.  
+- **Political Position** — The social or organizational rank and power an individual seeks to maintain or improve.  
+- **Psychological Maneuvering** — Tactics aimed at influencing an opponent’s mental state rather than direct physical or verbal attack.  
+- **Revenge** — The indirect, delayed act of retaliation designed to humiliate and undermine rivals without immediate confrontation.  
+- **Self-Destruction** — The failure or downfall of a rival caused by their own flaws and reactions to subtle provocations.  
+- **Social Mask** — The persona adopted to hide vulnerabilities and present confidence, which can be tactically disrupted.  
+- **Subtle Challenge** — An indirect provocation designed to unsettle rivals without obvious confrontation.  
+- **Vulnerability** — Exposure to psychological attack through underlying insecurities or weakness.  
+- **Weaponizing Insecurity** — Using a rival's fears and doubts as tools to provoke defensive errors and missteps.

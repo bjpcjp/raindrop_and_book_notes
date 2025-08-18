@@ -1,0 +1,58 @@
+```markdown
+# Table of Contents
+
+- Acheson, Dean, 59  
+- Adalet ve Kalkınma Partisi (AKP) party, xxvii, 153  
+- Afghanistan  
+  - US road building payments, 41  
+- Africa  
+  - Colonial powers, ethnographic theories of, 83  
+  - Groups that influence political policies, 121  
+- Africa, sub-Saharan  
+  - Transition from colonial rule, problems of, xxii–xxv  
+  - Postcolonial misgovernment, xxv–xxvi  
+  - Emergent democracies, xxvi–xxvii  
+  - Political forces in, 121  
+- Aguiyi-Ironsi, Johnson Thomas Umunnakwe, 49  
+- al-Assad  
+  - Bashar, xix, 127  
+  - Hafez, 15, 66, 127  
+- Alawites (See Syria)  
+- Al-Azhar University (Egypt), 150  
+- al-Banna, Hasan, 163  
+- al-Din, Shah Mozaffar, 42  
+- al Qaeda, 151  
+- al-Sīsī, Abdul-Fattāḥ Sa’īd Ḥusayn Khalīl, 71  
+- al-Za‘im, Husni, 40  
+- Amin, Idi, xxvi  
+- Anti-coup provisions  
+  - Separation of military and security forces, xvi–xviii, 4  
+  - Internal espionage, xix  
+- Arab-Israeli War  
+  - Organization of forces, 71  
+- Arab Socialist Ba‘ath Party, xx, 15  
+- Arafat, Yasser, xx–xxi  
+- Aref, Abd-el-Rahman, 85, 88–89  
+- Armed forces  
+  - Communication among services discouraged, xvii–xviii  
+  - Distinct uniforms of military and security, xvii  
+  - Officer corps and pronunciamiento, 9  
+  - Internal security forces in Muslim countries, 58  
+  - Control of civilian population, 65  
+  - Modern military effectiveness, 65, 67–68  
+  - Senior officers, effectiveness of, 77  
+- Armed forces, infiltration strategy, 96–97  
+- Armed forces, loyalty factor and, xvii, 65–66  
+- Armed forces, level of command and decision making, 69–71  
+- Armed forces, character of units, 78–80, 89–90  
+- Armed forces, regional differences, 89–90  
+- Armed forces, recruitment of key individuals, 74–78  
+  - Possible informants, 78–80, 91  
+  - Disgruntled officers, 85–87  
+  - Family ties, 87–89  
+  - Danger in finding first recruit, 91–92, 188  
+  - Slogans and early information, 92–93  
+  - Actual role in coup, 94, 188  
+- Armed forces, response to events during coup, 175–176  
+- Ba‘ath party, 67, 84, 89, 151 (See also Arab Socialist Ba‘ath Party)  
+```

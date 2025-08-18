@@ -1,0 +1,25 @@
+- **Ambition** — A driving force that can lead nations to engage in wars beyond immediate necessity.  
+- **Army** — A large organized military force; can be increased suddenly by militia or national mobilization.  
+- **Campaign of 1812** — Russia's military resistance against Napoleon, illustrating that vast empires resist conquest and that defensive forces can later assume offensive power.  
+- **Defensive** — Military actions focused on protecting territory; can transition into offensive operations once the enemy's power is exhausted.  
+- **Diplomatists** — Officials engaged in negotiation and peace-making, historically influenced by losses of battles, capitals, and provinces.  
+- **Empire of great dimensions** — Large territorial states difficult to conquer completely due to their size and depth.  
+- **France (Buonaparte)** — Reference to Napoleon Bonaparte's revolutionary methods in warfare, overturning traditional strategies.  
+- **Heart (of a nation)** — Core territorial and emotional center of a country that embodies its strongest resistance in war.  
+- **Insurgent measures** — Forms of armed resistance by local populations or irregular forces, exemplified by the Spanish in their resistance.  
+- **Militia** — Civilian military forces called up for defense or supplemented standing armies, effective both domestically and abroad.  
+- **Modern War** — Warfare involving the entire national power, including political, military, and popular elements, distinct from previous classical forms.  
+- **Napoleon’s luck and boldness** — Traits that disrupted traditional military methods and strategies.  
+- **Nation** — A politically unified population whose collective strength, sentiment, and will impact military outcomes.  
+- **National power** — The full societal capacity, including military, economic, and moral resources, mobilized in total war.  
+- **Political strength** — The influence of a nation's government and population sentiment supporting war efforts.  
+- **Prussia (1813)** — Example of rapid military expansion using militia to multiply army size and capability.  
+- **Resistance (stubborn)** — The persistent opposition by a population or army, often influencing war outcomes beyond conventional measures.  
+- **Sea force** — Naval military power, previously used as an analogy for standing armies before modern changes.  
+- **Sentiments (of a nation)** — Public morale and patriotic feelings that significantly affect wartime resilience and mobilization.  
+- **Standing Armies** — Permanent professional military forces, traditionally the principal components of national defense prior to mass mobilization.  
+- **Strategic plans** — Military plans considering the character of modern war, including national mobilization and popular involvement.  
+- **Temporary peace** — Short-lived cessation of hostilities often accepted under traditional principles due to losses.  
+- **War (character of)** — The nature of warfare, which has evolved to integrate entire nations and mobilize all resources rather than merely professional armies.  
+- **War (modern)** — Conflict that employs the full weight of a nation’s resources, involving mass mobilization, insurrection, and total engagement.  
+- **Weakness (individual parts)** — The smaller, less effective segments of a nation or army that can be offset by a united national effort.

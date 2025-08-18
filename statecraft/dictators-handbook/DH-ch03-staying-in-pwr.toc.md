@@ -1,0 +1,45 @@
+```markdown
+# Table of Contents
+
+- Staying in Power
+  - Governance in Pursuit of Heads
+    - CEO Coalition Dynamics
+    - Carly Fiorina and Hewlett-Packard Case Study
+    - Board Composition and Political Maneuvering
+    - The Compaq Merger and Its Political Implications
+    - Board Compensation and Coalition Loyalty
+    - Fiorina’s Downfall and Succession at HP
+  - The Perils of Meritocracy
+    - Loyalty Over Competence
+    - Examples from Autocratic Regimes
+    - Saddam Hussein’s Consolidation of Power
+    - Use of Eunuchs and Loyal Incompetents
+  - Keep Essentials Off-Balance
+    - The Need for a Small, Replaceable Coalition
+    - Rigged Elections and Lenin’s Model
+    - Liberia’s Selectorate System
+    - Corporate Rigged Elections and Board Packing
+    - Gorbachev and Political Purges
+    - Historical Examples of Ruthless Purges
+  - Democrats Aren’t Angels
+    - Election Cheating and Manipulation
+    - Control of Voter Eligibility and Intimidation
+    - Encouraging Competition to Divide Opposition
+    - Tanzania’s CCM and Opposition Fragmentation
+    - Reserved Seats and Delegated Positions
+    - Electoral Mechanics and Vote Shares in Tanzania
+  - Bloc Voting
+    - Vote Delivery by Local Leaders
+    - Indian Political Patronage Systems
+    - Case Study: Bihar’s Party Switching Raja
+    - Effects of Bloc Voting on Democracy
+    - Vote Buying and Election Monitoring Challenges
+    - Carrots and Sticks in Vote Mobilization
+    - Parallels Between Public Companies and Bloc Voting
+    - Gerrymandering and Its Impact on Electoral Security
+  - Leader Survival
+    - Coalition Size and Political Longevity
+    - Survival Rates: Democrats vs. Autocrats
+    - Early Challenges for Autocratic Leaders
+    - Long-Term Survival and Coalition Management
+```

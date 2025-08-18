@@ -1,0 +1,42 @@
+```markdown
+# Table of Contents
+
+- Part V: Unconventional (Dirty) Warfare
+  - Introduction to Unconventional Warfare
+  - Weave a Seamless Blend of Fact and Fiction
+  - Misperception Strategies
+    - The False Mirror
+      - Hitler’s Directive 51 and Allied Deception
+      - Themistocles and the Salamis Channel Deception
+      - Hitler’s Commanders and the Atlantic Wall
+      - Allied Intelligence and the Creation of FUSAG
+      - The Role of Double Agents and False Reports
+      - Analysis of the Allied Deception Combining Fact and Fiction
+    - Keys to Warfare
+      - Ancient Strategies of Deception and Observation
+      - Military Deception as an Art of Managing Appearances
+      - Psychological Impact of Ambiguity and Deception
+      - Application of Deception Beyond the Battlefield
+    - Main Forms of Military Deception
+      - The False Front
+        - Historical Examples: Sun-tzu, Napoleon, Joshua
+        - Application in Daily Life and Politics
+      - The Decoy Attack
+        - Military Examples including "Man Who Never Was"
+        - Use in Social and Strategic Contexts
+      - Camouflage
+        - Examples from Pacific and Vietnam Wars
+        - Social Application of Blending into Environments
+      - The Hypnotic Pattern
+        - Machiavelli’s Theory and Examples from Arab-Israeli Wars
+      - Planted Information
+        - World War I Intelligence and Odysseus/Palamedes Myth
+        - Use of Double Agents and Believable Lies
+      - Shadows Within Shadows
+        - Dudley Clarke’s Deception Campaigns
+        - Creating Ambiguity Beyond Simple Lies
+    - Reversal
+      - Dangers of Being Caught in Deception
+      - Maintaining Control and Escape Strategies
+      - Using Honesty as a Higher Form of Deception
+```

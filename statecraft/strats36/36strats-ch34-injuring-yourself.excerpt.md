@@ -1,0 +1,1 @@
+The Strategy of Injuring Yourself involves feigning weakness or injury to lull the enemy into underestimating you, creating opportunities for ambush or escape. This tactic, exemplified in various historical instances such as Sun Ce’s battlefield deception and Huang Gai’s feigned punishment, exploits the opponent's lowered guard to achieve greater strategic advantage.

@@ -1,0 +1,21 @@
+- **Alliance** — A temporary partnership formed between parties for mutual benefit, often unstable and subject to change when one side no longer profits.  
+- **Bribe** — A gift or payment offered to influence the actions or decisions of another party, often to gain safe passage or cooperation.  
+- **Duke** — A noble ruler or leader of a state or territory, such as the dukes of Jin and Yu in the strategy.  
+- **Exchange the Role of Guest for That of Host** — A strategic tactic where an ally turns against their benefactor once the common enemy is defeated.  
+- **General Xun** — Military advisor who proposed using the territory of Yu for a surprise attack on Guo.  
+- **Gong Ziqi** — Minister who cautioned against allowing Jin passage through Yu, warning of the danger to Yu's and Guo’s survival.  
+- **Jade** — Valuable treasure used as a bribe to the duke of Yu in the Spring and Autumn example.  
+- **Jin** — A large and powerful state seeking to conquer the smaller neighboring states of Yu and Guo.  
+- **King Xiong of Qi** — A ruler suspicious of his general Tian Dan’s loyalty, illustrating political mistrust.  
+- **Mongols** — The Yuan Dynasty forces who allied with a Javanese rebel to conquer Java, later betrayed.  
+- **Prince (Rebel Javanese)** — Ally who aided the Mongols to defeat the local king, then turned against his former allies.  
+- **Safe Passage** — Permission granted by a state or ruler to allow troops or resources to move freely through territory.  
+- **Spring and Autumn Period** — An era in Chinese history during which the strategy of Borrowing the Road to Conquer Guo originated.  
+- **Strategy 24** — The Thirty-Six Strategies' titled tactic “Borrow The Road to Conquer Guo,” involving using an ally’s resources to defeat a common enemy.  
+- **Tian Dan** — Loyal general who served King Xiong of Qi faithfully, demonstrating virtue under suspicion.  
+- **Tribute** — Valuable gifts like jade and horses given to influence or persuade a ruler.  
+- **Treasure** — Valuable resources used as bribes or rewards; in the story, jade and horses were treasures passed between rulers.  
+- **Warring States Period** — A turbulent era in Chinese history reflecting political intrigue and mistrust, exemplified by King Xiong’s suspicion of Tian Dan.  
+- **Yu** — A smaller state bordering Guo and Jin, initially allied with Jin through bribery but later conquered.  
+- **Yu and Guo Relationship** — Described metaphorically as lips and teeth, emphasizing their mutual dependence and the danger of betraying one another.  
+- **Zhao Strategy** (Borrow The Road to Conquer Guo) — Using the resources or territory of an ally to attack a third party, then turning against the ally once the goal is achieved.

@@ -1,0 +1,27 @@
+- **Ambition** — A strong desire for success or achievement, particularly related to victory in war.  
+- **Battalion** — A large body of troops ready for battle (implied as part of the troops mentioned).  
+- **Brigadier** — A high-ranking military officer commanding a brigade; often cautious and strategic in dangerous situations.  
+- **Bullets** — Projectiles fired from guns, representing a tangible threat to soldiers in battle.  
+- **Cannon** — Large artillery weapons whose thunderous fire signals advancing danger on the battlefield.  
+- **Danger** — The risk of harm or death present in war, initially romanticized but harshly revealed in its reality.  
+- **Enthusiasm** — Excited eagerness or passion that can blind soldiers to the true peril of battle.  
+- **Fracture** — The breaks and interruptions in smooth operation or progress, here relating to war’s challenges (implicit in 'friction').  
+- **Grape** — A type of ammunition made of small metal balls, used in cannons and known for causing widespread damage.  
+- **Habit** — The development of familiarity through repeated exposure, which dulls the immediate shock of danger.  
+- **Infantry** — Foot soldiers who face the greatest exposure to enemy fire and bear the brunt of battlefield danger.  
+- **Instantaneous decisions** — Rapid judgments made under pressure, often difficult for novices amid battle chaos.  
+- **Musket balls** — Lead projectiles fired from muskets, producing sharp sounds as they pass near soldiers.  
+- **Natural bravery** — Inherent courage in facing danger without fear or hesitation.  
+- **Perception** — The awareness and understanding of danger and surroundings during combat, often distorted by emotion.  
+- **Pity** — Compassion felt for the wounded and fallen soldiers on the battlefield.  
+- **Plough the air** — The movement of cannonballs cutting through the air en route to their targets.  
+- **Pulse-beat** — The metaphorical measure of time or moment in battle, highlighting the episodic nature of danger.  
+- **Reason** — The mental faculty to think and make decisions, which is impaired by the stress of combat.  
+- **Seriousness of life** — The stark reality and gravity of mortal danger encountered in war.  
+- **Shell** — An explosive artillery projectile causing destruction and chaos among troops.  
+- **Soldier** — An individual participant in war, exposed to various degrees of danger and emotional challenges.  
+- **Stoical** — Exhibiting endurance and calmness in the face of pain or adversity.  
+- **Thunder of the cannon** — The loud noise signaling the ongoing threat of artillery fire.  
+- **Time** — The element that diminishes the initial intensity and romanticism of danger through experience.  
+- **Troops** — Groups of soldiers engaged in combat, often positioned at various levels of danger.  
+- **Young soldier** — A novice to war, initially inexperienced and overwhelmed by the realities of battle.

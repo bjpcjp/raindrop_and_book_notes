@@ -1,0 +1,1 @@
+Boldness is a vital and creative force in war, essential from the lowest ranks to the highest command, where it must be tempered by reflection and intelligence to avoid recklessness. It embodies the courage to act decisively amid uncertainty, and its cultivation—especially under bold generals—is crucial to maintaining a nation’s military strength and character.

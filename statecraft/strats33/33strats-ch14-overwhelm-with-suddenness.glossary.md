@@ -1,0 +1,33 @@
+- **Ambassador** — A diplomatic representative sent to negotiate or communicate between powers.  
+- **Arrows Dipped in Burning Tar** — A Mongol weapon creating smoke screens for tactical advantage.  
+- **Blitzkrieg** — A military strategy emphasizing overwhelming speed and suddenness to defeat an enemy before they can react.  
+- **Cavalry** — Military troops mounted on horseback.  
+- **Chen / The Arousing** — An I Ching hexagram symbolizing shock and sudden power, represented by thunder causing fear.  
+- **Chariots** — Vehicles used behind Mongol lines to rapidly supply troops in battle.  
+- **Coordination** — The organized and timely communication and action between parts of an army or group.  
+- **Emotional Reaction** — A weakened state of decision-making caused by surprise or panic.  
+- **Fergana Valley** — The location of an initial key battle between the Mongols and the shah's forces.  
+- **Flash Attack** — A swift and unexpected assault designed to disorient and overwhelm the enemy.  
+- **Fortress** — A fortified military stronghold, often targeted in swift attacks.  
+- **General Jebe** — Mongol commander known for conducting unexpected and rapid maneuvers.  
+- **General Jochi** — Mongol commander who raided key towns to harass enemy lines.  
+- **Genghis Khan** — The leader who transformed Mongol speed and mobility into disciplined, strategic warfare.  
+- **I Ching** — An ancient Chinese divination text containing hexagrams symbolizing strategies like shock and sudden action.  
+- **Internal Collapse** — The breakdown of an enemy due to dissension and panic following rapid attacks.  
+- **Jawad ad-Din** — Son of the shah who commanded forces against the Mongols.  
+- **Kizil Kum Desert** — A natural barrier thought impassable but circumvented by Mongols using a guide.  
+- **Lull** — A deliberate pause or slowdown to lower an enemy’s guard before a sudden strike.  
+- **Momentum** — The growing force and morale gained by continuous decisive action and speed.  
+- **Mobility** — The ability to move quickly and flexibly in warfare or competition.  
+- **Mongol Cavalry** — Horse-mounted Mongol troops using multiple horses for sustained speed and endurance.  
+- **Momentum Effect** — A psychological and practical increase in power and support caused by sustained swift action.  
+- **Napoleon Bonaparte** — Military leader noted for using speed and surprise to break enemy alliances and morale.  
+- **Psychological Warfare** — Tactics aimed at confusing, panicking, or demoralizing opponents.  
+- **Roosevelt, Franklin D.** — U.S. president whose strategic use of slow buildup followed by rapid action gained public and political support.  
+- **Samarkand** — Capital city of the shah’s empire, captured unexpectedly by the Mongols.  
+- **Slow-Slow-Quick-Quick** — An ancient Chinese military strategy involving preparation, lulling the enemy, and then attacking suddenly twice.  
+- **Speed** — The supreme consideration in war for gaining advantage before the enemy can react.  
+- **Surprise Attack** — An attack initiated unexpectedly to catch an opponent unprepared.  
+- **Supply Wagons** — Traditional military logistics vehicles; Mongols notably did not rely on them to maintain speed.  
+- **Velvet Line** — The defensive cordon established by the shah along the Syr Dar'ya River.  
+- **Xenophon** — Ancient Greek writer who observed the terror caused by unexpected events in war.

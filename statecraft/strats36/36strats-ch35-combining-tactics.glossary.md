@@ -1,0 +1,32 @@
+- **Art of War** — Ancient Chinese military treatise by Sun Zi emphasizing strategy and tactics.  
+- **Box canyon** — A valley with a narrow enclosed end, used strategically in battle to trap enemies.  
+- **Cattle with torches** — A tactic involving releasing enraged animals with flaming torches tied to their horns or tails to cause panic.  
+- **Chu** — An ancient Chinese state involved in conflicts described in the text.  
+- **Enraged animals** — Animals used in warfare by painting them and attaching weapons or torches to cause chaos among enemy troops.  
+- **Heir apparent** — The designated successor to a throne or leadership position, as referenced with Prince Hui.  
+- **Hostage** — A person held to ensure the compliance of another party, as with Qing Xiong at the court of Qi.  
+- **Jimo** — A city where Qi forces made their final stand against Yan forces.  
+- **Kurikara Pass** — A strategic mountain pass in Japan where the battle of Kurikara took place.  
+- **Land cession** — The act of giving up territory as a bargaining or political tactic.  
+- **Minamoto clan** — A Japanese clan that fought against the Taira in the battle of Kurikara.  
+- **Minister Shen Ci** — Counselor to the king of Chu who advised using multiple simultaneous strategies.  
+- **Multi-front attack** — A strategy involving simultaneous attacks from multiple directions or aspects.  
+- **Ploy** — A deceptive tactic intended to trap or mislead an opponent.  
+- **Prince Hui** — Successor to the king of Yan who was influenced by rumors affecting military leadership.  
+- **Qi** — An ancient Chinese state involved in territorial disputes and warfare.  
+- **Qing Xiong** — Heir of Chu who negotiated with Qi for his return from hostage status.  
+- **Relief force** — Reinforcements sent to aid a besieged or attacked army.  
+- **Samurai protocols** — Traditional rules of engagement and combat observed by Japanese warriors.  
+- **Simultaneous strategies** — Applying multiple tactics at once to increase chances of success.  
+- **Skirmish** — A brief and small-scale military conflict or engagement.  
+- **Tactics** — Specific actions or maneuvers used to achieve immediate battlefield objectives.  
+- **Terrain advantage** — Utilizing the natural features of the land for strategic benefit in warfare.  
+- **Thirty-Six Strategies** — A collection of ancient Chinese proverbs and tactics for strategy and warfare.  
+- **Tian Dan** — Qi general who orchestrated a victorious counterattack against Yan forces.  
+- **Torches tied to horns/tails** — Part of a psychological warfare tactic using animals to create confusion.  
+- **Trickery** — The use of deception, misinformation, or feints in strategy and battle.  
+- **Warring States Period** — Era in ancient China marked by continuous warfare among rival states.  
+- **Yagyu Munenori** — Japanese strategist quoted about the use of artful appearance and intention in warfare.  
+- **Yan** — An ancient Chinese state involved in warfare against Qi.  
+- **Yoshinaka** — Minamoto general who implemented combined tactics in the battle of Kurikara.  
+- **Zhou Dynasty / Warring States Period** — Historical timeframe relevant to the documented strategies.

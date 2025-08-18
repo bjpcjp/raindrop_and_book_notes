@@ -1,0 +1,1 @@
+The strategy "Hide Your Dagger Behind a Smile" advocates disguising hostile intentions with kindness and loyalty to gain an enemy's trust before striking unexpectedly. Historical examples illustrate how deceit and charm were used to manipulate opponents and secure power through covert betrayal.

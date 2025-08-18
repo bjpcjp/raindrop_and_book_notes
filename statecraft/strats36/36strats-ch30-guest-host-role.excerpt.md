@@ -1,0 +1,1 @@
+The strategy of "Exchange The Role Of Guest For That Of Host" involves infiltrating the enemy's camp under the guise of cooperation or surrender to uncover weaknesses and strike at their source. Historical examples from Chinese and Japanese history illustrate how assuming a subordinate role can enable one to undermine and subvert a stronger adversary’s power.

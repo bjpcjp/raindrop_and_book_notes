@@ -1,0 +1,1 @@
+The strategy emphasizes luring the enemy into terrain that disadvantages them while benefiting your own forces, then cutting off their escape routes to force a vulnerable confrontation. Historical examples demonstrate using deception and terrain manipulation to trap and defeat larger or well-fortified armies by controlling their lines of communication and retreat.

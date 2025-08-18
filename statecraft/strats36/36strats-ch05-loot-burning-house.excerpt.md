@@ -1,0 +1,1 @@
+When a country is weakened by internal strife, corruption, and disasters, it becomes vulnerable to external attack, as demonstrated historically when rulers exploited such conditions to conquer rival states. The decline of civilizations is often marked by starvation, disease, and war, with instability inviting opportunistic enemies to seize power.

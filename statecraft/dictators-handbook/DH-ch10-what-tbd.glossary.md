@@ -1,0 +1,12 @@
+- **Akhi Reed Amar** — Author of *America’s Constitution: A Biography* (2006), a detailed examination of the U.S. Constitution’s history and impact.  
+- **Brand Keys, Sports Loyalty Index** — A ranking measuring fan loyalty to sports teams, referenced for evaluating NFL fan support.  
+- **Congressional Research Service** — A U.S. government agency providing policy and legal analysis to Congress, cited here for cost estimates on global war operations.  
+- **Iraq, Afghanistan, and Other Global War on Terror Operations** — Military engagements since 9/11, with documented financial costs analyzed by Amy Belasco in 2010.  
+- **Initial Institutions** — Foundational political and economic structures influencing long-term development, as discussed by Jeffrey L. Jensen.  
+- **NFL Fan Support Ranking** — A ranking system evaluating the level of fan support for NFL teams, used as a measure of sports loyalty.  
+- **NPR** — National Public Radio, referenced for reporting on the use of cell phones as debit cards in Haiti.  
+- **Robert Romano** — Author of a critical legal analysis on corporate governance and the Sarbanes-Oxley Act published in the Yale Law Journal.  
+- **Sarbanes-Oxley Act** — A U.S. federal law enacted to improve corporate governance and accountability, subject to critique by Robert Romano.  
+- **Sports Illustrated** — A sports magazine cited for commentary on NFL-related topics and fan engagement.  
+- **Team Executive Committee** — A leadership group responsible for team management, mentioned with reference to the Green Bay Packers.  
+- **Working Paper** — An academic or research paper shared prior to formal publication, exemplified by Jeffrey L. Jensen’s work on institutions.

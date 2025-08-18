@@ -1,0 +1,27 @@
+- **Angles** — Geometric points of intersection in tactics and fortifications, crucial for determining lines of attack and defense.  
+- **Attack** — The act of engaging or assaulting enemy forces, often influenced by geometric positioning.  
+- **Combations** — Tactical or strategic maneuvers aimed at gaining advantage; those based on geometry cause greater enemy disquietude.  
+- **Disquietude** — The anxiety or concern caused in the enemy by geometrical threat of encirclement or attack.  
+- **Direction** — The arrangement or orientation of troops that follows geometric principles in tactics and fortification.  
+- **Disposition** — The formation or positioning of military forces, heavily influenced by geometry in both tactics and strategy.  
+- **Field Fortification** — Temporary or movable defensive works where geometry profoundly governs layout and defense.  
+- **Flank** — The side of a military formation, which if attacked, poses serious tactical risk; geometric positioning aims to protect or exploit it.  
+- **Form** — The shape or pattern in which troops or fortifications are arranged, central to both tactics and strategy but more dominant in tactics.  
+- **Geometry** — The mathematical study of shapes and spatial relations used as a foundational principle in fortifications, tactics, and to a lesser degree in strategy.  
+- **Individual traits** — Human factors such as morale and leadership that influence tactics beyond purely geometric considerations.  
+- **Lines** — Straight or curved paths forming the basis of formations and fortifications, essential in the application of geometrical principles.  
+- **Magnitude** — The size or scale of victorious engagements, more decisive in strategy than geometric form.  
+- **Moral forces** — Psychological and emotional factors affecting troops, which reduce the supremacy of geometry in tactics compared to fortification.  
+- **Position** — The occupied ground by troops or fortifications, whose geometric qualities are decisive in tactical engagements.  
+- **Retreat** — The act of withdrawing from combat, whose feasibility can be limited by enemy geometrical positioning.  
+- **Scope** — The range or extent to which geometrical elements influence tactics or strategy; larger in tactics, smaller in strategy.  
+- **Space** — The physical area in which military forces operate; it shrinks to a minimum in tactics, limiting movement and increasing geometric control.  
+- **Strategic movement** — Large-scale troop maneuvers aimed at gaining advantage over time and space, less dependent on instant geometric dispositions.  
+- **Strategy** — The overall planning and conduct of war, where geometry plays a minor role compared to the number and impact of battles.  
+- **Tactics** — The art of moving and deploying troops in combat, highly reliant on geometric principles for positioning and encirclement.  
+- **Theory of positions** — The study and application of the geometry of occupied ground in battle, crucial for both defense and attack planning.  
+- **Time** — The temporal dimension in warfare; minimized in tactics (leading to urgent decisions) and extended in strategy (allowing slower, larger maneuvers).  
+- **Troops** — Military units whose disposition in formation is influenced by the geometrical element in tactics and strategy.  
+- **Victory/Victorious combats** — Successful engagements, whose number and scale determine strategic success more than geometric arrangement.  
+- **War of sieges** — A form of warfare where geometric elements attain supreme importance, especially in fortification and positional battles.  
+- **Warfare** — The overall conduct of armed conflict, consisting of strategy, tactics, and fortifications where geometry plays varying roles.

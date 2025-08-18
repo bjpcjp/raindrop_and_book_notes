@@ -1,0 +1,21 @@
+- **Attack Wei to Rescue Zhao** — A strategic maneuver where attacking a vulnerable area forces the enemy to retreat from their offensive to defend their own territory.  
+- **Chen Dynasty** — The ruling dynasty during the Spring and Autumn Period in China involved in the campaign against Song.  
+- **Chu** — A state in ancient China that revolted against Qin and was involved in military conflicts led by generals Song Yi and Xiang Yu.  
+- **Duke of Chen** — The leader who invaded Song and later annexed the kingdom of Tai by seizing an unexpected opportunity.  
+- **Duke of Song** — The ruler who defended against Chen’s invasion and attempted to seize Tai’s territory but retreated when Chen’s army returned.  
+- **Fireboats** — Boats set on fire and used as a weapon to exploit wind and chaos in naval warfare, as used by General Chu during the Battle of Poyang Lake.  
+- **General Chang Han** — The Qin general tasked with suppressing a rebellion and laying siege to the city of Chulu.  
+- **General Chen** — Commander during the Yuan dynasty who was defeated at Poyang Lake due to a fireboat attack, leading to his death.  
+- **General Chu Yuanchang (Zhu Yuanzhang)** — The general who capitalized on favorable conditions to defeat General Chen and later founded the Ming dynasty.  
+- **General Song Yi** — The commander who delayed action against Qin and was executed by Xiang Yu for alleged treason.  
+- **King of Tai** — The ruler of a small neutral kingdom who was captured and his territory annexed by the Duke of Chen.  
+- **Kingdom of Tai** — A small state that remained neutral during the Chen-Song conflict and was later taken over through a surprise action.  
+- **Ming Dynasty** — The dynasty founded by General Chu Yuanchang after defeating Yuan forces.  
+- **Qin Dynasty** — The dynasty marked by harsh rule and military campaigns to suppress revolts, notably against Chu and Zhao.  
+- **Seize the Opportunity to Lead a Sheep Away** — Strategy advising flexibility and readiness to exploit unexpected opportunities to gain advantages without direct confrontation.  
+- **Song (State)** — A state attacked by Chen and defended by its duke, involved in strategic retreats and opportunistic sieges.  
+- **Spring and Autumn Period** — An era in ancient China characterized by frequent wars and shifting alliances, providing the historical context for many strategies.  
+- **Strategy and Tactics** — The principles of planning and executing military operations, requiring adaptability to changing circumstances.  
+- **Thirty-Six Strategies** — A classic collection of ancient Chinese strategies including “Seize the Opportunity to Lead a Sheep Away.”  
+- **Xiang Yu** — A prominent general who executed Song Yi, became Supreme General, and won multiple victories before ultimately losing to the Han dynasty founder.  
+- **Yellow River** — A major river in northern China, strategically significant in military campaigns described in the text.

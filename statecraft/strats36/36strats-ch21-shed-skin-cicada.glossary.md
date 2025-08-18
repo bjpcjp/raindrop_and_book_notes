@@ -1,0 +1,29 @@
+- **Bukkoku Kokushi** — Japanese Zen Buddhist monk; author of *The Unfettered Mind*.
+- **Cao Cao** — Warlord of Wei during the Three Kingdoms Period in China.
+- **Changpan Bridge** — Strategic bridge over the Wei River during the Three Kingdoms Period.
+- **Chu** — Kingdom and enemy faction of Han during the Han Dynasty in China.
+- **Emperor Go Oaigo** — Japanese emperor who rebelled against the Hojo Shogunate in 1331.
+- **Golden Cicada** — Symbolic reference to shedding one’s skin to create an illusion for escape.
+- **Han Dynasty** — Chinese dynasty founded by Gaozu in 202 B.C., lasting several centuries.
+- **Gaozu** — King and founder of the Han Dynasty in China.
+- **Henan** — Province contested during the Six Dynasties Period in China.
+- **Hojo Regency** — Japanese ruling clan controlling puppet emperors during the early 14th century.
+- **Imperial Regalia** — Sacred Japanese treasures (mirror, sword, jewels) symbolizing the right to rule.
+- **Jiangling** — Location where Liu Bei and Zhang Fei regrouped after an escape.
+- **Ji Xin** — Commander who impersonated King Gaozu to enable escape during the Han Dynasty siege.
+- **Kusunoki Masashige** — Loyal Japanese commander renowned for strategy and loyalty to Emperor Go Oaigo.
+- **Liu Bei** — Shu leader during the Three Kingdoms Period, sworn brother of Zhang Fei.
+- **Palisade** — Defensive wooden fence or fortification used in warfare.
+- **Peach Grove Oath** — Brotherhood oath sworn by Liu Bei, Zhang Fei, and others, common in Chinese secret societies.
+- **Qiào (Tuō Qiào)** — Strategy meaning "shed your skin," creating a deceptive illusion to escape.
+- **Shu** — Kingdom led by Liu Bei and Zhang Fei during the Three Kingdoms Period in China.
+- **Song Emperor Wendi** — Emperor during the Six Dynasties Period who launched campaigns against Wei.
+- **Strategy 21** — The Thirty-Six Strategy titled "Shed Your Skin Like The Golden Cicada," involving deception for escape.
+- **Tao Cu** — General of Song who used deception to successfully retreat from Wei forces.
+- **Thirty-Six Strategies** — Ancient Chinese collection of tactics and strategies for warfare and politics.
+- **Warlord** — Military leader exercising civil power by force, e.g., Xiang Yu and Cao Cao.
+- **Wei Kingdom** — Rival kingdom of Song and Shu during various Chinese dynasties.
+- **Xiang Yu** — Warlord of Chu and enemy of Han’s Gaozu during the late Qin and early Han period.
+- **Yellow River** — Major river in China, site of Xiang Yu’s final retreat and death.
+- **Zhang Fei** — Shu general and sworn brother of Liu Bei, known for bravery during retreat at Changpan Bridge.
+- **Zhongyang** — City fortified by Gaozu during siege by Xiang Yu in the Han Dynasty.

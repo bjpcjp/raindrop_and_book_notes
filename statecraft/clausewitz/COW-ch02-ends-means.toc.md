@@ -1,0 +1,52 @@
+```markdown
+# Table of Contents
+
+- II. End and Means in War  
+  - Nature and Variability of War’s Object  
+  - The Political Object and Purity of War  
+  - Three General Objects  
+    - Military Power  
+    - The Country  
+    - The Will of the Enemy  
+  - Order of Attaining Objects  
+  - Disarming the Enemy: Theory and Practice  
+  - Motives to Peace  
+    - Improbability of Success  
+    - Excessive Price of Success  
+  - Influencing Probability of Success  
+    - Destruction of Enemy Forces  
+    - Conquest of Provinces  
+    - Political Expeditions and Alliances  
+  - Raising the Price of Enemy Success  
+    - Wear and Tear of Forces  
+    - Loss and Conquest of Provinces  
+  - Additional Means to Increase Enemy Waste  
+    - Invasion and Devastation without Occupation  
+    - Selecting Targets Based on Objectives  
+    - Wearing Out the Enemy  
+  - Offensive and Defensive Distinctions  
+    - Negative Intention and Pure Defensive  
+    - Duration of Contest and Exhaustion  
+  - Multiple Ways to the Political Object  
+    - Arguments ad hominem and Individual Spirit  
+  - The Single Means: The Fight  
+    - Combat as Fundamental Unit  
+    - Organisation and Subordination in Combat  
+    - Objects of Combat beyond Destruction  
+    - Measuring Strength and Resolving Without Combat  
+    - Campaigns without Notable Combat  
+  - Relation of Combat to Military Activity  
+  - Destruction of Enemy’s Fighting Power  
+    - Moral and Physical Interconnection  
+  - Expense and Risk of Seeking Destruction  
+    - Adaptation to Enemy’s Means  
+  - Positive vs Negative Objects in War  
+    - Effort to Destroy Enemy vs Preserve Own Forces  
+    - Relation to Duration and Postponement of Action  
+  - Supremacy of Decision by Arms  
+    - Potential for Loss if Opponent Seeks Decisive Battle  
+  - Realities and Conceptions in War  
+    - Bloody Solution as Primary Principle  
+    - Cautious Commanders and Forbidden Paths  
+  - Summary and Philosophical Outlook on War’s Ends and Means  
+```

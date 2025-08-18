@@ -1,0 +1,1 @@
+The strategy emphasizes the importance of waiting for the enemy to become exhausted and demoralized before attacking, allowing one to conserve strength and gain a decisive advantage. Historical examples illustrate how timing and patience in battle can lead to victory, while rushing without advantage often results in failure.

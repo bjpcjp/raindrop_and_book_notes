@@ -1,0 +1,29 @@
+- **ambush** — A surprise attack from a concealed position.  
+- **baggage train** — The group of supply wagons and animals that follow an army.  
+- **bait** — Something used to lure or tempt an opponent into a trap.  
+- **battle lines** — The organized formation of troops prepared for fighting.  
+- **bi** — A ceremonial jade ornament shaped like a carved disc or cylinder, highly valued in ancient China.  
+- **border guards** — Soldiers assigned to defend the boundary of a territory or state.  
+- **castle** — A fortified structure or city used for defense (implied in historical contexts).  
+- **ceremonial jade** — Precious jade artifacts used for rituals or symbolizing status.  
+- **disarray** — A state of disorder or confusion, especially among troops.  
+- **endless expanse of the grasslands** — The vast northern steppe region inhabited by nomads like the Xiongnu.  
+- **forfeit** — A penalty or loss, often of possessions or territory due to failure or surrender.  
+- **fork in the road** — A point where a road divides into two or more paths, often used tactically.  
+- **General Cao Cao** — A prominent military leader during China's Three Kingdoms period known for strategic acumen.  
+- **General Li Mu** — A Han dynasty general known for his tactics against the Xiongnu nomads.  
+- **illusion of opportunity** — A deceptive prospect of gain offered to lure an enemy.  
+- **illusion of power** — The perception of strength or advantage presented as bait.  
+- **illusion of wealth** — The appearance of riches used to tempt an opponent.  
+- **minister** — An official advisor to the king or ruler.  
+- **mustangs** — Wild or free-roaming horses, often used as a valuable gift or resource.  
+- **nomads** — People who move from place to place rather than settling permanently, often pastoralists.  
+- **outnumbered** — Being fewer in number compared to the opposing force.  
+- **prospect of gain** — The expectation of achieving benefit or reward.  
+- **routed** — Defeated and dispersed in disorder.  
+- **Sun Zi** — Ancient Chinese military strategist, author of *The Art of War*.  
+- **trap** — A stratagem or device designed to catch or deceive an enemy.  
+- **White Jade Bi** — A specific type of precious jade disc used ceremonially, symbolizing status or alliance.  
+- **Xiongnu** — A confederation of nomadic tribes inhabiting the northern Chinese borders during antiquity.  
+- **Yuan Shao** — A rival warlord opposing Cao Cao during the Three Kingdoms period.  
+- **Zhi, Earl of** — A historical figure who attempted to deceive the state of Wei with gifts as bait.

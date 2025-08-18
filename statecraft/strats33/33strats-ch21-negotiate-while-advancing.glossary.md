@@ -1,0 +1,34 @@
+- **Advancing** — Continuing to apply pressure or make gains to strengthen one's position during negotiations or conflict.  
+- **Alliance** — A formal agreement or union between parties to cooperate for mutual benefit, often against a common enemy.  
+- **Amiable** — Having a friendly and pleasant manner, often used deceptively in diplomacy.  
+- **Appeals to fairness** — Arguments invoking morality or justice used as a cover to advance one's position in negotiation.  
+- **Battlefield advantage** — A position of strength achieved through military gains or strategic maneuvering.  
+- **Bearers of trust** — Individuals or entities believed to keep promises, though trust is viewed strategically rather than morally.  
+- **Chess player (in diplomacy)** — A metaphor for a skilled negotiator who strategically maneuvers opponents.  
+- **Concessions** — Yielding or giving up something during negotiation, often used strategically to appear generous.  
+- **Diplomatic-war strategy** — Treating negotiation as an extension of warfare involving strategy, deception, and maneuvering.  
+- **Domineering** — Exercising control or influence over others, often subtly in negotiations.  
+- **Gaudy piece of painted tile** — A metaphor for something superficially attractive but of little real value, used to mislead opponents.  
+- **Good faith** — Honest intention to act fairly in negotiation, often assumed but not guaranteed.  
+- **Holy Alliance** — The coalition of Austria, Russia, and Prussia formed to suppress revolution and maintain monarchies in Europe.  
+- **Hostile takeover** — Acquisition of land, power, or position by force or deception rather than agreement.  
+- **Internal power struggle** — Conflict within a state or group that weakens it during negotiations or war.  
+- **Leverage** — Relative power or advantage that influences negotiation outcomes.  
+- **Maneuvering** — Strategic actions taken to improve position or control during negotiation or conflict.  
+- **Morality (in negotiation)** — Ethical considerations often used as a cover for advancing strategic interests.  
+- **Negotiation** — Process of discussion aimed at reaching agreement, involving bargaining and maneuvering for advantage.  
+- **Outposts** — Remote settlements or military positions used to secure resources or territory.  
+- **Peace of Philocrates** — 346 B.C. treaty where Athens relinquished claims to Amphipolis in exchange for promises of security.  
+- **Pressure** — Persistent effort to compel the other side to concede or accept terms.  
+- **Promises** — Commitments made during negotiation which may be honored or broken tactically.  
+- **Protectors of the Greek Orthodox Church** — Role claimed by Russia to justify intervention in Greece against the Ottoman Turks.  
+- **Relinquish** — To give up or surrender claims or control strategically during negotiation.  
+- **Resolution (in conflict)** — Settlement intended to secure one’s interests without fostering lasting enmity.  
+- **Reputation** — Public perception of strength or reliability, used strategically in negotiation.  
+- **Retracting** — Pulling back from advance or claims to create an appearance of concession.  
+- **Shopkeeper (negotiator)** — A negotiator focused on building trust and mutual satisfaction in settlements.  
+- **Sword and olive branch** — Symbol of readiness to negotiate while maintaining the ability to fight or advance.  
+- **Treaty** — Formal agreement between parties, often with strategic or deceptive intent behind its terms.  
+- **Trust** — A strategic asset or tool in negotiation rather than a moral certainty.  
+- **War by other means** — Viewing negotiation as a continuation of conflict, involving strategy and deception beyond the battlefield.  
+- **Warrior (negotiator)** — A negotiator who treats talks as tactical battles aimed at strengthening position.

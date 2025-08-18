@@ -1,0 +1,22 @@
+- **Art of War** — The theoretical study and practice of warfare, encompassing both physical and moral forces.  
+- **Catalogical Propositions** — Absolute statements or rules that fail to take moral forces into account, leading to overly rigid or dogmatic theories.  
+- **Effect of a Defeat** — The moral and physical consequences that impact an army, general, or government following a loss in battle.  
+- **Effect of a Victory** — The moral and physical consequences that influence forces and public opinion positively after winning a battle.  
+- **Exception** — A deviation from established military rules or principles often caused by unpredictable moral factors.  
+- **Forces, Moral** — Intangible, psychological influences in war that affect will, spirit, and morale, and cannot be quantified or strictly classified.  
+- **Forces, Physical** — Concrete and measurable military powers and resources involved in warfare.  
+- **General** — A military leader whose spirit, morale, and qualities embody the moral forces influencing war.  
+- **Government** — The political authority in charge of conducting war, affected by moral forces and public opinion.  
+- **Immaterial Forces** — Non-physical influences such as morale, spirit, and public sentiment that play a critical role in warfare.  
+- **Moral Effect** — The influence of moral forces on the outcome and perception of military actions.  
+- **Moral Forces** — The intangible elements that shape the will and spirit driving war, including morale, public opinion, and psychological factors.  
+- **Moral Powers** — Influences that affect an army and its leaders internally beyond material strength.  
+- **Philosophy, Miserable** — The flawed approach of creating rigid rules for warfare that ignore moral forces and later treat exceptions as rules.  
+- **Physical Forces** — Tangible military capabilities and resources that operate in conjunction with moral forces.  
+- **Public Opinion** — The collective sentiment in a population or province that affects and is affected by wartime conditions.  
+- **Rule** — A principle or guideline in the art of war that should incorporate both physical and moral considerations.  
+- **Sentiments** — Emotional and psychological impressions that contribute to understanding moral forces in war.  
+- **Spirit** — The animating moral quality or morale that pervades an army, general, or government during war.  
+- **Theory** — The intellectual framework outlining the art of war, which must recognize both physical and moral forces.  
+- **Victories and Defeats, Moral Impact of** — The psychological and emotional consequences of winning or losing that influence ongoing warfare.  
+- **Will** — The driving force that motivates and controls military power, itself a moral force deeply connected to other moral influences.

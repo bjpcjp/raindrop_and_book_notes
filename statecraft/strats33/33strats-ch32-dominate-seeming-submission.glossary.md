@@ -1,0 +1,25 @@
+- **Aggression** — Attempts to bend people to your will, which can be overt or disguised under compliance.  
+- **Aggressive passivity** — Presenting a hostile or blustery exterior while inwardly remaining calm and nonaggressive, used as intimidation.  
+- **Ambivalence** — Having simultaneous conflicting feelings or attitudes, often occurring in judgments of people or events.  
+- **Blame-shifting** — A tactic in passive aggression where the aggressor denies responsibility for hostile acts, making others feel guilty or confused.  
+- **Civil disobedience** — Nonviolent protest against laws or policies, exemplified by Gandhi's salt march.  
+- **Compliant front** — An outward appearance of submission or agreement used to mask true aggressive intent.  
+- **False surrender** — A strategic act of feigned defeat or submission to lull the enemy into complacency, then regroup or counterattack.  
+- **Friendly exterior** — A pleasant, benign appearance that conceals hostile intentions or manipulations.  
+- **Guilt weapon** — Using others' feelings of guilt or moral discomfort as a means to dominate or control.  
+- **Hidden aggression** — Aggressive actions or intentions that are covert and disguised beneath a passive or compliant demeanor.  
+- **Passive aggression** — A dual behavior characterized by outward compliance and friendliness combined with covert hostility or sabotage.  
+- **Passive-aggressive warrior** — Someone who consciously employs passive-aggressive strategy to manipulate and dominate others.  
+- **Passive resistance** — Nonviolent opposition to authority or injustice, exploiting opponents' reluctance to use force.  
+- **Political liberalism** — A tradition valuing political freedom and civilized behavior, significant in Gandhi's strategy against the British.  
+- **Power camouflage** — Concealing ambition or maneuvers for control behind an appearance of reluctance or forced circumstances.  
+- **Realpolitik** — Practical politics focused on power and order rather than ideology or moral considerations, exemplified by Metternich.  
+- **Resistance paralysis** — The confusion and disarmament opponents feel when facing nonviolent, seemingly helpless resistance.  
+- **Sabotage** — Secret or indirect acts designed to undermine or harm an opponent while avoiding direct confrontation.  
+- **Self-image (opponent’s)** — The perception an adversary holds about their own moral integrity or political identity, which can be exploited.  
+- **Semiconscious passive aggression** — Passive-aggressive behavior used unconsciously in everyday life, often overlooked or forgiven.  
+- **Strategic ambiguity** — Deliberate use of vague, diplomatic, or ambiguous language and actions to confuse and manipulate opponents.  
+- **Subtle manipulation** — Influencing others in an indirect, often unnoticed way while maintaining a compliant appearance.  
+- **Territorial circumscription** — Restricting another’s behavior or freedom while denying control or responsibility for doing so.  
+- **Weaponizing guilt** — Utilizing others' conscience and feelings of moral responsibility as a tool for dominance.  
+- **Willful perversity** — The natural human tendency to resist direct opposition, which passive aggression channels for strategic ends.

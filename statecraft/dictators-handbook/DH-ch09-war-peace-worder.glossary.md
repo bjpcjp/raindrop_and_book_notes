@@ -1,0 +1,14 @@
+- **Belligerent Occupations** — Control of a territory by a foreign military power, often involving the installation of puppet regimes to ensure political survival.
+- **Correlates of War Project** — A research data project providing empirical data on international conflicts, military capabilities, and interstate wars.
+- **Democracies at War** — A concept and study analyzing the behavior of democratic states in the context of war and peace.
+- **Military Expenditure** — The amount of resources a state allocates to its armed forces, often used as an indicator of military capability.
+- **Militarized Disputes** — Conflicts that involve the threat, display, or use of military force but do not necessarily escalate to war.
+- **Nuremberg Diary** — A personal account documenting the war crimes trials held after World War II.
+- **Puppet Regimes** — Governments installed or controlled by an external power to maintain control over occupied territories.
+- **Selectorate Theory** — A political theory that explains the survival of leaders based on the size and nature of their support coalition.
+- **The Art of War** — An ancient military treatise attributed to Sun Tzu, addressing strategy and tactics in warfare.
+- **The Logic of Political Survival** — A theoretical framework analyzing the incentives political leaders face to maintain power, often through war or peace decisions.
+- **Violent Conflicts** — Episodes of armed confrontation that can range from militarized disputes to full-scale wars.
+- **War and the Fate of Regimes** — A study exploring how wars affect the stability and survival of different political regimes.
+- **War and the Survival of Political Leaders** — Research investigating the relationship between conflict outcomes and political accountability.
+- **World Order** — The distribution of power and institutional arrangements that govern international relations and peace.

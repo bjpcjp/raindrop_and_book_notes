@@ -1,0 +1,31 @@
+- **Chèn Huǒ Dǎ Jié** — "Loot a Burning House," a strategy to attack an enemy weakened by internal troubles.  
+- **Chu** — One of the major kingdoms involved in the Warring States Period conflicts.  
+- **Corruption** — The decay of government integrity through bribery, favoritism, and lawlessness weakening a state.  
+- **Dike and Canal System** — China's irrigation infrastructure whose maintenance indicated government stability; neglect led to droughts and floods.  
+- **Disease** — One of the three key events leading to the collapse of civilizations.  
+- **Drought** — A natural calamity causing famine and suffering, often exploited as a sign of governmental weakness.  
+- **Eight Beautiful Women** — A bribe used by Gou Jian to corrupt the chief minister of Wu.  
+- **Famine** — Severe food shortage contributing to societal destabilization and vulnerability.  
+- **Fu Chai** — King of Wu who conquered Yue and enslaved its king Gou Jian.  
+- **Han** — A kingdom attacked during the Warring States Period, seeking aid from Qi.  
+- **Irrigation System Maintenance** — The upkeep of dikes and canals critical for preventing drought and flooding.  
+- **King of Northern Qi** — Ruler employing corrupt sycophants, leading to government decay and collapse.  
+- **King of Wu** — Monarch who conquered Yue but grew arrogant, leading to his downfall.  
+- **Kingdom of Northern Qi** — A realm that fell due to internal corruption and was conquered by Northern Zhou.  
+- **Kingdom of Northern Zhou** — The kingdom that capitalized on Northern Qi's weakness to conquer it.  
+- **Minister Su Tianchen** — Advisor to the king of Qi advocating for strategic inaction and opportunistic attack on Yan.  
+- **Palace Construction** — Expensive building projects that drained Wu's treasury during drought, worsening public unrest.  
+- **Prime Minister of Yan** — The despised official who caused internal turmoil by usurping the throne.  
+- **Qin** — A powerful kingdom that attacked Han and cooperated with Wei during the Warring States Period.  
+- **Qi** — Kingdom that feigned support for Han but instead attacked Yan during internal strife.  
+- **Sowing Discord** — Strategy involving bribery and false accusations to weaken an enemy internally.  
+- **Spies** — Agents used by Gou Jian to monitor Wu's military deployments and seize opportunity.  
+- **Strategy of Sowing Discord** — Tactic to weaken enemies by internal manipulation, as used by Gou Jian.  
+- **Thirty-Six Strategies** — Ancient Chinese compendium of military tactics including Loot a Burning House.  
+- **Thief and Raider Increases** — Result of governmental decay causing lawlessness.  
+- **Warring States Period** — Historical era marked by warfare among Chinese states before unification.  
+- **Wu Capital** — The city seized by Gou Jian when Wu's army was away.  
+- **Yellow River Flooding** — Consequence of neglected irrigation causing agricultural devastation.  
+- **Yue** — Kingdom conquered by Wu; its king Gou Jian later reclaimed power.  
+- **Zhao** — Kingdom allied with Chu in aiding Han against Qin.  
+- **Zhou** — Kingdom that conquered Northern Qi after its decline.

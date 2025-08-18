@@ -1,0 +1,30 @@
+- **Alliance** — A union or association formed for mutual benefit, especially between states or armies.  
+- **Art of War** — Ancient Chinese military treatise attributed to Sun Zi, containing strategic principles.  
+- **Army retreat** — A strategic withdrawal of military forces from battle or enemy territory.  
+- **Barbarians** — Non-Chinese tribal groups often hostile to imperial China during ancient periods.  
+- **Besiege** — To surround an enemy force or location to cut off supplies and force surrender.  
+- **Campaign** — A series of military operations intended to achieve a specific objective.  
+- **Capital** — The city or town that functions as the seat of government and administrative center.  
+- **Cornered prey** — An enemy or opponent trapped with limited options, prone to desperate resistance.  
+- **Desperate attack** — A final, often reckless, effort by a cornered enemy to break free or survive.  
+- **Escape outlet** — A deliberately left route allowing an enemy to flee, reducing their will to fight.  
+- **Exhausted invader** — Enemy forces depleted of energy or resources, vulnerable during retreat.  
+- **Former Qin** — A state during the Six Dynasties period in China.  
+- **General** — A high-ranking military officer commanding armies or campaigns.  
+- **Hua Marsh** — A geographic location significant in the Six Dynasties military conflict described.  
+- **Huang River** — A river used as a strategic retreat barrier by the Xianling tribe.  
+- **Home territory** — The defender’s own land or region, often where enemy morale may weaken if reached.  
+- **Invader** — A force entering another’s territory to conquer or pillage.  
+- **King of Wu** — Monarch who led the alliance against Chu during the Spring and Autumn Period.  
+- **Lingering morale** — The remaining fighting spirit and willingness of troops to continue battle.  
+- **Prisoners** — Captured enemy soldiers held during or after military engagements.  
+- **Retreating army** — Troops withdrawing to avoid engagement or after defeat.  
+- **River crossing** — The act of crossing a river, often strategic in ancient warfare.  
+- **Siege** — A military tactic involving surrounding a fortified place to force surrender.  
+- **Southern Song period** — An era in Chinese history during which General Tan Daoji campaigned.  
+- **Strategy** — A plan or method used to achieve a military or political objective.  
+- **Tribe** — A social division consisting of families or communities with a common culture or leadership.  
+- **Troops** — Military soldiers or armed forces engaged in warfare.  
+- **Wu alliance** — Coalition led by the state of Wu that defeated Chu forces.  
+- **Xianling barbarians** — Invading tribal group fought by Han general Zhao Zhongguo.  
+- **Yingdu** — Capital city of the Chu state conquered by the Wu army.

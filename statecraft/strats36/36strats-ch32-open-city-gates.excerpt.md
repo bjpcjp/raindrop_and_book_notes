@@ -1,0 +1,1 @@
+The Strategy of Open City Gates involves acting unexpectedly casual and unprepared in desperate situations to arouse suspicion and doubt in the enemy, causing them to hesitate or retreat. This tactic relies on supreme self-control, as unusual behavior during crises can serve as a psychological bluff to prevent attacks or facilitate escape.

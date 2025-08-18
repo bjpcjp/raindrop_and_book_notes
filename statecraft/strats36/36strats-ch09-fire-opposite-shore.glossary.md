@@ -1,0 +1,25 @@
+- **Akechi Mitsuhide** — A Japanese general defeated by Toyotomi Hideyoshi at the Battle of Yamazaki in 1583.  
+- **Battle of Guandu** — A decisive conflict during the Three Kingdoms Period where Cao Cao defeated Yuan Shao.  
+- **Battle of Yamazaki** — A 1583 battle in Japan where Toyotomi Hideyoshi fought against Akechi Mitsuhide.  
+- **Cao Cao** — A prominent warlord of the Three Kingdoms Period known for his strategic patience against Yuan Shao's sons.  
+- **Clam and Snipe Folktale** — A Chinese story illustrating the danger of mutual entrapment leading to downfall, symbolizing strategic patience.  
+- **Diplomacy** — The use of secret treaties or negotiations to gain advantage without direct confrontation.  
+- **Fire on the Opposite Shore** — A strategy advocating waiting calmly as rivals weaken each other before acting decisively.  
+- **Gongsun Gang** — A nomadic chief who eliminated Yuan Shao's sons, aiding Cao Cao indirectly.  
+- **Guo Jian** — Cao Cao's minister who advised postponing attack to let enemies weaken themselves.  
+- **Han** — A Chinese state during the Warring States Period involved in conflict with Wei and ally to Qi.  
+- **Horagatoge** — The hill in Japan where Tsetsui Junkeian observed the battle before switching allegiance, symbolizing waiting and opportunism.  
+- **Marquis of Qi** — A Warring States ruler who delayed aiding Han until Wei was weakened, then asserted dominance.  
+- **Military Strategy** — The art of planning and conducting warfare, often using patience and observation to gain advantage.  
+- **Nomadic Chief** — A tribal leader, such as Gongsun Gang, whose allegiance or actions impact regional power balance.  
+- **Qi** — A state during the Warring States Period that used strategic delay to weaken its rivals Han and Wei.  
+- **Snipe** — The bird in the folktale that was trapped by the clam, representing entrapment in conflict.  
+- **Sun Zi (Sun Tzu)** — Ancient Chinese military strategist and author of *The Art of War*.  
+- **Three Kingdoms Period** — A historical era in China marked by division into three rival states and frequent warfare.  
+- **Tigers Fighting** — A metaphor for competing powers mutually weakening each other, drawn from Warring States advice.  
+- **Toyotomi Hideyoshi** — A great Japanese general who defeated Akechi Mitsuhide at Yamazaki.  
+- **Treasures** — Goals or objectives that multiple parties compete for, which may not be worth immediate conflict.  
+- **Valsing Rivalries** — When involved parties weaken each other through internal disputes, providing external opportunities.  
+- **Wei** — A state during the Warring States Period, opponent to Han and targeted by Qi’s strategy.  
+- **Warring States Period** — A turbulent era in Chinese history characterized by constant warfare among rival states.  
+- **Waiting and Watching** — The principle of restraint and observation to exploit opponents’ weaknesses before acting.

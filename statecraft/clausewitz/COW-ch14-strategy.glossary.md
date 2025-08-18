@@ -1,0 +1,18 @@
+- **Battle** — The actual engagement or combat between armed forces; the means through which Strategy employs to achieve the overall objective of War.  
+- **Campaign** — A series of connected military operations planned and conducted to achieve a strategic objective within a War.  
+- **Combat** — A confrontation or fight between military forces; may be actual or possible, with real effects on the course of War.  
+- **Execution** — The process of carrying out strategic and tactical plans in the field, involving movement, supply, and maintaining discipline despite hardships.  
+- **Flank** — The side of a military formation; turning a flank involves maneuvering to attack the enemy’s side, often a fundamental strategic action.  
+- **Forces, Material** — The physical armed troops and resources involved in War, including their deployment and engagement in combat.  
+- **Forces, Moral** — The mental, psychological, and moral powers influencing armies and commanders, such as morale, willpower, and steadiness of mind.  
+- **General** — A high-ranking military commander responsible for planning and executing Strategy and tactics in War.  
+- **Moral Quantities/Forces** — Intangible elements affecting the outcome of War and Strategy, including spirit, confidence, and moral endurance of troops and leaders.  
+- **Plan (Strategic Plan)** — The overarching scheme or design of military operations that connects campaigns and battles in pursuit of the War’s objective.  
+- **Possible Combat** — A confrontation that may not physically occur but whose threat or offer affects enemy decisions and outcomes as if it had.  
+- **Principal Relations** — The essential connections and interactions of the armed forces and elements involved in a battle or War.  
+- **Sagacity** — Keen mental discernment and practical wisdom, especially in knowing the limitations and opportunities in War and Strategy.  
+- **Single Campaign** — An individual military operation or series of engagements forming part of a larger War effort.  
+- **Strategy** — The employment of battles as means toward attaining the object of War; the art of planning and directing overall military operations.  
+- **Tactics** — The art and science of organizing and employing troops in actual battles and engagements on a smaller scale than Strategy.  
+- **War** — A state of armed conflict between political entities, involving military forces and conducted to achieve a political objective.  
+- **Willpower (Strength of Will)** — The inner mental force necessary to make and carry out strategic decisions despite doubts, fears, and opposition.

@@ -1,0 +1,48 @@
+```markdown
+# Table of Contents
+
+- Chapter 2: When Is a Coup d’État Possible?
+  - Introduction: Lenin’s Call to Immediate Power (October 1917)
+  - Post-World War II Decolonization and Coup Opportunities
+  - Political Sophistication and Public Reaction to Coups
+    - Political Participation in Developed Countries
+    - Political Dialogue in One-Party States
+      - Example: Yugoslav Communist Party
+      - Example: Arab Socialist Union and Ba‘ath Party
+    - The Communist Party of China: Transformation and Challenges
+  - Preconditions for Coup Success
+    - Temporary Weakening of Political Structures
+      - Example: 1958 France and the Advent of the Fifth Republic
+      - Temporary Factors Favoring Coups
+        - Economic Crises
+        - Unsuccessful Wars
+        - Chronic Instability in Multiparty Systems
+      - Italy as a Case Study: Coalition Instability and Berlusconi Era
+    - Economic Backwardness
+      - Impact on Population and Political Passivity
+      - Case Study: Egypt’s 1952 Coup and “Black Saturday”
+      - Bureaucratic Reactions to Coups
+      - Political Passivity of Masses and Elite Acceptance
+    - Political Independence
+      - Dependence on Foreign Powers and Its Effects
+        - Case Study: 1956 Hungarian Revolution
+        - Case Study: 1963 South Vietnam Coup
+        - French Military Interventions in Africa
+        - Arms Dependence and Political Influence
+          - Egypt-Soviet Relations 1955–1967
+      - Guidelines for Evaluating Foreign Influence
+    - Organic Unity
+      - Concentration and Diffusion of Power
+      - Sectional Interests and Corporate Influence
+        - Role of Giant Corporations in Advanced and Underdeveloped Economies
+        - Example: Katanga Secession and Union Minière
+        - Example: Saudi Aramco and Tribal Politics
+        - Foreign Companies and Political Intervention
+      - Regional Entities and Power Distribution
+        - Examples: Congo Provinces 1960–1964
+        - Federal States and Centralization Trends
+        - Ethnic and Regional Power Blocs
+          - Example: Nigeria (1966 Coup)
+          - Example: Lebanon’s Ethnic Power Structures
+        - Implications for Coup Planning
+```

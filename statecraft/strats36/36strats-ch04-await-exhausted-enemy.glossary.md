@@ -1,0 +1,31 @@
+- **Battle** — A combat between opposing forces, where strategy and morale play crucial roles.  
+- **Chariot** — A two-wheeled vehicle used in ancient warfare and for mobility on the battlefield.  
+- **Commander** — A military leader responsible for planning and directing troops.  
+- **Conserve Strength** — The strategy of preserving one's energy and resources while forcing the enemy to expend theirs.  
+- **Disorderly Retreat** — A chaotic withdrawal of troops indicating low morale and vulnerability.  
+- **Drums** — Instruments used in battle to signal commands and influence troop morale.  
+- **Energy** — The physical and mental stamina of troops essential for effective combat.  
+- **Exhausted Enemy** — Opponents who have depleted their strength and morale, becoming vulnerable.  
+- **Formation** — The organized arrangement of troops in preparation for battle.  
+- **Governor/Duke** — A regional ruler or noble responsible for military and civil leadership.  
+- **Insights/Advisor** — A person who provides strategic counsel to leaders in military matters.  
+- **Ji Xingze** — Trainer hired by Emperor Xuan to condition fighting roosters for cock fights.  
+- **Jian Shu** — Advisor who cautioned against hasty military action and foresaw potential disaster.  
+- **Lu** — An ancient Chinese state involved in the battle of Changshao.  
+- **Marshal/Military Strategy** — The planning and directing of large-scale military operations.  
+- **Morale** — The confidence, enthusiasm, and discipline of troops in battle.  
+- **Pass (Yao Pass)** — A strategic narrow route vital for controlling movements of armies.  
+- **Peak Morale** — The highest level of troop enthusiasm and readiness to fight.  
+- **Qi** — An ancient Chinese state engaged in conflict with Lu at Changshao.  
+- **Retreat** — The withdrawal of troops from the battlefield to avoid defeat or regroup.  
+- **Secret Attack** — A surprise military operation aimed at catching the enemy unprepared.  
+- **Soldiers** — Combatants trained and equipped for military service.  
+- **Spring and Autumn Period** — A historical era in ancient China (approx. 770-476 B.C.) marked by frequent warfare among states.  
+- **Strategy** — A plan or method employed to gain a tactical advantage over an adversary.  
+- **Surprise Attack** — A sudden offensive meant to overwhelm the enemy before they can respond.  
+- **Terrain** — The physical features of a battlefield which can affect tactics and outcomes.  
+- **Troops** — Groups of soldiers organized for combat operations.  
+- **Waiting for the Enemy** — A tactic of holding position until the opponent is weakened or disorganized.  
+- **Yao Pass** — A critical defensive point where the Jin army ambushed Qin forces.  
+- **Zheng** — A state allied with Qin but prepared to resist a secret assault.  
+- **Zhou Dynasty** — The ruling dynasty during which Emperor Xuan reigned and related tales occurred.

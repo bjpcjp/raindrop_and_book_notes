@@ -1,0 +1,14 @@
+- **Aid Agency** — An organization that provides foreign aid, often aimed at disaster relief or development assistance.  
+- **Cambodian Corruption Assessment** — A 2004 USAID report evaluating levels and impacts of corruption in Cambodia.  
+- **Development Aid** — Financial or material support given by governments or international organizations to promote economic development and welfare in developing countries.  
+- **Foreign Aid** — Assistance, typically financial, technical, or military, given by one country or international organization to another.  
+- **Graft** — Corruption involving the use of a politician's authority for personal gain.  
+- **IMF Loans for Votes** — The practice of the International Monetary Fund providing financial support in exchange for political support, such as votes in international bodies.  
+- **Kenya’s Anti-corruption Campaign** — Initiatives aimed at reducing corruption in Kenya to restore donor confidence.  
+- **Pakistan Flood** — Refers to the 2010 floods in Pakistan and the associated challenges in aid distribution and social inequality.  
+- **Policy Concessions** — Changes or compromises in policy made by recipient countries as conditions for receiving foreign aid.  
+- **Political Economy of Aid** — The study of how political factors influence the allocation and effects of foreign aid.  
+- **Security Council Membership** — Membership in the United Nations Security Council, which can influence foreign aid flows and international political dynamics.  
+- **USAID’s Greenbook** — A data source published by the United States Agency for International Development detailing foreign aid allocations.  
+- **UN Security Council Bribery** — The alleged practice of countries using foreign aid to influence votes or decisions within the UN Security Council.  
+- **World Bank Decisions** — Financial and developmental decisions made by the World Bank, which can be influenced by foreign aid politics.

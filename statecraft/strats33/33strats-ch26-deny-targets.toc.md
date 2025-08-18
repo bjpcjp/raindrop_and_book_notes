@@ -1,0 +1,43 @@
+```markdown
+# Table of Contents
+
+- Deny Them Targets: The Strategy of the Void
+- The Lure of the Void
+  - Napoleon and Czar Alexander I's Treaty (1807)
+  - Napoleon's Invasion Plans and Preparations
+  - Early Difficulties in the Russian Campaign
+  - Harassment by Cossacks and Army Exhaustion
+  - The Battle of Smolensk
+  - March on Moscow and the Battle of Borodino
+  - Occupation and Fire of Moscow
+  - The Retreat from Moscow and Disaster
+- Interpretation
+  - Alexander I's Strategy and Psychological Warfare
+  - Effects on Napoleon’s Army and Morale
+  - Human Nature and the Void Strategy
+  - Psychological Power of Guerrilla Tactics
+- Keys to Warfare
+  - Conventional Warfare Logic
+  - The Shadow Side: Guerrilla Warfare Origins
+  - Guerrilla War Tactics and Historical Use
+  - Expansion and Refinement of Guerrilla Warfare
+  - Modern Guerrilla Warfare and Political Applications
+  - Psychological Impact of Guerrilla Strategy
+  - Franklin Roosevelt as a Political Guerrilla
+  - Conditions Suitable for Guerrilla Warfare
+  - Organizing Guerrilla Cells
+  - John Boyd’s Guerrilla Campaign in the Pentagon
+  - Luring the Enemy and Small Raids
+  - Jay Gould’s Business Guerrilla Tactics
+  - Using the Media as a Guerrilla Tool
+  - Supplies and Living off the Enemy
+  - Time as an Offensive Weapon
+  - Extending Space and Political Support
+  - Winning the Guerrilla War
+  - Necessity of Fluidity and Adaptation
+- Authority  
+- Reversal: Countering Guerrilla Warfare
+  - Importance of Decisive Victory
+  - Avoiding Graduated Responses
+  - When to Withdraw
+```

@@ -1,0 +1,24 @@
+- **Alliance** — A formal agreement between states or groups to cooperate for mutual benefit, often in military contexts.  
+- **Brushwood** — Branches and sticks used to stir up dust and create confusion in battle tactics.  
+- **Chariot Duel** — A formal combat challenge between opposing armies involving chariots, often as a prelude or distraction.  
+- **Dust Cloud** — A visual obscuration created deliberately by dragging brushwood or stirring earth to confuse the enemy.  
+- **Envoy** — A messenger or representative sent by one state to another, often to negotiate or request terms.  
+- **Feint** — A deceptive or distracting maneuver intended to mislead the enemy about one’s true intentions.  
+- **Flanks** — The sides of a military formation or army, vulnerable to attack from the sides.  
+- **Formation** — The organized arrangement or positioning of troops in battle.  
+- **General** — A senior military commander responsible for strategy and leadership.  
+- **Pincer Movement** — A military tactic where forces attack both sides of an enemy formation to encircle or crush it.  
+- **Psychological Warfare** — Strategies aimed at weakening the enemy’s morale, will, or judgment without direct combat.  
+- **Retreat Pennants** — Flags or signals used to indicate a withdrawal or retreat in battle, sometimes used deceptively.  
+- **Ritual** — Established formal or traditional behavior, often used to maintain discipline within troops.  
+- **Scout** — A soldier or unit sent ahead to observe enemy positions and movements.  
+- **Skirmish** — A minor or preliminary fight or clash ahead of the main battle.  
+- **Surprise Attack** — An unexpected offensive intended to catch the enemy off guard.  
+- **Tactic** — A specific method or action employed to achieve an immediate objective in battle.  
+- **Terrain** — The physical features of the land which influence military operations.  
+- **Troops** — Soldiers collectively organized for combat.  
+- **Vanguard** — The forward part of an advancing military formation or force.  
+- **Weary Soldiers** — Troops that are tired or exhausted, sometimes used strategically as a disguise.  
+- **Withdrawal** — The organized movement of forces away from the enemy or a position.  
+- **Xiǎnshuǐ Mō Yú (Trouble the Water to Catch the Fish)** — Strategy 20, involving creating confusion or disturbance to exploit enemy vulnerabilities.  
+- **Zhao Rescue (Besiege Wei to Rescue Zhao)** — A strategic maneuver involving attacking an enemy’s ally or position to force relief or distraction.

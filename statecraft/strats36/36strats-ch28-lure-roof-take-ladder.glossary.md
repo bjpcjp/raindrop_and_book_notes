@@ -1,0 +1,30 @@
+- **Avenue of escape** — A route by which a retreating army can withdraw safely.  
+- **Bait** — A deceptive lure designed to entice the enemy into a disadvantageous position.  
+- **Cavalry** — Military units mounted on horseback, effective in open terrain and swift movement.  
+- **Defensive barrier** — A constructed obstacle meant to slow or stop enemy movement.  
+- **Deception** — The act of misleading the enemy to gain a tactical advantage.  
+- **Desertion** — When soldiers abandon their duties or leave the army, often due to fear or low morale.  
+- **Drainage/dam** — A constructed obstruction used to control water flow in battle strategy.  
+- **Terrain** — The physical features of a landscape impacting military operations.  
+- **Element of nature** — Natural forces such as rivers, cliffs, or weather that can affect combat.  
+- **Encampment** — A temporary military camp or base for an army.  
+- **Exhaustion** — A state of extreme fatigue affecting troops' combat effectiveness.  
+- **Flanks** — The sides of a military formation or battlefield.  
+- **Fortifications** — Defensive military works to protect troops or positions.  
+- **Gap** — A narrow pass or opening in terrain that can serve as a chokepoint.  
+- **Harassment** — Continuous small-scale attacks designed to weaken or provoke the enemy.  
+- **Line of communication** — Pathways used to maintain contact between forces or logistics.  
+- **Lure** — To attract or entice the enemy into a specific location or trap.  
+- **Marshal** — To organize and lead troops in preparation for battle.  
+- **Narrow pass** — A confined path in terrain limiting the movement or deployment of forces.  
+- **Open plains** — Flat, expansive terrain favorable to cavalry and large formations.  
+- **Pursuit** — The act of chasing a retreating enemy to capitalize on their disarray.  
+- **Rations** — Food supplies designated for troops during military campaigns.  
+- **Skirmish** — A brief and irregular fight between small groups of soldiers.  
+- **Supply lines** — Routes through which armies receive provisions and reinforcements.  
+- **Tactical advantage** — A position or condition that gives one side superiority over the other.  
+- **Trickery** — The use of cunning or deception in warfare.  
+- **Troops** — Soldiers or military personnel grouped for combat.  
+- **Wilderness** — Remote, untamed natural terrain that can complicate military operations.  
+- **Withdrawal** — A strategic retreat of forces to avoid defeat or reposition.  
+- **Woods** — Dense clusters of trees providing cover and concealment.

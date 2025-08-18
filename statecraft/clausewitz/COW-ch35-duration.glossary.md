@@ -1,0 +1,23 @@
+- **Absolute magnitude of force** — The total number of troops or strength involved in a combat.
+- **Arms** — Different military branches, such as infantry, cavalry, and artillery, involved in combat.
+- **Combat** — An engagement or battle between opposing forces.
+- **Conqueror** — The side or force that achieves victory in combat.
+- **Corps** — A military formation typically composed of three or four divisions.
+- **Decision (moment of decision)** — The critical point in combat at which the outcome becomes clear or final.
+- **Division** — A military unit of 8,000 to 10,000 men including various arms.
+- **Duration of combat** — The length of time a combat lasts, influencing strategic outcomes.
+- **Duration as a strategic element** — The importance of how long a combat lasts in achieving broader war objectives.
+- **Essential relations** — The key factors influencing combat duration, including strength, arms relation, and terrain.
+- **Force relation** — The comparative strength between opposing forces.
+- **Infantry combat** — A battle primarily involving foot soldiers, generally longer in duration than cavalry combat.
+- **Massing (masses)** — Concentrated troops engaged in combat without immediate support from other forces.
+- **Nature of the country** — The terrain characteristics (e.g., hills, forests, level ground) affecting the pace and duration of combat.
+- **Position** — The geographical or tactical location of forces affecting combat effectiveness and duration.
+- **Relative defence** — A combat objective focused on delaying or holding ground rather than outright victory.
+- **Resistance** — The duration and ability of a force to withstand attacks against superior numbers.
+- **Separate combat** — An isolated engagement occurring independently rather than integrated with other forces.
+- **Strategic elements** — Factors such as duration, strength, and terrain considered in planning war operations.
+- **Tardy decision** — A delayed outcome of combat which can partially compensate the defeated side.
+- **Vanquished** — The side or force defeated in combat.
+- **Victory (speedy victory)** — A quick success in combat representing greater power and effectiveness.
+- **Weapons arms relation** — The mutual proportion and interaction of infantry, cavalry, and artillery on the battlefield.

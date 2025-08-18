@@ -1,0 +1,1 @@
+In war, commanders face a relentless storm of misinformation, mistakes, and unforeseen events that challenge their authority and judgment. Success depends on unwavering perseverance and immense force of will to overcome these obstacles and achieve the mission despite physical and moral hardships.

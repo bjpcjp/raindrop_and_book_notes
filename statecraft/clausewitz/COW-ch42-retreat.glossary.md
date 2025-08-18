@@ -1,0 +1,31 @@
+- **Ambuscades** — Concealed positions from which troops can launch surprise attacks during a retreat.  
+- **Army** — An organized military force engaged in battle or maneuvers.  
+- **Battle** — A combat engagement between opposing military forces.  
+- **Battle of Jena** — A historical battle illustrating the difficulty of retreat when forces are heavily engaged until destruction.  
+- **Battle of La Belle-Alliance** — Another instance showing the impossibility of a regulated retreat under severe conditions.  
+- **Battles, small** — Regular minor engagements used to delay and harass the enemy during retreat.  
+- **Brienne, Battle of** — A battle after which Buonaparte’s division of forces during retreat demonstrated strategic considerations.  
+- **Concentration** — The gathering of forces to restore order, morale, and confidence after defeat.  
+- **Counterstrokes** — Bold, courageous attacks by a retreating army to check enemy advance.  
+- **Defeat** — The loss of a battle causing physical and moral disintegration of an army.  
+- **Detachments** — Smaller formations sent out to cover flanks during retreat; generally considered an undesirable necessity.  
+- **Division** — A large military unit, sometimes used to describe separated corps during retreat.  
+- **Equilibrium of forces** — The balance point at which the strength of opposing armies is evened.  
+- **Enemy’s advance-guard** — The frontmost units of the opposing force during pursuit.  
+- **Favourable circumstances** — External conditions that improve the strategic position during or after battle.  
+- **Fortresses** — Strong defensive positions that can provide protection and aid during retreat.  
+- **Frontier or flank detachments** — Units covering the sides of a retreating army to delay the opponent.  
+- **Generals, great** — Experienced commanders known for skillful conduct of retreats.  
+- **Ground utilization** — Strategic use of terrain to gain advantage during a retreat.  
+- **Kollin, Battle of** — A historical battle after which Frederick the Great retreated in three columns due to strategic necessity.  
+- **Losses** — The casualties and material damage sustained in battle.  
+- **Moral forces** — The mental and emotional strength and will to resist among troops.  
+- **Rear-guard** — A strong detachment protecting the rear of a retreating army.  
+- **Retreat** — The organized withdrawal of forces after defeat to restore strength and avoid destruction.  
+- **Separate columns** — Divisions of an army made for retreat or maneuver, often risky unless strictly necessary.  
+- **Slow retreat** — A deliberate, measured withdrawal combined with resistance and counterattacks to maintain morale and order.  
+- **Stragglers** — Soldiers who lag behind during retreat, often increasing vulnerability and losses.  
+- **Strong defensive positions** — Geographic locations offering natural or man-made protection during retreat.  
+- **System of regular small battles** — Planned minor engagements during retreat to disrupt enemy pursuit.  
+- **Troyes** — The location toward which Buonaparte turned after dividing his retreat forces post-Brienne battle.  
+- **War inured armies** — Troops experienced in combat and accustomed to hardships of war.

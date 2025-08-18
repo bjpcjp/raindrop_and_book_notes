@@ -1,0 +1,19 @@
+- **Emperor Yongle** — Ming dynasty ruler who ascended the throne after feigning madness to avoid elimination.  
+- **Feigned Madness** — Pretending insanity or irrational behavior to confuse opponents and conceal true intentions.  
+- **Ghost Valley School** — A mysterious ancient Chinese academy known for teaching strategy, diplomacy, and martial arts.  
+- **Hongwu** — Founder of the Ming dynasty who appointed his young grandson as emperor.  
+- **Imperial Spies** — Officials who monitored and reported suspicious activities to the ruler.  
+- **Li Yuan** — Minor Sui dynasty official who feigned illness and madness, later founded the Tang dynasty.  
+- **Madness (Feigning)** — A tactic to avoid suspicion and attacks by appearing irrational or mentally unfit.  
+- **Pang Juan** — Jealous court advisor who framed Sun Bin as a traitor, later killed by Sun Bin.  
+- **Prince of Shang** — Ming dynasty prince who committed suicide by fire rather than submit to accusations.  
+- **Prince of Yan** — The last surviving Ming royal uncle who feigned madness to survive and later became emperor.  
+- **Sage** — A wise figure in ancient Chinese philosophy who uses deceptive appearances strategically.  
+- **Sui Dynasty** — Chinese dynasty during which Li Yuan feigned madness before founding the Tang dynasty.  
+- **Sun Bin** — Warring States strategist who feigned madness after being crippled and imprisoned.  
+- **Tang Dynasty** — Influential Chinese dynasty founded by Li Yuan after his deception and military success.  
+- **The Thirty-Six Strategies** — A collection of ancient Chinese stratagems, of which "Feign Madness, But Keep Your Balance" is one.  
+- **The Tao Te Ching** — Classical Chinese text by Lao Zi, cited regarding appearing crooked to avoid harm.  
+- **The Six Secret Teachings of the Tai Gong** — Ancient text referencing sages displaying a foolish countenance.  
+- **Warring States Period** — Era in ancient China marked by warfare and strategic political maneuvering.  
+- **Yue** — Sun Bin’s home state who helped rescue him from imprisonment.

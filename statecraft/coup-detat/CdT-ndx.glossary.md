@@ -1,0 +1,26 @@
+- **Acheson, Dean** — American statesman referenced on page 59.  
+- **Adalet ve Kalkınma Partisi (AKP)** — Turkish political party, noted for its significance on page xxvii and 153.  
+- **Afghanistan, US road building payments** — US financial activities related to infrastructure in Afghanistan, page 41.  
+- **Africa** — Discussed in context of colonial powers’ ethnographic theories (page 83) and political groups influencing policies (page 121).  
+- **Africa, sub-Saharan** — Region facing postcolonial misgovernment (xxv–xxvi), problems transitioning from colonial rule (xxii–xxv), and emergent democracies (xxvi–xxvii).  
+- **Aguiyi-Ironsi, Johnson Thomas Umunnakwe** — Notable individual referenced on page 49.  
+- **Al-Azhar University (Egypt)** — Institution mentioned on page 150, likely in political or religious context.  
+- **Alawites** — Referenced under Syria, a sect significant in the region's politics.  
+- **al-Assad, Bashar** — Syrian president mentioned on pages xix and 127.  
+- **al-Assad, Hafez** — Former Syrian president appearing on pages 15, 66, and 127.  
+- **al-Banna, Hasan** — Important figure cited on page 163.  
+- **al-Din, Shah Mozaffar** — Referenced on page 42.  
+- **al Qaeda** — Militant Islamist organization mentioned on page 151.  
+- **al-Sīsī, Abdul-Fattāḥ Sa’īd Ḥusayn Khalīl** — Egyptian political/military leader noted on page 71.  
+- **al-Za‘im, Husni** — Referenced on page 40, likely a historical figure.  
+- **Amin, Idi** — Ugandan leader associated with postcolonial misgovernment, mentioned on page xxvi.  
+- **Anti-coup provisions** — Regulations including separation of military and security forces (xvi–xviii, 4) and internal espionage (xix).  
+- **Arab-Israeli War** — Context of the organization of forces, page 71.  
+- **Arab Socialist Ba‘ath Party** — Political party active in Arab nationalism, referenced on pages xx, 15, and linked to Ba‘ath party.  
+- **Arafat, Yasser** — Palestinian leader mentioned on pages xx–xxi.  
+- **Aref, Abd-el-Rahman** — Historical/political figure cited on pages 85, 88–89.  
+- **Armed forces** — Military institutions with attributes such as discouraged inter-service communication (xvii–xviii), distinct uniforms (xvii), role in coups, internal security functions, and control over civilian populations (various pages).  
+- **Armed forces, infiltration strategy** — Methods and challenges of embedding agents, loyalty factors, command issues, regional variations, and recruitment details (pages 65–97, 188, 215–216).  
+- **Armed forces, recruitment of key individuals** — Processes involving selecting officers, potential informants, family ties, slogans, and the initial recruit danger (pages 74–93, 188).  
+- **Armed forces, response to events during coup** — How military units react in real-time to coup developments (pages 175–176).  
+- **Ba‘ath party** — Associated with Arab Socialist Ba‘ath Party, cited on pages 67, 84, 89, and 151.

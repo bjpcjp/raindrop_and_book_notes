@@ -1,0 +1,30 @@
+- **Authority** — The principle that anything with form can be overcome; true power lies in formlessness and emptiness, allowing strategy to transcend physical constraints.  
+- **Borodino** — Site of a major 1812 battle between Napoleon’s forces and the Russian army, noted for fierce fighting and heavy casualties, but no decisive victory.  
+- **Cossacks** — Russian irregular cavalry forces who used guerrilla tactics of raids and harassment to undermine Napoleon’s army during the 1812 invasion.  
+- **Destroying the enemy almost without him noticing it** — The guerrilla warfare aim of gradually wearing down an opponent through constant small attacks rather than direct battle.  
+- **Emptiness/The Void** — A strategic state of nonengagement and invisibility that frustrates opponents by denying them a target, causing psychological disarray.  
+- **Flank** — The side of a military formation, which must be protected to prevent encirclement.  
+- **Foraging** — Searching for food or resources from the local environment, often necessary for armies with extended supply lines.  
+- **Frustration (psychological effect)** — The mental state induced in an opponent by elusive tactics and absence of decisive contact, debilitating strategic thought.  
+- **Guerrilla** — “Small war” in Spanish; a style of warfare characterized by hit-and-run tactics, dispersed forces, and avoidance of direct confrontation with larger armies.  
+- **Guerrilla warfare** — A strategy that avoids decisive battles, employing mobility, small-scale attacks, and psychological pressure to weaken a stronger opponent over time.  
+- **Harassment** — Continuous small attacks and raids aimed at sapping enemy strength and morale without engaging in full battle.  
+- **Illusion of success** — Allowing the enemy to hold key positions while gradually increasing pinprick attacks to foster complacency and exhaustion.  
+- **Infiltration** — The method of embedding small groups or cells within enemy ranks to gather intelligence or sabotage.  
+- **Lines of communication and supply** — Routes that must be maintained for an army’s logistics and reinforcements to reach the front.  
+- **Lure of the void** — The tactic of enticing opponents into chasing non-existent or elusive targets, thereby stretching their resources and morale.  
+- **Mao Tse-tung** — Chinese revolutionary who organized guerrilla cells to infiltrate and sabotage Nationalist forces during the Chinese Revolution.  
+- **Mobilization** — The process of assembling and preparing troops and supplies for military action.  
+- **Napoleon’s 1812 Russian campaign** — A failed invasion characterized by logistical failures, scorched-earth tactics by Russians, guerrilla harassment, and eventual catastrophic retreat.  
+- **Pinprick attacks** — Small, targeted raids that continuously irritate and wear down the enemy without decisive engagement.  
+- **Psychological warfare** — Use of tactics aimed at mentally exhausting and confusing the enemy rather than relying solely on physical force.  
+- **Scorched-earth policy** — Strategy of destroying crops, food stores, and infrastructure to deny resources to invading forces.  
+- **Smolensk** — A strategically important Russian city where Napoleon fought a costly battle but failed to destroy the Russian army or force surrender.  
+- **Space (extension of)** — Expanding the battlefield beyond conventional limits into political, social, and international arenas to diffuse the enemy’s efforts.  
+- **Strategy of the void** — Denying the enemy firm targets or direct engagement, making oneself elusive to undermine their strength and morale.  
+- **Supply base (using enemy’s)** — Living off the enemy’s resources as a tactic of endurance in guerrilla warfare.  
+- **T. E. Lawrence** — British officer who applied guerrilla tactics in World War I by never letting the enemy engage directly and using the vast desert as a strategic advantage.  
+- **Time (offensive weapon)** — Using the prolonged duration of conflict to wear down an opponent’s morale, resources, and strategic coherence.  
+- **Triangle of battle (front, flank, rear)** — The traditional formation in conventional warfare that must be protected to avoid encirclement.  
+- **Vaporous presence** — Being elusive and invisible enough that the enemy has no concrete target, heightening their frustration and error rate.  
+- **Winter (Russian)** — The harsh climate that devastated Napoleon’s army during the retreat from Moscow, a natural ally to guerrilla tactics.

@@ -1,0 +1,26 @@
+- **Active Neutralization** — The subversion or cooperation of key personnel within forces to prevent them from opposing the coup.  
+- **Allies** — Units or individuals within the armed forces or security apparatus that support the coup planners.  
+- **Army** — Land-based military forces, central to coup planning due to their size, training, and firepower.  
+- **Autonomy** — Level of independent operation allowed to military units based on their training, terrain, and communication capabilities.  
+- **Balance of Forces** — The distribution and interaction of political and coercive forces supporting or opposing the government.  
+- **Bureaucratic Mentality** — An outlook focused on jobs and careers rather than political loyalty, often characteristic of paramilitary police units.  
+- **Career Pattern** — The progression and promotions of military officers, used to assess their loyalty and recruitment potential.  
+- **Central Intelligence Agency (CIA)** — A major US intelligence organization criticized for bureaucratic inefficiency and lack of undercover field operators.  
+- **Coup d’État** — A rapid and planned seizure of political power, typically by armed forces or military elements within a state.  
+- **Defensive Neutralization** — Measures to prevent potential opposition forces from effectively acting against the coup without incorporating them.  
+- **Director of National Intelligence (DNI)** — US official responsible for coordinating multiple intelligence agencies but limited by fragmentation and military dominance.  
+- **Ethnic Matrix** — The complex network of ethnic affiliations, rivalries, and solidarities influencing military and political loyalties in coup planning.  
+- **Incorporation** — The active recruitment and cooperation of key leaders and technicians within military units to support the coup.  
+- **Intelligence Community** — The network of agencies gathering information on domestic and foreign threats; often fragmented and bureaucratically bloated.  
+- **Key Individuals** — Officers or technicians within military units whose cooperation is essential for controlling that unit during a coup.  
+- **Military Echelon** — The actual operational level in military units where command and control decisions are effectively made.  
+- **Paramilitary Forces** — Police or security forces with military training and equipment, sometimes capable of independent intervention.  
+- **Police Forces** — Civil law enforcement bodies that vary widely in structure and intervention capability, generally less effective against coups than armies.  
+- **Political Forces** — Non-military groups such as parties, unions, religious, ethnic, or sectional interests that influence government stability.  
+- **Professional Defenses of the State** — Armed forces, police, and security services forming the state's coercive apparatus.  
+- **Recruitment Prospects** — The evaluation of individuals’ loyalty and political outlook to assess their suitability for involvement in the coup.  
+- **Security Services** — Intelligence and counterintelligence agencies tasked with internal security, surveillance, and protection of the regime.  
+- **Subversion** — The act of covertly recruiting or influencing members of a force to support or not oppose a coup.  
+- **Technical Personnel (Technicians)** — Specialists in communications, transport, or other technical roles critical to executing or neutralizing military interventions.  
+- **Transition Phase** — The critical period immediately after the coup during which control over the state apparatus must be rapidly consolidated.  
+- **Wait-and-See Elements** — Individuals or groups undecided in allegiance during a coup, whose neutrality is crucial to prevent opposition grouping.

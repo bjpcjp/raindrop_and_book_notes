@@ -1,0 +1,16 @@
+- **Absolute force** — The total number of troops available in an army, as determined by the government and often considered a fixed quantity by commanders.  
+- **Decisive point** — The specific location or moment where the majority of fighting forces should be concentrated to achieve victory.  
+- **Energy in forced marches** — The vigorous and rapid movement of troops to gain strategic advantage and concentrate forces effectively.  
+- **Judicious direction** — The skillful management and deployment of forces to ensure superiority at critical moments and locations.  
+- **Military virtue** — The moral and fighting qualities of an army, influencing effectiveness alongside numbers and skill.  
+- **Numerical force** — The quantity or number of combatants engaged in a battle, a key factor in determining victory.  
+- **Relative superiority** — Achieving a local or situational numerical advantage at the decisive point, even if overall numbers are equal or inferior.  
+- **Skilful assemblage** — The strategic concentration of available troops at the right time and place to overpower the enemy.  
+- **Strategy** — The broader art of determining when, where, and with how many troops a battle is to be fought, aiming at long-term war objectives.  
+- **Superiority in numbers** — The advantage in troop quantity that can decisively influence the outcome of combat when sufficiently great.  
+- **Tactics** — The conduct and execution of actual combat on the battlefield, following the framework set by strategy.  
+- **Ultimate aim of War** — The final goal or purpose of engaging in warfare, often distant and achieved through a series of subordinate objectives.  
+- **Use of battle** — The application and consequences of a combat outcome towards achieving larger strategic goals.  
+- **Valour of troops** — The bravery and fighting spirit of soldiers, considered a given, constant quality in analyzing combat outcomes.  
+- **Validity of numerical superiority** — The principle that significant numerical advantage generally leads to victory but must be weighed against other factors.  
+- **War objectives** — The series of goals subordinate to the ultimate aim, which strategy seeks to achieve through battles and campaigns.

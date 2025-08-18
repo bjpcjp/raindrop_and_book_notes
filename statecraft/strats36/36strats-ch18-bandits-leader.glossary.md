@@ -1,0 +1,28 @@
+- **Art of War** — Classical Chinese military treatise attributed to Sun Bin emphasizing strategy and tactics.  
+- **Bandits** — Rebels or enemy forces operating outside formal military structure.  
+- **Captain** — A military rank or commander leading troops in battle.  
+- **Commander** — Leader of an army or military force responsible for strategy and operations.  
+- **Counterattack** — A tactical response where defending forces go on the offensive after repelling an assault.  
+- **Detachment** — A specific unit or group of troops assigned for a special task.  
+- **Fuhan** — A city besieged by rebel forces led by Li Yan during the Six Dynasties Period.  
+- **Great Prince** — A senior noble who provides authority and support, as seen in the Heian Period story.  
+- **Imperial Order** — A command issued by the emperor directing military operations or policy.  
+- **Loyalty** — A binding allegiance of troops to their leader, motivating continued fighting despite losses.  
+- **Lyoyality vs. Money/Threats** — Distinction between troops bound by faithfulness versus those hired or coerced.  
+- **Master Yoga** — An aristocrat in Heian Japan who survived a surprise attack through cunning escape.  
+- **Multi-layered White Robes** — Disguise used by Wang Meng representing peaceful intent in a Trojan horse tactic.  
+- **Provincial Governor** — A regional ruler, such as rebel Li Yan who claimed governorship of Yi province.  
+- **Rebel Commander** — A leader opposing established rulers, such as Yin Ziqi or Li Yan.  
+- **Rodents of War** — A metaphor for enemy forces or bandits in guerrilla warfare contexts.  
+- **Siege** — A military blockade and assault on a fortified city or position intending to force surrender.  
+- **Shock Troops** — Highly trained soldiers deployed for rapid and decisive assaults on key enemy positions.  
+- **Strategic City** — Locations of military importance controlling key routes or resources, e.g., Suiyang.  
+- **Surprise Attack** — An offensive launched unexpectedly to catch the enemy off guard.  
+- **Trojan Horse Strategy** — A deceptive tactic involving false peace offers or disguised forces to infiltrate an enemy.  
+- **Troops’ Morale** — The confidence, enthusiasm, and discipline of soldiers in battle influenced by leadership.  
+- **Wang Meng** — Commander who subdued rebels by capturing their leader through trickery.  
+- **Weaponry Deception** — The practice of hiding or withholding weapons to achieve tactical surprise.  
+- **Yi Province** — Region in China governed by rebel Li Yan during the Six Dynasties Period.  
+- **Yin Ziqi** — Rebel commander killed during the siege of Suiyang which led to rebel army's dispersal.  
+- **Zhang Xun** — Defending commander at Suiyang who planned the archers’ ambush against Yin Ziqi.  
+- **Thirty-Six Strategies** — Ancient Chinese collection of tactics and stratagems for warfare and conflict resolution.

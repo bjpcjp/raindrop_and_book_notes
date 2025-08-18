@@ -1,0 +1,1 @@
+When facing a powerful enemy, one should undermine their foundation by attacking their sources of strength—be it wealth, resources, or manpower—thereby weakening their entire force indirectly. Historical examples demonstrate that manipulating an opponent's ambitions, destroying their supplies, or sowing discord can lead to victory without direct confrontation.

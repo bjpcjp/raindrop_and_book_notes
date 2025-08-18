@@ -1,0 +1,17 @@
+- **Capital (human and physical)** — Assets such as trained individuals and factories necessary for economic development.  
+- **Consumption** — The use of goods and services by individuals or households, as opposed to income saved or invested.  
+- **Coup** — A sudden, often violent, seizure of government power.  
+- **Development (economic)** — The process of improving economic conditions through increasing capital and investment, often at the cost of current consumption.  
+- **Elite** — The privileged group in a society that benefits from economic development and holds significant political power.  
+- **Foreign aid** — Financial resources provided by donor countries to assist economic development, typically insufficient to cover all necessary expenses.  
+- **GDP per capita** — Gross Domestic Product divided by the population, indicating average income per person.  
+- **Investment** — Allocation of resources to create or enhance capital, such as building infrastructure or training workers.  
+- **Minimum annual income (economic survival limit)** — The rigid threshold of income needed for an average individual to meet basic bodily needs and avoid starvation.  
+- **Political survival limit** — The flexible minimum income or standard of living threshold below which the population may revolt and overthrow the government; influenced by psychological, historical, and social factors.  
+- **Propaganda** — Activities designed to provide information or entertainment that distracts from hardships, justifies sacrifices, and legitimizes current leadership through rational or irrational appeals.  
+- **Repression** — Political police activities aimed at suppressing dissent, intimidating populations, and controlling information to maintain regime stability.  
+- **Standard of living** — The level of wealth, comfort, and material goods available to a population or individual.  
+- **Taxation** — The process of levying financial charges on individuals or businesses to fund government expenditure, including development, police, and propaganda.  
+- **Tonton Macoute** — The secret police/militia force used by Haiti's Duvalier regime for repression and political control.  
+- **Voodoo (in political context)** — Duvalier’s use of supernatural beliefs as a tool for political propaganda and intimidation.  
+- **Wartime state security** — The system of police, military, and intelligence efforts used to enforce political stability and suppress opposition.

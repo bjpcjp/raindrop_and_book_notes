@@ -1,0 +1,26 @@
+- **Advance Guards** — Forward elements engaged in early combat, often preceding the main battle; generally considered necessary evils to be avoided if possible.  
+- **Battle** — A total combat event composed of partial combats resulting in a decisive outcome.  
+- **Combat** — The engagement or fight between opposing forces, consisting of multiple moments and partial actions.  
+- **Decision of the Combat** — The moment when a battle’s outcome is fixed, making further fighting a new battle, not a continuation.  
+- **Disposition** — The tactical or strategic arrangement of forces relative to each other and the battlefield.  
+- **Economy of Forces** — Conducting combat by engaging the smallest necessary portion of one's army while preserving strong reserves.  
+- **Flank Attack** — An attack directed at the side of the enemy formation, usually yielding moral and tactical advantages, especially in the crisis of battle.  
+- **Force (Fresh Force)** — Newly arrived troops intended to support or restore a combat.  
+- **Loss of Ground** — Generally marks the decision point when ground possession is the objective of the combat.  
+- **Moment of the Decision** — The point in time when the battle is essentially decided; no fresh force can reverse the defeat.  
+- **Moral Effect** — The psychological impact on troops, often influenced by surprise or success in battle, affecting combat effectiveness.  
+- **New Battle** — A separate engagement arising after the previous combat has been decisively concluded.  
+- **Partial Combat** — A segment or phase of the overall combat, contributing to the total result.  
+- **Reserves** — Troops held back from initial engagement to provide support or exploit success later in the battle.  
+- **Restoration of the Battle** — The act of resuming combat advantageously after a disadvantageous turn, often through reinforcement.  
+- **Result (Total Result)** — The combined outcome of all partial combats constituting the battle’s final decision.  
+- **Second Battle** — A subsequent engagement following a lost battle, often motivated by feelings of revenge and requiring offensive action.  
+- **Strategic Arrangement** — Separation of forces so that separate combats may occur though union for a common purpose remains the goal.  
+- **Strategic Unity of Battle** — The conception of the battle as a single entity despite various partial combats within it.  
+- **Surprise** — An element increasing the moral effect and efficacy of reinforcement, particularly potent in flank or rear attacks.  
+- **Tactical Arrangement** — Compact troop dispositions designed for action in a single, common battle space.  
+- **Tactical Course** — The unfolding sequence of combat events and partial successes or failures before final decision.  
+- **Tactical Result** — The immediate outcome of a particular engagement or partial combat within the battle.  
+- **Total Force** — The entire combat strength engaged or available in a battle.  
+- **Unit (Military Unit)** — A military formation, the size of which influences the time needed to restore order after crisis.  
+- **Victory** — Complete success in battle, often involving enemy destruction or ground/object possession, satisfying the ideal of battle outcome.

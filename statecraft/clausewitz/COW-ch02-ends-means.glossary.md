@@ -1,0 +1,23 @@
+- **Act of destruction** — The effort with a positive object in combat aimed at destroying the enemy’s fighting powers.  
+- **Battle** — The single means in War, involving combat to achieve political or military objectives.  
+- **Combat** — A unit of fighting within War, involving the use of armed force directed toward an objective.  
+- **Conquest** — The subjugation or occupation of enemy provinces to diminish their military power or leverage political advantage.  
+- **Destruction of the enemy’s military power** — Reducing the enemy’s armed forces to a state incapable of prosecuting War.  
+- **Decision by arms** — The supreme law of War whereby outcomes are settled through combat and destruction of the enemy’s fighting forces.  
+- **Duration of the contest** — The length of time over which War is waged, which can wear down the enemy’s physical and moral powers.  
+- **End of War (object of War)** — The political goal or condition War aims to achieve, often involving subduing the enemy’s will, military power, or territory.  
+- **Expenditure of force** — The resources, strength, and effort expended by a belligerent in pursuit of War objectives.  
+- **Fight** — The sole means in War, covering any form or scale of combat or armed engagement.  
+- **Holding territory (Occupation)** — Temporarily controlling enemy land to levy contributions, devastate resources, or disrupt their capacity to wage War, without intent to keep it.  
+- **Measuring of strength** — The comparative assessment of opposing forces that may prevent combat by convincing the weaker side to yield.  
+- **Military activity** — The creation, maintenance, and application of armed forces directed toward combat and achieving War objectives.  
+- **Military force (Army)** — Organized armed men whose creation and application constitute the means of fighting.  
+- **Negative object** — A defensive goal aimed at preserving one’s own forces and prolonging the contest to wear out the enemy.  
+- **Offensive** — The act of applying military force with the positive objective of destroying the enemy’s fighting power or achieving decisive results.  
+- **Probability of success** — The calculated likelihood of achieving objectives in War, influencing decisions to continue or conclude hostilities.  
+- **Pure defensive** — A form of resistance focusing solely on defeating enemy intentions without pursuing other positive objectives.  
+- **Resistance (passive and active)** — Endurance of force or combat without necessarily seeking to destroy the enemy, often to prolong conflict and exhaust the opponent.  
+- **Short cuts (arguments ad hominem)** — Individual, often unpredictable, factors or actions in War that influence outcomes beyond formal strategy or theory.  
+- **Subjugation of the enemy’s will** — Forcing the enemy’s government or people into peace or submission to end hostilities.  
+- **Wearing out the enemy** — A strategy of gradually exhausting the enemy’s physical and moral strength through prolonged contest and resistance.  
+- **Will of the enemy** — The determination or morale of the opposing side, which must be overcome to end War fully.

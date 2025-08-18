@@ -1,0 +1,1 @@
+Success in strategy requires abandoning the rigid tactics and doctrines of the past to remain fully present, adaptable, and fluid in response to ever-changing circumstances. By waging a guerrilla war on the mind—eschewing repetition and embracing constant movement and innovation—you prevent stagnation and outmaneuver opponents who fight the last war.

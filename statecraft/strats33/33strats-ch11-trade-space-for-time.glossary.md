@@ -1,0 +1,18 @@
+- **Authority** — The art of remaining disciplined and calm while waiting for disorder to appear among the enemy.  
+- **Disengagement** — The refusal to engage the enemy psychologically or physically, used as a strategy to conserve strength and provoke the enemy.  
+- **Friction** — The unforeseen events and obstacles in war that disrupt even the best-laid plans, described by Clausewitz.  
+- **Guerrilla tactics** — A strategy of irregular warfare using mobility, surprise, and avoidance of frontal battles, often employed by Mao.  
+- **Long March** — The strategic retreat of the Chinese Red Army under Mao to escape encirclement and forge a new revolutionary identity.  
+- **Martyrdom** — The deliberate sacrifice of oneself as a symbolic act to inspire others; a dangerous and often uncontrollable strategy.  
+- **Murphy’s Law** — The idea that if anything can go wrong, it will; a factor that can turn enemy plans into disasters over time.  
+- **Nonengagement strategy** — Trading space for time by retreating rather than fighting strong enemies, allowing recovery and eventual advantage.  
+- **Perspective** — Gaining broader understanding of oneself, the enemy, and events by stepping back from immediate conflict.  
+- **Retreat** — A strategic withdrawal from battle, seen not as weakness but as a means to conserve strength, gain time, and avoid defeat.  
+- **Reversal** — Choosing to engage an overwhelming enemy directly, sometimes by martyrdom, to serve as a symbolic rallying act.  
+- **Self-possession** — Maintaining composure and discipline in the face of chaos or enemy attacks.  
+- **Space vs. Time** — The strategic concept of conceding physical territory to gain valuable time for recovery and planning.  
+- **Strategic identity** — The cohesive sense of purpose and belief shaped during times of retreat and reflection, crucial for future success.  
+- **Tolerance for retreat** — The willingness to accept temporary loss of ground or face apparent weakness for long-term gain.  
+- **Wei Wu** — A Taoist concept of action through inaction; controlling situations by not forcing control and allowing natural progress.  
+- **Winning through inaction** — Achieving success by not responding immediately to aggression, frustrating and unbalancing the enemy.  
+- **Zeitgeist of retreat** — The cultural and psychological significance of withdrawal as a time for reflection, regrouping, and strengthening.

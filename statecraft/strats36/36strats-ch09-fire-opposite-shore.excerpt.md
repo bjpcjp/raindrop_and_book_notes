@@ -1,0 +1,1 @@
+The strategy "Observe the Fire on the Opposite Shore" advises maintaining discipline and patience by waiting for rivals to weaken each other through conflict before intervening decisively. This approach, illustrated by historical Chinese and Japanese examples, emphasizes restraint to achieve victory with minimal effort and risk.

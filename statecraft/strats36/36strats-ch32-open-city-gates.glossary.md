@@ -1,0 +1,23 @@
+- **Advance force** — A detachment sent ahead of the main army to scout or engage the enemy.
+- **Ambush** — A surprise attack from a hidden position.
+- **Brazier** — A container for burning coal or fire, used for light or warmth, here as a signal beacon.
+- **Decoy** — A ruse or distraction intended to mislead the enemy.
+- **Dismount** — To get off a horse or vehicle.
+- **Forge retreat** — To simulate withdrawal to lure the enemy.
+- **Lute** — A stringed musical instrument; here used to project calmness or confidence.
+- **Non-contention** — The virtue of avoiding direct confrontation or conflict.
+- **Open city gates** — Leaving gates unbarred to create an impression of weakness or trap.
+- **Outnumbered** — Being inferior in number compared to the enemy.
+- **Pretense of military preparedness** — Displaying readiness for battle that may be misleading.
+- **Reverse psychology** — Influencing an opponent by behaving opposite to expectations.
+- **Retreat** — Withdrawal of forces from engagement or danger.
+- **Siege** — A military blockade or assault on a fortified place.
+- **Sundown signaling** — Using visible markers (like braziers or drums) to guide troops during darkness.
+- **Trap** — A planned strategy to catch the enemy off guard or cause their defeat.
+- **Troop commanders** — Officers leading groups of soldiers.
+- **Unusual behavior** — Actions that deviate from expected norms to confuse or mislead.
+- **Vanguard** — The foremost part of an advancing army.
+- **War drum** — A drum beaten to convey orders or boost morale during battle.
+- **Weak appearance** — Strategy of seeming vulnerable to bait the enemy.
+- **Xiongnu** — Nomadic tribes that were historic enemies during Han dynasty China.
+- **Yangping** — Historical city used as a refuge in the Three Kingdoms period.

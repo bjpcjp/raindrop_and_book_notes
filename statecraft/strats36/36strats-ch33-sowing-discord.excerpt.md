@@ -1,0 +1,1 @@
+The Strategy of Sowing Discord involves undermining an enemy's effectiveness by creating internal conflicts among their leaders, allies, and population, thereby preventing cooperation and weakening their ability to fight. Historical examples from ancient China demonstrate how fomenting distrust, deception, and division led to the downfall of enemy coalitions and military defeats.

@@ -1,0 +1,24 @@
+- **Aggression** — Hostile or violent behavior often hidden under friendship or alliance to advance one’s interests covertly.  
+- **Ambassador** — A messenger or representative, sometimes used deceptively to negotiate or deceive.  
+- **Appeasement** — Attempts to conciliate or compromise with an opponent that may be naive or exploited.  
+- **Battle** — Constant struggle or conflict that defines identity, purpose, or survival.  
+- **Center** — The political or social middle ground often associated with compromise and loss of distinct identity.  
+- **Chameleon** — A person who mimics others’ ideas without conviction and hides true allegiance.  
+- **Conflict** — A necessary and therapeutic struggle that shapes mental and social development.  
+- **Enemy** — One who is opposed, hostile, or a threat; not merely a foe but the opposite pole that defines self.  
+- **Hostility** — Hidden or disguised antagonism that can be subtle or overt.  
+- **Inner enemy** — One’s own confusion, fear, or indecision that obstructs clarity and effective action.  
+- **Moral warfare** — Tactics where opponents play victim or induce guilt to manipulate and undermine.  
+- **Naivety** — Lack of awareness or suspicion, often leading to exploitation or defeat.  
+- **Outsider** — Someone apart from established or dominant groups, often defining themselves by opposition.  
+- **Paranoia** — Excessive or irrational suspicion that leads to loss of clarity and control.  
+- **Polar star** — A guiding enemy or opposing force that provides focus and direction.  
+- **Polarization** — The act of sharply dividing people or groups into opposing camps to clarify identity and conflict.  
+- **Power grab** — Sudden attempt to gain control or dominance, often linked to dangerous enemies.  
+- **Provocation** — Deliberate action or words aimed to elicit a revealing response from others.  
+- **Subtlety** — Indirect, evasive behaviors or hidden intentions that mask true hostility.  
+- **Treachery** — Deceitful betrayal, often unexpected and undermining trust.  
+- **Victimhood** — Playing the role of the victim as a weapon in conflict and manipulation.  
+- **Warlike nature** — An intrinsic or cultivated disposition toward confrontation and conflict.  
+- **Wits** — Mental sharpness and adaptability crucial for survival in conflict or adversity.  
+- **Zeus’s lightning bolt** — A metaphor for a decisive awakening or catalyst that stirs action and clarity.

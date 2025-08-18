@@ -1,0 +1,25 @@
+- **Ambush** — A surprise attack from a hidden position used to catch the enemy off guard.  
+- **Chen** — A historical Chinese state attacked by Northern Zhou and Sui dynasties.  
+- **Direct attack** — A straightforward assault on the enemy, often anticipated and defended against.  
+- **Feint** — A deceptive maneuver intended to mislead the enemy about the true point of attack.  
+- **Force multiplier** — Using strategy or deception to increase the effectiveness of a smaller force.  
+- **General He Nuobi** — Sui dynasty general known for crossing the Yangtze using deception and surprise.  
+- **General He Ruodun** — Northern Zhou general who used feints and deception during the attack on Chen.  
+- **General Hou Qi** — Chen state general opposing the Northern Zhou invasion.  
+- **Indirect attack** — An assault that targets the enemy unexpectedly by exploiting their assumptions or weaknesses.  
+- **Lao Zi** — Ancient Chinese philosopher, author of the Tao Te Ching, whose ideas underpin the strategy.  
+- **Northern Zhou** — A dynasty in China whose forces attacked the Chen state using strategic deception.  
+- **Siege** — The military operation of surrounding and attacking a fortified place to force surrender.  
+- **Six Dynasties Period** — Era in Chinese history during which some of the described military events occurred.  
+- **Something and Nothing** — Philosophical concept that all things arise from and return to emptiness or non-being; used metaphorically in strategy.  
+- **Sui Dynasty** — Chinese dynasty that conquered Chen through deception and surprise attacks across the Yangtze.  
+- **Straw dummies** — Decoys used by General Zhang Xun’s troops to deceive enemies and replenish arrows during siege.  
+- **Sun Zi** — Ancient Chinese military strategist who emphasized interchangeability of direct and indirect attacks.  
+- **Tang Dynasty** — Chinese dynasty during which General Zhang Xun used the “Create Something from Nothing” strategy in the An Lushan Rebellion.  
+- **The Way (Dao)** — Philosophical principle of natural order and flow, emphasizing yielding and weakness as strengths.  
+- **Thirty-Six Strategies** — A collection of Chinese proverbs and tactics illustrating cunning and strategy in warfare.  
+- **Wú Zhōng Shēng Yǒu** — The strategy "Create Something from Nothing," emphasizing feints and deception in warfare.  
+- **Yangtze River** — Major Chinese river that served as a strategic barrier and crossing point in the described battles.  
+- **Zhou troops** — Forces of the Northern Zhou dynasty involved in the described conflict against Chen.  
+- **Zhou’s hidden shock troops** — Soldiers concealed in boats disguised as supply vessels to surprise and attack enemy troops.  
+- **Deception** — Deliberate misleading of the enemy to achieve a tactical advantage.

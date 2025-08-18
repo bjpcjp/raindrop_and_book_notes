@@ -1,0 +1,45 @@
+```markdown
+# Table of Contents
+
+- The Genius For War  
+  - Definition and Conception of Genius  
+  - Essence of Military Genius  
+  - Prevalence and Degree of Military Genius  
+  - Courage  
+    - Physical Courage  
+      - Indifference to Danger  
+      - Courage from Positive Motives  
+    - Moral Courage  
+  - Physical Strength and Endurance  
+  - The Role of Understanding  
+    - War and Uncertainty  
+    - War and Chance  
+  - Qualities for Command  
+    - Coup d’oeil (Rapid Discernment)  
+    - Resolution  
+    - Presence of Mind  
+  - Four Elements of War’s Atmosphere  
+    - Danger  
+    - Physical Effort  
+    - Uncertainty  
+    - Chance  
+  - Manifestations of Heroic Nature  
+    - Energy  
+    - Firmness  
+    - Staunch­ness  
+    - Strength of Mind and Character  
+      - Self-Command  
+      - Types of Emotional Character  
+      - Strength of Character vs. Obstinacy  
+  - Connection Between War and Country/Ground  
+    - Sense of Locality (Orisinn)  
+    - Role of Imagination and Memory  
+  - Intellectual Requirements in War  
+    - Differences Across Ranks  
+    - Military Genius in Commanders-in-Chief  
+    - The General as Statesman  
+  - Higher Mental Faculties  
+    - Unity and Judgment in Complex Situations  
+    - The Influence of Temperament and Character  
+  - Conclusion: Traits Closest to Military Genius  
+```

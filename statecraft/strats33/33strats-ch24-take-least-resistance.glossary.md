@@ -1,0 +1,22 @@
+- **Authority** — The interplay of orthodox and unorthodox tactics in battle, each generating the other in an endless cycle.  
+- **Duchamp, Marcel** — Influential 20th-century artist known for "readymades" that challenged art conventions by presenting ordinary objects as art.  
+- **Extraordinary** — Actions or strategies that are surprising, novel, and arise from the ordinary to shock and confuse opponents.  
+- **Fabius Maximus** — Roman dictator who used a guerrilla-style, defensive strategy to exhaust Hannibal's forces without direct confrontation.  
+- **Fashion** — A continual process of standardization where novelty becomes normal and is abandoned once it becomes cliché.  
+- **General Staff (Prussian)** — A military innovation developed post-Napoleon to systematize continuous adaptation and strategic innovation.  
+- **Hannibal** — Ancient Carthaginian general known for unorthodox military tactics, including surprising enemy expectations to sow chaos.  
+- **Line of Least Expectation** — The path or approach that opponents least anticipate and therefore least defend, offering a tactical advantage.  
+- **Modern Art Avant-Garde** — Artistic movement focused on originality and novelty, constantly experimenting beyond traditional forms.  
+- **Ordinary** — Conventional or expected actions used to fix opponents’ expectations before delivering the extraordinary.  
+- **Ordinary-Extraordinary Strategy** — Combining conventional actions to set a pattern, then following with unexpected extraordinary maneuvers.  
+- **Out of the Ordinary** — Doing things in ways outside established patterns to disrupt and confuse opponents.  
+- **Psychological Warfare** — Use of deception, disinformation, and emotional manipulation to weaken an opponent’s morale and decision-making.  
+- **Reversal** — Avoiding attack directions or methods expected by opponents to prevent stiff resistance.  
+- **Strategic Madness** — Controlled, occasional irrational behavior used to unsettle opponents while maintaining overall strategic focus.  
+- **Surprise** — The element of unexpectedness critical to disorienting opponents and making strategies effective.  
+- **Sun-tzu** — Ancient Chinese strategist who articulated the balance and cycling between orthodox and unorthodox tactics.  
+- **Unconventional Warfare** — Military strategy emphasizing surprise, innovation, irregular tactics, and psychological disruption beyond traditional methods.  
+- **Unorthodox** — Nontraditional tactics or behavior intentionally breaking conventions to gain advantage.  
+- **Wiles of War** — Ancient Chinese military strategies focusing on deception, surprise, and strategic illusion.  
+- **Windigokan (No-flight Contraries)** — Ojibwa warrior society known for acting contrary to norms, using unpredictable and terrifying behavior to intimidate enemies.  
+- **Young Strategists** — Typically the group most inclined to innovate and use unconventional tactics, opposing psychological aging and rigidity.

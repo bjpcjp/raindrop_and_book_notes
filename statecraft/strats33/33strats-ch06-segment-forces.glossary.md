@@ -1,0 +1,27 @@
+- **Auftrag** — A general statement of overall mission or directive to be followed in spirit, not letter; basis for mission tactics in German military doctrine.  
+- **Auftragstaktik** — Mission-oriented command system emphasizing initiative, allowing officers to act without awaiting orders and adapt as needed to the situation.  
+- **Befehl** — A rigid order to be obeyed to the letter in German military terminology.  
+- **Campaign spirit** — The shared belief and motivation that infuses troops, fostering initiative and cohesion.  
+- **Calculated disorder** — A tactic of creating apparent chaos to confuse and paralyze the enemy while maintaining internal coordination.  
+- **Command** — The art of directing forces, which can range from centralized control to decentralized, mission-based leadership.  
+- **Corps system** — A military organization dividing an army into independent, self-sufficient units (corps) capable of operating autonomously.  
+- **Flexibility (in organization)** — The ability of a military group to adapt its structure and strategy fluidly in response to circumstances.  
+- **General staff** — A cadre of specially trained officers responsible for planning, coordination, and continual self-assessment within an army.  
+- **Genghis Khan’s Great Hunt** — A training exercise simulating coordinated, distributed maneuvers to develop communication, discipline, and initiative.  
+- **Mobility** — The capacity of forces to move quickly and adaptively, often enhanced by decentralization and smaller operational units.  
+- **Mission command** — A leadership philosophy that emphasizes defining missions broadly and trusting subordinates to execute them creatively.  
+- **Napoleon’s corps** — Independent army units each led by a capable marshal, functioning as miniature armies for rapid, flexible operations.  
+- **Organizational dimension of strategy** — The assessment of how effectively a military’s structure handles uncertainty and adapts to challenges.  
+- **Pattern warfare** — The tactic of dispersing and concentrating forces in nonlinear, flexible patterns to confuse the enemy.  
+- **Patton’s philosophy of command** — "Tell them what to do and they will surprise you with their ingenuity," emphasizing decentralized initiative.  
+- **Potential force (shih)** — A position of preparedness and advantage allowing multiple responsive options, as described by Sun-tzu.  
+- **Segmentation** — Breaking an army into independent teams or units that operate autonomously to enhance speed and adaptability.  
+- **Speed** — Critical factor in warfare denoting the rapid movement of troops and decision-making to outpace the enemy.  
+- **Strategic depth** — The capacity to maintain multiple flexible options and courses of action in a military campaign.  
+- **Structure is strategy** — The concept that an army’s organizational design directly shapes its strategic capabilities and options.  
+- **Sun-tzu’s Art of War** — Ancient military treatise emphasizing adaptability, fluid movement, and taking advantage of uncertainty.  
+- **T.E. Lawrence’s maximum disorder** — Embracing controlled chaos as a natural and effective state for guerrilla warfare.  
+- **Unity through victory** — The idea that discipline and shared success, rather than superficial friendliness, build true team cohesion.  
+- **Velociy (related to command)** — The ability to move and make decisions faster than the opponent, a key element of success.  
+- **Warrior ethos** — A unifying belief or cause that inspires and directs soldiers in their mission-oriented actions.  
+- **Win through decentralization** — Strategy of empowering subordinates with mission clarity and tactical freedom to maximize adaptability and effectiveness.

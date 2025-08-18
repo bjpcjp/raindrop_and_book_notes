@@ -1,0 +1,18 @@
+- **Effective truth** — The real truth based on actions and results, not words or theories, as emphasized by Machiavelli.  
+- **Experience (in communication)** — Events or feelings that alter perception and internalize ideas more deeply than words alone.  
+- **Form (of communication)** — The method or style used to deliver a message, which must lead the audience to conclusions indirectly.  
+- **Irony** — A pedagogic tool used to provoke realization through humiliation, posing as ignorance to expose others’ faults.  
+- **Little things (le cose piccole)** — Small details in text, speech, or art that carry significant expressive power and indirect messages.  
+- **Midwife role (Socratic method)** — Helping others discover their own doubts and insights rather than directly implanting ideas.  
+- **Parables** — Stories or analogies used to indirectly communicate deeper truths, exemplified by Jesus’s teaching method.  
+- **Passive contemplation** — A state wherein language only prompts thought without inspiring action; communication to avoid.  
+- **Preaching (in communication)** — Direct moralizing or telling people what to do, which often triggers resistance.  
+- **Resistance (to communication)** — The defensive mental barriers people maintain to protect preexisting beliefs from outside influence.  
+- **Reverse ability** — The skill of decoding subtexts, hidden meanings, and unconscious signals behind others’ speech.  
+- **Socratic method** — A strategic dialog style involving questioning and feigned ignorance to reveal contradictions and induce change.  
+- **Subtext** — Implicit ideas or messages conveyed indirectly under the surface of spoken or written communication.  
+- **Symbols (powerful)** — Images or sensory cues designed to affect moods and emotions, penetrating defenses more deeply than words.  
+- **Unconscious signals** — Nonverbal or indirect cues embedded in communication that reveal hidden intentions or truths.  
+- **Visceral communication** — Communication that targets emotions and physical experience rather than intellectual understanding.  
+- **Visual details** — Specific images or cinematic techniques used by Hitchcock to express complex ideas beyond dialogue.  
+- **Words (limitations of)** — Verbal expressions that often fail to influence deeply due to noise, defenses, and preconceptions.

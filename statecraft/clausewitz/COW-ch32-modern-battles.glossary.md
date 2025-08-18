@@ -1,0 +1,26 @@
+- **Art of War** — The systematic study and practice of military strategy, tactics, and organization.  
+- **Battle** — A large-scale combat between opposing forces, typically decisive in nature.  
+- **Bayonet** — A blade attached to the muzzle of a rifle used for close combat charges.  
+- **Cavalry** — Military units mounted on horseback, used for charges and rapid attacks.  
+- **Combat** — Engagement between opposing forces involving offensive and defensive actions.  
+- **Country** — The geographic and environmental context affecting the conduct and outcome of military operations.  
+- **Defensive** — A military posture or strategy aimed at holding ground and repelling enemy attacks.  
+- **Extinct volcanoes** — Metaphor describing troops that have exhausted their fighting capability and morale.  
+- **Fire-combat** — A prolonged exchange of gunfire between opposing forces.  
+- **Forces** — The assembled military units participating in battle.  
+- **Frontal mass** — Large formations arranged contiguous and behind one another in battle.  
+- **Great battle** — A decisive, large-scale combat involving significant forces and strategic objectives.  
+- **Infantry** — Soldiers fighting on foot, typically forming the core of battle formations.  
+- **Masses** — Concentrated large groups of troops deployed for combat.  
+- **Military organisation** — The structured arrangement and deployment of armed forces.  
+- **Modern battle** — A battle characterized by protracted fire-combat with successive troop replacements, reflecting parity in military knowledge and organization.  
+- **Morale** — The confidence and fighting spirit of troops.  
+- **Offensive** — A military operation aimed at attacking and gaining ground from the enemy.  
+- **Particular coefficients** — Specific factors such as strength, terrain, and other conditions influencing battle outcomes.  
+- **Resolution** — The decision to continue fighting or withdraw after assessing the situation.  
+- **Shock** — The impact of short, intense physical attacks such as bayonet charges or cavalry strikes.  
+- **Strategy** — The overall plan or method for conducting war, influenced by tactical realities.  
+- **Successive relief** — The practice of withdrawing exhausted troops and replacing them with fresh ones during battle.  
+- **Tactics** — The art and method of deploying and maneuvering forces in battle to achieve immediate objectives.  
+- **Veil of night** — The darkness that can halt fighting due to limited visibility and increased risk.  
+- **Warlike element** — The combat energy and determination propelled by national interests and conflict realities.

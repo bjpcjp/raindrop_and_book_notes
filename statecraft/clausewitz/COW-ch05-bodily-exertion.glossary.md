@@ -1,0 +1,31 @@
+- **Allowance** — The consideration given to bodily fatigue when forming opinions about war events.  
+- **Army** — The collective military force subject to leadership and bodily exertion in war.  
+- **Attack** — (implied) Military action requiring exertion and spirit, though not directly defined in the passage.  
+- **Bodily exertion** — Physical effort and fatigue experienced by soldiers and commanders during war.  
+- **Coefficient** — A factor representing the influence of bodily exertion on military forces.  
+- **Commander** — A military leader responsible for directing troops and sustaining their spirit and effort.  
+- **Danger** — A fundamental cause of friction in war, related to bodily exertion and morale.  
+- **Desponding** — A state of low spirit or despair, often seen in eyewitnesses after adverse events.  
+- **Dictation of the Chief** — The command and will of a leader directing the army’s efforts.  
+- **Effort** — The exertion of physical strength and willpower in military operations.  
+- **Elastic body** — A metaphor describing the indefinite and variable nature of bodily exertion as a cause of friction.  
+- **Eye-witnesses** — Individuals who observe war events firsthand and whose judgments are modulated by their physical state.  
+- **Fatigue** — Extreme physical tiredness affecting judgment and performance in war.  
+- **Friction** — The resistance and difficulties caused by bodily exertion, danger, and other factors in war.  
+- **Glory** — The honor gained through victory, contrasted with disgrace in defeat despite hardship.  
+- **Influence** — The effect of bodily fatigue on opinions and military effectiveness.  
+- **Judgment** — The forming of opinions influenced by physical and emotional states during wartime.  
+- **Leader** — A person who guides troops and demands effort, embodying the spirit to sustain exertion.  
+- **Mind** — The intellectual and moral faculties constrained by physical and emotional strain.  
+- **Misfortunes** — Adverse events that weaken the army’s cohesion and morale.  
+- **Opinion** — The subjective appraisal of war events, shaped by physical condition and experience.  
+- **Pity** — Sympathy felt toward a defeated army compelled to exert itself merely to survive.  
+- **Power latent in troops** — The potential strength within soldiers unleashed through effective leadership.  
+- **Personal physical exertion** — The bodily effort of commanders and leaders alongside their troops.  
+- **Resistance** — The challenge to maintain spirit and effort under adverse circumstances.  
+- **Sensibilities** — Emotional faculties that guide judgment regarding justice and effort in war.  
+- **Spirit** — The morale, willpower, and motivation driving soldiers and commanders.  
+- **Subjective correctness** — Accuracy of judgment relative to the condition and perspective of the observer.  
+- **Tariff** — A fixed measure or rate, here implying the impossibility of quantifying bodily effort in war.  
+- **Victorious army** — A force motivated by pride and strong leadership, capable of sustained exertion.  
+- **Will of the Chief** — The authoritative direction that inspires and channels army effort.

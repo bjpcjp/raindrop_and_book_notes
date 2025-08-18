@@ -1,0 +1,32 @@
+- **Alliance** — A formal agreement or union between parties to cooperate for mutual benefit.  
+- **Armada** — A fleet of warships assembled for military purposes.  
+- **Art of War** — An ancient Chinese military treatise attributed to Sun Zi, focusing on strategy and tactics.  
+- **Bickering** — Repeated petty arguments or disagreements.  
+- **Cartel** — (Not explicitly mentioned but implied) A coalition or alliance formed to control or influence a situation.  
+- **Coup** — A sudden, violent, and illegal seizure of power from a government.  
+- **Defector** — A person who abandons their allegiance to join an opposing side.  
+- **Deception** — The act of misleading or tricking an enemy through false information or ruses.  
+- **Discord** — Conflict or lack of harmony between people or groups.  
+- **Doomed Spy** — An enemy spy deliberately allowed to observe staged events to deliver false intelligence, usually resulting in their execution.  
+- **Forgery** — The act of producing fake documents to mislead an opponent.  
+- **Hounds** — Metaphorical reference to soldiers or followers used to illustrate internal competition or conflict.  
+- **Infighting** — Internal conflict or quarrels within a group that weaken its overall strength.  
+- **Internal Disputes** — Conflicts occurring within an organization, government, or group.  
+- **Jia Lin** — Ancient Chinese strategist referenced for methods of harming enemies.  
+- **Kai Wu Dynasty** — (Likely a misread; correct is Wei dynasty) A Chinese imperial period known for military campaigns like that of emperor Tai Wu.  
+- **Marquis Ying** — Minister of Qin who advised sowing discord among enemy commanders.  
+- **Military Commanders** — Leaders responsible for directing armed forces.  
+- **Naval Commanders** — Military leaders specializing in naval warfare.  
+- **Partitioning** — Dividing a group or territory to weaken its power or unity.  
+- **Palace Coup** — An internal government overthrow plotted within a royal or imperial court.  
+- **Qin** — A powerful ancient Chinese state known for its aggressive expansion and strategy of sowing discord.  
+- **Ruse** — A trick or stratagem intended to deceive an enemy.  
+- **Sowing Discord** — A strategic method of weakening an enemy by causing internal conflict and division.  
+- **Spoils** — Rewards or gains distributed, often used to encourage loyalty or defection.  
+- **Thirty-Six Strategies** — A collection of ancient Chinese stratagems used in politics, war, and civil life.  
+- **Traditional Customs** — Established cultural practices or social behaviors.  
+- **Urine Wine** — A deceptive gift meant to insult and provoke the enemy.  
+- **Wei Dynasty** — A later imperial Chinese dynasty known for military engagements like that of emperor Tai Wu.  
+- **Warring States Period** — A historical era in China marked by rivalry and warfare among multiple states before unification under Qin.  
+- **Zang Zhi** — Song general known for using psychological tactics during siege warfare.  
+- **Zhou Yu** — Military commander who used deception to eliminate rivals and defeat Cao Cao.

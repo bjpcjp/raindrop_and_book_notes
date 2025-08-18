@@ -1,0 +1,14 @@
+- **Army** — The collective body of armed forces assembled for the purpose of war or defense.  
+- **Concentration** — The strategic principle of keeping all forces united and not dispersing them unnecessarily.  
+- **Definitive Point** — The critical location or moment in battle where the concentrated strength must be applied decisively.  
+- **Detachment** — A portion of troops separated from the main body for a specific, urgent purpose.  
+- **Energy** — The effort and resources required to create and maintain the Army.  
+- **Forces** — Military units or groups assembled to engage in combat or strategic operations.  
+- **General** — The commanding officer responsible for overall military strategy and decision-making.  
+- **Means** — The instruments, resources, or methods used to achieve strategic ends.  
+- **Necessary Separation** — The justified division of troops only when urgent or clearly reasoned causes exist.  
+- **Norm** — The accepted standard or guiding rule, here implying that forces should remain concentrated.  
+- **Reasonable Grounds** — Valid and justifiable reasons to detach portions of the army from the main body.  
+- **Separation** — The act of dividing troops into smaller groups, generally considered an exception to the rule of concentration.  
+- **Strategy** — The art and science of planning and directing military operations to achieve desired objectives.  
+- **War** — The state of armed conflict wherein different strategies and principles apply according to context.

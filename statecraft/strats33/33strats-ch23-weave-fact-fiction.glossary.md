@@ -1,0 +1,16 @@
+- **Ambiguity** — Creating confusion about reality by mixing fact and fiction, making it difficult for the enemy to discern truth.  
+- **Camouflage** — The ability to blend into the environment, physically or socially, to avoid detection until attacking or to stay unnoticed.  
+- **Decoy Attack** — Sending troops or making movements toward a false objective to disperse enemy forces and conceal the real target.  
+- **Deception** — The art of deliberately misleading the enemy by manipulating appearances and information to control their perception.  
+- **Double Agent** — An enemy agent who is turned or used to feed false information back to their original side unknowingly.  
+- **False Front** — Presenting a deceptive outward appearance, often weakness, to disarm or bait the enemy into a vulnerable position.  
+- **False Mirror** — A form of deception that blends truth and lies so intricately that the enemy cannot distinguish between them, reflecting their own expectations.  
+- **Hypnotic Pattern** — Creating a predictable pattern to lull the enemy into complacency before breaking it to achieve surprise.  
+- **Indirection** — Using indirect methods and deceptive maneuvers to counter enemy strategies without relying on direct force.  
+- **Military Deception** — Organized tactics to distort or manipulate signs of identity and intent to influence enemy behavior advantageously.  
+- **Misperception** — Causing the enemy to misunderstand or misinterpret reality, often by feeding their expectations and desires.  
+- **Passive Aggression** — Indirect or subtle hostile acts used to manipulate or undermine opponents without open confrontation.  
+- **Planted Information** — False intelligence deliberately placed where the enemy can discover it, making them believe they found the truth themselves.  
+- **Shadows within Shadows** — Layered deceptions that create complex ambiguity, making it impossible to differentiate fact from fiction.  
+- **Unconventional (Dirty) Warfare** — Using any available means, including unethical actions and mass deception, to gain advantage, especially by surprise and manipulation.  
+- **Warfare Appearance Management** — Controlling the perceptions and outward signals given to the enemy to gain strategic advantage.
