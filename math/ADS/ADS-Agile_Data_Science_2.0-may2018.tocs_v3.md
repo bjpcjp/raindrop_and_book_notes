@@ -1,0 +1,136 @@
+![ADS-Agile_Data_Science_2.0-may2018](ADS-Agile_Data_Science_2.0-may2018.best.png)
+
+- **Preface**
+  - **Agile Data Science Mailing List**
+    - The author maintains a web page for the book with updates and materials.
+    - Readers can access latest developments via the mailing list.
+  - **Data Syndrome, Product Analytics Consultancy**
+    - Data Syndrome is a consultancy founded by the author to advance the methodology.
+    - It offers help for implementing Agile Data Science and building data products.
+    - A video course on realtime predictive analytics is available as supplementary material.
+  - **Live Training**
+    - Offers customizable courses including Agile Data Science, Realtime Predictive Analytics, and Introduction to PySpark.
+    - Courses range from one to three days, covering full-stack analytics app development.
+    - More information is available at the Data Syndrome website.
+  - **Who This Book Is For**
+    - Targeted at programmers with some software and data experience.
+    - Especially useful for engineers, analysts, and data scientists working with big data.
+    - Product managers and designers benefit particularly from certain chapters.
+  - **How This Book Is Organized**
+    - Part I covers dataset and toolset introduction; Part II is a tutorial building an analytics application.
+    - Chapters 1–3 introduce theory, tools, and data.
+    - Chapters 4–9 cover progressively building, deploying, and improving analytics applications.
+  - **Conventions Used in This Book**
+    - Italic text for new terms, URLs, etc.
+    - Constant width for code elements; bold for literal commands.
+    - Icons indicate tips and warnings.
+  - **Using Code Examples**
+    - Code examples are downloadable from GitHub.
+    - Users may reuse code with conditions; significant reproduction requires permission.
+    - Attribution is appreciated but not required.
+  - **O’Reilly Safari**
+    - Safari is a membership-based training platform with thousands of technical resources.
+    - Offers books, videos, tutorials, and other learning material from multiple publishers.
+  - **How to Contact Us**
+    - Contact details for O’Reilly Media including phone, fax, and email.
+    - Social media links provided for further engagement.
+
+- **Part I Setup**
+  - **Chapter 1 Theory**
+    - **Introduction**
+      - Agile Data Science centers on web application development as the effective data science output.
+      - Agile software methods don't fit data science due to uncertainty and different deliverables.
+      - Agile Data Science aims to bridge engineering and data science teams and work effectively with big data using Spark.
+      - The methodology combines research and engineering to create analytics applications iteratively.
+      - Real data science timelines conflict with typical agile sprints, requiring new methods.
+      - Suggested further reading: [The Agile Manifesto](https://agilemanifesto.org).
+    - **Definition**
+      - Agile Data Science aims to document and guide exploratory data analysis toward compelling products.
+      - The methodology focuses on managing the exploratory process rather than fixed outputs.
+    - **Methodology as Tweet**
+      - The process focuses on the critical path to analytics products via exploratory data analysis.
+    - **Agile Data Science Manifesto**
+      - Seven principles: iterate frequently; ship intermediate outputs; prototype experiments; include data's opinion; climb the data-value pyramid; pursue the critical path; describe the process (get meta).
+      - Iteration is fundamental across tables, charts, reports, and predictions.
+      - Shipping incomplete assets is essential to avoid wasted effort.
+      - Experimentation supersedes task implementation in driving value creation.
+      - Product decisions must integrate empirical data evidence.
+      - The data-value pyramid structures work from raw data records to actionable AI.
+      - Critical path discovery is necessary for focused development.
+      - "Getting meta" means documenting the process to maintain agility.
+    - **The Problem with the Waterfall**
+      - Case study of LinkedIn Career Explorer project's failure due to waterfall-like process.
+      - Issues included poor user validation, rigid timelines, last-minute integration, and lack of iterative feedback.
+      - Scrum fails when real user testing is absent, manifesting in waterfall characteristics.
+      - Contrasted with better outcomes when iterative releases with real data occurred.
+      - Waterfall issues stem from mismatched expectations and hidden problems surfacing late.
+    - **Research Versus Application Development**
+      - Conflict exists between uncertain research timelines and predictable engineering schedules.
+      - Science is iterative and exploratory without fixed endpoints; engineering is linear and scheduled.
+      - This mismatch causes delays and reliance on mock-ups, undermining agility.
+      - Suggested further reading: [Scientific Method](https://en.wikipedia.org/wiki/Scientific_method).
+    - **The Problem with Agile Software**
+      - Agile software development does not map directly onto data science.
+      - **Eventual Quality: Financing Technical Debt**
+        - Technical debt arises from shortcuts and differs in data science versus software engineering.
+        - Data science allows initially poor code that improves if the prototype proves valuable.
+        - Not all prototypes are refined, enabling extensive experimentation with limited resources.
+      - **The Pull of the Waterfall**
+        - Complex tech stacks and broad skills cause sequential dependencies that resemble waterfall stages.
+        - Slow progress occurs when tasks are strictly siloed across specialized roles completing work in sequence.
+        - Iteration within sprints is necessary to maintain agility.
+    - **The Data Science Process**
+      - **Setting Expectations**
+        - Agile Data Science cannot guarantee fixed ship dates or predetermined outputs.
+        - Transparency in ongoing incremental progress is exchanged for a definite schedule.
+        - Stakeholders monitor continuous progress and evolving deliverables.
+      - **Data Science Team Roles**
+        - Diverse roles include customers, business development, marketing, product management, design, web development, engineering, data science, applied research, platform engineering, QA, and operations.
+        - Collaboration across these roles is essential for product success.
+      - **Recognizing the Opportunity and the Problem**
+        - Diverse expertise enables decomposition and specialization but increases communication overhead.
+        - Large teams risk misaligned visions and falling back into waterfall-like processes.
+      - **Adapting to Change**
+        - Agility requires generalists, small teams, high-level tools/platforms, and continuous sharing of intermediate work.
+        - Agile Data Science emphasizes scalable, cloud-based platforms and iterative publishing of partial results.
+      - **Harnessing the Power of Generalists**
+        - Generalists possess broad skills crossing design, development, and data work.
+        - Examples include designers who code, data scientists who build apps, and product managers with broad knowledge.
+      - **Leveraging Agile Platforms**
+        - Scalable, user-friendly distributed systems and cloud services minimize infrastructure overhead.
+        - This simplicity is crucial for productivity and collaboration.
+      - **Sharing Intermediate Results**
+        - Publishing incomplete data and results daily or weekly is required to maintain team alignment.
+        - Incremental releases promote understanding of data, research progress, and feature development.
+      - Suggested further reading: [Scrum Guide](https://scrumguides.org/).
+    - **Notes on Process**
+      - Collaboration requires consensus and shared vision to avoid incohesive products.
+      - Mocks (mock-ups) without data lack essential insights and mislead design in data products.
+      - Data products must anticipate evolving and fuzzy data with flexible blueprints.
+      - **Code Review and Pair Programming**
+        - Regular code review prevents systemic errors and improves quality.
+        - Increases knowledge sharing and cross-training in the team.
+      - **Agile Environments: Engineering Productivity**
+        - Generalists require quiet, spacious, and flexible workspaces.
+        - Creative workspaces blend collaboration, personal, and private zones.
+        - Investment in work environment substantially improves productivity.
+      - **Realizing Ideas with Large-Format Printing**
+        - Access to large-format printers fosters data immersion, sharing, and teamwork.
+        - Physical printouts clarify progress and stimulate cross-departmental interest.
+
+  - **Chapter 2 Agile Tools**
+    - **Scalability = Simplicity**
+      - Selection of tools favors simplicity to enable focus on data and users, not infrastructure.
+      - The stack supports linear scalability with minimal complexity, suitable for diverse teams.
+      - The stack serves as an example, not a definitive solution, encouraging adaptation.
+    - **Agile Data Science Data Processing**
+      - The data pipeline flows from event collection to user presentation.
+      - Events are serialized primarily in JSON Lines or Apache Parquet for performance.
+      - Key components include event collectors (Kafka), bulk storage (S3), document stores (MongoDB), minimalist web servers (Flask), and browser-based clients.
+      - This stack balances scalability with ease of use.
+    - **Local Environment Setup**
+      - Multiple installation options: virtual machine (VM), manual install, or AWS cloud.
+      - Recommended methods are Vagrant (for VM) or AWS.
+      - Appendix A covers manual installation instructions.
+      - The author runs all tools locally on a MacBook Pro for development.
+      - Code examples are available on GitHub at https://github.com/rjurney/Agile_Data_Code_2.
