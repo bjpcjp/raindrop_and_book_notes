@@ -1,0 +1,52 @@
+[Representative image](ADM-book-algorithm-design-manual.best.png)
+
+- **2. Algorithm Analysis**
+  - **2.1 The RAM Model of Computation**
+    - The RAM model assumes each simple operation (+, *, –, =, if, call) takes exactly one time step.
+    - Memory access also takes one time step, with infinite memory assumed.
+    - It simplifies algorithm study by being machine- and language-independent despite idealized assumptions.
+    - The model allows counting steps to estimate running time, ignoring hardware details like cache or disk access.
+    - See further details in [The Algorithm Design Manual - Chapter on RAM Model](https://doi.org/10.1007/978-1-84800-070-4_2).
+  - **2.1.1 Best, Worst, and Average-Case Complexity**
+    - Best-case complexity measures minimum steps an algorithm takes for input size n.
+    - Worst-case complexity considers the maximum steps across all inputs of size n.
+    - Average-case complexity is the mean across all inputs of size n.
+    - Worst-case analysis is most practical because it provides guaranteed upper bounds.
+  - **2.2 The Big Oh Notation**
+    - Big Oh notation O(g(n)) provides an upper bound for a function f(n) ignoring constant factors and lower order terms.
+    - Ω(g(n)) denotes a lower bound, while Θ(g(n)) denotes a tight bound on f(n).
+    - Constants and small input sizes (n < n₀) are ignored to focus on asymptotic behavior.
+    - Examples illustrate usage and common misconceptions.
+    - Formal definitions ensure consistent interpretation in algorithm analysis.
+    - For more, see [Big O notation - Wikipedia](https://en.wikipedia.org/wiki/Big_O_notation).
+  - **2.3 Growth Rates and Dominance Relations**
+    - Algorithm time complexities fall into a range of standard classes from constant to factorial.
+    - Functions grow increasingly faster in the order: 1, log n, n, n log n, n², n³, 2^n, n!.
+    - Dominance relation means a faster growing function asymptotically bounds a slower one.
+    - Table 2.4 illustrates practical computation times for these growth rates.
+    - Understanding these classes guides algorithm selection for given problem sizes.
+  - **2.4 Working with the Big Oh**
+    - Adding Big Oh functions results in the Big Oh of the dominant term.
+    - Multiplying Big Oh functions results in the Big Oh of the product.
+    - Constant multipliers do not affect the Big Oh classification.
+    - Transitivity of Big Oh means if f=O(g) and g=O(h), then f=O(h).
+    - Simplifications of terms enable tractable upper bound estimates.
+  - **2.5 Reasoning About Efficiency**
+    - **2.5.1 Selection Sort**
+      - Selection sort executes an outer loop n times with an inner loop running (n - i - 1) times.
+      - Total comparisons sum to ~ n(n - 1)/2 making time complexity Θ(n²).
+      - Exact counting or bounding techniques justify quadratic complexity.
+    - **2.5.2 Insertion Sort**
+      - Worst-case behavior assumes inner loop runs i or n times; outer runs n times.
+      - Worst-case time is therefore quadratic O(n²).
+      - Crude rounding up of loop counts yields valid upper bounds even if pessimistic.
+    - **2.5.3 String Pattern Matching**
+      - Naive pattern matching tries all possible alignments and matches character-by-character.
+      - Worst-case time is proportional to O(nm), where n and m are text and pattern lengths.
+      - String length computations add linear terms but do not alter asymptotic behavior.
+      - Simplifications using Big Oh remove lower order terms and negative terms from bounds.
+    - **2.5.4 Matrix Multiplication**
+      - Elementary algorithm involves three nested loops over x, y, and z dimensions.
+      - Multiplication steps count proportionally to x × y × z making complexity O(xyz).
+      - Matrix multiplication is critical in many linear algebra applications.
+      - See further study in [Matrix multiplication - Wikipedia](https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm).

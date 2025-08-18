@@ -1,0 +1,64 @@
+[Representative image](ADM-ch18-strings-text-compression.best.png)
+
+- **Text Compression**
+  - **Input description**
+    - The input is a text string S that must be compressed.
+    - The goal is to create a shorter string S' from which S can be exactly reconstructed.
+    - Compression addresses limitations of secondary storage and network bandwidth.
+    - Further reading: [Sayood, Data Compression Book](https://example.org)
+  - **Problem description**
+    - Data compression aims to find space-efficient encodings for files.
+    - The rise of networks increased the importance of reducing transmission bits.
+    - Compression methods range from ad hoc to general algorithms.
+    - Further reading: [Maximum Compression](http://www.maximumcompression.com/)
+  - **Issues in selecting a compression algorithm**
+    - **Lossy vs. Lossless encoding**
+      - Lossless encodings are needed for document storage to ensure fidelity.
+      - Lossy compression sacrifices exact recovery but achieves higher compression.
+      - Lossy methods suit images, video, and audio where minor artifacts are imperceptible.
+      - Further reading: [Salomon, Data Compression](https://example.org)
+    - **Data simplification before compression**
+      - Preprocessing such as removing whitespace or formatting can improve compression.
+      - The Burrows-Wheeler transform rearranges input to increase compressibility.
+      - It sorts cyclic shifts and uses the last character of each sorted shift.
+      - The transform is reversible and yields 10–15% better compression often.
+      - Further reading: [Burrows-Wheeler transform](https://example.org)
+    - **Patent considerations**
+      - Some algorithms like LZW were patented but may now be expired.
+      - Selecting non-patented variants often yields comparable performance.
+      - Legal status influences algorithm adoption.
+    - **Compressing image data**
+      - Run-length encoding is a simple lossless method for images with large uniform regions.
+      - Its effectiveness depends on bit allocation and image traversal order.
+      - For advanced media, standards like JPEG and MPEG are recommended.
+      - Further reading: [JPEG compression](https://example.org)
+    - **Real-time compression requirements**
+      - Decompression speed often outweighs compression speed in importance.
+      - Systems like operating systems require fast, symmetric compression/decompression.
+      - Streaming applications prioritize rapid decoding.
+  - **Text compression algorithm classes**
+    - **Static algorithms (Huffman codes)**
+      - Huffman codes assign variable-length codes based on symbol frequency.
+      - The code tree is built using a greedy algorithm in O(n log n) time.
+      - They require two passes: one to build codes and another to encode.
+      - Disadvantages include storing code tables and limited redundancy exploitation.
+      - Further reading: [Huffman coding](https://example.org)
+    - **Adaptive algorithms (Lempel-Ziv)**
+      - Lempel-Ziv builds coding tables dynamically as text is read.
+      - It adapts to local character distributions and encodes frequent substrings.
+      - Encoders and decoders stay synchronized via clever protocols.
+      - It is highly robust across data types and generally hard to outperform.
+      - Further reading: [Lempel-Ziv algorithm](https://example.org)
+  - **Implementations**
+    - gzip is a popular Lempel-Ziv variant under GNU license.
+    - bzip2 uses the Burrows-Wheeler transform and offers tighter compression at the cost of speed.
+    - High-compression algorithms expend significant run-time for marginal gains.
+    - Further reading: [gzip official site](http://www.gzip.org)
+  - **Notes and research**
+    - Key texts include Sayood [Say05], Salomon [Sal06], and Bell, Cleary, and Witten [BCW90].
+    - Surveys and foundational papers are available for Huffman, Lempel-Ziv, and Burrows-Wheeler.
+    - The IEEE Data Compression Conference is the premier research venue.
+    - Further reading: [IEEE Data Compression Conference](http://www.cs.brandeis.edu/~dcc/)
+  - **Related problems**
+    - Connections exist to shortest common superstring problems.
+    - Cryptography shares conceptual overlaps with data compression techniques.

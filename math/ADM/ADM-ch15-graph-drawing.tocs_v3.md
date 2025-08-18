@@ -1,0 +1,44 @@
+[Representative image](ADM-ch15-graph-drawing.best.png)
+
+- **Drawing Graphs Nicely**
+  - **Input description**
+    - The input is a graph \( G \) for which a drawing is desired.
+  - **Problem description**
+    - The problem is to draw graph \( G \) to accurately reflect its structure.
+    - The drawing should help the viewer understand the graph intuitively.
+    - The drawing should also be aesthetically pleasing.
+  - **Hard criteria for quality of a drawing**
+    - Minimize edge crossings to reduce visual distraction.
+    - Use a small area while keeping vertices sufficiently spaced.
+    - Avoid long edges that obscure other drawing features.
+    - Maximize angular resolution by avoiding small angles at vertices.
+    - Maintain an aspect ratio that suits typical output media, such as 4:3 screens.
+  - **Challenges and complexity**
+    - These quality goals often conflict and are likely NP-complete to optimize simultaneously.
+    - Large, dense graphs (e.g., \( K_{100} \)) result in cluttered, unreadable drawings.
+  - **Questions to guide algorithm choice**
+    - Edges can be straight or polyline; orthogonal polylines suit complex graphs like circuits.
+    - Use natural application-specific layouts when available, such as geographic placements.
+    - Employ planar or tree-specific algorithms for planar graphs or trees.
+    - Consider edge direction effects for directed graphs, especially DAGs.
+    - Performance needs dictate incremental algorithms for interactive use versus slower optimizations for print-quality.
+    - Graph symmetries can be identified with automorphism computations and improve aesthetics.
+  - **Basic drawing methods**
+    - Even spacing of vertices on a circle with straight edges is simple and avoids overlapping edges.
+    - Permuting vertex order on the circle (e.g., via simulated annealing) reduces crossings and edge length.
+    - Spring embedding heuristics model vertices as masses with attractive forces on edges and repulsive forces elsewhere.
+  - **Polyline drawing and labeling**
+    - Polyline drawing algorithms require significant development work.
+    - Label placement near edges or vertices is an NP-complete problem but can be heuristically managed using bin packing techniques.
+  - **Implementations and tools**
+    - GraphViz is a widely used graph-drawing program using splines.
+    - Boost Graph Library interfaces with GraphViz; JGraphT suits interactive applications.
+    - Commercial products include Tom Sawyer Software, yFiles, and iLOG’s JViews.
+    - Pajek specializes in social network drawing and is freely available.
+    - Combinatorica offers Mathematica implementations of multiple drawing algorithms.
+  - **Further reading and resources**
+    - Graph drawing research community publishes in Springer-Verlag's Lecture Notes in Computer Science.
+    - The [Handbook of Graph Drawing and Visualization](https://example.org) promises comprehensive coverage.
+    - Books by Battista et al. [BETT99], Kaufmann and Wagner [KW01], and Jünger and Mutzel [JM03] give detailed algorithmic and system perspectives.
+    - Map-labeling heuristics are covered in [BDY06, WW95].
+    - Spherical codes for vertex placement on spheres for \( n \leq 130 \) are available from Hardin, Sloane, and Smith [HSS07].

@@ -1,0 +1,27 @@
+[Representative image](ADM-ch18-strings-shortest-common-superstring.best.png)
+
+- **18.9 Shortest Common Superstring**
+  - **Problem Description**
+    - The shortest common superstring is the shortest string containing every string in a set as a substring.  
+    - Finding a common superstring is easy, but minimizing its length is NP-complete.  
+    - The problem has notable applications in DNA sequence assembly, casino slot machine symbol reconstruction, and data/matrix compression.  
+    - For further reading on applications and complexity, see [Shortest Common Superstring Wikipedia](https://en.wikipedia.org/wiki/Shortest_common_superstring_problem).  
+  - **Reduction to Traveling Salesman Problem**
+    - The problem reduces to an asymmetric traveling salesman problem on an overlap graph.  
+    - Vertices represent strings; edge weights correspond to the non-overlapping portion between pairs of strings.  
+    - Asymmetric TSP instances are significantly harder to solve practically than symmetric ones.  
+  - **Greedy Heuristic Approach**
+    - The greedy heuristic repeatedly merges the pair of strings with maximum overlap until one superstring remains.  
+    - This method can be implemented in linear time by using suffix trees to find overlaps efficiently.  
+    - The greedy heuristic guarantees a superstring no more than 3.5 times longer than optimal, but can sometimes be twice as long.  
+    - For implementation details and heuristics, consult [Gusfield 1994](https://doi.org/10.1017/CBO9780511574336).  
+  - **Applications and Advanced Topics**
+    - The shortest common superstring helps reconstruct DNA sequences from fragment reads using shotgun sequencing.  
+    - High-performance DNA assembly programs such as CAP3 and PCAP implement these algorithms.  
+    - The Celera assembler used for the human genome is open-source at [Celera Assembler](http://sourceforge.net/projects/wgs-assembler/).  
+    - Additional research on handling errors and approximation algorithms is available in [Kececioglu and Myers 1995] and [Swe 1999].  
+  - **Computational Complexity and Variations**
+    - Deciding if a superstring exists avoiding certain negative substrings is NP-complete unless spacers are introduced.  
+    - Recent advances have improved approximation factors from 3.5 to approximately 2.5 but a factor-2 approximation remains a goal.  
+    - Experiments show greedy heuristics typically produce solutions near optimal for many inputs.  
+    - Related concepts include suffix trees and text compression algorithms.

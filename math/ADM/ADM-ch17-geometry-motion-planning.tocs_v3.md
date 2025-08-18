@@ -1,0 +1,32 @@
+[Representative image](ADM-ch17-geometry-motion-planning.best.png)
+
+- **Motion Planning**
+  - **Problem Description**
+    - The problem involves finding the shortest collision-free path for a polygonal robot moving from start position s to goal position t in a room with polygonal obstacles.
+    - Real-world applications include moving furniture, molecular docking, robot navigation, and computer animation scene interpolation.
+    - The complexity of motion planning is influenced by robot shape, degrees of freedom, motion constraints, and knowledge of the obstacles.
+  - **Considerations Impacting Complexity**
+    - Point robots simplify to geometric shortest path problems solvable by visibility graph construction and shortest path algorithms like Dijkstra's.
+    - Polygonal robots introduce corridor width constraints and increase problem complexity with additional degrees of freedom.
+    - Simplification of robot shape, e.g., enclosing it in a disk, can reduce the problem to translation-only motion planning.
+    - Rotation constraints affect approaches; with translation only, obstacles are expanded via Minkowski sums.
+    - Unknown or dynamic obstacles require exploration or heuristic strategies, such as mapping or reactive obstacle tracing.
+  - **Sampling-Based Motion Planning**
+    - Random sampling in configuration space with vertices representing legal robot positions and edges representing direct feasible paths creates a graph for pathfinding.
+    - Enhancements include adding samples in important regions to improve the roadmap.
+    - Probabilistic roadmaps like SBL offer practical single-query planners and are part of toolkits such as the Motion Planning Toolkit (MPK).
+  - **Algorithms and Computational Results**
+    - The visibility graph for n line segments can be computed in O(n lg n + E) time, with shortest paths found by known algorithms.
+    - The expanded obstacles approach reduces polygonal robot motion to point robot path planning using Minkowski sums.
+    - Motion planning with d degrees of freedom has theoretical complexity O(nd lg n), with specialized faster algorithms available.
+  - **Implementation and Resources**
+    - The Motion Planning Toolkit (MPK) supports single and multi-robot planners with implementations like SBL.
+    - The University of North Carolina GAMMA group provides collision detection libraries such as SWIFT++.
+    - CGAL offers computational geometry algorithms relevant to motion planning, including visibility graph construction and Minkowski sums.
+    - Recommended further reading includes Latombe [Lat91], LaValle [LaV06](http://planning.cs.uiuc.edu/), and Laumond [Lau98](http://www.laas.fr/~jpl/book.html).
+  - **Historical and Theoretical Background**
+    - The piano mover’s problem by Schwartz and Sharir involves constructing complete free space of legal robot positions to find shortest paths.
+    - Canny’s free-space approach establishes complexity bounds for d-dimensional configuration spaces.
+    - The expanded obstacle method originates from Lozano-Perez and Wesley.
+    - The heuristic “sightless man’s” approach was formally studied by Lumelski.
+    - Davenport-Schinzel sequences and arrangements play a role in combinatorial analysis of free space in motion planning.

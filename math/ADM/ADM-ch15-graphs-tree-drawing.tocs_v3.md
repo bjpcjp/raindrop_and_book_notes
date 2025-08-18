@@ -1,0 +1,30 @@
+[Representative image](ADM-ch15-graphs-tree-drawing.best.png)
+
+- **Drawing Trees**
+  - **Input description**
+    - The input is a tree T, a graph without any cycles.
+    - Trees are always planar graphs and should be drawn so edges do not cross.
+    - Tree drawing applications include file system hierarchies, family trees, syntax trees, and evolutionary trees.
+  - **Problem description**
+    - The task is to create a nice drawing of the tree T.
+    - Different aesthetics depend on whether the tree is free or rooted.
+  - **Discussion**
+    - Rooted trees define a hierarchy from a single root node, influencing the drawing order of children.
+    - Free trees lack a root and hierarchical order; their drawing must respect connection topology.
+    - Selecting a center vertex or a root is crucial for producing natural drawings.
+    - The tree center either consists of one vertex or two adjacent vertices and can be found in linear time.
+  - **Drawing methods**
+    - Ranked embeddings place the root at the top center, partitioning the page into vertical strips for subtrees.
+    - Ranked embeddings illustrate hierarchy depth but may produce narrow strips, potentially cramping nodes.
+    - Radial embeddings place the root/center in the middle, dividing space into angular sectors for subtrees.
+    - Radial embeddings use space more efficiently and better suit free trees.
+  - **Implementations**
+    - GraphViz is a popular open-source graph drawing program supporting spline edges and large graphs.
+    - Commercial products such as Tom Sawyer Software, yFiles, and iLOG’s JViews offer advanced tree drawing features.
+    - Combinatorica provides Mathematica implementations of tree drawing algorithms.
+  - **Notes**
+    - Tree drawing is well-studied, with surveys and books documenting various algorithms.
+    - The problem can be NP-complete under certain aesthetic criteria.
+    - Specialized tree layouts, such as Van Emde Boas layouts, improve external memory performance.
+  - **Related Problems**
+    - Tree drawing relates closely to drawing graphs and planar drawings.

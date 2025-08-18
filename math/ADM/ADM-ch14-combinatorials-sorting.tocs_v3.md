@@ -1,0 +1,28 @@
+[Representative image](ADM-ch14-combinatorials-sorting.best.png)
+
+- **14.1 Sorting**
+  - **Input description**
+    - The input is a set of n items to be arranged by order.
+    - Sorting is fundamental for many algorithmic problems and is often the first design step.
+  - **Problem description**
+    - The problem consists of arranging items in increasing or decreasing order.
+  - **Criteria for choosing sorting algorithms**
+    - Different sorting algorithms suit varying data sizes, key uniqueness, and data properties.
+    - Quadratic-time sorts like insertion sort are preferred for small datasets (n ≤ 100).
+    - O(n lg n) algorithms (heapsort, quicksort, mergesort) are suited for larger datasets.
+    - Stable sorting is necessary when preserving the relative order of equal keys.
+    - Data knowledge (e.g., partial sorting, key distribution) can optimize sorting choice.
+  - **External sorting considerations**
+    - Massive data exceeding memory requires algorithms minimizing disk access.
+    - Multiway mergesort and B-tree traversal are standard external sorting techniques.
+  - **Implementation guidelines**
+    - Quicksort is the best general-purpose internal sorting algorithm with tuning heuristics.
+    - Recommended heuristics include randomization, median-of-three pivot selection, switching to insertion sort on small arrays, and processing smaller partitions first.
+    - Practical programming favors library routines like GNU sort, C qsort, C++ STL sort, and Java Collections.
+  - **Notes and references**
+    - Knuth’s book remains the definitive reference on sorting.
+    - Historical algorithms include heapsort (Williams), quicksort (Hoare), and mergesort (von Neumann).
+    - High-performance sorting competitions and cache-aware and cache-oblivious designs have driven recent advances.
+    - Sorting lower bound is Ω(n lg n) under the algebraic decision tree model.
+    - Alternative computational models yield faster sorting algorithms.
+    - See [Knuth’s Sorting Treatise](https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming) and [GNU coreutils](http://www.gnu.org/software/coreutils/) for further reading.

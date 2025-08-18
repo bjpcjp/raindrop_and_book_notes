@@ -1,0 +1,24 @@
+[Representative image](ADM-ch13-matrix-determinants.best.png)
+
+- **Determinants and Permanents**
+  - **Determinant Definition and Properties**
+    - The determinant of an n × n matrix M is a sum over all n! permutations of M's columns, weighted by the permutation sign.
+    - The sign of a permutation is determined by the number of inversions (pairs of elements out of order).
+    - Determinants can be used to test matrix singularity, dimensionality of point sets, point positioning relative to lines or planes, and compute areas or volumes.
+    - LU-decomposition allows computing determinants in O(n³) time by multiplying diagonal elements.
+  - **Permanent Definition and Complexity**
+    - The permanent of a matrix is defined similarly to the determinant but with all positive product terms, ignoring permutation signs.
+    - Computation of the permanent is NP-hard and #P-complete, significantly harder than determinants.
+    - Permanent algorithms run in O(n² 2ⁿ) time, which is more efficient than the factorial definition but still costly for large n.
+    - Permanents count combinatorial structures such as perfect matchings in graphs.
+  - **Implementations and Algorithms**
+    - LINPACK offers Fortran routines for computing determinants optimized for various data types and matrix structures.
+    - JScience and JAMA provide Java libraries including determinant calculations.
+    - Efficient Fortran and C routines exist for permanent calculations, motivated by applications in chemistry and combinatorics.
+    - Approximation algorithms and fast methods are available for the permanent, including those by Barvinok, capable of handling large matrices rapidly.
+  - **Notes and Computational Advances**
+    - Cramer's rule reduces matrix inversion and solving linear systems to determinant calculation, but LU decomposition is more efficient.
+    - Fast matrix multiplication algorithms compute determinants in sub-cubic time.
+    - Probabilistic and approximation algorithms offer polynomial-time estimates for permanents, circumventing exact computation hardness.
+    - Fundamental complexity classes: permanent computation is #P-complete, harder than NP-hard problems.
+    - Relevant external resources include [http://math.nist.gov/javanumerics/](http://math.nist.gov/javanumerics/) and [Barvinok's manual](http://www.math.lsa.umich.edu/~barvinok/manual.html).

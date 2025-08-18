@@ -1,0 +1,29 @@
+[Representative image](ADM-ch14-combinatorials-calendar-math.best.png)
+
+- **14.8 CALENDRICAL CALCULATIONS**
+  - **Input and Problem Description**
+    - The input is a calendar date specified by month, day, and year.  
+    - The problem is to determine the day of the week for the given date according to the specified calendar system.  
+    - Calendrical calculations are essential for business applications like displaying calendars and computing event dates.  
+  - **Calendar System Characteristics**
+    - Different nations and ethnic groups use varied calendar systems, including solar (Gregorian) and lunar (Hebrew) calendars.  
+    - Calendars are historical objects defined by rules rather than purely mathematical constructs.  
+    - Implementation requires functions to convert dates to and from integer days elapsed since a defined epoch.  
+  - **Challenges in Calendrical Calculations**
+    - The solar year is not an integer number of days, necessitating leap day adjustments at regular and irregular intervals.  
+    - The Julian calendar added a leap day every four years but ignored the extra ~10 minutes per year, causing drift.  
+    - The Gregorian reform deleted ten days and adjusted leap year rules for century years to maintain alignment.  
+    - Adoption of Gregorian reforms varied historically by country.  
+  - **Implementation Recommendations**
+    - Calendar rules are complex; it is advisable to use reliable existing code rather than develop from scratch.  
+    - Mental algorithms exist for day-of-week calculations but lack reliability outside limited time spans.  
+    - Reliable libraries include Boost.Date_Time (C++), java.util.Calendar (Java), and the Calendrical library covering multiple calendar systems.  
+    - SourceForge hosts other calendar implementations of varying reliability.  
+  - **Further Reading and References**
+    - The uniform calendrical algorithms by Dershowitz and Reingold provide comprehensive treatments of many calendar systems ([calendarists.com](http://calendarists.com)).  
+    - Their papers [DR90, RDC93] and book [RD01] detail algorithms for over 25 calendars.  
+    - Historical tabulations of three centuries of calendars appear in [DR02].  
+  - **Historical and Cultural Context**
+    - The Mayan Long Count calendar’s rollover on December 21, 2012, marked 13.0.0.0.0 after a 5,125-year cycle.  
+    - No catastrophic events are implied by this date in a scientific or calendrical context.  
+    - The Mayan calendar is authoritatively described in [RD01].

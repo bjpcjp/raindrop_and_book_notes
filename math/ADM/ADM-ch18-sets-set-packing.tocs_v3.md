@@ -1,0 +1,26 @@
+[Representative image](ADM-ch18-sets-set-packing.best.png)
+
+- **Set Packing**
+  - **Input description**
+    - The input is a set of subsets \( S = \{S_1, \ldots, S_m\} \) of the universal set \( U = \{1, \ldots, n\} \).
+  - **Problem description**
+    - The goal is to select a collection of mutually disjoint subsets from \( S \) whose union is the universal set.
+    - The problem requires that no element is covered by more than one selected subset.
+  - **Discussion**
+    - Set packing problems model constraints where subsets cannot overlap, related to independent set problems in graphs.
+    - Applications include scheduling airline flight crews with constraints on crew composition and assignments.
+    - Variations include exact cover, requiring every element to appear exactly once, which is NP-complete.
+    - Partial solutions using singleton subsets allow expansion into exact covers by covering leftover elements.
+    - Problems lying between set cover and exact cover can be approached by penalizing subsets covering already covered elements.
+    - Greedy heuristics select subsets based on size and remove conflicting subsets, sometimes enhanced by randomization or exhaustive search.
+    - Integer programming formulations use 0-1 variables to represent subset selection and enforce coverage constraints.
+  - **Implementations**
+    - Set cover implementations can be adapted to support set packing constraints.
+    - Pascal codes for exhaustive search and heuristics are referenced in [SDK83].
+    - SYMPHONY provides a mixed-integer linear programming solver with set partitioning capabilities.
+  - **Notes**
+    - Survey articles on set packing include [BP76, Pas97].
+    - Combinatorial auction bidding strategies reduce to set-packing problems as discussed in [dVV03].
+    - Set-packing relaxations and reduction rules are detailed in [BW00] and [SDK83], including application to airplane scheduling.
+  - **Related Problems**
+    - Independent set problems relate closely, as do set cover problems.

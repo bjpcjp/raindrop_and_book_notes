@@ -1,0 +1,47 @@
+[Representative image](ADM-ch01-intro.best.png)
+
+- **Introduction to Algorithm Design**
+  - **What is an algorithm?**
+    - An algorithm is a procedure to accomplish a specific task and is the idea behind any reasonable computer program.
+    - It must solve a general, well-specified problem, defined by input instances and the expected output.
+    - Sorting is an example, where the input is a sequence of keys and the output is a sorted permutation.
+    - Different algorithms solve sorting; insertion sort is one example discussed with a C implementation.
+    - For more, see [The Algorithm Design Manual](https://link.springer.com/book/10.1007/978-1-84800-070-4).
+  - **Robot Tour Optimization**
+    - Problem involves finding the shortest closed cycle visiting a set of points, relevant to robot arm tool paths.
+    - The nearest-neighbor heuristic is simple and efficient but fails to guarantee the shortest tour.
+    - The closest-pair heuristic improves on nearest-neighbor but also can produce suboptimal tours.
+    - The optimal solution involves enumerating all permutations, which is computationally infeasible for large n.
+    - The problem is an instance of the Traveling Salesman Problem (TSP); see Section 16.4 for details.
+  - **Selecting the Right Jobs**
+    - The movie scheduling problem seeks the largest set of mutually non-overlapping intervals from given job intervals.
+    - EarliestJobFirst heuristic can fail if the earliest job is long; ShortestJobFirst can also fail by blocking better schedules.
+    - ExhaustiveScheduling checks all subsets but is exponential in complexity and infeasible for large n.
+    - The OptimalScheduling algorithm selects jobs by earliest completion time, producing a correct and efficient solution.
+    - This problem is a special case of the independent set problem; see Section 16.2.
+  - **Reasoning about Correctness**
+    - Proofs of correctness involve clear statements, assumptions, logical chains, and conclusions.
+    - Algorithm descriptions use English, pseudocode, or real programming languages, with clarity prioritized.
+    - Problems require precise input and output specifications to allow correctness proofs.
+    - Counter-examples are used to demonstrate incorrectness; they must be verifiable and simple.
+    - Mathematical induction and recursion are key methods to prove correctness, especially for incremental algorithms like insertion sort.
+    - Summation formulae underpin analysis and proofs; arithmetic progressions and geometric series are fundamental.
+    - For formal proofs, see [Gries, The Science of Programming](https://mitpress.mit.edu/books/science-programming).
+  - **Modeling the Problem**
+    - Proper modeling maps real-world problems to abstract combinatorial structures (permutations, subsets, trees, graphs, points, polygons, strings).
+    - Successful modeling can reduce or eliminate the need for new algorithm design by leveraging known solutions.
+    - These structures are recursive, decomposable into smaller similar components.
+    - Understanding cataloged algorithm problems enables effective application modeling.
+    - Avoid overconstraining or underconstraining problems, as it affects algorithm correctness and efficiency.
+    - Refer to catalog problems in Part II of the text for extensive examples.
+  - **About the War Stories**
+    - Real-world algorithmic case studies illustrate the impact of careful design and modeling.
+    - The stories capture authentic problem-solving mindsets and reference catalog problems.
+    - Reading algorithmic war stories aids understanding of practical applications and challenges.
+  - **War Story: Psychic Modeling**
+    - The problem involved constructing minimal sets of lottery tickets to guarantee a win given partial information.
+    - This is a set cover problem, known to be NP-complete.
+    - Key components included k-subset generation, covering criteria, bit vector data structures, and search mechanisms including heuristics.
+    - Initial modeling errors led to too broad coverage; refining coverage criteria yielded practical solutions.
+    - The story illustrates the importance of accurate problem modeling before implementation.
+    - See [Set cover problem on Wikipedia](https://en.wikipedia.org/wiki/Set_cover_problem) for further details.

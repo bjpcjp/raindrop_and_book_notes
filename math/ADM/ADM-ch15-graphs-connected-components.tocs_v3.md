@@ -1,0 +1,34 @@
+[Representative image](ADM-ch15-graphs-connected-components.best.png)
+
+- **Connected Components**
+  - **Input description**
+    - The input is a directed or undirected graph G.
+    - The problem requires identifying distinct pieces or components where no path exists between some vertex pairs.
+  - **Problem description**
+    - Vertices x and y belong to different components if no path connects them.
+    - Connected components represent the pieces of the graph.
+  - **Discussion**
+    - Connected components cluster vertices that share paths.
+    - Finding connected components is key to identifying natural clusters and preprocessing for graph algorithms.
+    - Testing connectivity uses depth-first search (DFS) or breadth-first search (BFS), both operating in O(n + m) time.
+  - **Directed graph connectivity**
+    - Weak connectivity ignores edge direction and tests connectivity as if the graph were undirected.
+    - Strong connectivity requires a directed path between every pair of vertices.
+    - Testing weak connectivity is linear time by treating edges as undirected.
+    - Testing strong connectivity involves two DFS traversals of the graph and its edge-reversed version.
+    - The two-DFS algorithm labels vertices by finish times and identifies strongly connected components.
+  - **Other connectivity notions**
+    - Connectivity measures graph robustness to vertex or edge removal.
+    - Biconnected components separate the graph based on vertex cuts and can be found in linear time using DFS.
+    - Trees are connected acyclic undirected graphs and cycle detection uses DFS back edges.
+  - **Implementations**
+    - BFS and DFS are implemented in common graph libraries such as Boost Graph Library, LEDA, JUNG, and JGraphT.
+    - The book’s C language library includes connectivity algorithms like strongly connected and biconnected components.
+  - **Historical notes**
+    - DFS predates modern computing, originating in the 19th century for maze pathfinding.
+    - BFS was introduced by Moore in 1957 for shortest path problems.
+    - Tarjan pioneered linear-time DFS algorithms for strongly connected components.
+    - Kosaraju and Sharir developed simpler algorithms for strongly connected components.
+  - **Related problems**
+    - Connectivity relates to edge-vertex connectivity and shortest path problems.
+    - More information appears in sections on edge-vertex connectivity (page 505) and shortest paths (page 489).

@@ -1,0 +1,28 @@
+[Representative image](ADM-ch18-strings-string-matching.best.png)
+
+- **18.3 String Matching**
+  - **Input description**
+    - The input consists of a text string t of length n and a pattern string p of length m.
+    - The goal is to find the first or all instances of pattern p in the text t.
+    - String matching is fundamental to almost all text-processing applications.
+    - For detailed algorithm examples, see Section 2.5.3.
+  - **Algorithm selection considerations**
+    - Short patterns and infrequent queries allow the simple O(mn)-time search algorithm to suffice.
+    - Longer texts and patterns benefit from worst-case linear time algorithms like Knuth-Morris-Pratt.
+    - Boyer-Moore algorithm is more efficient for patterns longer than 5 characters and infrequent matches.
+    - Multiple queries on the same text justify building data structures such as suffix trees or suffix arrays.
+    - Searching many texts with the same patterns calls for automaton-based algorithms like Aho-Corasick.
+  - **Special cases and extensions**
+    - Approximate string matching handles texts or patterns containing spelling errors, discussed further in Section 18.4.
+    - Regular expressions require constructing finite automata equivalent to the regex for matching.
+    - Context-free grammars extend string matching into parsing, detailed in Section 8.6.
+  - **Implementations and resources**
+    - Strmat offers C implementations of KMP and Boyer-Moore algorithms ([Strmat](http://www.cs.ucdavis.edu/~gusfield/strmat.html)).
+    - SPARE Parts provides C++ implementations for single and multiple pattern matching ([SPARE Parts](http://www.fastar.org/)).
+    - GNU grep combines lazy-state deterministic matching with Boyer-Moore for fixed strings ([GNU grep](http://directory.fsf.org/project/grep/)).
+    - Boost string algorithms offer C++ string routine implementations, including search ([Boost string algo](http://www.boost.org/doc/html/string_algo.html)).
+  - **Further reading and references**
+    - Comprehensive algorithm discussions found in [CHL07], [NR07], and [Gus97].
+    - Historical context and surveys of string matching present in [BM77], [KMP77], [Aho90], and [AC75].
+    - Empirical comparisons for practical performance considerations include [DB86], [Hor80], and [Lec95].
+    - Karp-Rabin algorithm, an alternative method using hashing, is detailed in Section 3.7.2.

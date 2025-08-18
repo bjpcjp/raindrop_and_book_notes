@@ -1,0 +1,30 @@
+[Representative image](ADM-ch12-datastructs-kd-trees.best.png)
+
+- **Kd-Trees Overview**
+  - **Input and Problem Description**
+    - Input consists of a set S of n points or geometric objects in k dimensions.
+    - The problem involves constructing a tree that partitions space by half-planes to isolate each object in its own box-shaped region.
+    - The “kd” in kd-tree stands for “k-dimensional.”
+  - **Tree Construction and Partitioning**
+    - Kd-trees are built by partitioning points with planes, splitting subsets ideally in half.
+    - Partitioning cycles through dimensions or selects splits along the largest dimension to maintain box shape quality.
+    - Partitioning ends after approximately lg n levels, resulting in leaf cells each containing a single point.
+  - **Types of Partitioning Variants**
+    - Variants include cycling dimensions, largest dimension cuts, quadtrees/octtrees, BSP-trees, and R-trees.
+    - Quadtrees/octtrees create multiple child cells per partition point, effective for image data.
+    - BSP-trees use general cutting planes, accommodating objects that cannot be axis-aligned.
+    - R-trees handle objects that cannot partition into axis-oriented boxes without splitting.
+  - **Applications and Operations**
+    - Point location is implemented by tree traversal to the leaf cell containing the query point.
+    - Nearest neighbor search requires exploring adjacent cells within a certain distance to ensure accuracy.
+    - Range search prunes the search space by intersecting query regions with node cells.
+    - Partial key search handles incomplete coordinate information through selective subtree searches.
+  - **Limitations and Dimensionality**
+    - Kd-trees perform best in low to moderate dimensions (2–20).
+    - High-dimensional data reduces effectiveness due to exponentially increasing cell neighborhoods and shrinking unit sphere volume.
+    - Dimensionality reduction techniques like random projections help mitigate these issues.
+  - **Implementations and References**
+    - KDTREE 2 provides C++ and Fortran implementations for nearest neighbor search.
+    - Samet’s spatial index demos and book serve as comprehensive resources.
+    - The 1999 DIMACS challenge focused on nearest neighbor search data structures.
+    - Key references include [Samet 2006](http://donar.umiacs.umd.edu/quadtree/) and [KDTREE 2](http://arxiv.org/abs/physics/0408067).

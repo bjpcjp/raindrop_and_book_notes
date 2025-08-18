@@ -1,0 +1,36 @@
+[Representative image](ADM-ch17-geometry-nearest-neighbors.best.png)
+
+- **17.5 Nearest Neighbor Search**
+  - **Problem Description**
+    - Identifies the closest point in a set S of n points in d dimensions to a query point q.
+    - Applied in emergency dispatch systems to minimize response times.
+    - Relevant for classification tasks by assigning labels based on nearest neighbors.
+  - **Applications**
+    - Used in political preference classification by proximity in multidimensional feature space.
+    - Applies in image compression via vector quantization by mapping image regions to closest library tiles in 64-dimensional space.
+  - **Key Issues in Nearest-Neighbor Search**
+    - Performance depends on the size of the data set and number of queries; brute force suffices for small n or few queries.
+    - Dimensionality adversely affects efficiency; kd-trees work well up to about 20 dimensions.
+    - Voronoi diagrams provide efficient nearest-neighbor queries in two dimensions but become impractical in higher dimensions.
+    - Exact nearest neighbors are costly to find in high dimensions; approximate methods using dimension reduction and randomness help.
+    - Dynamic data sets require adaptable data structures; kd-trees with insertion/deletion support can be used.
+  - **Data Structures and Algorithms**
+    - The nearest neighbor graph is a subgraph of the Delaunay triangulation and computable in O(n log n).
+    - Closest-pair problem relates to sorting and minimum gap detection between adjacent sorted elements.
+  - **Implementations and Tools**
+    - ANN: C++ library for exact and approximate nearest neighbor search across multiple lp norms, effective up to ~20 dimensions ([ANN](http://www.cs.umd.edu/~mount/ANN/)).
+    - Samet’s spatial index demos provide Java applets for kd-tree variants ([Samet’s Demos](http://donar.umiacs.umd.edu/quadtree/)).
+    - KDTREE 2: C++ and Fortran 95 kd-tree implementations ([KDTREE 2](http://arxiv.org/abs/physics/0408067)).
+    - Ranger: visualization tool for multiple multidimensional search trees ([Ranger](http://www.cs.sunysb.edu/~algorith)).
+    - Nearpt3: specialized for extremely large 3D point sets ([Nearpt3](http://wrfranklin.org/Research/nearpt3)).
+    - CGAL and LEDA libraries provide Voronoi diagram implementations in C++ with planar point location ([CGAL](https://www.cgal.org)).
+  - **Additional Notes and References**
+    - Indyk’s survey details approximate nearest neighbor search via random projection methods ([Ind04]).
+    - ANN's theoretical approach uses sparse weighted graphs and greedy walks to find neighbors ([AM93], [AMN+ 98]).
+    - Samet’s works are authoritative on kd-trees and spatial data structures ([Sam06], [Sam05]).
+    - Random perturbation method for improving nearest neighbor search efficiency is credited to [Pan06].
+    - Closest pair algorithms use divide-and-conquer rather than only Delaunay triangulations ([BS76], [CLRS01], [Man89]).
+  - **Related Topics**
+    - Kd-trees (Section 12.6)
+    - Voronoi diagrams (Section 17.4)
+    - Range search (Section 17.6)

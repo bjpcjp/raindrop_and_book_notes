@@ -1,0 +1,33 @@
+[Representative image](ADM-ch18-sets-finite-state-machine-minimization.best.png)
+
+- **18.7 Finite State Machine Minimization**
+  - **Minimizing deterministic finite state machines**
+    - Minimization eliminates redundant states to reduce both storage and execution costs.
+    - The basic algorithm partitions states into equivalence classes and refines them based on transition behavior.
+    - The classical approach runs in O(n²) time, while Hopcroft's algorithm achieves O(n log n) efficiency.
+    - Final equivalence classes correspond to the states in the minimized automaton.
+    - See Hopcroft [Hop71] for the O(n log n) minimization algorithm.
+  - **Constructing deterministic machines from nondeterministic machines**
+    - NFAs can exist in multiple states simultaneously, whereas DFAs are in exactly one state.
+    - Any NFA can be converted to an equivalent DFA, though this can cause exponential state blowup.
+    - Minimizing DFA after conversion can reduce excessive states from NFA blowup.
+    - The exponential blowup and minimization of NFAs is PSPACE-hard, complicating implementation.
+    - Refer to standard automata theory texts like [Sip05] for proofs and explanations.
+  - **Constructing machines from regular expressions**
+    - Two approaches exist: constructing NFAs (using ϵ-moves) or constructing DFAs directly.
+    - NFA construction via ϵ-moves is straightforward and yields O(m) states for regex length m.
+    - DFA construction via the derivatives method creates states as needed but can require O(2^m) states in worst cases.
+    - Simulation on a DFA is linear time regardless of automaton size.
+    - For more, see Brzozowski [Brz64] on derivatives method and Thompson [Tho68] on ϵ-moves.
+  - **Implementations and software tools**
+    - Grail+ is a C++ package enabling conversion and minimization of automata on large alphabets.
+    - AT&T FSM Library supports massive automata (over ten million states/transitions) on UNIX.
+    - JFLAP provides graphical tools for learning and converting between DFAs, NFAs, and regex.
+    - FIRE Engine implements multiple minimization algorithms including Hopcroft’s O(n log n) method.
+    - Links to these tools: [Grail+](http://www.csd.uwo.ca/Research/grail), [AT&T FSM](http://www.research.att.com/~fsmtools/fsm/), [JFLAP](http://www.jflap.org/), [FIRE Engine](http://www.fastar.org/).
+  - **Notes and references**
+    - Aho [Aho90] surveys pattern matching algorithms for regular expressions.
+    - Thompson’s ϵ-move technique is foundational for NFA construction.
+    - The CIAA conference covers automata implementations and applications.
+    - Equivalence testing of NFAs and DFA compression problems are PSPACE-complete.
+    - For theory, consult [HMU06], [Sip05], and Conway [Con71].

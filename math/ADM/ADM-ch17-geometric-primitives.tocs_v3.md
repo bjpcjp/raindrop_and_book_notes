@@ -1,0 +1,34 @@
+[Representative image](ADM-ch17-geometric-primitives.best.png)
+
+- **Robust Geometric Primitives**
+  - **Introduction and Challenges**
+    - Implementing geometric primitives involves difficulties such as handling parallel or identical lines and avoiding division by zero or arithmetic overflows.  
+    - Special cases and degeneracies increase complexity, especially for intersecting line segments.  
+    - New implementers are advised to study O’Rourke’s *Computational Geometry in C* for practical guidance and implementations.  
+  - **Handling Degeneracy**
+    - Degeneracy involves special cases like collinear points or multiple lines intersecting at one point.  
+    - The three main approaches are ignoring degeneracies, perturbing data randomly or symbolically, and explicitly coding special cases.  
+    - Ignoring degeneracies risks program crashes; perturbation can alter data subtly; explicit handling requires significant effort.  
+  - **Numerical Stability Approaches**
+    - Integer arithmetic provides exact comparisons but may fail to represent all intersection points exactly.  
+    - Double precision floating-point arithmetic reduces numerical errors with intermediate computations in higher precision.  
+    - Arbitrary precision arithmetic guarantees correctness at the cost of severe performance penalties but is gaining research favor.  
+  - **Core Geometric Primitives**
+    - The triangle area is computed using a determinant formula representing twice the signed area, generalizable to volumes in higher dimensions.  
+    - The above-below-on test determines a point's relative position to a directed line using the sign of the triangle area.  
+    - Line segment intersection tests use the above-below concept, with special handling for shared endpoints depending on the application.  
+    - The in-circle test uses a determinant to check if a point lies inside, outside, or on the circle defined by three points, critical in Delaunay triangulation.  
+  - **Implementations**
+    - CGAL and LEDA are comprehensive C++ libraries offering robust geometric primitives; LEDA is easier for beginners while CGAL is more extensive and free.  
+    - O’Rourke’s *Computational Geometry in C* provides implementation-oriented examples suitable for small projects.  
+    - The Core Library supports exact geometric computation with adaptability to multiple precision levels.  
+    - Shewchuk’s robust C++ implementations are publicly available and widely respected for precision and stability.  
+  - **Notes and References**
+    - O’Rourke’s text is a recommended foundational resource for robust geometric primitives.  
+    - LEDA offers an excellent practical model for geometry software design.  
+    - Surveys and studies by Yap, Kettner et al., Shewchuk, and others highlight challenges and strategies in robust geometric computation.  
+    - Controlled perturbation is an emerging technique gaining attention for robustness.  
+    - Detailed costs and practicalities of arbitrary-precision arithmetic are analyzed by Shewchuk and Fortune & van Wyk.  
+    - [O’Rourke’s Computational Geometry in C](https://cs.smith.edu/~orourke/books/Computational_Geometry_in_C/)  
+    - [CGAL](https://www.cgal.org)  
+    - [Shewchuk’s Robust Predicates](http://www.cs.cmu.edu/~quake/robust.html)

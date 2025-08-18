@@ -1,0 +1,41 @@
+[Representative image](ADM-ch17-geometry-convex-hull.best.png)
+
+- **Convex Hull**
+  - **Input description**
+    - The input is a set S of n points in d-dimensional space.
+    - The goal is to find the smallest convex polygon or polyhedron containing all points of S.
+  - **Problem description**
+    - Finding the convex hull captures the rough shape or extent of a data set.
+    - Convex hull serves as a preprocessing step to many geometric algorithms.
+  - **Use cases and examples**
+    - The diameter of a point set must lie between two points on the convex hull.
+    - The rotating-calipers method efficiently finds diametrically opposed hull vertices.
+  - **Dimension considerations**
+    - Two and three dimensions allow relatively simple O(n log n) algorithms.
+    - Higher dimensions are more complex; gift-wrapping is a basic algorithm applicable there.
+    - Relationships between vertices, edges, and faces become complicated beyond 2D.
+  - **Data input format**
+    - Problems can be presented as points (vertices) or half-spaces.
+    - Half-space intersection problems are dual to convex hull problems.
+  - **Hull complexity**
+    - Random point sets tend to have most points inside the hull.
+    - Preprocessing can discard interior points by using extreme points (leftmost, rightmost, topmost, bottommost).
+  - **Shape characterization**
+    - Convex hulls do not capture concavities in the data shape.
+    - Alpha-shapes generalize convex hulls to retain arbitrarily large concavities.
+  - **Algorithms**
+    - Graham scan is the primary planar convex-hull algorithm with O(n log n) complexity.
+    - Gift-wrapping (Jarvis march) runs in O(nh) time, where h is hull vertices count.
+    - Incremental and optimal planar hull algorithms exist for various complexities.
+  - **Implementations and resources**
+    - CGAL provides C++ implementations for multiple dimensions.
+    - Qhull handles 2 to about 8 dimensions and constructs related structures.
+    - O’Rourke offers C and Java implementations of Graham scan and 3D convex hull incremental algorithms.
+    - Alpha-shapes implementations available from Edelsbrunner’s group and Ken Clarkson.
+    - Avis’s lhs implements vertex enumeration for higher dimensions.
+    - Relevant links: [CGAL](http://www.cgal.org), [Qhull](http://www.qhull.org), [Alpha-shapes](http://biogeometry.duke.edu/software/alphashapes/).
+  - **Notes and theory**
+    - Planar convex hull computation has an Ω(n log n) lower bound based on sorting reduction.
+    - Optimal planar algorithms run in O(n log h) time.
+    - Dynamic data structures support insertions and deletions with near-logarithmic amortized time.
+    - Voronoi diagrams are closely related and can be computed via convex hull constructions in higher dimensions.

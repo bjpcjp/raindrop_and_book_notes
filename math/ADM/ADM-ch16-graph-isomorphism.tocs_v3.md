@@ -1,0 +1,31 @@
+[Representative image](ADM-ch16-graph-isomorphism.best.png)
+
+- **Graph Isomorphism**
+  - **Problem Description**
+    - Graph isomorphism tests whether there exists a vertex mapping between two graphs such that edges correspond exactly.
+    - The problem detects if two graphs are identical by preserving edges under a vertex mapping.
+    - It can be used to identify graph duplicates, avoiding redundant computation.
+  - **Applications and Variations**
+    - Subgraph isomorphism checks if a smaller graph is contained within a larger one, with induced subgraph isomorphism imposing stricter conditions.
+    - Graph labeling constraints speed up isomorphism testing by pruning invalid vertex pairings.
+    - Specialized algorithms exist for trees and planar graphs that exploit structural properties to speed up matching.
+  - **Algorithmic Approach**
+    - The basic algorithm involves backtracking through all vertex permutations to find isomorphisms.
+    - Vertex equivalence classes based on invariants such as degree, shortest path distances, and counts of length-k paths dramatically reduce the search space.
+    - Highly symmetric graphs are more challenging due to larger equivalence classes.
+  - **Practical Implementations**
+    - Nauty is a leading C library providing efficient automorphism group computations and canonical labeling.
+    - VFLib offers multiple algorithms for graph and subgraph isomorphism with comprehensive benchmarking.
+    - GraphGrep supports graph querying in large graph databases.
+    - Valiente’s implementations focus on tree and subgraph isomorphism atop LEDA.
+  - **Complexity and Theoretical Notes**
+    - Graph isomorphism is neither known to be NP-complete nor proven to be solvable in polynomial time.
+    - Known polynomial algorithms exist for specific graph classes like planar graphs and bounded-degree graphs.
+    - The problem lies uniquely between P and NP-complete in complexity theory.
+    - Related concepts include automorphisms and isomorphism-complete problems such as bipartite graph isomorphism.
+  - **Further Reading**
+    - Nauty website: [http://cs.anu.edu.au/~bdm/nauty/](http://cs.anu.edu.au/~bdm/nauty/)
+    - VFLib: [http://amalfi.dis.unina.it/graph/](http://amalfi.dis.unina.it/graph/)
+    - GraphGrep: [http://www.cs.nyu.edu/shasha/papers/graphgrep/](http://www.cs.nyu.edu/shasha/papers/graphgrep/)
+    - Valiente’s webpage: [http://www.lsi.upc.edu/~valiente/algorithm/](http://www.lsi.upc.edu/~valiente/algorithm/)
+    - Kreher and Stinson implementations: [http://www.math.mtu.edu/~kreher/cages/Src.html](http://www.math.mtu.edu/~kreher/cages/Src.html)

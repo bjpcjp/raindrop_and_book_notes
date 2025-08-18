@@ -1,0 +1,38 @@
+[Representative image](ADM-ch17-geometry-intersections.best.png)
+
+- **17.8 Intersection Detection**
+  - **Input Description**
+    - The input consists of a set S of lines and line segments or a pair of polygons/polyhedra.
+    - The goal is to identify which line segment pairs intersect or find the intersection of two polygons or polyhedra.
+    - Intersection detection is critical for applications requiring immediate identification of intersections, such as virtual-reality simulations.
+  - **Applications and Issues**
+    - Intersection detection prevents unrealistic scenarios in virtual reality, like passing through walls.
+    - Important in VLSI design-rule checking to detect errors such as crossing metal strips before fabrication.
+    - Several factors influence algorithms: detection versus computation, types of intersecting objects, and expected number of intersections.
+  - **Algorithmic Considerations**
+    - Detecting intersection existence is often simpler than computing exact intersection points.
+    - Intersecting lines differ from line segments; lines intersect at one point, whereas segment intersection is more complex.
+    - Output-sensitive algorithms run in O(n log n + k) time, where k is the number of intersections, often using planar sweepline techniques.
+  - **Special Cases and Extensions**
+    - Visibility queries translate to line segment intersection problems.
+    - Intersection of convex polygons runs in O(n + m) time and is simpler than for nonconvex polygons, which may yield disconnected, complex intersections.
+    - Polyhedra intersection is complicated as they can intersect without edge intersections.
+  - **Repeated Intersection Searches and Optimizations**
+    - In scenarios with static scenes and moving objects, bounding simpler enclosing objects like boxes improve efficiency.
+    - Intersection checks first test these bounding boxes before detailed geometric checks.
+  - **Planar Sweep Algorithm**
+    - Sweeping a vertical line from left to right manages events: insertion, deletion, and intersection of segments.
+    - An event queue (priority queue) and horizon data structure (balanced tree) manage the sweep line status.
+    - Convex polygon intersections simplify sweepline implementation, requiring fewer data structure needs.
+  - **Implementations and Software**
+    - Libraries such as LEDA and CGAL implement the Bentley-Ottmann algorithm for line segment intersection in O((n + k) log n) time.
+    - Robust C programs exist for convex polygon intersection as documented by O’Rourke.
+    - Collision detection libraries like SWIFT++ efficiently detect intersections and distances among polyhedral models.
+    - Qhull software computes mutual intersections of half-spaces and convex hulls in general dimensions.
+  - **Additional Notes and References**
+    - Mount provides a comprehensive survey on intersection algorithms.
+    - Foundational texts include [dBvKOS00](#), [CLRS01](#), [PS85](#), with special cases like rectangle intersections detailed by Preparata and Shamos.
+    - Optimal O(n log n + k) algorithms by Chazelle and Edelsbrunner exist, with simpler randomized approaches covered by Mulmuley.
+    - Lin and Manocha survey collision detection techniques and software.
+  - **Related Problems**
+    - Intersection detection relates closely to maintaining arrangements and motion planning.

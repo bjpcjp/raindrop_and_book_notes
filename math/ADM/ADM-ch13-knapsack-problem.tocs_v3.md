@@ -1,0 +1,44 @@
+[Representative image](ADM-ch13-knapsack-problem.best.png)
+
+- **Knapsack Problem**
+  - **Input description**
+    - Specifies a set of items with sizes and values, and a knapsack capacity C.
+    - Defines the problem as selecting a subset of items maximizing total value without exceeding C.
+    - Relates to resource allocation under budget constraints and the 0/1 knapsack version disallowing item fractions.
+  - **Problem description**
+    - Formalizes the objective to maximize total value of items in the knapsack with size sum ≤ C.
+    - Highlights the difficulty introduced by the 0/1 constraint compared to fractional knapsack.
+    - References the greedy heuristic method for fractional cases and its limitation in 0/1 cases.
+  - **Discussion**
+    - Notes the problem’s origin in choosing purchases under fixed budgets.
+    - Emphasizes the computational hardness due to the indivisibility of items.
+    - Points out the common misconceptions and realistic difficulties in solving 0/1 knapsack.
+  - **Easy cases of knapsack**
+    - Items having identical value or identical size simplify the problem to sorting and greedy selection.
+    - When items share the same "price per pound," problem reduces to minimizing leftover capacity but remains NP-complete.
+    - Presents integer partitioning as a special knapsack case related to bin packing and subset sum problems.
+  - **Dynamic programming algorithm**
+    - Applicable when item sizes and capacity are small integers, running in O(nC) time and O(C) space.
+    - Uses boolean array C[i] to track achievable sums with subsets of items.
+    - Extends to store maximum value subsets summing to i by updating values instead of booleans.
+    - Reconstruction of solution subset requires tracking which item caused each state change.
+  - **Handling multiple knapsacks**
+    - Multiple knapsacks relate closely to bin-packing problems.
+    - Suggests consulting bin-packing and cutting-stock algorithms for multiple constrained containers.
+    - Mentions existing software implementations supporting multiple knapsacks.
+  - **Exact and heuristic algorithms**
+    - Exact solutions for large capacities use integer programming or backtracking.
+    - Heuristics include greedy algorithms based on price per pound, which can approximate well or perform arbitrarily poorly.
+    - Scaling heuristic reduces large capacities for dynamic programming by resizing item sizes proportionally.
+  - **Implementations**
+    - Martello and Toth provide Fortran codes for various knapsack variants online.
+    - David Pisinger maintains C-language codes, with the strongest based on dynamic programming algorithms.
+    - ACM's Algorithm 632 supports multiple knapsacks in Fortran.
+  - **Notes and references**
+    - Keller, Pferschy, and Pisinger [KPP04] is the most current knapsack reference.
+    - Standard references include Martello and Toth’s book [MT90a] and survey [MT87].
+    - Integer programming approaches detailed in [SDK83]; computational studies in [MPT00].
+    - Polynomial-time approximation schemes (PTAS) provide trade-offs between runtime and solution quality.
+    - Further reading on PTAS found in [IK75], [BvG99], [CLRS01], [GJ79], and [Man89].
+    - Merkle-Hellman cryptosystem based on knapsack hardness; discussed in [Sch96].
+    - Additional resources: [Martello and Toth Knapsack Page](http://www.or.deis.unibo.it/kp.html), [Pisinger’s Codes](http://www.diku.dk/~pisinger/codes.html)

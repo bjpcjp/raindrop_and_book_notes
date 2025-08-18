@@ -1,0 +1,36 @@
+[Representative image](ADM-ch15-graphs-matching.best.png)
+
+- **Matching**
+  - **Problem Description**
+    - The problem seeks the largest set of edges in a graph so that each vertex is incident to at most one edge.
+    - Common applications include assigning tasks to workers ensuring no worker is overloaded.
+    - The problem is formalized as finding a maximum matching in a graph.
+  - **Key Concepts**
+    - Matching problems are often modeled on bipartite graphs for simplicity and efficiency.
+    - Augmenting paths alternate edges in and out of the current matching to increase matching size.
+    - Berge’s theorem states a matching is maximum if no augmenting paths exist.
+    - Odd-length cycles called blossoms pose challenges in general, non-bipartite graphs.
+  - **Algorithmic Approaches**
+    - Bipartite matching commonly uses network flow transformations.
+    - Weighted matchings apply matrix-oriented Hungarian algorithms.
+    - The Hopcroft-Karp algorithm finds shortest augmenting paths in O(√n m) time.
+    - Edmond’s algorithm and Gabow’s implementation address general graph matching with cubic time complexity.
+  - **Applications and Examples**
+    - Matching frameworks apply to worker-task assignments, marriage problems, and string permutation problems.
+    - Stable matching guarantees existence and can be found in O(n²) time.
+    - Medical resident-hospital assignments use stable matching algorithms.
+  - **Software Implementations**
+    - High-performance codes such as Goldberg’s CSA (weighted) and BIM (unweighted) exist.
+    - The First DIMACS Implementation Challenge collected various matching solvers.
+    - Libraries like GOBLIN and LEDA provide C++ implementations for weighted and unweighted matching.
+    - Blossom IV offers efficient minimum-weight perfect matching in C.
+  - **Theoretical Notes**
+    - Lovász and Plummer [LP86] provide authoritative coverage on matching theory.
+    - Matching size equals minimum vertex cover size in bipartite graphs.
+    - Maximum matching, minimum vertex cover, and maximum independent set can be solved in polynomial time on bipartite graphs.
+    - Stable marriage theory is well studied in [GI89] and found efficiently by Gale-Shapley [GS62].
+  - **References and Resources**
+    - [Lovász and Plummer on Matching Theory](https://example.org)
+    - [Hopcroft and Karp Algorithm](https://example.org)
+    - [Hungarian Algorithm Survey](https://example.org)
+    - [DIMACS Implementation Challenge](ftp://dimacs.rutgers.edu/pub/netflow/matching)

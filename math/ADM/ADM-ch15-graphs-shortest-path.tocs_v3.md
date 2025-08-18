@@ -1,0 +1,38 @@
+[Representative image](ADM-ch15-graphs-shortest-path.best.png)
+
+- **Shortest Path Problem**
+  - **Problem Description and Applications**
+    - The problem involves finding the shortest path from vertex s to t in an edge-weighted graph G.  
+    - Applications include transportation routing, image segmentation, speech recognition, and graph visualization.  
+    - Image segmentation models pixels as graph vertices with edge costs representing color transitions.  
+    - Speech recognition uses weighted graphs of phoneme-to-word mappings to find sentence interpretations.  
+    - Graph centers minimize maximum distance to other vertices, requiring shortest path computations.  
+  - **Dijkstra’s Algorithm**
+    - Dijkstra’s algorithm finds shortest paths from a single source to all vertices in O(n²) or faster with advanced data structures.  
+    - The algorithm grows a shortest-path tree by adding the vertex with minimum tentative distance in each iteration.  
+    - Terminate early if only the shortest path from s to t is required.  
+    - Use for positively weighted graphs only.  
+  - **Algorithm Selection Based on Graph Properties**
+    - Use breadth-first search for unweighted graphs for simpler and faster shortest-path computation.  
+    - Use Bellman-Ford algorithm for graphs with negative edge weights; does not handle negative cycles.  
+    - Geometric shortest paths are often solved by converting obstacles to visibility graphs or using dedicated geometric algorithms.  
+    - DAG shortest paths run in linear time via topological sorting and dynamic programming.  
+    - Use Dijkstra n times or Floyd-Warshall algorithm for all-pairs shortest paths; Floyd-Warshall handles negative edges (no cycles).  
+  - **Floyd-Warshall Algorithm**
+    - Computes all-pairs shortest paths by dynamic programming in O(n³) time with O(n²) space.  
+    - Updates path lengths using possible intermediate vertices iteratively.  
+    - Enables computation of shortest cycles (girth) by examining self-distances.  
+  - **Advanced Topics and Variants**
+    - The shortest cycle (girth) can be found by combining shortest path lengths and edges back to the start vertex.  
+    - Finding longest paths is NP-complete, except in DAGs where longest paths are found similarly to shortest paths.  
+    - Graph invariants like eccentricity, radius, center, and diameter derive from shortest path computations.  
+    - High-performance implementations exist (e.g., Andrew Goldberg’s MLB) for large-scale, integer-weighted, non-negative graphs.  
+    - Heuristics improve practical performance of Dijkstra; A* algorithm uses heuristics and lower bounds for fast point-to-point queries.  
+    - Problems of k-shortest paths and multiple alternatives have specialized algorithms and experimental results.  
+    - Fast algorithms exist for computing girth in general and planar graphs.  
+  - **Resources and References**
+    - Detailed algorithm descriptions available in [CLRS](https://en.wikipedia.org/wiki/Introduction_to_Algorithms) and original papers by Dijkstra, Bellman-Ford, Floyd.  
+    - Goldberg’s implementations provided at http://www.avglab.com/andrew/soft.html.  
+    - DIMACS Implementation Challenge archive has papers and source codes at http://dimacs.rutgers.edu/Challenges/.  
+    - Survey of shortest path algorithms by Zwick [Zwi01] and geometric shortest paths by Mitchell [PN04].  
+    - Boost Graph Library and LEDA provide robust C++ libraries with implementations of various shortest path algorithms.

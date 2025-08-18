@@ -1,0 +1,53 @@
+[Representative image](ADM-ch14-combinatorials.best.png)
+
+- **Combinatorial Problems**
+  - **14.1 Sorting**
+    - Sorting arranges a set of n items in increasing or decreasing order, serving fundamental roles in algorithm design.
+    - Different sorting algorithms suit various data sizes, stability needs, key distributions, and external memory considerations.
+    - Quicksort is the best general-purpose internal sorting algorithm but requires care and tuning.
+    - [Knuth's Sorting and Searching](https://doi.org/10.5555/58024) is the canonical reference on sorting.
+  - **14.2 Searching**
+    - Searching locates a query key q within a set S using sequential or binary search, each suited to different data sizes and scenarios.
+    - Optimal search structures depend on access frequency, dynamic adjustments, and external memory usage.
+    - Interpolation search uses key distribution to guide lookup, but binary search is usually more robust.
+    - [Handbook of Data Structures and Applications](https://example.org) provides comprehensive surveys on dictionary and search structures.
+  - **14.3 Median and Selection**
+    - Median and selection find the kth smallest element in a set, with median as a special case at k = n/2.
+    - Linear expected-time algorithms based on partitioning offer efficient median finding, outperforming sorting-based methods.
+    - Streaming models approximate median when data cannot be stored or revisited.
+    - [Floyd and Rivest Algorithm](https://doi.org/10.1145/360248.360257) provides improved average comparisons.
+  - **14.4 Generating Permutations**
+    - Permutations are arrangements of n items, with n! possible orderings growing rapidly.
+    - Ranking/unranking maps permutations to unique integers and vice versa; incremental change methods efficiently generate permutations by minimal swaps.
+    - The Fisher-Yates shuffle algorithm uniformly generates random permutations in linear time.
+    - [Knuth 2005a](https://doi.org/10.5555/108331) is the authoritative source on permutation generation.
+  - **14.5 Generating Subsets**
+    - Subsets select combinations of elements from an n-element set, totaling 2ⁿ subsets.
+    - Generation orders include lexicographic, Gray code (minimum change), and binary counting.
+    - The binary representation of subsets enables efficient ranking, unranking, and random subset generation.
+    - [Knuth 2005b](https://doi.org/10.5555/108332) details subset generation techniques.
+  - **14.6 Generating Partitions**
+    - Two types exist: integer partitions decompose n into sums; set partitions divide {1,...,n} into blocks.
+    - Integer partitions are generated in lex order with recursive techniques; set partitions correspond to restricted growth functions ordered lexicographically.
+    - Random partition generation uses counting functions like P(n,k) for integer partitions and Stirling numbers for set partitions.
+    - [Andrews 1998](https://example.org) is the primary reference on integer partitions.
+  - **14.7 Generating Graphs**
+    - Graph generation involves labeled vs. unlabeled, directed vs. undirected distinctions and definitions of randomness (edge probability, fixed edges, preferential attachment).
+    - Specialized generation methods exist for labeled trees (Prüfer codes) and fixed-degree sequence graphs.
+    - Random graphs have limited real-world modeling, while “organic” graphs represent natural networks.
+    - [Stanford GraphBase](http://www-cs-faculty.stanford.edu/~knuth/sgb.html) provides rich graph generators and data.
+  - **14.8 Calendrical Calculations**
+    - Calendrical calculations convert calendar dates across diverse systems like Gregorian, Hebrew, Islamic, and Mayan.
+    - Algorithms rely on ranking/unranking functions from epoch dates and compensate for solar year fractional lengths with leap days.
+    - Reliable calendar libraries exist in Boost C++ and Java, with comprehensive implementations by Dershowitz and Reingold.
+    - [Calendrical Calculations](http://calendarists.com) offers exhaustive calendar algorithms and conversions.
+  - **14.9 Job Scheduling**
+    - Job scheduling solves precedence-constrained tasks represented by DAGs to minimize total completion time or processor usage.
+    - Key problems include critical path identification, minimum completion time with unlimited processors, and NP-complete scheduling with limited resources.
+    - Connections to topological sorting, bipartite matching, coloring, traveling salesman, and Eulerian cycle problems exist.
+    - [JobShop](http://www2.isye.gatech.edu/~wcook/jobshop/) provides practical scheduling software.
+  - **14.10 Satisfiability**
+    - Satisfiability (SAT) determines if a Boolean formula in conjunctive normal form (CNF) has an assignment satisfying all clauses.
+    - CNF-SAT is NP-complete; 1-SAT and 2-SAT are efficiently solvable, while 3-SAT is strongly NP-complete.
+    - Modern SAT solvers implement backtracking algorithms (e.g., DPLL), with heuristics and local search for optimization.
+    - [SAT Competition](http://www.satcompetition.org/) hosts leading SAT solver benchmarks and resources.

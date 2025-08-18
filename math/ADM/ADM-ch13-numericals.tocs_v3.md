@@ -1,0 +1,66 @@
+[Representative image](ADM-ch13-numericals.best.png)
+
+- **Numerical Problems**
+  - **13.1 Solving Linear Equations**
+    - Solves for vector x such that A·x = b given matrix A and vector b representing linear equations.
+    - Gaussian elimination is the fundamental algorithm, with O(n³) time complexity, but numerical stability and round-off errors are major concerns.
+    - Specialized solvers and LU decomposition optimize solving repeated systems with the same coefficient matrix.
+    - Use libraries like LAPACK or Numerical Recipes for robust and efficient implementations.
+  - **13.2 Bandwidth Reduction**
+    - Minimizes the maximum distance between connected vertices in a graph to reduce matrix bandwidth.
+    - Important for speeding up linear system solutions by exploiting sparse and banded matrix structures.
+    - The problem is NP-complete, even for restricted graph classes.
+    - Heuristics like Cuthill-McKee and Gibbs-Poole-Stockmeyer provide practical bandwidth reduction.
+  - **13.3 Matrix Multiplication**
+    - Computes the product of two matrices with straightforward O(xyz) time complexity for dimensions x,y,z.
+    - Performance varies based on loop ordering and memory access patterns; bandwidth-b matrices allow speedups.
+    - Strassen’s algorithm achieves O(n^2.81) time, faster for very large matrices but less stable.
+    - Matrix-chain multiplication optimization uses dynamic programming to minimize computations.
+    - Use LAPACK or highly optimized libraries like FFTW for efficient implementations.
+  - **13.4 Determinants and Permanents**
+    - Determinant indicates singularity and is computable via LU decomposition in O(n³) time.
+    - The permanent counts combinatorial structures like perfect matchings but is #P-complete and much harder to compute.
+    - Algorithms exist for permanents running in O(n^2·2^n) time; approximation algorithms are also available.
+    - Implementations include LINPACK routines for determinants and specialized code for permanents.
+  - **13.5 Constrained and Unconstrained Optimization**
+    - Seeks to maximize or minimize objective functions with or without constraints.
+    - Unconstrained optimization uses derivatives and gradient-based methods to find local optima.
+    - Constrained optimization often requires linear programming or penalty methods; simulated annealing is suitable for combinatorial domains.
+    - Practical algorithm choice depends on problem dimension, constraint type, function smoothness, and evaluation cost.
+    - Reference optimization software includes Netlib ACM algorithms and NEOS optimization server.
+  - **13.6 Linear Programming**
+    - Maximizes a linear objective function subject to linear inequalities (constraints).
+    - Applications include resource allocation, approximating inconsistent systems, and solving graph problems.
+    - The simplex algorithm and interior-point methods are standard solvers; integer and mixed integer programs increase complexity.
+    - Dual formulations switch variables and constraints to optimize solution time.
+    - Free solvers include lp_solve, CLP, and GLPK; commercial codes are often superior.
+  - **13.7 Random Number Generation**
+    - Generates pseudorandom integer sequences on deterministic machines.
+    - Linear congruential generators are standard but require carefully chosen parameters and seeds.
+    - Testing and validation should employ multiple statistical tests like the NIST suite.
+    - Generating nonuniform distributions is aided by acceptance-rejection methods and specialized algorithms.
+    - Parallel simulations require independent random streams; libraries like SPRNG and L’Ecuyer’s generators address this.
+  - **13.8 Factoring and Primality Testing**
+    - Determines primality of an integer and its factors if composite.
+    - Trial division is simple but inefficient for large integers; advanced algorithms like the number field sieve scale better.
+    - Randomized primality tests based on Fermat’s little theorem are efficient and effective.
+    - Prime number distribution near n approximated by n/ln n; large primes can be found quickly.
+    - Computational number theory libraries include PARI, LiDIA, NTL, and MIRACL.
+  - **13.9 Arbitrary-Precision Arithmetic**
+    - Supports arithmetic on integers larger than hardware limits via data structures other than built-in types.
+    - Basic operations follow classical algorithms: schoolbook addition/subtraction, Karatsuba multiplication, long division, and fast exponentiation.
+    - Base choice affects performance; larger bases aligned with hardware word size are most efficient.
+    - High-precision arithmetic supports cryptographic applications and computational number theory.
+    - Libraries include GMP for C/C++, Java BigInteger class, and ARPREC for C++/Fortran.
+  - **13.10 Knapsack Problem**
+    - Finds a subset of items maximizing value without exceeding a capacity constraint.
+    - The 0/1 knapsack problem is NP-complete, unlike the fractional version solvable greedily.
+    - Special cases exist when items have equal value or size; subset sum and integer partition are related problems.
+    - Dynamic programming solves integer knapsack efficiently for small capacities.
+    - Heuristics, integer programming, and scaling are useful for large or complex instances; implementations include Martello & Toth’s and Pisinger’s libraries.
+  - **13.11 Discrete Fourier Transform**
+    - Converts a time series of complex or real numbers into frequency domain representations.
+    - Enables filtering, image compression, convolution, deconvolution, and correlation computations.
+    - The Fast Fourier Transform (FFT) reduces O(n²) computation to O(n log n) via divide-and-conquer.
+    - Most FFT algorithms assume input size n is a power of two; zero-padding is a common solution.
+    - Popular libraries include FFTW and FFTPACK; FFTW holds a performance award.

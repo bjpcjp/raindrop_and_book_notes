@@ -1,0 +1,59 @@
+[Representative image](ADM-ch08-dynamic-programming-string-matching-approx.best.png)
+
+- **18.4 Approximate String Matching**
+  - **Input description and Problem statement**
+    - The input consists of a text string and a pattern string.
+    - The problem is to find the minimum-cost transformation of the text into the pattern using insertions, deletions, and substitutions.
+    - Approximate string matching is necessary due to errors in real-world data such as spelling and genetic mutations.
+    - Applications include spelling correction, DNA sequence analysis (e.g., BLAST), OCR evaluation, and file difference tools.
+  - **Dynamic Programming Approach**
+    - Defines a cost matrix D[i,j] representing the cost to edit the first i characters of the pattern into the first j characters of the text.
+    - The recurrence considers matching/substitution, deletion, and insertion operations.
+    - Boundary conditions vary depending on whether matching the whole text or substrings.
+    - Cost assignments can be uniform or vary depending on operation type or character pairs.
+    - The matrix can be traced back to reconstruct the optimal alignment.
+    - Further details and implementation examples are given in Section 8.2 (page 280).
+  - **Algorithmic Considerations**
+    - **Matching scope and boundary conditions**
+      - Matching can be full-pattern-to-full-text or pattern-to-substring.
+      - Costs on the matrix border reflect these matching scenarios.
+    - **Cost selection**
+      - Costs for insertion, deletion, and substitution can be tuned based on application needs.
+      - Equal costs simplify to edit distance; disallowing substitutions can simulate longest common subsequence.
+    - **Alignment reconstruction**
+      - Backtracking the cost matrix identifies the sequence of edits.
+      - Only partial matrix storage is required if just the cost is needed.
+    - **Efficiency improvements**
+      - Banding limits search to a diagonal band if strings are similar.
+      - Filtration partitions the pattern to locate candidate matches efficiently.
+    - **Bit-parallel algorithms**
+      - Utilize word-level parallelism for fast approximate matching.
+      - Bitmasks represent pattern characters and support parallel comparison.
+      - Tools like agrep implement these methods for speed.
+    - **Space optimization**
+      - Only two rows of the DP matrix are needed to compute minimum cost.
+      - Hirschberg’s algorithm reconstructs alignments in linear space.
+    - **Gap penalties**
+      - Affine gap penalty models assign cost as a function of gap length.
+      - Separate recurrences track gaps to model long indel runs efficiently.
+    - **Phonetic similarity**
+      - Soundex encodes words to identify similar-sounding strings.
+      - The method involves dropping vowels and mapping consonant classes.
+      - Used for matching names with variant spellings.
+  - **Implementations and References**
+    - agrep supports approximate text search with errors using bit-parallel methods.
+    - nrgrep combines bit-parallelism and filtration for approximate matching.
+    - TRE is a library supporting exact and approximate regular expression matching.
+    - Wikipedia provides multi-language implementations of Levenshtein distance algorithms: [Wikipedia Levenshtein Distance](http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance)
+  - **Notes and Further Reading**
+    - The dynamic programming approach dates to [WF74]; practical applications are widespread.
+    - Surveys on approximate matching include [HD80, Nav01a].
+    - Bit-parallel methods are detailed in Navarro and Raffinot [NR07].
+    - Hirschberg’s linear-space alignment algorithm is covered in [Hir75].
+    - Faster edit distance computation relies on Masek and Paterson’s O(mn / log(min{m,n})) algorithm.
+    - Myers’s and Landau-Vishkin’s algorithms handle small edit distances efficiently.
+    - Soundex was invented by Odell and Russell; improvements like Metaphone exist.
+    - For details on phonetic hashing and entity name unification see [LMS06].
+  - **Related Problems**
+    - Exact string matching is covered in Section 18.3 (page 628).
+    - Longest common substring problems are discussed in Section 18.8 (page 650).

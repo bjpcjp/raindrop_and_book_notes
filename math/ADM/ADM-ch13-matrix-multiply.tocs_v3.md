@@ -1,0 +1,51 @@
+[Representative image](ADM-ch13-matrix-multiply.best.png)
+
+- **Matrix Multiplication Basics**
+  - **Input and Output Description**
+    - The problem involves multiplying an x × y matrix A by a y × z matrix B.
+    - The resulting matrix is of dimensions x × z.
+    - Initialization requires setting all entries of the output matrix M to zero.
+    - An example shows specific input matrices and their product.
+  - **Algorithm and Complexity**
+    - The straightforward matrix multiplication algorithm runs in O(xyz) time.
+    - Three nested loops perform the multiplication by summing over the inner dimension.
+    - Loop order can be permuted to optimize cache usage, causing runtime to vary about 10-20%.
+    - Multiplying bandwidth-b matrices speeds up computation to O(xbz).
+  - **Advanced Algorithms and Implementation**
+    - Strassen’s algorithm reduces complexity to O(n^2.81) but is more complex and less stable.
+    - Empirical crossover where Strassen beats cubic is around matrix size n ≈ 100–128.
+    - Practical implementations combine both algorithms, choosing based on matrix size.
+    - LAPACK and Algorithm 601 provide efficient and sparse matrix multiplication routines.
+    - Winograd’s algorithm halves multiplications but has bookkeeping overhead.
+- **Optimization Techniques**
+  - **Matrix Chain Multiplication**
+    - Multiplying multiple matrices can be optimized by choosing the best parenthesization.
+    - Dynamic programming identifies optimal multiplication order to reduce computation.
+    - Optimization depends on irregular matrix dimensions and frequent chain multiplication.
+    - The optimization concerns dimension sizes, not matrix values.
+- **Applications and Interpretations**
+  - **Graph Theory Connections**
+    - Multiplying adjacency matrix A by itself counts the number of paths of a certain length.
+    - Powers of A, i.e., A^k, count paths of length exactly k between vertices, including repeated nodes.
+    - The square of a biconnected graph’s adjacency matrix relates to Hamiltonian cycles.
+  - **Boolean Matrix Multiplication**
+    - Boolean matrix multiplication reduces to general matrix multiplication.
+    - The Four-Russians algorithm reduces complexity to O(n^3 / log n) via preprocessing.
+    - Further preprocessing improves complexity to O(n^3 / log^2 n).
+- **Historical and Theoretical Context**
+  - **Algorithmic Advances**
+    - Strassen’s 1969 algorithm initiated asymptotic improvements in matrix multiplication complexity.
+    - The current best theoretical algorithm runs in O(n^2.376) time.
+    - Some algorithms trade practicality and stability for theoretical speed.
+- **Engineering and Practical Considerations**
+  - **Cache and Memory Management**
+    - Efficient matrix multiplication requires careful cache memory management.
+    - Empirical studies assess optimal loop order and memory access patterns.
+  - **Software Libraries**
+    - LAPACK and LINPACK provide robust matrix multiplication routines.
+    - Algorithm 601 supports hybrid sparse and dense matrix multiplication in Fortran.
+- **Further Reading**
+  - [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/books/introduction-algorithms-third-edition)
+  - [Strassen’s Original Paper (Str69)](https://doi.org/10.1007/BF02165411)
+  - [LAPACK Library](http://www.netlib.org/lapack/)
+  - [Four Russians Algorithm Explanation](https://en.wikipedia.org/wiki/Four_Russians_algorithm)

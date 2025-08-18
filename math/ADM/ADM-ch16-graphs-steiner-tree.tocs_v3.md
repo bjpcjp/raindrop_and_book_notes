@@ -1,0 +1,44 @@
+[Representative image](ADM-ch16-graphs-steiner-tree.best.png)
+
+- **Input and problem description**
+  - The input is a graph \( G = (V, E) \) and a subset of vertices \( T \subseteq V \).
+  - The problem is to find the smallest tree connecting all vertices in \( T \).
+  - Steiner trees have applications in network design, VLSI circuit design, and other domains.
+- **Distinguishing features and problem complexity**
+  - The Steiner tree problem allows the use or construction of intermediate connection points to reduce cost.
+  - It differs from the minimum spanning tree (MST) problem in that MST connects all vertices, Steiner tree only the subset \( T \).
+  - The general Steiner tree problem is NP-hard, even under many restrictions.
+- **Problem variations and constraints**
+  - **Number of points to connect**
+    - For two vertices, the Steiner tree is the shortest path between them.
+    - For \( S = V \), the Steiner tree reduces to the MST of \( G \).
+  - **Geometric vs graph input**
+    - Geometric Steiner problems take points in the plane with unknown intermediate points.
+    - Steiner points have degree exactly three with angles of 120° in Euclidean cases.
+    - Rectilinear Steiner trees restrict edges to horizontal and vertical with angles multiples of 90°.
+  - **Edge constraints**
+    - Geometric wiring problems may limit edges to rectilinear paths.
+    - Different angular and degree constraints apply in rectilinear Steiner trees.
+- **Heuristics and approximation methods**
+  - Constructing an MST on a graph weighted by distances between points yields a good heuristic.
+  - The MST approximation ratio for Euclidean Steiner trees has a worst-case ratio of about 1.154 (3/2).
+  - For rectilinear Steiner trees, the MST approximation ratio is always at least 2/3.
+  - Refinements include inserting Steiner points when MST edges meet at angles less than 120°.
+  - An alternative heuristic builds the tree by iteratively adding shortest paths between terminals.
+- **Practical considerations and use cases**
+  - Some applications justify exhaustive searches using backtracking or branch-and-bound.
+  - Steiner points can represent evolutionary or classification branches in phylogenetic trees.
+  - Different phylogenetic reconstruction algorithms exist with varying data and optimization criteria.
+- **Implementations and software**
+  - GeoSteiner solves Euclidean and rectilinear Steiner tree problems optimally for up to 10,000 points ([GeoSteiner](http://www.diku.dk/geosteiner/)).
+  - FLUTE focuses on fast rectilinear Steiner trees with user-controlled tradeoffs ([FLUTE](http://home.eng.iastate.edu/~cnchu/flute.html)).
+  - GOBLIN offers heuristics and search methods for Steiner trees in general graphs ([GOBLIN](http://www.math.uni-augsburg.de/~fremuth/goblin.html)).
+  - PHYLIP and PAUP contain phylogenetic tree reconstruction algorithms for arbitrary distance matrices ([PHYLIP](http://evolution.genetics.washington.edu/phylip.html), [PAUP](http://paup.csit.fsu.edu/)).
+- **Notes and historical context**
+  - The Euclidean Steiner problem dates back to Fermat and was solved by Torricelli, with Steiner erroneously credited for the general problem.
+  - The Gilbert-Pollak conjecture on the Steiner tree to MST ratio was proven by Du and Hwang.
+  - Euclidean MST computations can be done in \( O(n \log n) \) time.
+  - Polynomial-time approximation schemes (PTAS) and better approximation algorithms exist ([Arora 1998], [Robins and Zelikovsky 2005]).
+  - The Steiner tree problem is hard for graphs and Euclidean/rectilinear metrics.
+  - Soap film analogies provide physical interpretations of the Steiner tree problem ([Mie58]).
+  - Further reading includes surveys and books: [Hwang, Richards, and Winter 1992](https://www.springer.com/gp/book/9780387970767), [Du, Smith and Rubinstein 2000](https://www.springer.com/gp/book/9783540670822).

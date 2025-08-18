@@ -1,0 +1,46 @@
+[Representative image](ADM-ch12-datastructs-sets.best.png)
+
+- **Set Data Structures**
+  - **Input description**
+    - The universe U = {u1, ..., un} defines the fixed set of items for all subsets.  
+    - The collection S = {S1, ..., Sm} consists of subsets drawn from universe U.
+    - This structure is the basis for all further set operations and representations.
+  - **Problem description**
+    - The challenge is efficient representation for membership testing, union/intersection, and element insertion/deletion.
+    - Operations target subsets Si and Sj within the universal set.
+    - Canonical ordering, typically sorted, simplifies union and intersection to linear time.
+  - **Discussion**
+    - Sets differ from dictionaries and strings by fixed universe and unordered elements respectively.
+    - Sorted order enables sublinear time searching and linear-time merges.
+    - Multisets allow repetitions, extending set structures by maintaining counts or linked lists.
+    - When subsets have exactly two elements, they represent edges in graphs; unrestricted cardinality forms hypergraphs.
+  - **Primary alternatives for representing arbitrary subsets**
+    - Bit vectors use an n-bit array marking presence or absence of elements.
+    - Containers or dictionaries keep only the subset members and can be sorted for efficient operations.
+    - Bloom filters use multiple hash functions to represent subsets probabilistically with controlled false positives.
+    - Bit vectors are space efficient but costly on sparse sets; dictionaries offer better sparse subset handling at some overhead.
+    - Bloom filters excel in static subsets where small error tolerance is acceptable, improving space efficiency.
+  - **Set partitions**
+    - A collection of pairwise disjoint subsets where every element belongs to exactly one subset.
+    - Applications include connected components in graphs and political party affiliations.
+    - Queries typically involve membership and equality of subsets among elements.
+  - **Data structures for set partitions**
+    - Collection of containers: fast union/intersection but membership tests require searching multiple containers.
+    - Generalized bit vector: constant-time membership queries, but union operations are costly relative to universe size.
+    - Dictionary with subset attribute: search time for membership queries, slow unions similar to generalized bit vectors.
+    - Union-find structure: uses parent-pointer rooted trees; fast membership and union operations with nearly constant amortized time.
+    - Union-find benefits greatly from path compression and union by size/rank strategies to optimize tree height.
+    - Union-find cannot efficiently support breaking apart subsets once merged.
+  - **Implementations**
+    - Modern languages provide built-in efficient set libraries like C++ STL sets and Java Collections HashSet/TreeSet.
+    - LEDA provides specialized C++ libraries for dictionaries, sparse arrays, and union-find.
+    - Union-find underlies algorithms including Kruskal’s minimum spanning tree; implemented in graph libraries.
+    - Computer algebra systems like REDUCE have packages supporting explicit and symbolic sets.
+  - **Notes**
+    - Optimal set operation algorithms were presented in [Rei72].
+    - Bloom filter surveys and experimental results are available from [BM05] and [PSS07].
+    - Balanced tree data structures support efficient merge and intersect operations [Tar83].
+    - Disjoint set union complexity characterized by Tarjan [Tar75], achieving near-linear time bounded by inverse Ackermann function.
+    - Symbolic power set representations address the combinatorial explosion of explicit power sets [BCGR92].
+  - **Related Problems**
+    - Generating subsets, partitions, set cover, and minimum spanning tree are related challenges addressed elsewhere.

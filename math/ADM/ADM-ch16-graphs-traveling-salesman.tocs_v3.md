@@ -1,0 +1,43 @@
+[Representative image](ADM-ch16-graphs-traveling-salesman.best.png)
+
+- **Traveling Salesman Problem (TSP) Overview**
+  - The TSP requires finding a minimum-cost cycle that visits each vertex of a weighted graph exactly once.
+  - It is an NP-complete problem with broad applications in transportation, routing, and manufacturing.
+  - Practical applications include planning optimal city tours and optimizing tool paths for robotic arms.
+  - The problem’s difficulty arises from several input characteristics such as graph weighting, triangle inequality adherence, and symmetry.
+- **Key Problem Considerations**
+  - **Graph Weighting and Triangle Inequality**
+    - Unweighted graphs or graphs with edges of only two costs reduce the problem to finding a Hamiltonian cycle.
+    - The triangle inequality (d(i,j) ≤ d(i,k) + d(k,j)) influences heuristic performance and problem complexity.
+    - Geometric instances naturally satisfy the triangle inequality, aiding heuristic guarantees.
+  - **Input Format and Visit Constraints**
+    - Input may be point sets or weighted graphs, with geometric inputs often easier to handle.
+    - Visiting vertices multiple times may be allowable in some applications, but TSP usually requires single visits.
+    - Repeated visits can be handled by transforming the problem into one using shortest path distances that respect the triangle inequality.
+  - **Distance Symmetry and Optimality**
+    - Symmetric distance functions simplify the TSP, while asymmetric TSP (ATSP) is harder to solve.
+    - ATSP instances can be converted to symmetric variants at the cost of increasing vertices.
+    - Exact optimal solutions can be obtained by cutting plane methods or branch-and-bound algorithms, though heuristics usually suffice.
+- **Heuristic Methods for TSP**
+  - **Minimum Spanning Tree Heuristic**
+    - Constructs a minimum spanning tree and performs a DFS to define a tour.
+    - Guarantees a tour length at most twice the optimal if the triangle inequality holds.
+    - Runs in O(n log n) time for planar point sets.
+  - **Incremental Insertion Heuristics**
+    - Builds a tour by inserting points one at a time, often using the furthest point insertion method.
+    - This approach yields tours typically 5% to 10% longer than the optimum.
+  - **K-Opt and Related Optimization Techniques**
+    - Applies local edge rewirings to improve an existing tour by replacing k edges.
+    - 2-opt and 3-opt are effective and commonly used, balancing quality and computation time.
+    - Simulated annealing and other metaheuristics provide alternative improvement strategies.
+- **Implementations and Software Resources**
+  - Concorde is a leading ANSI C program for solving symmetric TSPs with known performance records.
+  - Various other tools include Tsp solve (C++), GOBLIN, and Fortran codes for asymmetric TSP and quadratic assignment problems.
+  - TSPLIB offers a standard benchmark collection of TSP instances for practical evaluation.
+  - Comprehensive software listings and resources are maintained at [TSP Software](http://www.or.deis.unibo.it/research_pages/tspsoft.html).
+- **Notes and Theoretical Advances**
+  - The Christofides heuristic guarantees tours at most 3/2 times optimal in Euclidean graphs with O(n³) runtime.
+  - Polynomial-time approximation schemes by Arora and Mitchell provide (1 + ε) approximations for Euclidean TSP.
+  - Historical progress includes solving progressively larger TSP instances with better algorithms and hardware.
+  - Certain special cases like points in convex position are solvable in O(n log n) time using convex hull computations.
+  - Further reading includes the books by Applegate et al. [The Traveling Salesman Problem](http://www.tsp.gatech.edu/concorde) and Gutin & Punnen’s comprehensive reference.

@@ -1,0 +1,33 @@
+[Representative image](ADM-ch13-numericals-random-numbers.best.png)
+
+- **Random Number Generation**
+  - **Input description**
+    - The input may be nothing or a seed value for the generator.
+    - Seeds influence the starting point of the pseudorandom sequence.
+    - Using a seed enables repeatability or differing sequences across runs.
+  - **Problem description**
+    - The goal is to generate a sequence of random integers.
+    - True randomness is impossible on deterministic devices; only pseudorandomness is achievable.
+  - **Discussion**
+    - Random numbers are fundamental to areas including simulated annealing, simulations, cryptography, and randomized algorithms.
+    - Poor random-number generation can compromise security and simulation accuracy.
+    - Practical considerations include seed initialization, quality of built-in generators, and testing for randomness.
+    - The linear congruential generator is a commonly used algorithm defined by the recursion Rₙ = (aRₙ₋₁ + c) mod m.
+    - Scaling techniques adapt large integers to uniform distributions over specified ranges.
+    - Nonuniform distributions can be generated using acceptance-rejection methods or specialized algorithms.
+    - The length of the generator's period influences simulation accuracy and run length considerations.
+    - Parallel simulations require independent random streams, with specialized libraries and algorithms available.
+    - True random-number generators can use external physical processes, such as atmospheric noise.
+  - **Implementations and resources**
+    - Online resources include http://random.mat.sbg.ac.at for generators and stochastic simulation.
+    - Advanced parallel generators by L’Ecuyer et al. have very long periods suitable for parallel applications.
+    - The SPRNG library supports scalable parallel random number generation.
+    - ACM Collected Algorithms include Fortran codes for nonuniform random number generation.
+    - The NIST statistical test suite validates random number generators and is publicly available.
+    - True random numbers from atmospheric noise are accessible at http://www.random.org.
+  - **Notes and further reading**
+    - Knuth’s work offers thorough theoretical treatment of random-number generation.
+    - The Mersenne Twister provides a fast generator with an extremely long period (2¹⁹⁹³⁷−1).
+    - Surveys of nonuniform random variate generation enhance implementation accuracy.
+    - The theory of Kolmogorov complexity links randomness to incompressibility of strings.
+    - Additional references include [Knuth](https://en.wikipedia.org/wiki/Donald_Knuth), [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister), and [NIST Test Suite](http://csrc.nist.gov/rng/).

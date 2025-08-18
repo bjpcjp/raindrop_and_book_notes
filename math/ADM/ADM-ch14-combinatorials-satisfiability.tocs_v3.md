@@ -1,0 +1,37 @@
+[Representative image](ADM-ch14-combinatorials-satisfiability.best.png)
+
+- **14.10 Satisfiability**
+  - **Input description**
+    - The input is a set of clauses expressed in conjunctive normal form (CNF).
+    - Each clause is a disjunction (OR) of literals.
+  - **Problem description**
+    - The problem asks if there exists a truth assignment to Boolean variables that satisfies every clause simultaneously.
+    - This checks for a configuration consistent with all logical constraints.
+  - **Discussion**
+    - Satisfiability (SAT) is the original NP-complete problem foundational to complexity theory.
+    - CNF formulas require all clauses to be true; DNF formulas require any clause to be true.
+    - Converting between CNF and DNF can cause exponential growth in formula size, affecting complexity.
+    - Special cases: 1-SAT is trivial, 2-SAT solvable in linear time, and 3-SAT is NP-complete.
+  - **Issues in satisfiability testing**
+    - CNF or DNF form influences solution difficulty; DNF satisfiability is trivial unless contradictory clauses exist.
+    - Clause size (k) affects complexity, with 3-SAT marking NP-completeness threshold.
+    - Exact satisfiability requires backtracking algorithms like Davis-Putnam; many heuristics and pruning exist.
+    - Relaxations focus on maximizing the number of satisfiable clauses for optimization.
+  - **Implementations**
+    - Modern SAT solvers have progressed considerably and participate in annual competitions.
+    - Leading solvers as of 2007 include Rsat, PicoSAT, and MiniSAT, all available online.
+    - SAT Live! offers current papers, programs, and test sets for satisfiability research.
+  - **Notes**
+    - The Davis-Putnam-Logemann-Loveland (DPLL) algorithm is a foundational backtracking method.
+    - Local search techniques complement DPLL, especially for hard problem classes.
+    - Influential solvers include Chaﬀ; surveys cover ongoing SAT solver developments.
+    - Faster worst-case algorithms exist for 3-SAT, but all remain non-polynomial.
+    - Garey and Johnson [GJ79] is the main reference on NP-completeness.
+    - Additional references include works on Cook’s theorem, Karp’s hardness results, and 2-SAT algorithms.
+  - **Related Problems**
+    - Constrained optimization problems and the traveling salesman problem share relevant complexity aspects.
+  - **Further reading**
+    - [SAT Competition](http://www.satcompetition.org/)
+    - [SAT Live!](http://www.satlive.org/)
+    - [Garey and Johnson, 1979](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/GareyJohnson.pdf)
+    - [Kautz et al., 2007](https://link.springer.com/book/10.1007/978-3-540-74796-9)

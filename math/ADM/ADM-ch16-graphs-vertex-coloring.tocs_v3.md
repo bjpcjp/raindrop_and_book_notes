@@ -1,0 +1,31 @@
+[Representative image](ADM-ch16-graphs-vertex-coloring.best.png)
+
+- **16.7 Vertex Coloring**
+  - **Problem Description**
+    - The goal is to color vertices of a graph with the minimum number of colors so adjacent vertices have different colors.
+    - The chromatic number denotes the smallest number of colors needed for proper vertex coloring.
+    - Register allocation in compiler optimization serves as a key practical application of vertex coloring.
+  - **Special Cases and Algorithms**
+    - Testing bipartiteness (2-colorability) uses a DFS to color vertices alternately, running in O(n + m) time.
+    - Planar graphs can be colored with at most four colors (four-color theorem); planar 3-colorability is NP-complete.
+    - Graphs with maximum degree Δ can be colored with ≤ Δ + 1 colors using simple recursive vertex deletion.
+    - Edge coloring is a related problem focusing on coloring edges to avoid conflicts at shared vertices.
+  - **Computational Complexity and Heuristics**
+    - Computing the exact chromatic number is NP-complete; backtracking algorithms provide exact but costly solutions.
+    - Incremental heuristics process vertices in order using local color assignments, often inserting vertices by nonincreasing degree.
+    - Brèlaz's heuristic selects the uncolored vertex with the highest color degree and assigns the lowest unused color.
+    - Color interchange improves colorings by swapping colors and recoloring components to reduce conflicts.
+    - Simulated annealing can incorporate color interchange for enhanced heuristic effectiveness.
+  - **Implementations and Resources**
+    - Extensive collections of graph coloring programs and instances are available at Culberson’s coloring page and Trick’s graph coloring overview.
+    - The DIMACS Implementation Challenge provides source code and test data for vertex coloring and related problems.
+    - GraphCol offers tabu search and simulated annealing implementations in C.
+    - The C++ Boost Graph Library and GOBLIN toolbox contain incremental heuristics and branch-and-bound algorithms, respectively.
+    - Backtracking and heuristic algorithms are available in Pascal [SDK83], Fortran [NW78], and Mathematica [PS03].
+  - **Notes and Further Reading**
+    - Classical and modern vertex coloring heuristics have been surveyed extensively [Brè79, MMI72, Tur88, GH06, HDD03].
+    - Wilf proved expected backtracking runtime for random graphs depends on the chromatic number, not size.
+    - Paschos reviews approximation algorithm limits and heuristics with guarantees [Pas03].
+    - Brook’s theorem bounds the chromatic number by Δ + 1 except for odd cycles and complete graphs.
+    - The four-color problem was solved using computer-assisted proof [SK86, RSST96].
+    - References for advanced studies: [Culberson’s Graph Coloring Page](http://web.cs.ualberta.ca/~joe/Coloring/), [Trick’s Graph Coloring Overview](http://mat.gsia.cmu.edu/COLOR/color.html)

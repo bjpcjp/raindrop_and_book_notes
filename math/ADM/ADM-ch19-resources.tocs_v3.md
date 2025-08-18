@@ -1,0 +1,87 @@
+[Representative image](ADM-ch19-resources.best.png)
+
+- **Algorithmic Resources**
+  - **19.1 Software Systems**
+    - **19.1.1 LEDA**
+      - LEDA offers a comprehensive C++ library of well-implemented data structures and combinatorial algorithms developed by a Max-Planck-Institut group.
+      - It includes graph types, dictionaries, priority queues, computational geometry, and visualization support.
+      - Since 2001, LEDA is commercially distributed by Algorithmic Solutions Software GmbH, with a free basic edition available as of February 2008.
+      - The free edition lacks source code and advanced algorithms, but full licensing fees are modest and trial downloads exist.
+      - More information at [Algorithmic Solutions](http://www.algorithmic-solutions.com/).
+    - **19.1.2 CGAL**
+      - CGAL provides efficient and reliable geometric algorithms in C++ across dimensions, including triangulations, Voronoi diagrams, and convex hulls.
+      - The library is comprehensive but requires initial orientation to its design approach.
+      - Distributed under a dual-license scheme: free for open source use, commercial license required otherwise.
+      - See [CGAL](https://www.cgal.org) for details.
+    - **19.1.3 Boost Graph Library**
+      - Boost offers free, peer-reviewed, portable C++ libraries under a license encouraging commercial and noncommercial use.
+      - The Boost Graph Library includes generic adjacency lists, matrices, edge lists, and a basic graph algorithm library.
+      - Its design parallels the C++ STL for generic programming.
+      - Further libraries support string/text processing and numerical computation.
+      - Information at [Boost Graph](http://www.boost.org/libs/graph/doc).
+    - **19.1.4 GOBLIN**
+      - GOBLIN is a C++ class library focused on graph optimization, especially network flows, matching, and branch-and-bound for NP-hard problems.
+      - Written and maintained by Christian Fremuth-Paeger, it includes a Tcl/Tk interface.
+      - It is available under the GNU Lesser Public License at [GOBLIN](http://www.math.uni-augsburg.de/~fremuth/goblin.html).
+      - It contains unique algorithms not in Boost or LEDA but may be less robust.
+    - **19.1.5 Netlib**
+      - Netlib is an online repository of mathematical software, codes, tables, and papers from various sources with detailed indices.
+      - It is a broad resource for specialized mathematical software and numerical computing.
+      - The Guide to Available Mathematical Software (GAMS) indexes Netlib and related repositories, provided by NIST.
+      - See [Netlib](http://www.netlib.org) and [GAMS](http://gams.nist.gov).
+    - **19.1.6 Collected Algorithms of the ACM**
+      - CALGO distributes validated and refereed algorithm implementations, initially appearing in 1960 in Comm. ACM.
+      - It contains over 850 algorithms, mainly in Fortran, focused on numerical computing but also some combinatorial algorithms.
+      - The repository is maintained at the ACM and Netlib.
+      - Accessible at [ACM CALGO](http://www.acm.org/calgo/).
+    - **19.1.7 SourceForge and CPAN**
+      - SourceForge hosts over 160,000 open source projects, including graph libraries and optimization engines.
+      - CPAN is the Comprehensive Perl Archive Network, a primary source for Perl modules and scripts.
+      - Check [SourceForge](http://sourceforge.net/) and [CPAN](http://www.cpan.org/) for resources.
+    - **19.1.8 The Stanford GraphBase**
+      - The Stanford GraphBase is a literate program with implementations of key combinatorial algorithms and recreational graph problems.
+      - Written in CWEB by Knuth, it includes specialized graph instances from literature, arts, and other domains.
+      - It is valuable for generating reproducible random graphs for experiments.
+      - Available at [Stanford GraphBase](http://www-cs-faculty.stanford.edu/~knuth/sgb.html).
+    - **19.1.9 Combinatorica**
+      - Combinatorica is a Mathematica package containing over 450 combinatorics and graph theory algorithms designed for experimentation.
+      - It is comprehensive and well integrated but slower due to the interpreted nature of Mathematica.
+      - Best suited for small problems and as a source for translating algorithms into other languages.
+      - Available at [Combinatorica](http://www.combinatorica.com) and included with Mathematica.
+    - **19.1.10 Programs from Books**
+      - Various books provide working algorithm implementations primarily for exposition but usable for computation.
+      - Notable collections include:
+        - Programming Challenges by Skiena with dynamic programming and geometry routines ([link](http://www.programming-challenges.com)).
+        - Combinatorial Algorithms for Computers and Calculators by Nijenhuis and Wilf with Fortran code for combinatorial object generation.
+        - Computational Geometry in C by O’Rourke with practical C implementations of major geometric algorithms ([link](http://maven.smith.edu/~orourke/code.html)).
+        - Algorithms in C++ by Sedgewick with algorithm fragments and animation ([link](http://www.cs.princeton.edu/~rs/)).
+        - Discrete Optimization Algorithms in Pascal by Syslo et al., focusing on operations research problems ([repository](http://www.cs.sunysb.edu/~algorith)).
+  - **19.2 Data Sources**
+    - **TSPLIB**
+      - TSPLIB is a standard library of hard traveling salesman problem instances derived from real-world applications.
+      - Instances come from circuit boards, networks, and more, providing large test graphs.
+      - Available at [TSPLIB](http://www.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/).
+    - **Stanford GraphBase**
+      - Provides portable graph generators spanning theoretical and real-world graphs from diverse domains.
+      - Useful for testing graph algorithms with reproducible instances.
+      - Mentioned in Section 19.1.8 and available at [Stanford GraphBase](http://www-cs-faculty.stanford.edu/~knuth/sgb.html).
+    - **DIMACS Challenge Data**
+      - DIMACS Challenges organize workshops and provide challenging instance generators for graph, logic, and data structure problems.
+      - Focuses on generating difficult or representative test data.
+      - Data available at [DIMACS Challenges](http://dimacs.rutgers.edu/Challenges).
+  - **19.3 Online Bibliographic Resources**
+    - **ACM Digital Library**
+      - Comprehensive bibliographic resource for virtually all computer science technical papers.
+      - Accessible at [ACM Digital Library](http://portal.acm.org/).
+    - **Google Scholar**
+      - A free scholarly search engine focusing on academic papers and citation tracking.
+      - Enables users to track citations and updates of research papers.
+      - Available at [Google Scholar](http://scholar.google.com/).
+    - **Amazon.com**
+      - An extensive book catalog helpful for locating algorithm-related literature, including digitized recent books.
+      - Accessible at [Amazon](http://www.amazon.com).
+  - **19.4 Professional Consulting Services**
+    - Algorist Technologies offers expert, short-term algorithm design and implementation consulting.
+    - Typically provides 1–3 day onsite engagements with client development teams and longer-term services.
+    - Has a record of performance improvements across multiple companies.
+    - Contact info: phone 212-222-9891, email info@algorist.com, website [Algorist Technologies](http://www.algorist.com).

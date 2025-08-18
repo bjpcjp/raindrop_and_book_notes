@@ -1,0 +1,42 @@
+[Representative image](ADM-ch16-graphs-edge-coloring.best.png)
+
+- **16.8 Edge Coloring**
+  - **Input description**
+    - The input is a graph G = (V, E).
+  - **Problem description**
+    - Determine the smallest set of colors to color edges so no two edges sharing a vertex have the same color.
+    - Edge coloring models scheduling problems by assigning time slots to tasks without conflicts.
+  - **Discussion**
+    - Edge coloring is equivalent to scheduling noninterfering rounds of tasks.
+    - The National Football League uses edge coloring for season scheduling with additional constraints.
+  - **Edge-chromatic number**
+    - The minimum number of colors needed is called the edge-chromatic number or chromatic index.
+    - Even-length cycles have an edge-chromatic number of 2; odd-length cycles have 3.
+  - **Vizing's theorem**
+    - Any graph with maximum vertex degree Δ can be edge colored with at most Δ + 1 colors.
+    - Any edge coloring requires at least Δ colors.
+    - The theorem's constructive proof yields an O(nmΔ) algorithm for edge coloring.
+  - **Computational complexity**
+    - Deciding edge coloring with fewer than Δ + 1 colors is NP-complete.
+  - **Line graph transformation**
+    - Edge coloring of G can be transformed to vertex coloring of the line graph L(G).
+    - The line graph L(G) has a vertex for each edge of G and edges between vertices that share an endpoint in G.
+  - **Implementations**
+    - An implementation of Vizing’s algorithm exists as a C++ project by Yan Dong.
+    - GOBLIN software implements branch-and-bound methods for edge coloring.
+    - Vertex coloring codes can be applied to line graphs for edge coloring.
+    - Combinatorica provides Mathematica implementations for edge coloring via line graphs.
+  - **Notes**
+    - Vizing and Gupta independently proved the Δ + 1 upper bound for edge coloring.
+    - Misra and Gries provide a simple constructive proof of Vizing’s theorem.
+    - Computing the exact edge-chromatic number is NP-complete.
+    - Bipartite graphs allow polynomial-time edge coloring.
+    - Whitney’s work on line graphs relates isomorphisms except for K3 and K1,3.
+    - The line graph of Eulerian graphs is both Eulerian and Hamiltonian.
+    - The line graph of Hamiltonian graphs is always Hamiltonian.
+  - **Related problems**
+    - Vertex coloring and scheduling are related to edge coloring.
+  - **Further reading**
+    - [GOBLIN Graph Library](http://www.math.uni-augsburg.de/~fremuth/goblin.html)
+    - [Vizing's Theorem Proof by Misra and Gries](https://en.wikipedia.org/wiki/Vizing%27s_theorem)
+    - [Combinatorica Mathematica Package](http://programming.sas.upenn.edu/combinatorica/)

@@ -1,0 +1,55 @@
+[Representative image](ADM-ch04-sort-search.best.png)
+
+- **Sorting and Searching**
+  - **Applications of Sorting**
+    - Sorting algorithms can run in O(n log n), improving on naive O(n²) methods for large n.  
+    - Sorting enables efficient solutions for searching, closest pair, element uniqueness, frequency distribution, selection, and convex hull problems.  
+    - Sorting often dominates the running time, but using efficient sorting routines avoids bottlenecks.  
+    - Further reading: [S. S. Skiena, The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)  
+  - **Pragmatics of Sorting**
+    - Sorting order (increasing or decreasing), stability, key selection, and handling of equal keys are crucial considerations.  
+    - Non-numerical data sorting requires custom comparison functions, often provided as arguments to generic sorting routines.  
+    - The standard C library function `qsort` illustrates generic sorting via comparison functions.  
+  - **Heapsort: Fast Sorting via Data Structures**
+    - Heapsort improves selection sort by using a heap data structure to achieve O(n log n) time.  
+    - Heaps support efficient insert and extract-min operations in O(log n) time via bubbling operations.  
+    - The heap can be stored implicitly in arrays without pointers, mapping tree structure using index arithmetic.  
+    - Heap construction can be improved from O(n log n) to O(n) time using a bottom-up bubble down approach.  
+    - Heapsort is in-place and runs in worst-case O(n log n) time, making it practical for in-memory sorting.  
+    - Further reading: Priority queue implementations are detailed in catalog Section 12.2.  
+  - **War Story: Give me a Ticket on an Airplane**
+    - Real-world airfare pricing is complex due to many fares and combinability rules, making naive shortest-path models infeasible.  
+    - Efficient search algorithms use priority queues and incremental expansion of candidate pairs sorted by combined cost.  
+    - Managing duplicates requires auxiliary data structures such as hash tables.  
+    - The approach generalizes to multi-leg itineraries and enables interactive response times.  
+  - **Mergesort: Sorting by Divide-and-Conquer**
+    - Mergesort recursively splits the array, sorts each half, and merges sorted halves in linear time.  
+    - Merging two sorted lists requires at most n−1 comparisons, leading to O(n log n) total time.  
+    - Mergesort is especially suitable for linked lists and is a classic example of divide-and-conquer.  
+    - Requires auxiliary buffer space for arrays, but can merge linked lists in-place.  
+  - **Quicksort: Sorting by Randomization**
+    - Quicksort partitions the array around a pivot, recursively sorting sub-arrays left and right of the pivot.  
+    - Pivot selection affects performance: ideal pivots lead to O(n log n), worst pivots degrade to O(n²).  
+    - Randomized pivot selection ensures expected O(n log n) performance on any input.  
+    - Quicksort generally outperforms mergesort and heapsort in practice due to simpler inner loops.  
+    - Further reading: Detailed randomized algorithm discussion in [MR95], [MU05].  
+  - **War Story: Skiena for the Defense**
+    - External sorting on very large files prioritizes minimizing costly disk I/O over internal sorting speed.  
+    - Multiway mergesort using memory-resident heaps merges sorted runs efficiently.  
+    - Benchmarks like Minutesort highlight the importance of engineering in external sorting.  
+    - Lessons emphasize avoiding lawsuits and considering constant factors, not just asymptotic complexity.  
+  - **Binary Search and Related Algorithms**
+    - Binary search locates keys in O(log n) time by recursively halving the search space.  
+    - Variants enable counting duplicate occurrences in O(log n), one-sided search for unbounded arrays, and numerical root-finding.  
+    - Numerical root-finding by bisection is a robust algorithm that halves intervals until the root is approximated.  
+    - Binary search exemplifies divide-and-conquer principles.  
+  - **Divide-and-Conquer**
+    - This paradigm breaks problems into smaller subproblems, recursively solves them, and merges results.  
+    - Typical runtime recurrences have the form T(n) = aT(n/b) + f(n).  
+    - The master theorem characterizes runtime behavior into three cases depending on f(n) relative to n^{log_b a}.  
+    - Examples include mergesort, binary search, fast heap construction, and Strassen’s matrix multiplication.  
+    - Understanding recurrences aids algorithm design and complexity analysis.  
+    - Further reading: Standard references include [CLRS01], [KT06], [Man89].  
+  - **Exercises**
+    - The exercises cover sorting applications, heaps, quicksort, other sorting algorithms, lower bounds, searching, implementation challenges, interview preparation, and programming challenges.  
+    - Emphasis on algorithm design, complexity analysis, and practical considerations.

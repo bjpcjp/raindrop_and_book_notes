@@ -1,0 +1,36 @@
+[Representative image](ADM-ch14-combinatorials-graph-generation.best.png)
+
+- **14.7 Generating Graphs**
+  - **Graph generation parameters**
+    - Parameters include number of vertices (n) and either number of edges (m) or edge probability (p).
+    - Generation supports producing all graphs, random graphs, or next graphs matching criteria.
+    - Applications include testing programs by comparing solutions and experimental graph theory validations.
+  - **Key graph properties to consider**
+    - Labeled vs. unlabeled graphs determine whether vertex naming affects graph uniqueness.
+    - Directed vs. undirected graphs affect edge orientation and generation method.
+    - Randomness models must be clearly defined for uniformity and application relevance.
+  - **Models of random graph generation**
+    - Random edge generation uses edge probability p to decide edge inclusion independently.
+    - Random edge selection chooses a fixed number m of edges uniformly at random.
+    - Preferential attachment favors connections to high-degree vertices, modeling real networks.
+  - **Organic graphs as alternatives**
+    - Organic graphs reflect real-world relationships, e.g., web links or transport networks.
+    - They offer structured graph data often more relevant than random graphs.
+  - **Special graph classes and algorithms**
+    - Trees can be generated uniquely using Prüfer codes relating trees to sequences.
+    - Graphs with fixed degree sequences can be constructed recursively or randomized via edge flipping.
+  - **Implementations and resources**
+    - The Stanford GraphBase provides diverse graph generators and random graph reproducibility.
+    - Combinatorica offers Mathematica generators for many graph families and operations.
+    - The Combinatorial Object Server specializes in tree generation routines.
+    - Viger’s C++ implementation efficiently generates connected graphs with prescribed degree sequences.
+    - Nauty provides programs for generating nonisomorphic graphs and special graph classes.
+    - Extensive data catalogs by McKay and Royle exist for various graph families.
+    - Fortran and C implementations for tree enumeration and generation are available ([Nijenhuis and Wilf](https://example.org), [Kreher and Stinson](http://www.math.mtu.edu/~kreher/cages/Src.html)).
+  - **Notes and further reading**
+    - Surveys on uniform random graph generation include [Goldwasser 1993] and [Tinhofer 1990].
+    - Counting graphs is closely related to generation; see [Harary and Palmer 1973].
+    - Prüfer code bijection is foundational for labeled tree generation ([Prüfer 1918]).
+    - Random graph theory and threshold laws are surveyed in [Bollobás 2001] and [Janson et al. 2000].
+    - Preferential attachment models have been introduced and studied in [Barabási 2003] and [Watts 2004].
+    - The Erdős-Gallai theorem characterizes when degree sequences are graphical.

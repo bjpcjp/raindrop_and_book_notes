@@ -1,0 +1,35 @@
+[Representative image](ADM-ch14-combinatorials-permutations.best.png)
+
+- **14.4 Generating Permutations**
+  - **Problem description and importance**
+    - Permutations represent orderings of items and underpin many combinatorial problems such as traveling salesman and graph isomorphism.
+    - The number of permutations, n!, grows rapidly, limiting exhaustive generation for n > 12.
+    - Lexicographic order is the natural sorted sequence for permutations but is not always the most efficient.
+    - Nonlexicographic orders can lead to faster and simpler permutation generation.
+  - **Ranking and Unranking paradigms**
+    - Ranking assigns a unique position to each permutation using a recursive formula.
+    - Unranking finds the permutation corresponding to a given rank via recursive division by factorials.
+    - Ranking and unranking functions are inverses, enabling navigation through permutations by their rank.
+    - Applications include generating the next or previous permutation and enumerating all permutations by counting through ranks.
+  - **Random permutation generation**
+    - Selecting a random integer in [0, n! - 1] and unranking it creates a truly random permutation.
+    - A recommended algorithm uses a linear-time swapping method involving random indices from i to n for each position i.
+    - An alternate method that swaps with a random position always in [1, n] fails to produce uniform permutations.
+    - Extensive empirical testing is advised to verify uniformity of random permutation generators.
+  - **Incremental change methods**
+    - Generate permutations by swapping elements to create minimal changes between permutations.
+    - Such methods are efficient, typically constant time per permutation, and suitable for search algorithms like TSP.
+    - The Johnson-Trotter algorithm ensures swaps occur only between adjacent elements.
+  - **Handling multisets and duplicates**
+    - Duplicate elements in multisets reduce the total number of distinct permutations.
+    - Using backtracking with lexicographic ordering avoids generating identical permutations.
+  - **Implementations and further resources**
+    - The C++ STL provides next and prev permutation functions for lexicographic sequencing.
+    - Kreher and Stinson offer C implementations for minimal change and lexicographic generation.
+    - The Combinatorial Object Server provides interactive interfaces and code to generate multiple combinatorial objects.
+    - [The Combinatorial Object Server](http://theory.cs.uvic.ca/), [Kreher and Stinson's implementations](http://www.math.mtu.edu/~kreher/cages/Src.html), and Knuth [Knu05a] are key references.
+  - **Notes on permutation generation research**
+    - Ranking/unranking methods are suitable for small n due to factorial growth constraints.
+    - Incremental change methods, including Johnson-Trotter, enable efficient enumeration with minimal swaps.
+    - Myrvold and Ruskey provide simple linear-time ranking/unranking algorithms.
+    - Historical references include Sedgewick’s survey and tables of random permutations used before algorithmic methods.

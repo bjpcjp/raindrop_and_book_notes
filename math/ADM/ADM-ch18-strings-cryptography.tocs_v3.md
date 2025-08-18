@@ -1,0 +1,41 @@
+[Representative image](ADM-ch18-strings-cryptography.best.png)
+
+- **Cryptography overview**
+  - **Classes of cryptosystems**
+    - Caesar shifts involve mapping each letter to another via rotation or permutation and have weak keys vulnerable to frequency analysis.
+    - Block Shuffle Ciphers, like DES, shuffle bits based on the key and are now replaced by AES for stronger security.
+    - Public Key Cryptography uses separate encoding and decoding keys, solving key distribution problems, with RSA as a primary example.
+    - Refer to [Cryptolounge Algorithm Category](http://www.cryptolounge.org/wiki/Category:Algorithm) for detailed algorithm assessments.
+  - **Selecting a cryptosystem**
+    - The required security level depends on the adversary's threat, recommending AES or RSA for strong protection.
+    - Key lengths must be sufficiently long as computing power increases; symmetric keys are shorter for equivalent security compared to public keys.
+    - DES has been deprecated due to short key lengths and vulnerability to dedicated cracking machines.
+  - **Additional cryptographic concepts**
+    - Checksums and Cyclic Redundancy Checks (CRC) detect random data corruption but have different limitations.
+    - Cryptographic hashes like MD5 and SHA-256 provide one-way hashing that resists inversion and are important for digital signatures.
+    - Digital signatures prove file authenticity by combining checksum encryption with private keys.
+    - Refer to [Handbook of Applied Cryptography](http://www.cacr.math.uwaterloo.ca/hac/) for comprehensive technical surveys.
+
+- **Practical cryptographic implementations**
+  - **Libraries and software**
+    - Nettle provides a C library with implementations of MD5, SHA-256, DES, AES, and RSA.
+    - Crypto++ is a large C++ library encompassing the mentioned cryptosystems.
+    - Popular open source tools include GnuPG and OpenSSL for encryption and authentication.
+    - The Boost CRC Library offers implementations of various CRC algorithms.
+  - **Security considerations beyond algorithms**
+    - Human factors like password strength often pose greater security risks than the cryptographic algorithm itself.
+    - Novel cryptosystem development is discouraged without extensive cryptanalysis and public scrutiny.
+    - Legal protections such as the Digital Millennium Copyright Act complement cryptographic protections for copyrighted material.
+
+- **Historical and technical background**
+  - **Cryptography history and evolution**
+    - Cryptography dates back at least two thousand years, with accelerating developments following computational advances.
+    - DES was adopted in 1976 but withdrawn by 2005 due to inadequate security against modern attacks.
+    - Triple DES uses three rounds of DES with two keys to enhance security, approved for government use until at least 2030.
+  - **Hashing functions**
+    - MD5, used in digital signatures, has documented vulnerabilities reducing its security.
+    - The SHA family, especially SHA-256 and SHA-512, is currently regarded as more secure.
+  - **RSA cryptosystem**
+    - RSA security depends on the difficulty of factoring large numbers.
+    - Encoding is faster relative to decoding, which relies on factoring hardness.
+    - See [RSA Laboratories](http://www.rsa.com/rsalabs/) for comprehensive RSA information.

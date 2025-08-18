@@ -1,0 +1,38 @@
+[Representative image](ADM-ch10-how-to-design-algos.best.png)
+
+- **How to Design Algorithms**
+  - **Introduction**
+    - Designing algorithms involves creative problem-solving and requires choosing among many design options.
+    - Success requires both technical knowledge and a problem-solving mindset focused on inquiry and careful reasoning.
+    - Maintaining a distinction between strategy (big picture) and tactics (details) is crucial throughout the design process.
+    - The text emphasizes asking and answering guiding questions with documented reasoning to avoid overlooking possibilities.
+    - The approach is inspired by disciplined problem-solving under pressure, exemplified by test pilots in [The Right Stuff](https://en.wikipedia.org/wiki/The_Right_Stuff_(book)).
+  - **1. Do I really understand the problem?**
+    - Clarify the exact nature of inputs and desired outputs.
+    - Test understanding by solving small examples by hand.
+    - Assess optimality requirements, problem size, speed needs, implementation constraints, and problem type.
+  - **2. Can I find a simple algorithm or heuristic for my problem?**
+    - Evaluate if brute force can solve the problem correctly and in reasonable time.
+    - Analyze heuristic approaches based on simple rules, including their effectiveness on different input types and speed.
+    - Verify the problem is well-defined with measurable solution quality.
+  - **3. Is my problem in the catalog of algorithmic problems in the back of this book?**
+    - Check known results and available implementations for the problem.
+    - Search carefully using various keywords, images, indexes, and internet resources.
+    - Utilize the book’s webpage [http://www.cs.sunysb.edu/~algorith](http://www.cs.sunysb.edu/~algorith) for additional sources.
+  - **4. Are there special cases of the problem that I know how to solve?**
+    - Identify simpler problem instances by ignoring parameters or setting values to trivial ones.
+    - Seek efficient solutions to these special cases.
+    - Analyze why special-case solutions might not generalize widely.
+    - Determine if the problem itself is a special case of a more general known problem.
+  - **5. Which of the standard algorithm design paradigms are most relevant to my problem?**
+    - Consider sorting elements by key to simplify the problem.
+    - Explore problem splitting via binary search or divide-and-conquer partitioning.
+    - Apply dynamic programming where natural ordering exists in input or output.
+    - Use appropriate data structures like hash tables or priority queues to optimize repeated operations.
+    - Employ randomized algorithms such as random sampling, multiple random configurations, or simulated annealing.
+    - Evaluate formulations as linear or integer programs.
+    - Assess if the problem is NP-complete or related to well-known difficult problems, checking resources like Garey and Johnson [Computers and Intractability](https://dl.acm.org/doi/book/10.5555/58058).
+  - **6. Am I still stumped?**
+    - Consider hiring experts if feasible, referring to professional consulting resources.
+    - Revisit earlier questions to update or refine answers and insights.
+    - Emphasize problem-solving as partly art and skill, recommending George Pólya’s [How to Solve It](https://press.princeton.edu/books/paperback/9780691164076/how-to-solve-it) as foundational reading.

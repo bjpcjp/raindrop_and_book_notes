@@ -1,0 +1,21 @@
+[Representative image](ADM-ch17-geometry-minkowski-sum.best.png)
+
+- **Minkowski Sum**
+  - **Input description**
+    - The input consists of point sets or polygons A and B, containing n and m vertices respectively.
+  - **Problem description**
+    - The Minkowski sum A + B = {x + y | x ∈ A, y ∈ B} computes the convolution of polygons A and B using vector sums.
+    - Minkowski sums are useful for fattening objects to aid in motion planning, shape simplification, and boundary smoothing.
+  - **Issues in computing Minkowski sums**
+    - Objects may be rasterized images or explicit polygons, affecting algorithm complexity.
+    - Fattening by a fixed amount corresponds to offsetting the model with a disk of given radius.
+    - Polygon convexity greatly influences computational complexity; sums of convex polygons are simpler than nonconvex ones.
+  - **Approaches to computation**
+    - Triangulate both polygons and compute Minkowski sums of triangle pairs, followed by polygon unions via plane sweep algorithms.
+    - Computing Minkowski sums of convex polygons uses boundary traversal and runs in O(n + m) time.
+    - Partitioning polygons into convex pieces improves efficiency over full triangulation.
+  - **Implementations and references**
+    - CGAL provides robust, efficient Minkowski sum and offset code for arbitrary polygons.
+    - A 3D implementation for convex polyhedra is available at http://www.cs.tau.ac.il/~eﬁf/CD/ and described in [FH06].
+    - Key algorithmic references include [dBvKOS00], [O’R01], [KOS91], [Sha87], [AFH02], and [FHW07].
+    - Translational motion planning for polygonal robots using Minkowski sums is addressed in [KS90].

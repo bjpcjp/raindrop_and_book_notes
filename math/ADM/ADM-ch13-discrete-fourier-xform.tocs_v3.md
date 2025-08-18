@@ -1,0 +1,31 @@
+[Representative image](ADM-ch13-discrete-fourier-xform.best.png)
+
+- **Discrete Fourier Transform**
+  - **Input description**
+    - The input is a sequence of n real or complex values \( h_i \), indexed from 0 to \( n-1 \), sampled at uniform intervals.
+  - **Problem description**
+    - The discrete Fourier transform (DFT) computes \( H_m = \sum_{k=0}^{n-1} h_k e^{2\pi i k m / n} \) for \( m = 0 \) to \( n-1 \).
+  - **Discussion**
+    - Fourier transforms convert time-series samples into the frequency domain, simplifying certain operations.
+    - Applications include filtering, image compression, convolution and deconvolution, and computing correlation functions.
+    - Filtering removes noise by eliminating certain frequency components and then applying the inverse transform.
+    - Image compression reduces data by discarding sine function coefficients that contribute little to the image.
+    - Convolutions can be computed efficiently using Fourier transforms, reducing complexity from \( O(n^2) \) to \( O(n \log n) \).
+    - Correlation functions help detect periodicities in data using Fourier transforms.
+  - **Discrete Fourier transform and inverse formulas**
+    - The DFT is defined by \( H_m = \sum_{k=0}^{n-1} h_k e^{-2\pi i k m / n} \).
+    - The inverse transform is \( h_m = \frac{1}{n} \sum_{k=0}^{n-1} H_k e^{2\pi i k m / n} \).
+  - **Computational complexity and FFT**
+    - Direct DFT computation takes \( O(n^2) \) time.
+    - The Fast Fourier Transform (FFT) reduces this to \( O(n \log n) \) via a divide-and-conquer approach splitting into two transforms of size \( n/2 \).
+    - FFT algorithms usually require \( n \) to be a power of two, with zero-padding recommended if not.
+  - **Implementation and software libraries**
+    - FFTW is a high-performance C library supporting multi-dimensional, real, and complex FFTs.
+    - FFTPACK is a Fortran package with implementations of various Fourier transforms available on Netlib.
+    - Other implementations include ACM Algorithm 545 and GNU Scientific Library reimplementations.
+  - **Notes and further reading**
+    - Historical and theoretical context references include Cooley and Tukey [CT65], Bracewell [Bra99], Brigham [Bri88], and [PFTV07].
+    - Cache-oblivious FFT algorithms inspired FFTW.
+    - Advanced convolution algorithms include those by Schönhage and Strassen with quasi-linear time complexity.
+    - Wavelets are presented as a modern alternative to Fourier transforms for filtering.
+    - External resources: [FFTW](http://www.fftw.org/), [FFTPACK](http://www.netlib.org/fftpack), [GNU Scientific Library](http://www.gnu.org/software/gsl/).

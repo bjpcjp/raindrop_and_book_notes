@@ -1,0 +1,41 @@
+[Representative image](ADM-ch18-sets-set-cover.best.png)
+
+- **Set Cover**
+  - **Input Description**
+    - The input consists of a collection of subsets \( S = \{S_1, \ldots, S_m\} \) of a universal set \( U = \{1, \ldots, n\} \).
+    - The problem asks for the smallest subset \( T \subseteq S \) whose union equals \( U \).
+  - **Problem Description and Applications**
+    - Set cover represents selecting the minimal number of lots to acquire all items or combinations.
+    - Applications include Boolean logic minimization and Lotto ticket optimization.
+    - Boolean function implementation can be optimized by finding the minimal set cover of feasible "and" terms.
+  - **Variations of Set Cover**
+    - Distinction exists between set cover (elements can be covered multiple times) and set packing (discussed in Section 18.2).
+    - When derived from graph edges or vertices, set cover includes maximum matching and vertex cover as special cases.
+    - If subsets contain only two elements, the problem reduces to maximum matching and is efficiently solvable; with three elements, the problem is NP-complete.
+    - The hitting set problem is dual to set cover, seeking the smallest subset of elements covering all subsets, and can be solved via set cover approaches.
+    - See Figure 18.1 for an illustration of hitting set and its dual set cover conversion.
+  - **Complexity and Approximations**
+    - Set cover is NP-complete and harder than vertex cover.
+    - Vertex cover admits a 2-approximation; set cover has a best approximation ratio of \(\Theta(\log n)\).
+  - **Greedy Heuristic**
+    - The heuristic iteratively selects the largest subset by uncovered elements, removing covered elements after each choice.
+    - It guarantees a solution within a factor of \(\ln n\) of optimal and usually performs better in practice.
+    - Efficient implementation utilizes linked lists and bounded-height priority queues, achieving \(O(S)\) time complexity where \(S = \sum_{i=1}^m |S_i|\).
+    - Elements present in only one subset should be covered early to reduce extra costs.
+  - **Other Approaches**
+    - Simulated annealing may yield better covers than simple heuristics.
+    - Backtracking can find optimal solutions but is often computationally prohibitive.
+  - **Integer Programming Formulation**
+    - The set cover problem can be formulated as an integer linear program with 0-1 variables \( s_i \) indicating whether subset \( S_i \) is included.
+    - Constraints ensure every element is covered by at least one chosen subset.
+    - Weighted set cover generalizes this to subsets with nonuniform costs.
+    - Relaxing integrality constraints to linear programs enables effective heuristic approximations through rounding.
+  - **Implementations and Resources**
+    - Greedy heuristics and ILP formulations require custom implementation.
+    - Pascal implementations of set packing and set cover heuristics appear in [SDK83].
+    - SYMPHONY is a mixed-integer linear programming solver accommodating set partitioning problems ([branchandcut.org](http://branchandcut.org/SPP/)).
+    - Classic and recent surveys include [BP76], [Pas97], and computational studies in [CFT99, CFT00].
+    - Greedy heuristic expositions are found in [CLRS01, Hoc96], with worst-case examples in [Joh74, PS98].
+    - Hardness of approximation lower bounds are discussed in [Fei98].
+  - **Related Problems**
+    - Matching (Section 15.6), vertex cover (Section 16.3), and set packing (Section 18.2).

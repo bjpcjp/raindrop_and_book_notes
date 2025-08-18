@@ -1,0 +1,41 @@
+[Representative image](ADM-ch15-graphs-transitive-closure.best.png)
+
+- **15.5 Transitive Closure and Reduction**
+  - **Input description**
+    - The input is a directed graph \( G = (V, E) \).
+    - The objective is to construct graphs representing transitive closure and transitive reduction of \( G \).
+  - **Transitive closure problem**
+    - Constructs a graph \( G^* = (V, E^*) \) where an edge \((i, j) \in E^*\) if there is a directed path from \( i \) to \( j \) in \( G \).
+    - Enables constant-time reachability queries by referencing matrix entries.
+    - Essential in applications like spreadsheet dependency updates and many database problems.
+  - **Algorithms for transitive closure**
+    - Depth-first or breadth-first search from each vertex gives an \( O(n(n+m)) \) algorithm, suitable for sparse graphs.
+    - Warshall’s algorithm runs in \( O(n^3) \) and uses a boolean matrix update method analogous to Floyd’s algorithm.
+    - Matrix multiplication approach uses repeated squaring to compute closure in \( O(\log n) \) matrix multiplications.
+    - Strongly connected component decomposition can reduce the problem size and improve performance.
+  - **Transitive reduction problem**
+    - Seeks a minimal graph \( G^* = (V, E^*) \) preserving reachability with fewer edges.
+    - The transitive closure of \( G \) and its transitive reduction are identical.
+    - Applications include space saving and reducing visual clutter in graph drawing.
+  - **Properties and complexity of transitive reduction**
+    - Transitive closure is unique, but transitive reduction may not be.
+    - Finding a minimal transitive reduction with edges restricted to those in \( G \) is NP-complete.
+    - A quick heuristic replaces strongly connected components with cycles and connects components, possibly adding edges not in \( G \).
+  - **Heuristics and exact algorithms**
+    - A heuristic deletes edges if alternative paths exist, requiring efficient reachability testing.
+    - An exact minimum size reduction allowing arbitrary edges can be computed in \( O(n^3) \) time.
+    - The quick heuristic is often sufficient and simpler to implement.
+  - **Implementations and references**
+    - The Boost library provides a well-engineered transitive closure implementation based on [Nuu95].
+    - LEDA offers C++ implementations for both closure and reduction [MN99].
+    - Java lacks standard libraries, but Graphlib has a Java transitivity library available online.
+    - Combinatorica supplies Mathematica implementations and visualization tools [PS03].
+  - **Additional notes**
+    - Survey by Van Leeuwen [vL90a] covers transitive closure and reduction.
+    - Equivalence between matrix multiplication and closure proven by Fischer and Meyer [FM71].
+    - Recent improvements include cache-friendly optimizations of Warshall’s algorithm [PP06].
+    - Empirical studies and theoretical foundations are detailed in multiple references.
+    - Size estimation for transitive closure is vital for database query optimization [Coh94].
+  - **Related problems**
+    - Connected components computation (Section 15.1).
+    - Shortest path algorithms (Section 15.4).

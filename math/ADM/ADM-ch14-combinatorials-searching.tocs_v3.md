@@ -1,0 +1,32 @@
+[Representative image](ADM-ch14-combinatorials-searching.best.png)
+
+- **14.2 Searching**
+  - **Input description**
+    - The input consists of a set of n keys S and a query key q.
+    - The problem is to determine where q is located within the set S.
+  - **Problem description and discussion**
+    - Searching has different meanings, including optimization and game-tree exploration.
+    - This section focuses on searching for a key in static lists, arrays, or trees without insertions or deletions.
+    - Dictionaries like binary trees and hash tables offer efficient access but involve dynamic updates.
+  - **Basic searching approaches**
+    - Sequential search compares keys one-by-one from the start until a match is found or the end is reached.
+    - Binary search works on sorted arrays by repeatedly halving the search interval to locate the key in O(log n) comparisons.
+    - Binary search requires careful implementation and testing to avoid errors.
+  - **Considerations for search algorithm choice**
+    - Programming time: binary search is complex compared to sequential search.
+    - Access frequency skew: rearranging keys by popularity improves sequential search but complicates tree structures.
+    - Changing access frequencies: self-organizing lists like move-to-front adapt dynamically to query patterns.
+    - Proximity knowledge: one-sided binary search efficiently searches near a known position.
+    - External memory constraints: data structures like B-trees optimize disk access better than binary search.
+    - Distribution knowledge: interpolation search guesses search positions but is fragile and complex.
+  - **Self-organizing search structures**
+    - Move-to-front lists boost recently accessed keys to the front without counting frequencies.
+    - Splay trees self-adjust by rotating accessed nodes to the root, offering good amortized performance.
+  - **Implementation notes**
+    - Standard libraries provide binary and sequential search implementations such as C's bsearch and Java’s binarySearch.
+    - Textbooks by Sedgewick and Weiss offer implementations for various search structures.
+  - **Additional notes**
+    - The expected search time of linear interpolation search on uniformly distributed data is O(log log n).
+    - Optimal binary search trees can be constructed via dynamic programming in O(n log n) time.
+    - The Van Emde Boas tree layout improves cache and external memory performance.
+    - Recommended further reading includes [The Handbook of Data Structures and Applications](https://example.org), Knuth’s analysis [Knu97a], and surveys by Arge et al. [ABF05].

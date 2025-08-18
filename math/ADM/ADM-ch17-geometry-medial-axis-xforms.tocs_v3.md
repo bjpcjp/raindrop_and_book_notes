@@ -1,0 +1,35 @@
+[Representative image](ADM-ch17-geometry-medial-axis-xforms.best.png)
+
+- **Medial-Axis Transform**
+  - **Input description**
+    - The input is a polygon or polyhedron \( P \).
+    - The problem is to find points within \( P \) that have more than one closest point on the boundary.
+    - The medial-axis extracts a simple and robust representation of the polygon’s shape.
+  - **Discussion**
+    - The medial-axis represents the polygon’s skeleton, useful for thinning and shape reconstruction.
+    - It is always a tree for polygons without holes, facilitating dynamic programming for shape classification.
+    - For polygons with holes, the skeleton forms an embedded planar graph but remains manageable.
+    - Skeletons reflect shape centers, supporting applications like motion planning.
+  - **Geometric data approach**
+    - Uses Voronoi diagrams of line segments defining the polygon edges.
+    - The medial-axis is the portion of the line-segment Voronoi diagram inside \( P \).
+    - The straight skeleton is related but uses bisectors equidistant to supporting lines rather than edges.
+    - Straight skeletons have polygonal edges and are simpler to compute than the medial axis.
+    - For convex polygons, the medial axis, straight skeleton, and Voronoi diagram coincide.
+  - **Image data approach**
+    - Pixel-based images correspond to lattice points on an integer grid.
+    - Skeletons can be computed via a “brush fire” thinning algorithm that simulates fire spreading inward.
+    - The algorithm deletes non-skeleton boundary pixels iteratively until a thin (1-2 pixel width) object remains.
+    - Pixel-based skeletons are easier to implement but less geometrically accurate and may lack connectivity.
+    - Exact medial-axis properties are difficult to achieve in discrete pixel representations.
+  - **Implementations**
+    - CGAL package computes straight skeletons and offset contours of polygons.
+    - VRONI robustly computes Voronoi diagrams of segments, points, and arcs; suitable for medial-axis transforms.
+    - Cocone constructs approximate medial-axis transforms for 3D point clouds to interpolate surfaces.
+    - Powercrust approximates medial-axis transforms to reconstruct geometrically correct surfaces from dense samples.
+  - **Notes and references**
+    - The medial-axis transform was introduced for shape similarity studies in biology [Blu67].
+    - It is fundamental to surface reconstruction algorithms like Powercrust [ACK01a, ACK01b].
+    - Medial-axis of polygons can be computed in \( O(n \log n) \) time for arbitrary polygons; linear time for convex ones.
+    - Straight skeletons have subquadratic construction algorithms and applications in virtual building roof models.
+    - For thorough surveys and additional theory, see [dBvKOS00], [O’R01], and [Pav82].

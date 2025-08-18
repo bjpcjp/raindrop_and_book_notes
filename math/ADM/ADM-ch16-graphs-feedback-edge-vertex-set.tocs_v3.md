@@ -1,0 +1,45 @@
+[Representative image](ADM-ch16-graphs-feedback-edge-vertex-set.best.png)
+
+- **Feedback Edge/Vertex Set**
+  - **Input Description**
+    - The input is a directed graph \( G = (V, E) \).
+    - The main problem is to find the smallest set of edges or vertices to delete to leave an acyclic graph.
+  - **Problem Description and Applications**
+    - Feedback sets enable many problems to be solved more easily on DAGs than on general digraphs.
+    - Feedback sets help resolve cyclic constraints in scheduling problems, such as conflicting job precedence.
+    - The problem also applies to eliminating race conditions in electronic circuits.
+    - The problem is also called the maximum acyclic subgraph problem.
+  - **Ranking Tournaments Application**
+    - Directed graphs represent player wins, with edges from winner to loser.
+    - Feedback edge sets correspond to "upsets" that must be removed to produce a ranking.
+  - **Issues in Feedback Set Problems**
+    - **Do constraints have to be dropped?**
+      - No edges or vertices need removal if the graph is already acyclic, detected by topological sort.
+      - A naive topological sort modification removes edges/vertices causing contradictions but can yield large sets.
+      - Feedback edge and vertex set problems are NP-complete for directed graphs.
+    - **Finding a good feedback edge set**
+      - A linear-time heuristic constructs a vertex order and deletes edges going "against" the order.
+      - At least half the edges go either left-to-right or right-to-left; removing the minority is a good heuristic.
+      - Edge-imbalance (in-degree minus out-degree) or recursive partitioning from a chosen vertex helps define orders.
+    - **Finding a good feedback vertex set**
+      - Vertex orders define back edges to cover.
+      - The vertex cover problem used to find vertex sets covering back edges.
+      - Heuristics from vertex cover apply (see Section 16.3).
+    - **Feedback sets in undirected graphs**
+      - Feedback edge sets correspond to edges beyond the tree structure and can be found via DFS.
+      - Feedback vertex set remains NP-complete on undirected graphs.
+      - A heuristic deletes vertices from the shortest cycle until acyclic, estimating approximation quality by cycle length.
+  - **Heuristic Improvement Techniques**
+    - Refinement is possible by randomization or simulated annealing.
+    - Modifications include swapping vertex pairs or inserting/removing vertices in the candidate set.
+  - **Implementations**
+    - GRASP heuristics for feedback edge and vertex sets are available in Fortran from Festa et al. [FPR01].
+    - GOBLIN software includes an approximate minimum feedback arc set heuristic.
+    - The Stanford GraphBase econ order program minimizes sums below the diagonal in adjacency matrices.
+  - **Notes and References**
+    - Feedback minimization problems are NP-hard; detailed proofs are in [Kar72], [AHU74], and [Eve79a].
+    - Feedback vertex set admits a 2-approximation in undirected graphs [BBF99].
+    - Feedback edge set can be approximated within \( O(\log n \log \log n) \) [ENSS98].
+    - Additional studies on heuristics and applications appear in [CFR06], [Koe05], and [Knu94].
+  - **Related Problems**
+    - The problems relate to bandwidth reduction, topological sorting, and scheduling.

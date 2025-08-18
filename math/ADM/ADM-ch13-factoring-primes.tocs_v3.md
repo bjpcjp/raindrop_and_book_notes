@@ -1,0 +1,28 @@
+[Representative image](ADM-ch13-factoring-primes.best.png)
+
+- **Factoring and Primality Testing**
+  - **Problem Description**
+    - The problem is to determine if an integer n is prime and, if not, to find its factors.  
+    - Factoring and primality testing have practical applications such as RSA cryptography security and hash table optimization.  
+    - Algorithms include brute-force trial division and more advanced methods like the number field sieve.  
+    - [PARI](http://pari.math.u-bordeaux.fr/) provides comprehensive computational number theory capabilities.  
+  - **Algorithms and Complexity**
+    - Simple trial division tests divisibility up to √n and runs in O(√n) time but is exponential in input size.  
+    - Faster factoring algorithms use number theory and randomness, with the number field sieve factoring integers up to 200 digits.  
+    - Randomized primality tests, like Fermat's little theorem, efficiently check compositeness probabilistically.  
+    - PGP uses these randomized tests to find large primes quickly for cryptographic keys.  
+  - **Prime Distribution and Testing Theory**
+    - The prime number theorem approximates the number of primes less than n by n/ln(n).  
+    - Large prime gaps are rare, so about ln(n) checks typically find the next prime after n.  
+    - The Miller-Rabin test improves primality testing by addressing Carmichael numbers.  
+    - The Agrawal-Kayal-Saxena (AKS) algorithm provides a polynomial-time deterministic primality test.  
+  - **Computational Tools and Libraries**
+    - LiDIA is a C++ library implementing several modern integer factorization methods.  
+    - NTL is a high-performance C++ library for number theory involving arbitrary-length integers and finite fields.  
+    - MIRACL supports multiple factorization algorithms, including the quadratic sieve.  
+  - **Historical and Theoretical Notes**
+    - Mechanical sieving devices were historically used to prove primality efficiently before computers.  
+    - The RSA-129 integer factorization took eight months and used over 1,600 computers in 1994.  
+    - The RSA-200 integer was factored in 2005, requiring resources equivalent to 55 years on a 2.2 GHz CPU.  
+    - The problem of testing compositeness lies in both NP and co-NP complexity classes and is now known to be in P.  
+    - Recommended further reading includes [Crandall and Pomerance, 2005](https://link.springer.com/book/10.1007/b97644) and [Yan, 2003].

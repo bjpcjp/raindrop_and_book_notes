@@ -1,0 +1,57 @@
+[Representative image](ADM-ch03-datastructs.best.png)
+
+- **Data Structures**
+  - **Contiguous vs. Linked Data Structures**
+    - Data structures are classified as contiguous (arrays, matrices, heaps, hash tables) or linked (lists, trees, graph adjacency lists).
+    - Contiguous structures offer constant-time access and memory locality but fixed size constraints.
+    - Linked structures allow dynamic size and flexible insertions/deletions but require extra pointer space and lack efficient random access.
+    - Further exploration in [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).
+  - **Stacks and Queues**
+    - Stacks implement last-in, first-out retrieval via push and pop operations; queues implement first-in, first-out via enqueue and dequeue.
+    - Both can be efficiently realized using arrays or linked lists; choice depends on known size constraints.
+    - Queues are foundational in breadth-first graph searches.
+    - See [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms) for more details.
+  - **Dictionaries**
+    - Dictionaries enable operations like search, insert, delete, successor, predecessor, minimum, and maximum based on key values.
+    - Implementations using unsorted and sorted arrays have complementary trade-offs between operation costs.
+    - Linked list implementations further diversify runtime characteristics depending on whether they are singly or doubly linked and sorted or unsorted.
+    - An extensive catalog available in Section 12.1 of the source text.
+  - **Binary Search Trees**
+    - Nodes contain data, parent, left, and right pointers; maintain ordering such that left subtree nodes have smaller keys and right subtree nodes have larger keys.
+    - Support search, insertion, deletion, minimum, maximum, and traversal operations efficiently, generally in O(h) time where h is the tree height.
+    - Unbalanced insertions can cause worst-case height O(n), balanced search trees guarantee O(log n) height.
+    - Balanced variants like red-black and splay trees ensure logarithmic time complexity on all dictionary operations.
+    - See the [Binary Search Trees section](https://doi.org/10.1007/978-1-84800-070-4_3) for a full treatment.
+  - **Priority Queues**
+    - Support operations Insert, Find-Minimum/Maximum, and Delete-Minimum/Maximum.
+    - Useful in scheduling, simulations, and graph algorithms.
+    - Implementations over unsorted arrays, sorted arrays, and balanced binary search trees reveal differing operation time complexities.
+    - The heap data structure is a notable efficient implementation.
+    - Detailed implementations in Section 12.2 of the catalog.
+  - **Hashing and Strings**
+    - Hash functions map keys and strings to integer indices for efficient dictionary lookup.
+    - Collision resolution methods include chaining with linked lists and open addressing with probing.
+    - Hashing enables expected constant-time dictionary operations assuming good hash distribution.
+    - Rabin-Karp algorithm employs rolling hashes for expected linear-time substring pattern matching.
+    - Hashing applications extend to plagiarism detection and cryptographic integrity verification.
+    - See [Knuth's discussion](https://doi.org/10.5555/58056) for optimization details.
+  - **Specialized Data Structures**
+    - String structures like suffix trees/arrays accelerate pattern matching.
+    - Geometric structures organize spatial data for efficient queries.
+    - Graph data structures include adjacency lists and matrices impacting algorithm design.
+    - Set data structures support membership queries; union-find algorithms maintain set partitions.
+    - Catalog coverage in Sections 12.3–12.6.
+  - **War Stories**
+    - **Stripping Triangulations**
+      - Partitioning triangulated meshes into triangle strips reduces rendering overhead.
+      - Uses dual graph transformation and greedy heuristics for strip optimization.
+      - Priority queues and dictionaries underpin efficient strip selection and updates.
+      - Greedy heuristics significantly reduce total strip cost compared to naive approaches.
+      - [ESV96 paper](https://doi.org/10.1109/VISUAL.1996.568122) details the implementation.
+    - **String ’em Up**
+      - DNA sequencing by hybridization necessitated efficient dictionary search for substrings.
+      - Initial binary search tree and hash table implementations were insufficient in speed or memory.
+      - Suffix trees leverage shared substrings for more efficient repeated searches but require high memory.
+      - Compressed suffix trees solve memory issues, enabling handling of very long strings.
+      - Illustrates data structure choice and optimization based on problem characteristics.
+      - See detailed discussion in Section 12.3.

@@ -1,0 +1,41 @@
+[Representative image](ADM-ch15-graphs-planarity.best.png)
+
+- **15.12 Planarity Detection and Embedding**
+  - **Input and Problem Description**
+    - The input is a graph G for which it is necessary to determine if it can be drawn in the plane without edge crossings.
+    - If the graph is planar, produce a planar drawing (embedding).
+    - Planar drawings clarify graph structure by avoiding confusion caused by crossing edges.
+  - **Properties and Importance of Planar Graphs**
+    - Every planar graph is sparse, satisfying |E| ≤ 3|V| − 6 for nontrivial graphs.
+    - Each planar graph contains a vertex with degree ≤ 5, enabling a low-degree deletion sequence.
+    - Planarity testing and embedding can be done in linear time.
+  - **Planarity Testing Algorithms**
+    - Algorithms embed an arbitrary cycle first, then insert paths, checking for crossing conflicts.
+    - Mutual crossing of three paths means the graph is nonplanar.
+    - Linear-time algorithms rely on depth-first search but are complex; existing implementations are recommended.
+  - **Constructing Planar Embeddings**
+    - Embeddings are constructed incrementally by inserting paths one by one.
+    - Incremental methods may cause cramped drawings with many vertices in small areas.
+    - Planar-grid embeddings place vertices on a (2n − 4) × (n − 2) grid to avoid cramping and overly long edges.
+  - **Nonplanar Graph Drawing and Crossings**
+    - Minimizing crossings for nonplanar graphs is NP-complete.
+    - Heuristics extract a large planar subgraph, embed it, then insert remaining edges to reduce crossings.
+    - Useful for nearly planar graphs such as road networks with overpasses or multilayer circuit boards.
+  - **Implementations**
+    - LEDA provides linear-time planarity testing and grid embeddings; returns obstructing Kuratowski subgraphs for nonplanar graphs.
+    - JGraphEd includes the Booth-Lueker PQ-tree algorithm and modern straight-line grid embedding in Java.
+    - PIGALE contains planar graph algorithms including planarity tests and identification of K3,3 or K5 subgraphs.
+    - GRASP heuristics implement largest planar subgraph search, available from ACM Algorithm 797 and AT&T research site.
+  - **Historical and Theoretical Notes**
+    - Kuratowski’s theorem states planar graphs lack subgraphs homeomorphic to K3,3 or K5.
+    - Fary’s theorem ensures planar graphs can be drawn with straight edges.
+    - Hopcroft and Tarjan supplied the first linear-time planarity testing algorithm.
+    - Booth and Lueker developed a PQ-tree based planarity test.
+    - Nishizeki and Rahman’s book offers an overview of planar drawing algorithms.
+  - **Outerplanar Graphs**
+    - Outerplanar graphs allow all vertices on the outer face of a planar drawing.
+    - Characterized by absence of K2,3 homeomorphic subgraphs.
+    - Recognizable and embeddable in linear time.
+  - **Related Problems**
+    - Graph partitioning.
+    - Drawing of trees.
