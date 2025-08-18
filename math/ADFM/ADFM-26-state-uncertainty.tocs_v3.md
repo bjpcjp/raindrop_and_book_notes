@@ -1,0 +1,42 @@
+![ADFM-26-state-uncertainty](ADFM-26-state-uncertainty.best.png)
+
+- **26 State Uncertainty**
+  - **26.1 Partially Observable Markov Games**
+    - Defines POMGs as extensions of Markov games and POMDPs to multiple agents with partial observability.
+    - Agents select actions based on local observations rather than full states.
+    - Explains the complexity of belief updates due to infinite regress in agent reasoning.
+    - Introduces conditional plans and controllers as alternative policy representations.
+    - Further reading: [Dynamic Programming for Partially Observable Stochastic Games (Hansen et al., 2004)](https://www.aaai.org/Papers/AAAI/2004/AAAI04-027.pdf)
+  - **26.2 Policy Evaluation**
+    - **26.2.1 Evaluating Conditional Plans**
+      - Conditional plans are tree-based deterministic policies mapping observations to actions.
+      - Joint utility is computed recursively over states, actions, and observations.
+      - Algorithm 26.2 implements policy evaluation for finite horizon POMGs.
+    - **26.2.2 Evaluating Stochastic Controllers**
+      - Controllers are stochastic graph-based policies with action and successor node distributions.
+      - Utility evaluation involves solving linear systems or iterative methods.
+      - Utility from initial belief state is the weighted sum over state utilities.
+      - Example joint stochastic controllers are provided for the crying baby problem.
+  - **26.3 Nash Equilibrium**
+    - Nash equilibrium in POMGs occurs when all agents play best responses to each other.
+    - Computing exact Nash equilibria involves enumerating all d-step joint conditional plans.
+    - Converts POMG to a simple game where joint actions correspond to conditional plans.
+    - Nash equilibria in the simple game correspond to equilibria in the POMG.
+    - Example 26.4 illustrates this conversion for the crying baby problem.
+  - **26.4 Dynamic Programming**
+    - Uses iterative expansion and pruning of conditional plans to reduce computational cost.
+    - Pruning eliminates dominated policies by checking their utility compared to others.
+    - Linear programming is employed to verify domination under all beliefs over other agents’ policies.
+    - Dynamic programming approach significantly reduces the search space for Nash equilibria.
+    - Example 26.5 demonstrates pruning in the multi-caregiver crying baby problem.
+  - **26.5 Summary**
+    - POMGs generalize both POMDPs and Markov games to settings with multiple agents and partial observability.
+    - Policies are represented as conditional plans or finite-state controllers due to belief update difficulties.
+    - Nash equilibria are computed via transforming to simple games or dynamic programming.
+    - Dynamic programming uses pruning of dominated plans to efficiently search policy space.
+  - **26.6 Exercises**
+    - Exercises cover theoretical generality of POMGs, incorporation of communication, incentives, enumeration of conditional plans, and best response definitions.
+    - Solutions explain how POMGs subsume POMDPs and MGs, how communication can be modeled, and outline iterated best response procedures.
+    - Exercise 26.4 quantifies the combinatorial explosion in joint conditional plans.
+    - Exercise 26.5 relates best response for POMGs to initial belief states and utilities.
+    - Further reading: [A Framework for Sequential Planning in Multi-Agent Settings (Gmytrasiewicz and Doshi, 2005)](https://doi.org/10.1613/jair.1541)

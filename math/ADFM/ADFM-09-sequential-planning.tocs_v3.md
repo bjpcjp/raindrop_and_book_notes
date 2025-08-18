@@ -1,0 +1,60 @@
+![ADFM-09-sequential-planning](ADFM-09-sequential-planning.best.png)
+
+- **9 Online Planning**
+  - Discusses online planning methods that compute actions based on reachable states from the current state.
+  - Reachable state space is typically much smaller than the full state space, reducing computation and storage.
+  - Covers techniques including pruning, sampling, and selective deep planning along promising trajectories.
+- **9.1 Receding Horizon Planning**
+  - Plans from the current state up to a fixed horizon depth, then replans after executing an action.
+  - Appropriate planning depth balances computational cost with the need for early advisories or goal-directed behavior.
+  - Example 9.1 demonstrates depth impact on collision avoidance advisories.
+- **9.2 Lookahead with Rollouts**
+  - Uses simulation-based one-step lookahead with rollout policies to estimate action values.
+  - Rollout policies are stochastic and require a generative model to simulate successor states.
+  - Results in better behavior than base rollout policies but does not guarantee optimality.
+- **9.3 Forward Search**
+  - Explores all state-action transitions up to a given depth, forming an exponential-size search tree.
+  - Uses recursive depth-first search combined with a terminal value function.
+  - Can be combined with offline estimates in hybrid planning to extend planning depth.
+- **9.4 Branch and Bound**
+  - Prunes search branches using lower and upper bounds on value functions to reduce computations.
+  - If an action's upper bound is below a known lower bound for another action, that action is pruned.
+  - Worst-case complexity matches forward search but can yield significant speedups with tight bounds.
+- **9.5 Sparse Sampling**
+  - Limits the branching factor by sampling a fixed number of successor states per action.
+  - Complexity depends exponentially on depth but not on the total size of the state space.
+  - Balances approximation accuracy with computational tractability.
+- **9.6 Monte Carlo Tree Search**
+  - Runs multiple simulations to update estimates of action values and visitation counts.
+  - Chooses actions by balancing exploitation (high value) and exploration (low visitation count) via an upper confidence bound formula.
+  - Expansion, simulation, and backpropagation phases incorporate rollout policies for evaluation.
+  - Progressive widening techniques enable handling large or continuous action and state spaces.
+- **9.7 Heuristic Search**
+  - Runs a fixed number of simulations of a greedy policy guided by an upper-bound heuristic value function.
+  - Guarantees convergence to optimal utility if the heuristic is truly an upper bound (admissible).
+  - Efficiency depends on tightness of the heuristic upper bound.
+- **9.8 Labeled Heuristic Search**
+  - Improves heuristic search by labeling states as solved once their value residuals fall below a threshold.
+  - Focuses computation on unsolved states, reducing reevaluations.
+  - Uses the concept of a greedy envelope to identify related states in value updates.
+- **9.9 Open-Loop Planning**
+  - Optimizes a fixed sequence of actions without conditioning on future observations.
+  - Often called model predictive control in control literature.
+  - More computationally efficient and often convex under assumptions such as deterministic dynamics.
+  - May produce suboptimal behavior when ignoring feedback, demonstrated by example 9.9.
+  - Includes robust formulations that optimize worst-case outcomes but can be overly conservative.
+  - Multi-forecast model predictive control uses sampled scenarios to improve tractability and robustness.
+- **9.10 Summary**
+  - Online planning focuses computation on reachable states from the current state.
+  - Receding horizon replans actions after each execution.
+  - Lookahead with rollouts uses simulation-based value estimates without guarantees.
+  - Forward search has exponential complexity in states and actions.
+  - Branch and bound prunes suboptimal branches via bounds.
+  - Sparse sampling reduces branching by sampling successor states.
+  - Monte Carlo tree search balances exploration and exploitation using visitation counts.
+  - Heuristic and labeled heuristic searches use value function approximations and residual-based state labels.
+  - Open-loop planning optimizes fixed action sequences, often via convex optimization under deterministic assumptions.
+- **9.11 Exercises**
+  - Exercises cover complexity analysis of branch and bound, combining admissible and inadmissible heuristics, state-action space discretization trade-offs, action ordering effects, sparse sampling equivalence conditions, and application of upper confidence bounds in Monte Carlo tree search.
+  - Solutions emphasize worst-case complexity equivalence, heuristic admissibility preservation via min functions, and probabilistic differences between forward search and sparse sampling.
+  - Relevant for deepening understanding of computational trade-offs and algorithmic connections.

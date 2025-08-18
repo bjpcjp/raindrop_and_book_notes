@@ -1,0 +1,53 @@
+![ADFM-21-belief-state-planning-offline](ADFM-21-belief-state-planning-offline.best.png)
+
+- **Offline Belief State Planning**
+  - **Fully Observable Value Approximation**
+    - QMDP is a simple offline approximation that assumes full observability after the first step.
+    - The value function is represented as alpha vectors updated iteratively by a specified update rule.
+    - QMDP produces an upper bound on the optimal value function but may poorly approximate information gathering actions.
+    - [Hauskrecht, "Value-Function Approximations for Partially Observable Markov Decision Processes"](https://artint.info/html/ArtInt_197.html)
+  - **Fast Informed Bound**
+    - This method computes one alpha vector per action considering the observation model, improving on QMDP's upper bound.
+    - Each iteration requires operations linear in the number of states, observations, and actions.
+    - The fast informed bound yields a tighter upper bound than QMDP on the optimal value function.
+    - [Hauskrecht, 2000](https://artint.info/html/ArtInt_197.html)
+  - **Fast Lower Bounds**
+    - The best-action worst-state lower bound provides a loose but quickly computable lower bound with one alpha vector.
+    - The blind lower bound produces one alpha vector per action assuming the agent commits blindly to that action.
+    - These lower bounds often seed other planning algorithms for tighter value approximations.
+  - **Point-Based Value Iteration**
+    - Point-based methods maintain alpha vectors at a finite set of belief points to approximate the value function from below.
+    - The backup operation constructs new alpha vectors by maximizing over actions and observations at each belief.
+    - The method iterates to improve the value function lower bound, effectively approximating policies for reachable beliefs.
+    - [Shani et al., "A Survey of Point-Based POMDP Solvers"](https://www.aaai.org/ocs/index.php/AAMAS/AAMAS12/paper/view/4458)
+  - **Randomized Point-Based Value Iteration**
+    - This variation updates alpha vectors only for randomly selected beliefs until all points in the belief set improve.
+    - Offers improved computational efficiency over traditional point-based value iteration while maintaining lower bounds.
+    - It adaptively manages the number of alpha vectors during updates.
+    - [Spaan & Vlassis, "Perseus: Randomized Point-Based Value Iteration for POMDPs"](https://jair.org/index.php/jair/article/view/10452)
+  - **Sawtooth Upper Bound**
+    - Represents the value function as a set of belief-utility pairs forming inverted pyramids ("teeth") in belief space.
+    - Provides an upper bound interpolation by taking the minimum over pyramids formed by pairs and basis beliefs.
+    - The sawtooth method allows efficient upper bound improvements through iterative one-step lookahead updates.
+    - [Hauskrecht, 2000](https://artint.info/html/ArtInt_197.html)
+  - **Point Selection**
+    - Selecting belief points is critical; methods include random expansion and exploratory expansion to cover reachable belief space.
+    - Exploratory expansion adds points furthest from existing ones to improve spread and approximation quality.
+    - The expansion is limited by trade-offs between coverage of reachable beliefs and computational effort.
+    - [Kurniawati et al., "SARSOP: Efficient Point-Based POMDP Planning"](http://www.roboticsproceedings.org/rss08/p15.pdf)
+  - **Sawtooth Heuristic Search**
+    - Uses the gap between upper and lower bounds to guide exploration of reachable belief space to tighten value estimates.
+    - Initializes with fast informed bounds for the upper bound and best-action worst-state for the lower bound.
+    - Explores beliefs recursively, selecting actions from the upper bound policy and observations maximizing the gap.
+    - [Smith & Simmons, "Heuristic Search Value Iteration for POMDPs"](https://www.aaai.org/Papers/UAI/2004/UAI04-010.pdf)
+  - **Triangulated Value Functions**
+    - Implements value function approximation by Freudenthal triangulation over a discrete grid in belief space.
+    - Interpolates value at arbitrary beliefs via barycentric coordinates within simplices formed by vertices on the triangulation.
+    - Value iteration with triangulated values produces upper bounds due to convexity of the true value function.
+    - [Lovejoy, "Computationally Feasible Bounds for Partially Observed Markov Decision Processes"](https://pubsonline.informs.org/doi/abs/10.1287/opre.39.1.162)
+  - **Summary**
+    - QMDP and fast informed bound provide efficient, computable upper bounds for POMDP value functions.
+    - Lower bounds are generated via point-based methods and blind/BAWS techniques.
+    - Point-based and randomized value iteration methods produce lower-bound alpha vector sets focused on reachable beliefs.
+    - Sawtooth bounds and heuristic search combine upper and lower bounds to tighten approximations.
+    - Value function interpolation using Freudenthal triangulation supports upper bound approximations over discrete belief grids.

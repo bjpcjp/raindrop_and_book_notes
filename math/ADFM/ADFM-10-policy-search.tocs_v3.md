@@ -1,0 +1,46 @@
+![ADFM-10-policy-search](ADFM-10-policy-search.best.png)
+
+- **Policy Search**
+  - **Approximate Policy Evaluation**
+    - Monte Carlo policy evaluation estimates expected utility of a policy via trajectory rollouts.
+    - The estimated utility is the average discounted return over multiple sampled trajectories.
+    - Increasing the number of rollouts reduces estimation variance.
+    - The policy can be parameterized, e.g., by neural networks or decision trees.
+    - Refer to [Monte Carlo methods](https://en.wikipedia.org/wiki/Monte_Carlo_method) for foundational concepts.
+  - **Local Search**
+    - Local search optimizes policy parameters by iteratively exploring neighbor points.
+    - The Hooke-Jeeves method evaluates steps of size ±α in coordinate directions, reducing α if no improvement occurs.
+    - This method converges when the step size falls below a threshold.
+    - It can get stuck in local optima without global exploration mechanisms.
+    - See [Hooke-Jeeves method](https://en.wikipedia.org/wiki/Hooke%E2%80%93Jeeves_pattern_search) for algorithmic details.
+  - **Genetic Algorithms**
+    - Genetic algorithms maintain a population of parameter samples, evolving them via selection and mutation.
+    - Evaluation of utility for each sample is computationally expensive but parallelizable.
+    - The population is updated by perturbing elite samples and retaining the best unperturbed sample.
+    - This approach helps avoid local optima by global search.
+    - See Goldberg's book [Genetic Algorithms in Search, Optimization, and Machine Learning](https://mitpress.mit.edu/books/genetic-algorithms-search-optimization-and-machine-learning).
+  - **Cross Entropy Method**
+    - This method iteratively updates a parameterized search distribution over policies to maximize expected utility.
+    - Samples are drawn and elite samples refit the distribution parameters, typically using maximum likelihood estimation.
+    - Commonly uses Gaussian search distributions.
+    - It balances exploration and exploitation via statistical fitting of top-performing samples.
+    - For theoretical background, see [The Cross Entropy Method for Fast Policy Search](https://www.cs.rutgers.edu/~mollrich/teaching/IT464-s17/readings/2003_mannor_cross_entropy.pdf).
+  - **Evolution Strategies**
+    - Evolution strategies optimize by updating search distribution parameters in the gradient direction of expected utility.
+    - The gradient of the objective equals the expected utility-weighted gradient of the log-likelihood.
+    - Rank shaping weights improve gradient robustness by emphasizing relative sample quality.
+    - They combine aspects of local gradient ascent with population-based search.
+    - See [Natural Evolution Strategies](http://jmlr.org/papers/v15/wierstra14a.html) for comprehensive treatment.
+  - **Isotropic Evolutionary Strategies**
+    - This variant assumes an isotropic Gaussian search distribution with mean ψ and covariance σ²I.
+    - The gradient estimate simplifies to an expected utility-weighted sample perturbation.
+    - Mirrored sampling reduces gradient estimate variance by pairing samples symmetrically around the mean.
+    - It significantly speeds convergence and stabilizes learning.
+    - Refer to Salimans et al.'s paper [Evolution Strategies as a Scalable Alternative to Reinforcement Learning](https://arxiv.org/abs/1703.03864).
+  - **Summary**
+    - Monte Carlo evaluation computes expected policy utility via rollouts.
+    - Local search methods optimize policy parameter neighborhoods.
+    - Genetic algorithms maintain and evolve populations to escape local optima.
+    - The cross entropy method fits search distributions to elite samples iteratively.
+    - Evolution strategies use gradient estimates to update distribution parameters.
+    - Isotropic evolutionary strategies specialize with Gaussian isotropic assumptions to improve efficiency.

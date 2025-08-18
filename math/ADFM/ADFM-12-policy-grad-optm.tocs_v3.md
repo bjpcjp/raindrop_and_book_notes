@@ -1,0 +1,34 @@
+![ADFM-12-policy-grad-optm](ADFM-12-policy-grad-optm.best.png)
+
+- **Policy Gradient Optimization**
+  - **Gradient Ascent Update**
+    - Gradient ascent iteratively updates policy parameters by taking steps proportional to the gradient of expected utility \( U(\theta) \).
+    - The step size \(\alpha\) is crucial as large steps can overshoot the optimum.
+    - Gradient scaling (limiting L2 norm) and clipping (element-wise limits) help control gradient magnitude.
+    - See [Algorithms for Optimization](https://mitpress.mit.edu/books/algorithms-optimization) by Kochenderfer and Wheeler for detailed treatment.
+  - **Restricted Gradient Update**
+    - Uses a first-order Taylor approximation of \(U(\theta_0)\) with a constraint limiting step length based on Euclidean distance.
+    - The constrained optimization problem has an analytic solution updating \(\theta\) within a ball of radius related to divergence bound \(\epsilon\).
+    - The method controls updates to avoid excessively large parameter jumps.
+  - **Natural Gradient Update**
+    - Modifies restricted gradient by replacing Euclidean distance with Fisher information matrix \(F_\theta\) to measure parameter sensitivity.
+    - Enforces a trust region defined by an elliptical constraint on the KL divergence between trajectory distributions.
+    - The update is \(\theta_0 = \theta + u\) where \(u=F_\theta^{-1} \nabla U(\theta)\).
+    - Conjugate gradient descent can efficiently compute updates when parameter dimension is large ([Amari 1998](https://ieeexplore.ieee.org/document/679540)).
+  - **Trust Region Update**
+    - Starts from the natural gradient update and performs a line search along \(\theta \to \theta_0\) to find an improved policy within the trust region.
+    - Uses sampled trajectories to evaluate surrogate objective and KL divergence constraints without extra simulations.
+    - Iteratively shrinks step size until improvement and constraint satisfaction are achieved.
+    - Refer to [Trust Region Policy Optimization (TRPO)](https://arxiv.org/abs/1502.05477) by Schulman et al., 2015.
+  - **Clamped Surrogate Objective**
+    - Uses a pessimistic lower bound on the surrogate objective to avoid overly optimistic updates.
+    - The probability ratio is clamped to an interval \([1-\epsilon, 1+\epsilon]\) to prevent large detrimental updates.
+    - Removes need for line search and explicit constraints, enabling multiple gradient steps per batch of sampled trajectories.
+    - Gradient contributions are zeroed when clamping is active to enforce conservative updates.
+    - See [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347) by Schulman et al., 2017.
+  - **Summary**
+    - Policy gradient methods iteratively improve policies using gradient estimates.
+    - Robustness is enhanced via gradient scaling, clipping, or constrained step sizes.
+    - Natural gradient adapts updates to parameter sensitivity using the Fisher information.
+    - Trust region optimization augments natural gradient with line search refining policy improvement.
+    - Clamped surrogate objectives offer similar performance without line search by imposing conservative constraints.
