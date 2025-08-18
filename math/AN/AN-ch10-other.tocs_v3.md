@@ -1,0 +1,45 @@
+![AN-ch10-other](AN-ch10-other.best.png)
+
+- **When All Else Fails**
+  - **Variations on a Theme**
+    - The chapter discusses relaxing the assumptions of exact answers, single instance solving, sequential platform, and deterministic platform.  
+    - Different types of algorithms emerge when these assumptions are relaxed.  
+  - **Approximation Algorithms**
+    - Approximation algorithms produce near-optimal answers faster than exact algorithms.  
+    - Christofides' algorithm solves the Traveling Salesman Problem within 50% of the shortest tour when the triangle inequality holds.  
+    - TSP is NP-hard, making efficient exact solutions unlikely.  
+    - See Christofides (1976) for the foundational algorithm.  
+  - **Offline Algorithms**
+    - Offline algorithms batch multiple problem instances for processing, contrasting with online algorithms that solve each instance immediately.  
+    - Batching contains queries enables sorting and scanning that reduces total worst-case cost to O(n log n), versus O(n²) for online sequential searching.  
+    - The adversary prevents speedups in online query processing by unpredictable query order.  
+  - **Parallel Algorithms**
+    - Parallelism can reduce the worst-case cost of multiple sequential searches from O(n²) to O(n) using n processors.  
+    - Multicore processors facilitate such parallel computations.  
+    - See Berman and Paul (2004) and Armstrong’s *Programming Erlang* (2007) for deeper insights.  
+  - **Randomized Algorithms**
+    - Randomized algorithms use streams of random bits as an essential part of their processing.  
+    - Generating true random bits on deterministic machines is challenging; quasi-random bits approximate randomness.  
+  - **Estimating the Size of a Set**
+    - A probabilistic counting algorithm estimates the size n of a set faster than exact counting.  
+    - The algorithm iteratively probes random elements and stops upon repetition, returning an unbiased estimate \(2k^{2}/\pi\).  
+    - Expected execution time is O(√n).  
+    - Results show estimates improve with more trials but variability remains.  
+  - **Estimating the Size of a Search Tree**
+    - Knuth's method estimates the number of solutions to problems like n-Queens using random walks down the search tree.  
+    - Each random walk multiplies children counts along the path to estimate total nodes at each level.  
+    - Averaging many trials converges to accurate estimations quickly.  
+    - Applied to n-Queens, estimates closely approximate known counts for board sizes up to 19.  
+    - See Donald Knuth, *“Estimating the efficiency of backtrack programs”* (1975).  
+  - **Algorithms That Can Be Wrong, but with Diminishing Probability**
+    - Algorithms tolerate some probability of error but ensure it decreases exponentially with repeated trials.  
+  - **Testing Inequality of Databases**
+    - Fingerprints computed modulo random primes test database coherence efficiently over distributed sites.  
+    - Matching fingerprints guarantee identical data; mismatches guarantee differences.  
+    - Probability of false coherence is decreased by multiple fingerprints over several primes.  
+  - **Zero-Knowledge Proofs**
+    - Zero-knowledge protocols enable identification without revealing secrets, preventing impersonation by eavesdroppers.  
+    - The protocol uses the difficulty of Graph Isomorphism and Hamiltonian Cycle problems for security.  
+    - Patti (prover) convinces Victor (verifier) she knows a secret Hamiltonian cycle in her public graph without revealing it.  
+    - After repeated rounds, the impersonation probability approaches zero exponentially fast.  
+    - See foundational works on Graph Isomorphism and Hamiltonian Cycle problems for deeper understanding.

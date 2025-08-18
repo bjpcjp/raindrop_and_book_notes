@@ -1,0 +1,52 @@
+![AN-ch11-design-principles](AN-ch11-design-principles.best.png)
+
+- **Chapter 11: Epilogue**
+  - **Overview**
+    - The chapter reviews nearly three dozen detailed algorithms covered throughout the book.
+    - It summarizes key principles behind the algorithm designs rather than simply recapping chapters.
+    - The aim is to show connections across different problems and algorithms by focusing on shared concepts.
+    - Readers are encouraged to apply these principles and cross-index algorithms by shared ideas.
+    - Further reading: [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition)
+  - **Principle: Know Your Data**
+    - Understanding data type and access patterns influences algorithm choice and performance.
+    - Sorting algorithms vary in efficiency depending on data characteristics like range, order, and stability requirements.
+    - Table 11-1 exemplifies this with sorting algorithm performance and concepts.
+    - Recommends selecting algorithms based on data insights rather than generalities.
+    - Further reading: [Data Structures and Algorithms in Java](https://www.wiley.com/en-us/Data+Structures+and+Algorithms+in+Java%2C+6th+Edition-p-9781118771334)
+  - **Principle: Decompose the Problem into Smaller Problems**
+    - Effective algorithms often recursively break a problem into subproblems, solve them, then combine solutions.
+    - QUICKSORT and BINARY SEARCH are prime examples with O(n log n) and O(log n) complexities respectively.
+    - Some algorithms iterate smaller subproblems without recursion, e.g., SELECTION SORT, HEAP SORT.
+    - Table 11-2 shows searching algorithms that embody this principle.
+    - Further reading: [Divide and Conquer Algorithms](https://en.wikipedia.org/wiki/Divide_and_conquer_algorithm)
+  - **Principle: Choose the Right Data Structure**
+    - Proper data structures are critical for achieving best algorithmic performance, such as priority queues implemented via binary heaps.
+    - Inappropriate data structures can hinder algorithm efficiency or increase complexity.
+    - Graph algorithms in Table 11-3 illustrate the importance of data structure selection.
+    - Designs may augment structures (e.g., binary trees) to support necessary operations efficiently.
+    - Further reading: [Algorithms + Data Structures = Programs](https://web.stanford.edu/class/archive/cs/cs106a/cs106a.1174/lectures/06-Search-Data-Structures.pdf)
+  - **Principle: Add Storage to Increase Performance**
+    - Additional storage often caches intermediate computations to avoid redundancy and speed up execution.
+    - Examples include Boolean arrays to track status in graph algorithms and precomputed hash codes for strings.
+    - Sometimes storage overhead can be substantial, e.g., BUCKET SORT requiring O(n) extra space for linear time sorting.
+    - Using more memory can simplify algorithm design and improve runtime when overhead is manageable.
+    - Further reading: [Space-Time Tradeoff](https://en.wikipedia.org/wiki/Time%E2%80%93memory_tradeoff)
+  - **Principle: If No Solution Is Evident, Construct a Search**
+    - Problems without known solutions can be approached by formulating a search over a large (implicit or explicit) graph.
+    - Path-finding methods like DEPTH-FIRST SEARCH, BREADTH-FIRST SEARCH, and A*SEARCH solve AI and game search problems.
+    - The principle emphasizes search methods as general problem-solving tools but cautions against inefficient brute-force.
+    - Table 11-4 details path-finding algorithms, their complexities, and required concepts.
+    - Further reading: [Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/)
+  - **Principle: If No Solution Is Evident, Reduce Your Problem to Another Problem That Has a Solution**
+    - Problem reduction maps a complex or unknown problem to a well-studied problem with known solutions.
+    - For example, selecting the kth largest element can be reduced to sorting or solved directly via selection algorithms.
+    - Chapter 8 demonstrates reducing several flow-related problems to the minimum-cost maximum flow problem.
+    - Table 11-5 summarizes network flow algorithms and their key properties.
+    - Further reading: [Problem Reduction](https://en.wikipedia.org/wiki/Reducibility_(computability_theory))
+  - **Principle: Writing Algorithms Is Hard—Testing Algorithms Is Harder**
+    - Deterministic algorithms are generally easier to test via fixed inputs and expected outputs.
+    - Path-finding and heuristic algorithms require testing within problem and heuristic contexts and often only guarantee "reasonable" moves.
+    - Floating-point computations cause subtle discrepancies between algorithm outputs requiring statistical comparison rather than absolute correctness.
+    - Consistent floating-point comparison thresholds (e.g., epsilon) are necessary to interpret nearly equal values.
+    - Table 11-6 reviews computational geometry algorithms illustrating these testing challenges.
+    - Further reading: [Software Testing of Algorithms](https://doi.org/10.1007/978-1-4615-1709-3)

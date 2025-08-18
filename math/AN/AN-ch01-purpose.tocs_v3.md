@@ -1,0 +1,31 @@
+![AN-ch01-purpose](AN-ch01-purpose.best.png)
+
+- **Chapter 1 Algorithms Matter**
+  - **Algorithms Matter**
+    - The story illustrates the importance of choosing the right algorithm to solve a problem effectively.
+    - Graham created a memory leak detection library by wrapping malloc(), free(), and exit() functions.
+    - The initial implementation worked but caused unacceptable slowdowns in large programs.
+  - **Understand the Problem**
+    - The custom library tracked memory allocations and deallocations using a data structure.
+    - Graham used a binary tree keyed by memory addresses to record allocations.
+    - The slow performance occurred only in programs with many open allocations at once.
+  - **Experiment if Necessary**
+    - Tests showed programs with frequent open allocations ran much slower with Graham’s library.
+    - The performance issue was related to the maximum number of concurrently open allocations.
+    - Three test programs with different allocation/deallocation patterns were used to isolate the problem.
+  - **Algorithms to the Rescue**
+    - The key issue was that the binary tree was not balanced, resulting in degraded performance.
+    - Unbalanced insertion order produced right-heavy trees that behave like linear lists, causing O(n) operations.
+    - Red-black trees provide approximately balanced binary trees guaranteeing O(log n) operations.
+    - Modifying Graham’s code to use a red-black tree led to a performance speedup of around 5,000 times.
+    - For more on binary trees and balancing, refer to [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms).
+  - **Side Story**
+    - Empirical tests on malloc() and free() performance revealed allocation time grows linearly with size.
+    - Deallocation order impacts free() performance, with freeing in allocation order being fastest.
+    - The internal algorithms used by malloc() and free() remain unspecified but are likely complex and tuned.
+    - This example underscores that algorithm performance can vary with usage patterns and implementation details.
+  - **The Moral of the Story**
+    - Choosing an acceptable algorithm is a critical software development skill.
+    - Perfect solutions are less important than practical solutions that balance performance and complexity.
+    - Understanding the fit of an algorithm to a problem is more important than inventing new algorithms.
+    - The story emphasizes the value of algorithmic knowledge as an essential part of a development toolkit.

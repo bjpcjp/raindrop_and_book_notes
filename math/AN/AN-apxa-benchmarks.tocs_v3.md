@@ -1,0 +1,45 @@
+![AN-apxa-benchmarks](AN-apxa-benchmarks.best.png)
+
+- **Appendix Benchmarking**
+  - **Statistical Foundation**
+    - Empirical performance is measured using a suite of T independent trials executed on comparable inputs.
+    - Garbage collection is invoked prior to Java trials to reduce unrelated timing overhead.
+    - Best and worst trial times are discarded as outliers before calculating averages and standard deviations.
+    - Confidence intervals are derived from standard deviations using a probability table for predicting performance.
+    - Readers are referred to general statistics textbooks for detailed statistical methods.
+  - **Hardware**
+    - Performance measurements are conducted on two machines: a Pentium 4 desktop PC and a Linux cluster with dual-core AMD Opteron.
+    - The high-end computer is supported by National Science Foundation grant No. 0551584.
+    - Benchmark tables in the book reference these platforms for clarity on test environments.
+  - **An Example**
+    - Addition from 1 to n is benchmarked with n ranging from 1,000,000 to 5,000,000 in increments of 1,000,000, using 30 trials each.
+    - Three languages (Java, C, Scheme) are used to illustrate timing methods and benchmark infrastructure.
+    - Java timing uses current milliseconds before and after execution, with System.gc() invoked to reduce interference.
+    - C benchmarking uses a timing library with command-line options for problem size, random seed, and verbosity.
+    - Scheme employs timing helper functions to compute averages and standard deviations from multiple trials.
+  - **Java Benchmarking Solutions**
+    - Timing measures current system time in milliseconds before and after the timed task.
+    - TrialSuite class collects timings, discards minimum and maximum to exclude outliers, and calculates statistics.
+    - Background OS processes influence timing variability despite repeated trials.
+  - **Linux Benchmarking Solutions (C)**
+    - A timing library handles trial management, input preparation, and execution timing.
+    - Command-line parameters control number of elements and random seed for reproducibility.
+    - Sample addition task sums integers up to numElements in the execute() function.
+    - Shell scripts (compare.sh and suiteRun.sh) automate repeated test execution, aggregate timing results, and produce averages and standard deviations.
+    - The configuration file specifies executables to benchmark, trial counts, and problem size ranges.
+  - **Scheme Benchmarking Solutions**
+    - Helper functions implement foldl, min, max, sum, average, and standard deviation to process timing data.
+    - Timing code repeatedly invokes the function under test, collects execution times, removes min and max outliers, and computes summary statistics.
+    - The largeAdd function recursively sums integers from 1 to probSize.
+    - A sample report shows increasing execution time proportional to problem size.
+  - **Reporting**
+    - Timing results for 30 trials are presented for Java, C, and Scheme on a Linux i686 machine.
+    - Java timings have small standard deviations with integer millisecond reporting; C is roughly three times faster.
+    - Scheme shows larger variability, likely due to recursive implementation overhead.
+    - Statistical confidence intervals aid interpretation of timing variability.
+  - **Precision**
+    - Nanosecond-level timing is possible in Java using System.nanoTime().
+    - Code is modified to compare millisecond and nanosecond timers for correlation.
+    - Nanosecond timers offer finer granularity but require appropriate handling to interpret results.
+  - **Further Reading**
+    - See [An Introduction to Statistical Learning](https://www.statlearning.com) for foundational statistical methods used in benchmarking.
