@@ -1,49 +1,51 @@
-[ADNN-ch13-flask](ADNN-ch13-flask.best.png)
+![ADNN-ch13-flask](ADNN-ch13-flask.best.png)
 
-- **Advanced/Other Topics**
-  - **Part 13.1: Flask and Deep Learning Web Services**
-    - Neural networks must be exposed as web services for integration with Python and other languages.
-    - Flask is a popular Python library to deploy TensorFlow and other Python applications quickly as web services.
-    - Flask is ideal for development but not designed for high-volume production; Gunicorn or TensorFlow Serving is recommended for scaling.
-    - Example Flask applications include a simple "Hello World," an MPG prediction model, and an image classification API.
-    - [Flask Documentation](https://flask.palletsprojects.com/)
-  - **Flask Hello World**
-    - Demonstrates starting a simple Flask web service that listens on a specified port.
-    - Flask web server runs continuously waiting for client requests.
-    - Basic usage involves defining routes and returning simple responses like "Hello World."
-  - **MPG Flask**
-    - Demonstrates training a neural network on MPG dataset and saving it to an .h5 file.
-    - Inputs and their valid ranges are checked via JSON validation on incoming requests.
-    - Flask serves the saved model to predict MPG values using POSTed JSON data.
-    - Examples of client usage include Postman and Python requests.
-  - **Flask MPG Client**
-    - Shows how to consume Flask web services via HTTP POST requests.
-    - Includes using Postman with raw JSON and Python-based requests calls.
-    - Validates server responses and prints results or error messages.
-  - **Images and Web Services**
-    - Flask APIs can accept image uploads for classification (e.g., using MobileNet).
-    - Clients can upload files via Postman form data or Python requests.
-    - Responses include predicted classes and their probabilities.
-  - **Part 13.2: Interrupting and Continuing Training**
-    - Training interruption and continuation use checkpoints to save and reload model state.
-    - Utility functions enable unique output directories and logging of training progress.
-    - Includes example CNN training on MNIST with ModelCheckpoint callback to save weights by epoch and validation loss.
-    - Logger class redirects standard output and error to a log file during training.
-  - **Part 13.3: Using a Keras Deep Neural Network with a Web Application**
-    - Extends the image classification API by wrapping it in a ReactJS-based single-page web application.
-    - The web interface allows users to upload images and receive classifications interactively.
-    - Web application assets include HTML, CSS, and JavaScript files served by Flask.
-    - [ReactJS Official Site](https://reactjs.org/)
-  - **Part 13.4: When to Retrain Your Neural Network**
-    - Dataset drift occurs when the distribution of new data changes from the original training data.
-    - Retraining is important as new data arrives to maintain model relevance.
-    - Statistically detect drift using Kolmogorov-Smirnov (KS) test and by training classifiers to distinguish train vs. test data.
-    - Applies KS-test on the Sberbank Russian Housing Market dataset to identify features with significant distribution differences.
-    - Drift detection via Random Forest classifier with ROC AUC above 0.75 indicates likely drift.
-    - [Kaggle Sberbank Russian Housing Market](https://www.kaggle.com/c/sberbank-russian-housing-market)
-  - **Part 13.5: Using a Keras Deep Neural Network with a Web Application**
-    - Discusses deploying Keras neural networks on iOS devices using Apple’s CoreML framework.
-    - Conversion of Keras models (e.g., MobileNet) to CoreML-compatible format is performed using coremltools.
-    - Apple requires a Mac with XCode and an Apple Developer account for deployment.
-    - An example iOS application uses a converted model for camera-based single image classification.
-    - Relevant tutorials include "Running Keras models on iOS with CoreML" and Apple Vision API guides.
+- **13.1 Advanced/Other Topics: Flask and Deep Learning Web Services**
+  - **13.1.1 Flask Hello World**
+    - Flask is a Python library for quickly deploying Python applications as web services.
+    - A simple Flask server can be started on port 9000 to display "Hello World" when accessed.
+    - Flask runs as a server, and Jupyter typically acts as a client, though it can host Flask for development.
+  - **13.1.2 MPG Flask**
+    - A neural network is trained on MPG data and saved as an .h5 file to be deployed via Flask.
+    - The Flask app processes JSON POST requests with car attributes to predict miles per gallon.
+    - Input validation is performed using expected fields and their min/max ranges extracted from training data.
+    - Example client integrations include use of PostMan and Python requests for sending JSON payloads.
+    - The complete server script is named mpg_server_1.py and runs from the command line.
+  - **13.1.3 Flask MPG Client**
+    - Accessing the MPG Flask service requires HTTP POST requests with JSON input.
+    - PostMan and Python requests library are demonstrated as client methods.
+    - A successful prediction returns JSON containing mpg and error information.
+  - **13.1.4 Images and Web Services**
+    - Flask services can also accept images and classify them using models like MobileNet.
+    - Image input is sent as form data with a file named "image" in PostMan or Python requests.
+    - The image server script image_server_1.py runs similarly from the command line.
+    - Output JSON contains predicted classes with names and probabilities.
+- **13.2 Advanced/Other Topics: Interrupting and Continuing Training**
+  - Training can be interrupted and resumed later using checkpoints with TensorFlow Keras.
+  - Utility functions manage output directories, logging, and file management for multiple runs.
+  - Example uses MNIST data with a convolutional neural network for classification.
+  - ModelCheckpoint callback saves model weights during training for resuming.
+  - Logger class redirects stdout and stderr to files for structured logging.
+- **13.3 Advanced/Other Topics: Using a Keras Deep Neural Network with a Web Application**
+  - A ReactJS single-page web application is integrated with the Flask image API for classification.
+  - Web assets include index.html, style.css, and script.js to provide image upload and preview.
+  - The application uses simple HTML/JavaScript/CSS to interact with the neural network API.
+  - The source code and assets are structured to support deployment alongside the Flask backend.
+- **13.4 Advanced/Other Topics: When to Retrain Your Neural Network**
+  - Dataset drift arises when real-world data distribution changes over time, reducing model relevance.
+  - New data collected post-deployment may differ in distribution from the original training data.
+  - Drift detection can use statistical tests like the KS-Statistic to compare training and new data distributions.
+  - The Sberbank Russian Housing Market dataset is used to illustrate preprocessing and drift detection.
+  - A classifier approach trains a model to distinguish training vs. test data; a high AUC signals drift.
+  - Methods include sampling datasets, preprocessing categoricals and numerics, and using RandomForest.
+  - Further reading: [Sberbank Russian Housing Market](https://www.kaggle.com/c/sberbank-russian-housing-market)
+- **13.5 Advanced/Other Topics: Using a Keras Deep Neural Network with a Web Application**
+  - Deploy a neural network on iOS devices using Apple's CoreML framework for edge computing.
+  - Conversion of Keras models (e.g., MobileNet) to CoreML format enables mobile image classification.
+  - CoreML currently requires TensorFlow 1.14 and Keras 2.2.4 for compatibility with conversion tools.
+  - The CoreML model includes input preprocessing options like scaling and class labels.
+  - An iOS app is developed in XCode to classify images captured by the device camera.
+  - Developer requirements include a Mac with XCode and an Apple Developer account.
+  - Additional resources:  
+    - [Running Keras models on iOS with CoreML](https://machinethink.net/blog/coreml-and-keras/)  
+    - [How to build an image recognition iOS app with Apple’s CoreML and Vision APIs](https://heartbeat.fritz.ai/how-to-build-an-image-recognition-ios-app-with-apples-coreml-and-vision-apis-117038bf3c48)

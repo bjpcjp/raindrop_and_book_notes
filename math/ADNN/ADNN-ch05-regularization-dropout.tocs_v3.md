@@ -1,61 +1,71 @@
-[ADNN-ch05-regularization-dropout](ADNN-ch05-regularization-dropout.best.png)
+![ADNN-ch05-regularization-dropout](ADNN-ch05-regularization-dropout.best.png)
 
 - **Regularization and Dropout**
   - **Part 5.1: Introduction to Regularization: Ridge and Lasso**
-    - Regularization reduces overfitting by discouraging neural networks from memorizing training data through weight penalties.  
-    - Human programmers can overfit by memorizing practice exams rather than learning problem-solving techniques.  
-    - Regularization works by adding a penalty related to network weights during training, influencing their size.  
-    - See [Ng, 2004] for foundational details on L1 and L2 regularization.  
+    - Regularization reduces overfitting in neural networks by encouraging smaller weights during training.  
+    - Humans and machines can overfit by memorizing data rather than learning concepts.  
+    - L1 and L2 are common regularization techniques that add penalties to the objective functions or backpropagation gradients.  
+    - Regularization modifies weights to balance fitting the training data against model complexity.  
+    - See [Ng, 2004] for foundational theory on L1 and L2 regularization.  
   - **L1 and L2 Regularization**
-    - L1 (Lasso) adds an absolute value penalty to produce sparsity by pushing weights to zero, enabling feature selection.  
-    - L2 (Ridge) adds a squared penalty encouraging small weights, leading to less overfitting without sparsity.  
-    - Both exclude bias terms from the penalty and can be added to gradient or objective-function training.  
-    - Ridge typically yields better overall performance; Lasso is helpful for pruning unnecessary inputs.  
+    - L1 regularization (Lasso) encourages sparsity by pushing many weights to near zero, effectively performing feature selection.  
+    - L2 regularization (Ridge) encourages smaller weight magnitudes without necessarily forcing sparsity, suitable when low weights are preferred over dropped features.  
+    - Both techniques exclude bias values from the penalty calculations.  
+    - ElasticNet combines L1 and L2 penalties weighted by alpha and l1_ratio parameters.  
+    - Compare performance and coefficients with linear regression to understand regularization effects.  
   - **Linear Regression**
-    - Linear regression serves as an introductory context to illustrate effects of L1 and L2 penalties.  
-    - The auto-mpg dataset demonstrates differences in coefficients and RMSE with and without regularization.  
+    - Linear regression is a simple baseline model used to demonstrate basic functionality of L1 and L2 regularization.  
+    - Root Mean Squared Error (RMSE) is a common metric for evaluating regression model performance.  
+    - Coefficients reflect feature importance and are affected by regularization techniques.  
   - **L1 (Lasso) Regularization**
-    - Lasso creates sparse models by enforcing many weights near zero, effectively performing feature selection.  
-    - Coefficient magnitudes shrink compared to linear regression, as shown with alpha tuning via cross-validation.  
+    - L1 uses the sum of absolute values of weights for penalty, promoting sparse models by zeroing irrelevant features.  
+    - Useful in datasets with many input features for automatic feature pruning.  
+    - Alpha controls the strength of the L1 penalty; cross-validation helps select optimal alpha.  
+    - Can lead to slightly higher RMSE compared to unregularized linear regression but offers model simplicity.  
   - **L2 (Ridge) Regularization**
-    - Ridge penalizes the sum of squared weights, generally preserving all inputs but shrinking coefficients uniformly.  
-    - Typical alpha values are below 0.1; bias terms are not penalized.  
+    - L2 uses the sum of squared weights to penalize large weights, leading to weight shrinkage towards zero.  
+    - Typical alpha values for L2 are below 0.1, balancing fit and overfitting prevention.  
+    - Generally achieves better overall performance than L1, especially without a strong need for sparsity.  
   - **ElasticNet Regularization**
-    - ElasticNet combines penalties from both L1 and L2, controlled by alpha and l1_ratio parameters.  
-    - It balances sparsity and weight shrinkage, useful when neither pure Lasso nor Ridge is ideal.  
+    - ElasticNet combines L1 and L2 penalties, balancing sparsity and weight shrinkage.  
+    - Alpha and l1_ratio hyperparameters govern the mix of L1 and L2 components.  
+    - Provides a flexible regularization method useful across different data characteristics.  
   - **Part 5.2: Using K-Fold Cross-validation with Keras**
-    - Cross-validation trains multiple models on different folds to evaluate generalization, useful for hyperparameter tuning.  
-    - For regression, KFold is used with randomly partitioned folds; for classification, StratifiedKFold ensures class balance.  
-    - Out-of-sample predictions can be generated by averaging model outputs, selecting the best model, or retraining on full data.  
-  - **Regression vs Classification K-Fold Cross-Validation**
-    - Regression uses KFold with random splits without stratification; folds can vary in size.  
-    - Classification requires StratifiedKFold to preserve the original class distribution across folds.  
+    - Cross-validation divides data into K folds, training separate models to evaluate generalization across validation sets.  
+    - Out-of-sample predictions can be generated by aggregating results from K models or retraining on full data post hyperparameter selection.  
+    - Use KFold for regression problems where balanced class proportions are not required.  
+    - Use StratifiedKFold for classification problems to maintain class balance across folds.  
   - **Out-of-Sample Regression Predictions with K-Fold Cross-Validation**
-    - Demonstrated a 5-fold CV on the jh-simple-dataset to predict age using a neural network trained for 500 epochs.  
-    - Reported fold-wise RMSE and final aggregated out-of-sample RMSE provide expected performance estimates.  
+    - Demonstrated with a neural network trained over 5 folds on the jh-simple-dataset to predict age (regression task).  
+    - Aggregates RMSE across folds to assess generalization performance.  
+    - Provides insight into optimal number of training epochs based on validation performance per fold.  
   - **Classification with Stratified K-Fold Cross-Validation**
-    - Applied 5-fold stratified CV to the jh-simple-dataset for multiclass product prediction, maintaining class distribution.  
-    - Raw probabilities were converted to predicted classes with accuracy measured for each fold and overall.  
+    - StratifiedKFold maintains class balance across folds, preserving original data distribution.  
+    - Demonstrated with jh-simple-dataset classification by predicting product classes.  
+    - Accuracy metric is used to evaluate fold-wise and overall performance.  
   - **Training with both a Cross-Validation and a Holdout Set**
-    - A holdout set (typically 10%) is reserved before CV to provide an unbiased evaluation for final model validation.  
-    - CV is performed on remaining data, training multiple neural networks and reporting fold scores and final holdout RMSE.  
+    - Combining a final holdout set with cross-validation provides unbiased evaluation simulating real-world use.  
+    - Holdout set is set aside prior to cross-validation and is only used for final model assessment.  
+    - Demonstrated with jh-simple-dataset regression task and neural networks trained over folds plus separate holdout evaluation.  
   - **Part 5.3: L1 and L2 Regularization to Decrease Overfitting**
-    - Both L1 and L2 regularization add weight penalties during backpropagation to reduce overfitting in neural networks.  
-    - L1 constrains weights toward a Laplace distribution promoting sparsity; L2 towards a Gaussian distribution promoting small values.  
-    - Penalties are applied only to weights, excluding bias; in Keras, they can be added via kernel_regularizer parameters.  
-    - Cross-validated classification models using L1 regularization showed measurable accuracy improvements.  
+    - Both L1 and L2 regularization add weight penalties to training objectives to prevent overfitting.  
+    - L1 regularization produces weights with distributions similar to Laplace, encouraging sparsity.  
+    - L2 regularization approximates Gaussian-like weight distribution, encouraging smooth small weights.  
+    - Keras supports direct inclusion of L1/L2 regularization in dense layers via kernel and activity regularizers.  
   - **Part 5.4: Drop Out for Keras to Decrease Overfitting**
-    - Dropout prevents overfitting by randomly disabling neurons during training, reducing coadaptation and forcing generalization.  
-    - Unlike L1/L2, dropout temporarily masks neurons without modifying weight magnitudes or pruning features.  
-    - Dropout simulates ensemble learning by training numerous thinned subnetworks, improving robustness without additional models.  
-    - Implemented as a layer in Keras, usually used between dense layers, with dropout probability controlling neuron retention.  
-    - Demonstrated dropout usage with Keras for classification, achieving higher accuracy compared to models without dropout.  
-    - See [Hinton et al., 2012] for original dropout introduction.  
+    - Dropout regularization randomly disables (drops out) neurons during training to reduce co-adaptation among neurons.  
+    - Does not add weight penalties but forces networks to generalize by training different subnetworks each iteration.  
+    - Temporarily masks neurons without permanently removing them; dropout rate controls the percentage dropped.  
+    - Dropout works similarly to bootstrapping ensembles but within a single model training process.  
+    - Dropout layers usually placed between dense layers; not typically after the final hidden layer.  
+    - Demonstrated with Keras classification example applying dropout layers with specified dropout rates.  
   - **Part 5.5: Benchmarking Regularization Techniques**
-    - Hyperparameters affecting model performance include layer counts, neuron counts, activation functions, dropout rates, and L1/L2 penalties.  
-    - Bootstrapping involves iterative train/validation splits with replacement to benchmark hyperparameters over many cycles.  
-    - Bootstrapping differs from cross-validation by sampling with replacement, allowing duplicate samples, and theoretically unlimited cycles.  
-    - Regression bootstrapping uses ShuffleSplit; classification bootstrapping uses StratifiedShuffleSplit to maintain class balance.  
-    - Demonstrated bootstrapping on the jh-simple-dataset with early stopping and extensive logging of score, epoch count, and timing.  
-    - Final optimized model settings incorporated multiple layers, dropout, PReLU activation, and L2 regularization, improving log loss in classification.  
-    - Additional reading includes [A Recipe for Training Neural Networks](https://cs.stanford.edu/~ang/papers/nips07-early-stopping.pdf).
+    - Hyperparameter tuning requires multiple neural network trainings due to randomness in initialization and training.  
+    - Bootstrapping is used for hyperparameter benchmarking by repeatedly sampling train/validation splits with replacement.  
+    - For regression, ShuffleSplit performs sampling without class balancing.  
+    - For classification, StratifiedShuffleSplit maintains class proportions in splits.  
+    - Early stopping is applied during bootstrapping to determine optimal epochs per train/test split.  
+    - Performance metrics such as mean RMSE or log loss over splits guide comparison of hyperparameters.  
+    - Best parameter settings include dropout rates, L1/L2 regularization strengths, layer sizes, and activation functions.  
+    - Use of advanced activations (e.g., PReLU) and dropout layering improves model performance based on benchmarking results.  
+    - For comprehensive tuning refer to [A Recipe for Training Neural Networks](https://arxiv.org/abs/1803.05591).

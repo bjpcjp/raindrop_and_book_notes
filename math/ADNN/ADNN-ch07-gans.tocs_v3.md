@@ -1,34 +1,32 @@
-[ADNN-ch07-gans](ADNN-ch07-gans.best.png)
+![ADNN-ch07-gans](ADNN-ch07-gans.best.png)
 
-- **Part 7.1: Introduction to GANS for Image and Data Generation**
-  - GANs are a class of machine learning systems invented by Ian Goodfellow in 2014 that use two neural networks contesting in a game.
-  - They learn to generate new data with similar statistics to a given training set, useful for images such as MNIST, CIFAR, and the Toronto Face Dataset.
-  - The role of convolutional neural networks in GANs has increased significantly compared to initial implementations.
-  - GANs were originally intended for unsupervised learning but are also applicable to semi-supervised, supervised, and reinforcement learning.
-
-- **Part 7.2: Implementing DCGANs in Keras**
-  - DCGANs use convolutional layers with key techniques such as replacing pooling with strided convolutions and incorporating batch normalization.
-  - Training involves scaling images to [-1,1], using Adam optimizer with a 0.0002 learning rate, and LeakyReLU with a leak slope of 0.2 in the discriminator.
-  - The discriminator classifies input images as real or fake, while the generator creates images from random seed vectors.
-  - Loss functions for discriminator and generator are based on binary cross-entropy, and training uses separate gradient updates controlled via TensorFlow's GradientTape.
-  - Example implementations use data preprocessing, batching, and saving generated image outputs at intervals during training.
-
-- **Part 7.3: Face Generation with StyleGAN and Python**
-  - NVIDIA’s StyleGAN series (StyleGAN, StyleGAN2, and StyleGAN2 ADA) revolutionized photorealistic face generation, with ADA enabling effective training on smaller datasets via adaptive image augmentation.
-  - StyleGAN2 generates high-resolution (1024x1024) images, and its training requires substantial GPU resources.
-  - StyleGAN2 ADA dynamically adjusts augmentation probability to prevent discriminator overfitting on small datasets.
-  - Generated images can contain artifacts such as surreal backgrounds and minor face inconsistencies, e.g., asymmetric earrings or distorted eyes.
-  - Users can generate images from pretrained models using Google CoLab, with Python scripts provided for seed-based image generation and latent space interpolation.
-  - Further resources include NVIDIA’s GitHub repository for StyleGAN2 ADA and example pretrained GAN models.
-  
-- **Part 7.4: GANS for Semi-Supervised Training in Keras**
-  - Semi-supervised GANs combine labeled and unlabeled data to improve learning when only partial labels exist.
-  - The discriminator in semi-supervised GANs classifies both fake images and multiple real classes, effectively performing multi-class classification plus one fake class.
-  - Semi-supervised GANs can perform classification or regression by structuring discriminator outputs accordingly.
-  - Examples include the use of GANs with the Street View House Numbers (SVHN) dataset for classification and hybrid regression-classification tasks.
-  - Relevant references cover semi-supervised GAN learning techniques and datasets such as SVHN.
-
-- **Part 7.5: An Overview of GAN Research**
-  - Curated collections of Keras GAN implementations and notable GAN applications are available for further study.
-  - Selected projects include Few-Shot Adversarial Learning of Neural Talking Head Models, Pose Guided Person Image Generation, and Deep Fake technologies.
-  - These projects illustrate GANs’ versatility in generating realistic and dynamic human-like images and video.
+- **Chapter 7: Generative Adversarial Networks**
+  - **7.1 Part 7.1: Introduction to GANS for Image and Data Generation**
+    - GANs consist of two neural networks contesting in a game to generate new data matching training set statistics.
+    - Initially applied to datasets like MNIST, CIFAR, and Toronto Face Dataset, with convolutional networks used only in later models.
+    - GANs serve for unsupervised, semi-supervised, supervised, and reinforcement learning.
+    - Original GAN architecture involves separate generator and discriminator networks.
+    - Further reading: [Goodfellow et al., 2014](https://arxiv.org/abs/1406.2661)
+  - **7.2 Part 7.2: Implementing DCGANs in Keras**
+    - DCGANs replace pooling layers with strided and fractional-strided convolutions and use batch normalization and LeakyReLU/ReLU activations.
+    - Training images are scaled to [-1, 1]; Adam optimizer is used with tuned learning rate 0.0002 and momentum β1=0.5 for stability.
+    - The generator creates images from random seeds, and the discriminator classifies images as real or fake.
+    - Training involves separate losses for generator and discriminator with gradient updates controlled via TensorFlow’s GradientTape.
+    - Further reading: [Radford et al., 2015](https://arxiv.org/abs/1511.06434)
+  - **7.3 Part 7.3: Face Generation with StyleGAN and Python**
+    - StyleGAN series (StyleGAN, StyleGAN2, and StyleGAN2 ADA) produce highly photorealistic faces with resolutions up to 1024x1024.
+    - Adaptive Discriminator Augmentation (ADA) augments training images dynamically to prevent discriminator memorization and reduce required dataset size.
+    - StyleGAN2 weights can be used via Google CoLab for face generation or retraining with personal datasets.
+    - Latent vector interpolation enables smooth transformation between generated images.
+    - Further reading: [NVIDIA StyleGAN2 ADA GitHub](https://github.com/NVlabs/stylegan2-ada)
+  - **7.4 Part 7.4: GANS for Semi-Supervised Training in Keras**
+    - Semi-supervised GANs use a discriminator trained to classify real data classes plus a fake class for generated data.
+    - Semi-supervised training leverages mostly unlabeled data combined with a smaller labeled subset for improved classification or regression.
+    - The discriminator’s output neurons correspond to classes plus one fake data class in classification tasks.
+    - Regression tasks use separate output neurons for regression predictions and fake data detection.
+    - Further reading: [Semi-supervised learning with GANs](https://arxiv.org/abs/1606.01583)
+  - **7.5 Part 7.5: An Overview of GAN Research**
+    - Several curated resources list Keras GAN implementations and GAN applications.
+    - Selected projects include Few-Shot Adversarial Learning for Neural Talking Heads and Deep Fake research.
+    - GAN research continues advancing synthetic data generation and manipulation.
+    - Further reading: [Curated Awesome GAN Applications](https://github.com/nashory/gans-awesome-applications)

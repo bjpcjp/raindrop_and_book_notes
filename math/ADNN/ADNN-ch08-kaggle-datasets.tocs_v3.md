@@ -1,88 +1,121 @@
-[ADNN-ch08-kaggle-datasets](ADNN-ch08-kaggle-datasets.best.png)
+![ADNN-ch08-kaggle-datasets](ADNN-ch08-kaggle-datasets.best.png)
 
 - **Chapter 8**
   - **8.1 Part 8.1: Introduction to Kaggle**
-    - Kaggle runs data science competitions where participants compete to build the best data models.  
-    - The Titanic dataset is a tutorial dataset with no prize and extended deadlines, primarily for learning purposes.  
-    - Competition components include summary, data, evaluation description, and leaderboard pages.  
-    - Kaggle divides provided datasets into training and test sets, with public and private leaderboards determining scores.  
-    - Submissions are CSV files containing row IDs and predicted results; formats vary by competition type.  
-    - Relevant resources include Kaggle Top Users profiles and the current ranking system.  
+    - Kaggle hosts competitions where data scientists compete to create the best predictive models using provided datasets.  
+    - The Titanic dataset is a tutorial used for learning, with no prizes and non-ranking scoring.  
+    - The competition timeline may extend beyond initially scheduled dates.  
+    - Further reading: [Kaggle Competitions](https://www.kaggle.com/competitions)  
   - **8.1.1 Kaggle Ranks**
-    - Kaggle ranks data scientists by awarding gold, silver, and bronze medals.  
-    - Top user profiles and ranking details are tracked and available for reference.  
+    - Kaggle awards gold, silver, and bronze medals that contribute to user rankings.  
+    - Various notable Kaggle user profiles and ranking systems are referenced.  
   - **8.1.2 Typical Kaggle Competition**
-    - Competitions typically provide a summary page, data page, evaluation description, and a leaderboard.  
-    - These structural elements guide competitors through data access and scoring metrics.  
+    - Competitions commonly include a summary page, data page, evaluation description, and leaderboard.  
   - **8.1.3 How Kaggle Competition Scoring**
-    - Sponsors provide complete datasets divided into training and test sets, with the test set outcomes withheld.  
-    - Public leaderboard scores are based on an undisclosed portion of the test data; final rankings rely on a private portion revealed post-competition.  
-    - Input perturbation affects scoring by shuffling input features to assess importance.  
-    - See [Figure 8.1: How Kaggle Competition Scoring].  
+    - Data is split into training and test sets; test labels are withheld.  
+    - Public and private leaderboards evaluate partial test subsets but private scores are revealed only at competition end.  
+    - Figure 8.1 illustrates the scoring process.  
   - **8.1.4 Preparing a Kaggle Submission**
-    - Kaggle scores submissions based solely on CSV files containing predicted IDs and output values.  
-    - Submission files must predict every row in the test dataset without including non-test IDs.  
-    - Multi-class problems use multiple columns for class probabilities.  
+    - Kaggle submissions consist of CSV files with row IDs and predicted labels or scores.  
+    - Predictions must cover all test IDs without code submission.  
+    - Multi-class problems require prediction columns per class.  
   - **8.1.5 Select Kaggle Competitions**
-    - Selected classic tabular competitions include Otto Group Product Classification, Galaxy Zoo, Practice Fusion Diabetes Classification, and Predicting a Biological Response.  
-    - Notable computer vision competitions include Diabetic Retinopathy Detection, Cats vs Dogs, and State Farm Distracted Driver Detection.  
+    - Popular tabular data competitions include Otto Group Product Classification and Predicting a Biological Response.  
+    - Vision competitions include Diabetic Retinopathy Detection and Cats vs Dogs.  
   - **8.1.6 Module 8 Assignment**
-    - The first assignment for this chapter is designated as assignment 8.  
+    - The first assignment for this module is referenced as assignment 8.  
+
   - **8.2 Part 8.2: Building Ensembles with Scikit-Learn and Keras**
-    - Ensembles combine multiple models, often improving accuracy, with Kaggle winners frequently employing ensembling techniques.  
-    - Feature importance methods include connection weights, partial derivatives, input perturbation, and sensitivity analysis, among others.  
-    - The input perturbation algorithm, model-independent and originated by Leo Breiman, measures importance by shuffling input features and assessing accuracy degradation.  
-    - The algorithm evaluates log loss for classification and RMSE for regression models.  
-  - **8.2.1 Evaluating Feature Importance**
-    - Input perturbation ranks features by permuting each feature and calculating the change in model error.  
-    - The method applies to any supervised learning model and supports scikit-learn implementations.  
-    - See paper [An accurate comparison of methods for quantifying variable importance in artificial neural networks](https://doi.org/10.1016/j.ecolmodel.2004.03.013).  
-  - **8.2.2 Classification and Input Perturbation Ranking**
-    - Classification networks use log loss to evaluate perturbation rankings while regression networks use RMSE.  
-    - The example uses an iris dataset neural network trained with TensorFlow Keras layers.  
-    - Reported perturbation ranking outputs feature importance normalized from highest (1.0) to lowest.  
-  - **8.2.3 Regression and Input Perturbation Ranking**
-    - Regression example uses the MPG dataset with a neural network trained on vehicle attributes to predict MPG values.  
-    - Feature ranking identifies displacement as the most important feature, followed by weight and horsepower.  
-  - **8.2.4 Biological Response with Neural Network**
-    - The biological response dataset contains 1777 features for a binary classification task predicting molecular activity.  
-    - Preprocessing includes feature extraction, missing value handling, and train-test split.  
-    - Neural network architecture includes two hidden layers with ReLU and sigmoid activations, trained with early stopping.  
-    - Validation achieves approximately 76% accuracy with logged validation loss reported.  
-  - **8.2.5 What Features/Columns are Important**
-    - Input perturbation ranks molecular features by their contribution to predictive accuracy.  
-    - The top 10 features exhibit importance scores close to 1.0, indicating strong influence on classification.  
-  - **8.2.6 Neural Network Ensemble**
-    - Ensembles combine predictions from neural networks and classical models like KNN, random forests, extra trees, and gradient boosting via logistic regression blending.  
-    - The code implements stratified k-fold cross-validation over 10 folds to generate blended training and submission datasets.  
-    - Model blending improves predictive scores, a common strategy among Kaggle competitors.  
+    - The section introduces feature importance methods and ensemble modeling techniques using popular ML libraries.  
+    - Ensembles combine multiple models to improve prediction accuracy, a technique used frequently by Kaggle winners.  
+
+    - **8.2.1 Evaluating Feature Importance**
+      - Feature importance measures the predictive contribution of each input feature to a model.  
+      - The input perturbation method, model-independent and from Breiman's random forest paper, is used here.  
+      - Shuffling individual input columns degrades accuracy proportionally to their importance.  
+      - The method uses log loss for classification and RMSE for regression.  
+      - Further reading: [Accurate comparison of variable importance methods in ANNs](https://doi.org/10.1016/S0304-3800(03)00181-2)  
+
+    - **8.2.2 Classification and Input Perturbation Ranking**
+      - Demonstrates a classification neural network on the Iris dataset using TensorFlow Keras.  
+      - Achieves perfect accuracy on the test split and ranks feature importance using input perturbation.  
+      - Displays ranked feature importance with the petal length as most important.  
+
+    - **8.2.3 Regression and Input Perturbation Ranking**
+      - Applies input perturbation ranking to a regression network trained on the Auto MPG dataset.  
+      - The highest-ranking feature in MPG prediction is displacement, followed by weight and horsepower.  
+      - Model training shows iterative loss improvement through 100 epochs.  
+
+    - **8.2.4 Biological Response with Neural Network**
+      - Introduces a high-dimensional Kaggle biological response dataset (3751 samples, 1777 features).  
+      - Constructs a classification neural network with early stopping to prevent overfitting.  
+      - Validation accuracy reaches approximately 76%, with log loss reported for evaluation.  
+
+    - **8.2.5 What Features/Columns are Important**
+      - Uses input perturbation to rank the importance of thousands of features in the biological dataset.  
+      - Top-ranked features significantly influence model prediction performance.  
+
+    - **8.2.6 Neural Network Ensemble**
+      - Ensembles neural network outputs with classical models like k-NN, random forests, extra trees, gradient boosting.  
+      - Uses stratified K-Fold cross-validation for training and combines model predictions with logistic regression blending.  
+      - Produces highly accurate predictions validated by log loss metrics across folds.  
+
   - **8.3 Part 8.3: Architecting Network: Hyperparameters**
-    - Neural network hyperparameters include number of hidden layers, neurons per layer, activation functions, regularization, batch normalization, and training parameters.  
-    - Layer types in Keras cover dense, activation, dropout, flatten, input, masking, and spatial dropout variants.  
-    - General guidelines recommend ReLU for hidden layers and softmax or linear for output layers depending on task.  
-    - Advanced activation functions like LeakyReLU and PReLU learn parameters during training, potentially improving performance.  
-    - Regularization techniques include L1, L2, and dropout to prevent overfitting.  
-    - Batch normalization normalizes activations within batches, helping stabilize and speed up training.  
-    - Training parameters include optimizer choice, batch size (typically ~32), and learning rate (often ~1e-3).  
-    - See [Keras Activation Functions](https://keras.io/api/layers/activations/) and [Keras Batch Normalization](https://keras.io/api/layers/normalization_layers/batch_normalization/).  
-  - **8.3.7 Experimenting with Hyperparameters**
-    - The course uses bootstrapped stratified splits for network evaluation, tracking benchmarks and required epochs.  
-    - A function constructs networks with configurable dropout rate, learning rate, neuron count percentage, and neuron shrink factor across up to 10 layers.  
-    - PReLU activation is used, and early stopping monitors validation loss with patience.  
-    - The evaluation outputs negative mean log loss as a performance metric.  
+    - Covers crucial hyperparameters influencing neural network design and training outcomes.  
+    - Highlights the importance of choosing number of layers, neurons per layer, activation functions, and regularization.  
+
+    - **8.3.1 Number of Hidden Layers and Neuron Counts**
+      - Keras includes various layer types; dense layers fully connect neurons between layers.  
+      - Dropout layers randomly zero inputs during training to reduce overfitting.  
+      - Recommended neuron configuration is larger near input, shrinking towards output (triangular/trapezoid shape).  
+
+    - **8.3.2 Activation Functions**
+      - Common activations include RELU for hidden layers, softmax for classification outputs, and linear for regression outputs.  
+      - Other activations include elu, selu, softplus, tanh, sigmoid, and exponential.  
+      - Further reading: [Keras Activation Functions](https://keras.io/api/layers/activations/)  
+
+    - **8.3.3 Advanced Activation Functions**
+      - Advanced activations like LeakyReLU and PReLU contain trainable parameters to improve learning.  
+
+    - **8.3.4 Regularization: L1, L2, Dropout**
+      - Regularization techniques control model complexity and overfitting by adding penalty terms or zeroing activations.  
+      - Further reading: [Keras Regularization](https://keras.io/api/layers/regularizers/) and [Keras Dropout](https://keras.io/api/layers/regularization_layers/dropout/)  
+
+    - **8.3.5 Batch Normalization**
+      - Normalizes layer activations to zero mean and unit variance per batch.  
+      - Enables higher learning rates and faster convergence.  
+      - Further reading: [Batch Normalization Paper](https://arxiv.org/abs/1502.03167)  
+
+    - **8.3.6 Training Parameters**
+      - Important parameters include batch size (commonly ~32) and learning rate (commonly ~1e-3).  
+      - Choice of optimizer influences training dynamics.  
+      - Further reading: [Keras Optimizers](https://keras.io/api/optimizers/)  
+
+    - **8.3.7 Experimenting with Hyperparameters**
+      - Demonstrates code to preprocess dataset, build networks, and systematically evaluate hyperparameter combinations.  
+      - Uses stratified shuffle splitting and early stopping for training stability.  
+
   - **8.4 Part 8.4: Bayesian Hyperparameter Optimization for Keras**
-    - Bayesian optimization efficiently searches hyperparameter space, reducing costly retraining iterations compared to grid search.  
-    - The study optimizes dropout, neuron percentage, neuron shrink rate, and learning rate for constructing networks.  
-    - The generate_model function builds a multi-layer network based on these parameters with PReLU activations.  
-    - Model evaluation uses stratified shuffle splits for consistency, calculating log loss to guide optimization.  
-    - The bayesian-optimization library is employed with parameter bounds and iteration limits, reporting the best performing hyperparameter set found.  
-    - See [Bayesian Optimization](https://github.com/fmfn/BayesianOptimization) for further reading.  
+    - Bayesian optimization efficiently searches hyperparameter space to find good network configurations, reducing exhaustive grid search overhead.  
+    - Utilizes parameters: dropout rate, learning rate, neuron count percentage, and neuron shrink factor for network architecture.  
+    - Demonstrates code generating a model that incrementally shrinks neuron counts per layer with dropout after each.  
+    - Employs stratified K-fold cross-validation and early stopping in evaluation function.  
+    - Uses the bayesian-optimization Python package to conduct optimization over defined bounds.  
+    - Outputs improvement over random search and runtime metrics.  
+    - Further reading: [Bayesian Optimization GitHub](https://github.com/fmfn/BayesianOptimization)  
+
   - **8.5 Part 8.5: Current Semester’s Kaggle**
-    - Each semester’s Kaggle assignment uses specific data, with prior years’ competition sites provided for reference.  
-    - The Iris and MPG datasets are used as Kaggle competition examples, with separate training, test, and sample submission CSV files.  
-    - The Iris Kaggle example predicts species from standard flower measurements, encoding the species and using TensorFlow Keras for training.  
-    - Logistic loss and accuracy are computed on test splits; submission files contain ID and probability columns for each class.  
-    - The MPG Kaggle example involves regression for miles per gallon, includes missing value imputation, and uses ReLU activations with mean squared error loss.  
-    - Final evaluation calculates RMSE of predictions, and submission files include IDs and predicted MPG values.  
-  - **8.5.3 Module 8 Assignment**
-    - The chapter includes assignment 8, linked in the course materials.
+    - Provides links and resources for the current and previous semesters’ Kaggle assignments for the course.  
+
+    - **8.5.1 Iris as a Kaggle Competition**
+      - Describes standard Kaggle files: train, test, and sample submission.  
+      - Iris species labels are already index-encoded; test data excludes labels.  
+      - Provides example code to train a neural network on iris train set, evaluate log loss, and generate a submission CSV.  
+
+    - **8.5.2 MPG as a Kaggle Competition (Regression)**
+      - Describes standard Kaggle files for the MPG dataset: train, test, and sample submission files.  
+      - Shows building and training a regression neural network with early stopping and RMSE evaluation.  
+      - Presents code to generate predictions on test data and write Kaggle submission CSV.  
+
+    - **8.5.3 Module 8 Assignment**
+      - The module 8 assignment reference is repeated.
