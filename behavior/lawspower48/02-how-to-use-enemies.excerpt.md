@@ -1,1 +1,0 @@
-Friends are often unreliable allies prone to envy and betrayal, while former enemies, having more to prove and expecting nothing, can become more loyal and useful. Wise leaders use enemies strategically to secure power, recognizing that trust in friends can blind one to their true intentions and that managing enemies can strengthen and stabilize their rule.

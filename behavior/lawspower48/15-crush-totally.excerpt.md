@@ -1,1 +1,0 @@
-All great leaders understand that a feared enemy must be crushed completely, as leaving even a remnant allows them to recover and seek revenge, making total annihilation essential for lasting victory. Hesitation or mercy only strengthens enemies, while ruthless and decisive action ensures security and prevents future threats.

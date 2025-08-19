@@ -1,1 +1,0 @@
-Victory is often the most perilous moment because overconfidence and arrogance can push you beyond your goal, creating more enemies and undoing your success. To maintain power, one must know when to stop, consolidate gains, adapt to changing circumstances, and avoid overreaching after triumph.

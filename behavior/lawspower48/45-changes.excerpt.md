@@ -1,1 +1,0 @@
-Change is necessary but must be introduced gradually and disguised as a continuation of past traditions to avoid provoking fear, resistance, and revolt among people who are deeply attached to familiar habits and rituals. Successful reformers cloak innovation in the comforting appearance of the past, using history and tradition to legitimize change and prevent instability.

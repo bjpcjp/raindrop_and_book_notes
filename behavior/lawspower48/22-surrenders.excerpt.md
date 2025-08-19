@@ -1,1 +1,0 @@
-When weaker, surrender strategically rather than fight for honor, using apparent submission to gain time, unsettle opponents, and position yourself for eventual recovery and counterattack. This tactic requires self-control and patience, allowing you to conserve power and avoid futile martyrdom while preparing to exploit the oppressor’s eventual decline.

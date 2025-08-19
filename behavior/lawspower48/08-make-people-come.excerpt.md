@@ -1,1 +1,0 @@
-The essence of power lies in making others come to you, allowing you to control the situation by playing on their emotions and desires with carefully laid bait, rather than reacting aggressively and exhausting yourself. This strategy forces opponents to operate on your terms, wearing themselves out, while you maintain the initiative and long-term advantage.

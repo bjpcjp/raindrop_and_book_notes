@@ -1,1 +1,0 @@
-Gathering information through artful spying—whether by using intermediaries or posing as a friend—allows you to anticipate others' intentions and gain control over future events, making you seem all-powerful and clairvoyant. Equally important is safeguarding yourself from being spied on by feeding false information to mislead and control your rivals.
