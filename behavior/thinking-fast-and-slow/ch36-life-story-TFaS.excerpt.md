@@ -1,1 +1,0 @@
-People evaluate life and experiences not by their duration but by the significant moments and endings that shape their memories and narratives. This preference for peak and end moments influences how we judge life’s quality, choose vacations, and relate to our own and others’ stories, highlighting a fundamental distinction between our experiencing self and remembering self.
