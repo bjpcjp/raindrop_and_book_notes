@@ -1,0 +1,50 @@
+![SPAFF](SPAFF.best.png)
+
+- **The Specific Affect Coding System (SPAFF)**
+  - **History of the SPAFF**
+    - The SPAFF was introduced in 1989 by Gottman and Krokoff for systematic observation of affective behavior in marital conflict.
+    - Early observational systems focused on discrete behavioral bits, whereas SPAFF codes affect at the construct level integrating voice, verbal content, and physical features.
+    - Studies using SPAFF cover a broad variety of couples, including newlyweds, violent couples, same-sex couples, and parent-child interactions.
+    - For further reading, see [ResearchGate publication](https://www.researchgate.net/publication/230676408).
+  - **Learning to Code Behavior: The Philosophy of the SPAFF**
+    - SPAFF is built on the premise that emotions are expressed in diverse ways requiring integration beyond discrete cues.
+    - Coders need personal histories of interpersonal affective communication to interpret subtle cues.
+    - Successful coding involves synthesizing multiple indicators from voice, face, verbal content, and miscellaneous behaviors.
+    - The SPAFF approach contrasts purely physical feature coding versus cultural informant decoding.
+  - **SPAFF Codes Are Latent Psychological Constructs**
+    - SPAFF codes represent latent constructs inferred from multiple observable indicators rather than directly observable behaviors.
+    - Indicators inform about the presence of a construct, while counterindicators suggest its absence.
+    - The construct-validation model is essential to interpret discrete behaviors like the "eye roll" as contempt.
+  - **Physical Features and Cultural Informants**
+    - Physical features approaches code discrete and observable behaviors, which can be automated by machines.
+    - Cultural informants decode behaviors based on contextual and cultural knowledge, identifying meaning beyond physical features.
+    - SPAFF utilizes both approaches, emphasizing the need for human coders with interpersonal experience for accurate interpretation.
+  - **Learning to Observe: Rules of People Watching**
+    - Rule 1 states any given behavior can be a choice from multiple possible alternatives reflecting different interpersonal styles.
+    - Rule 2 emphasizes interpreting behavior as if designed to portray a character, prompting analysis of intent.
+    - Rule 3 recommends mimicking observed behavior to better grasp subtle emotional communication cues.
+    - These rules facilitate active observation needed for reliable SPAFF coding.
+  - **Facial Expressions of the SPAFF**
+    - SPAFF integrates key Facial Action Coding System (FACS) units to identify upper and lower face muscle movements related to affect codes.
+    - The system simplifies and modifies FACS coding by focusing on presence/absence of action units, rather than intensity levels.
+    - Commonly coded AUs include inner and outer brow raisers, lip corner pullers, cheek raisers, and lip depressors.
+    - See [FACS manual](https://en.wikipedia.org/wiki/Facial_Action_Coding_System) for detailed action unit descriptions.
+  - **Codes of the SPAFF**
+    - The SPAFF comprises positive affect codes (e.g., Affection, Enthusiasm, Humor, Interest, Validation) and negative affect codes (e.g., Anger, Belligerence, Contempt, Criticism).
+    - Each code is defined by its function, verbal and nonverbal indicators, physical cues (often specific FACS AUs), and counterindicators.
+    - Examples include Anger characterized by facial tightening and vocal growling, and Affection characterized by caring statements and positive voice tones.
+    - The full code list and descriptions appear in Table 16.1.
+  - **Data Collection and Reliability Assessment**
+    - High quality audiovisual recordings with split-screen views and proper microphone placement enhance SPAFF coding accuracy.
+    - Coding reliability is assessed using statistical measures such as Cohen’s kappa, with 1-second time units and typical 3-second windows for agreement.
+    - Reliability checking involves double coding each tape and conducting regular coder meetings for clarifications.
+    - Software like the Long Video Coding System (VCS) facilitates coding and disagreement identification.
+  - **The Future of the SPAFF**
+    - Researchers have developed weighting schemes transforming SPAFF codes into continuous scales predictive of relationship outcomes.
+    - SPAFF is being expanded to code behavioral sequences over longer periods, such as rejection of influence during conflict.
+    - Ongoing development includes frequent coder training, refinement of codes, and extending SPAFF’s use beyond couples to family and therapy contexts.
+  - **Training**
+    - SPAFF training involves learning constructs, mastering relevant FACS codes, and extensive practice viewing and discussing videotaped interactions.
+    - Training often progresses in steps: people watching and construct understanding, FACS training, then SPAFF code learning.
+    - Group training sessions and ongoing coder meetings enhance reliability and clarify coding ambiguities.
+    - Active discussion of video examples is essential for solidifying coding competence.
