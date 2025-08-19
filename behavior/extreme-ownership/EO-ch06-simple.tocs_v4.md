@@ -1,0 +1,48 @@
+![EO-ch06-simple](EO-ch06-simple.best.png)
+
+- **Combat Outpost Falcon: Into the Fray**
+  - **Mortar attack at COP Falcon**
+    - Insurgents accurately fired 120mm mortars into COP Falcon, causing several casualties including one soldier who later died.  
+    - One mortar round hit the roof but failed to explode, indicating some rounds were duds.  
+    - The attack highlighted the insurgents' capabilities and the dangerous environment in Ramadi.  
+    - For more on urban warfare, see [Urban Combat](https://www.globalsecurity.org/military/library/policy/army/fm/3-06/fm3-06.pdf).  
+  - **Initial insertion and securing of COP Falcon**
+    - SEAL Charlie Platoon inserted via Marine SURC boats into a violent neighborhood in Ramadi.  
+    - They cleared buildings to establish COP Falcon and provided overwatch for Army tanks and engineer teams.  
+    - The outpost required extensive fortification with sandbags, barriers, and concertina wire.  
+  - **Coordination with Army units**
+    - SEALs handed buildings over to Army Team Bulldog and continued providing sniper overwatch.  
+    - Adverse conditions included scattered small-arms fire and repeated enemy contact near the COP.  
+
+- **Presence Patrol Planning and Execution**
+  - **Mission objective and complexity**
+    - The goal was to establish coalition presence in hostile neighborhoods to challenge insurgent control.  
+    - The planned patrol route was long, passed through multiple battle spaces with different units, and was laden with IED risks.  
+    - Complexity was compounded by differing unit procedures and radio communications.  
+  - **Simplification of patrol route**
+    - The SEAL commander advised shortening the patrol, restricting it to one company’s battlespace to reduce risk and complexity.  
+    - The MiTT leader initially underestimated the mission difficulty but agreed to the simpler plan after discussion.  
+  - **Patrol departure and engagement**
+    - The patrol proceeded with SEALs providing direct coordination and overwatch sniper support.  
+    - Contact with enemy fighters occurred within twelve minutes, leading to a significant firefight.  
+    - Support included coordinated radio communication, CASEVAC, and fire support from tanks and armored vehicles.  
+    - The patrol suffered two Iraqi casualties; one was evacuated successfully, the other later died.  
+    - The engagement validated the importance of simplicity and coordination under fire.
+
+- **Leadership Principle: Simple**
+  - **Importance of simplicity in combat**
+    - Complex plans hinder understanding, increase confusion, and multiply challenges when contingencies occur.  
+    - Clear, concise communication and well-understood roles improve adaptability and mission success.  
+    - Leaders must ensure all team members fully grasp the plan and encourage clarifying questions.  
+    - See [Jocko Willink’s Leadership Principles](https://jockowillink.com/principles/).  
+  - **Application to business: Bonus plan case study**
+    - A manufacturing plant had a complex bonus system with many variables, weights, and tiers causing employee confusion.  
+    - Workers did not understand how bonuses were calculated, reducing motivation and performance.  
+    - Leadership simplified the bonus system to two metrics: weighted units produced and quality scores.  
+    - After simplification, employee focus improved, productivity increased, and underperforming workers were identified and removed.  
+    - The case underscores that simplicity is crucial beyond combat, applying equally in business contexts.  
+  - **Key takeaways from business application**
+    - Complex incentive systems fail if employees cannot see clear connections between behavior and reward.  
+    - Simplified objectives enable rapid adaptation and better overall team performance.  
+    - Consistent communication and transparency maintain alignment of individual and organizational goals.  
+    - For leadership techniques in business, see [Harvard Business Review on Leadership](https://hbr.org/topic/leadership).

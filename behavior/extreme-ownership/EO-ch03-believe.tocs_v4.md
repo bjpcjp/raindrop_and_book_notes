@@ -1,0 +1,22 @@
+![EO-ch03-believe](EO-ch03-believe.best.png)
+
+- **SHARKBASE, CAMP RAMADI, IRAQ: QUESTIONING THE MISSION**
+  - Task Unit Bruiser, composed of highly trained Navy SEALs, was ordered to work with poorly trained and ill-equipped Iraqi Army soldiers.
+  - Iraqi soldiers faced challenges including weak training, poor equipment, questionable loyalty, and low motivation.
+  - The mission aimed to train Iraqi forces through combat advising while simultaneously reducing insurgents’ capabilities.
+  - Cooperation with Iraqi soldiers was essential for mission approval and strategic success in stabilizing Iraq.
+  - [Navy SEALs and Training](https://www.navy.com/seals)
+- **PRINCIPLE**
+  - Leaders must fully believe in the mission to inspire their teams and take necessary risks to succeed.
+  - Understanding "why" a mission exists enables leaders to align tactical actions with strategic goals.
+  - Senior leaders should communicate mission intent and rationale clearly to junior leaders to build belief.
+  - Leaders at all levels must ask questions and seek understanding to maintain mission alignment and avoid failure.
+  - Belief in the mission is critical to decentralized command and effective execution.
+  - [Leadership Principles](https://www.militaryleaders.com/leadership-principles/)
+- **APPLICATION TO BUSINESS**
+  - Lack of understanding of organizational decisions leads to resistance and failure among middle managers and staff.
+  - Leaders may have open-door policies but employees often fear looking incompetent, hindering communication.
+  - Senior leadership must clearly explain the rationale behind strategic changes to foster belief and commitment.
+  - Midlevel managers have a responsibility to ask questions and seek clarity on directives to maintain alignment.
+  - Open communication strengthens leadership effectiveness and prevents misalignment between strategy and execution.
+  - [Effective Corporate Communication](https://hbr.org/2016/02/the-secrets-of-great-communicators)

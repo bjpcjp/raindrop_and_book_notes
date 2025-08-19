@@ -1,0 +1,21 @@
+![EO-ch01](EO-ch01.best.png)
+
+- **Extreme Ownership**
+  - **The Ma’laab District Incident**
+    - A blue-on-blue friendly fire incident occurred involving U.S. SEALs and Iraqi soldiers in Ramadi, Iraq, causing casualties and confusion.
+    - Several failures contributed including poor communication, altered plans without notification, and ineffective coordination of forces.
+    - The author, as SEAL task unit commander, took full responsibility for the incident under the principle of Extreme Ownership.
+    - The incident led to improved operational procedures and reportedly prevented future fratricide during the deployment.
+    - For more on military leadership and friendly fire risks, see [Fog of War](https://en.wikipedia.org/wiki/Fog_of_war).
+  - **Principle of Extreme Ownership**
+    - Leaders must accept total responsibility for all success and failure within their team or mission.
+    - Effective leaders do not blame subordinates but take ownership of mistakes and develop corrective plans.
+    - Extreme Ownership involves humility, courage, and removal of ego to promote continuous improvement and team culture.
+    - Leaders who embody this principle empower junior leaders to take responsibility, increasing team efficiency.
+    - Further reading on leadership accountability: [Extreme Ownership Website](https://www.extremeownership.com/).
+  - **Application to Business**
+    - A vice president of manufacturing failed to execute a board-approved plan due to poor leadership and resistance from subordinate managers.
+    - The VP initially blamed others but was coached to accept total ownership for the plan’s failure.
+    - Leadership requires gaining buy-in and effective communication, not just issuing orders.
+    - Successful leaders in high-performance teams accept blame, learn from errors, and drive execution.
+    - For parallels between military and business leadership, see [Leadership in Organizations](https://hbr.org/2011/01/the-discipline-of-teams).
