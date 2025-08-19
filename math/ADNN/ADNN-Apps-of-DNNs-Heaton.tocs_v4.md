@@ -1,0 +1,52 @@
+![ADNN-Apps-of-DNNs-Heaton](ADNN-Apps-of-DNNs-Heaton.best.png)
+
+- **0.1 Introduction**  
+  - Deep learning enables neural networks to handle tabular data, images, text, and audio as input and output.  
+  - It allows learning hierarchies of information similar to the human brain’s functioning.  
+  - The course covers classic neural networks, CNNs, LSTMs, GANs, reinforcement learning, and HPC applications.  
+  - Python with TensorFlow and Keras are the primary tools used.  
+  - For further reading, see [Deep Learning Book](https://www.deeplearningbook.org/).
+
+- **1 Python Preliminaries**  
+  - **1.1 Part 1.1: Course Overview**  
+    - Introduces deep neural networks, their architectures, and HPC implementations on GPUs and grids.  
+    - Assignments include 10 individual modules, Kaggle project, and final team project.  
+    - Lists course resources such as Google CoLab, Anaconda, Jupyter, TensorFlow, and Kaggle.  
+    - Deep learning is a method for efficiently training deep neural networks through advanced techniques.  
+    - Recommended resource: [Andrew Ng's Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning).  
+  - **1.2 Part 1.2: Introduction to Python**  
+    - Covers basic Python syntax, variables, strings, numbers, if-statements, loops, and differences between Python 2 and 3.  
+    - Emphasizes significance of indentation and use of f-strings for formatting.  
+    - Advises use of Python 3 for TensorFlow compatibility.  
+    - Suggested resource: [Python Official Tutorial](https://docs.python.org/3/tutorial/).  
+  - **1.3 Part 1.3: Python Lists, Dictionaries, Sets and JSON**  
+    - Explains fundamental collection types: lists (ordered, mutable), tuples (ordered, immutable), sets (unordered, no duplicates), dictionaries (key-value pairs).  
+    - Demonstrates list operations, dictionary access with safety checks, and combining lists and dictionaries for complex data.  
+    - Introduces JSON format as hierarchical data structure compatible with Python dictionaries and lists.  
+    - Recommended reading: [Python Data Structures](https://docs.python.org/3/tutorial/datastructures.html).  
+  - **1.4 Part 1.4: File Handling**  
+    - Details reading from CSV files with Pandas and streaming large CSV files to handle memory constraints.  
+    - Shows reading text files and images from URLs using Python libraries.  
+    - Demonstrates handling of various file formats relevant for AI including CSV, image, text, JSON, audio, and H5 files.  
+    - Suggested resource: [Pandas IO Tools](https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html).  
+  - **1.5 Part 1.5: Functions, Lambdas, and Map/Reduce**  
+    - Describes defining functions with default and named parameters in Python.  
+    - Explains map, filter, lambda functions for functional list processing.  
+    - Introduces reduce for aggregating list values into a single output.  
+    - Further reading: [Python Functional Programming HOWTO](https://docs.python.org/3/howto/functional.html).
+
+- **2 Python for Machine Learning**  
+  - **2.1 Part 2.1: Introduction to Pandas**  
+    - Pandas is an open-source library for high-performance data structures and analysis tools.  
+    - Introduces the DataFrame for handling real-world datasets like auto-mpg.  
+    - Demonstrates loading data from CSV, setting display options, and computing statistics (mean, variance, stddev).  
+    - Handles missing values by replacing NA with median values, and techniques to identify missing data.  
+    - Recommended source: [Pandas Documentation](https://pandas.pydata.org/docs/).  
+  - **2.1.1 Missing Values**  
+    - Missing values are common and can be replaced by median or dropped.  
+    - Illustrates using Pandas fillna and isnull methods to handle missing horsepower data.  
+    - See [Handling Missing Data in Pandas](https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html).  
+  - **2.1.2 Dealing with Outliers**  
+    - Defines outliers as values several standard deviations from the mean, often errors or extreme values.  
+    - Shows how to filter out rows in a DataFrame where specified columns exceed a threshold using standard deviations.  
+    - Recommended reading: [Detecting Outliers with Z-Score](https://machinelearningmastery.com/how-to-use-statistics-to-identify-outliers-in-data/).

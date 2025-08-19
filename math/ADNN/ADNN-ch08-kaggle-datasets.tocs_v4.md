@@ -1,0 +1,105 @@
+![ADNN-ch08-kaggle-datasets](ADNN-ch08-kaggle-datasets.best.png)
+
+- **Chapter 8**
+  - **8.1 Part 8.1: Introduction to Kaggle**
+    - Kaggle runs competitions where data scientists develop models to fit provided data sets.
+    - The Titanic data set is a common tutorial competition with no prizes or ranking impact.
+    - Typical Kaggle competitions have summary, data, evaluation, and leaderboard pages.
+    - Scoring is based on a split of training and test data, with public and private leaderboards unknown to participants.
+    - [Kaggle Official Site](https://www.kaggle.com)
+  - **8.1.1 Kaggle Ranks**
+    - Kaggle ranks are earned through bronze, silver, and gold medals.
+    - Rankings depend on performance in competitions and community engagement.
+    - Profiles of top users can showcase rank and achievements.
+    - [Kaggle Ranking System](https://www.kaggle.com/rankings)
+  - **8.1.2 Typical Kaggle Competition**
+    - Competitions include Competition Summary, Data, Evaluation Description, and Leaderboard components.
+    - The Titanic competition serves as an example of this structure.
+  - **8.1.3 How Kaggle Competition Scoring**
+    - Kaggle provides a complete dataset split into training and test sets.
+    - Training data includes inputs and outcomes; test data excludes outcomes.
+    - Public leaderboard score calculates based on an undisclosed subset of test data.
+    - Private leaderboard determines final scores after competition ends.
+  - **8.1.4 Preparing a Kaggle Submission**
+    - Submissions are CSV files with ID columns and predicted outputs.
+    - The format matches the test data IDs, requiring predictions for all rows.
+    - Multi-class classification submissions often include a column per class.
+  - **8.1.5 Select Kaggle Competitions**
+    - Favorite tabular data competitions include Otto Group Product Classification and Predicting a Biological Response.
+    - Popular computer vision competitions include Diabetic Retinopathy Detection and Cats vs Dogs.
+  - **8.1.6 Module 8 Assignment**
+    - The first assignment related to this part is available as assignment 8.
+  - **8.2 Part 8.2: Building Ensembles with Scikit-Learn and Keras**
+    - Ensembles combine multiple models to improve accuracy in predictions.
+    - Feature importance identifies how inputs affect model predictions.
+  - **8.2.1 Evaluating Feature Importance**
+    - Feature importance methods include Connection Weights, Partial Derivatives, and Input Perturbation.
+    - Input Perturbation algorithm measures impact by shuffling features and observing accuracy loss.
+    - Algorithm is model-independent and applicable to regression and classification.
+    - [Ecological Modelling Paper](https://doi.org/10.1016/S0304-3800(03)00030-9)
+  - **8.2.2 Classification and Input Perturbation Ranking**
+    - Classification networks use log loss while regression uses RMSE for evaluation.
+    - Example: Iris dataset neural network achieves 1.0 accuracy.
+    - Input perturbation ranks input features by impact on log loss.
+  - **8.2.3 Regression and Input Perturbation Ranking**
+    - Demonstrated on the MPG dataset using a regression neural network.
+    - Evaluates feature importance by measuring RMSE increase after feature perturbation.
+  - **8.2.4 Biological Response with Neural Network**
+    - Biological response dataset contains 3751 samples and 1777 features.
+    - A neural network with two hidden layers and sigmoid output performs binary classification.
+    - Early stopping monitors validation loss to prevent overfitting.
+  - **8.2.5 What Features/Columns are Important**
+    - Feature importance ranking reveals top contributing features in the biological response dataset.
+    - Top features have importance near 1.0; lower-ranked features approach zero.
+  - **8.2.6 Neural Network Ensemble**
+    - Ensemble blends predictions from neural network, KNN, random forest, extra trees, and gradient boosting classifiers.
+    - Logistic regression determines weights for ensemble blending.
+    - Stratified K-Fold cross-validation with 10 folds is used in training ensemble models.
+    - Ensemble approach achieves high accuracy in Kaggle competitions.
+  - **8.3 Part 8.3: Architecting Network: Hyperparameters**
+    - Choosing hyperparameters like layers, neurons, activation functions affects model performance.
+    - Keras layers include Dense, Dropout, Flatten, BatchNormalization, and more.
+  - **8.3.1 Number of Hidden Layers and Neuron Counts**
+    - Number and size of layers are chosen by trial and error.
+    - Neuron counts often decrease from input to output layers forming a triangular/trapezoid shape.
+  - **8.3.2 Activation Functions**
+    - Hidden layers typically use ReLU; output layer uses softmax for classification or linear for regression.
+    - Common activation functions include softmax, elu, selu, softplus, softsign, relu, tanh, sigmoid, exponential, and linear.
+    - [Keras Activation Functions](https://keras.io/api/layers/activations/)
+  - **8.3.3 Advanced Activation Functions**
+    - LeakyReLU and PReLU include learnable parameters improving over basic ReLU.
+  - **8.3.4 Regularization: L1, L2, Dropout**
+    - Regularization techniques reduce overfitting.
+    - Dropout randomly disables neurons during training to improve generalization.
+    - [Keras Regularization](https://keras.io/guides/regularization/)
+  - **8.3.5 Batch Normalization**
+    - Normalizes layer activations to have zero mean and unit variance per batch.
+    - Can enable higher learning rates and faster training.
+    - [Batch Normalization Paper](https://arxiv.org/abs/1502.03167)
+  - **8.3.6 Training Parameters**
+    - Important parameters include batch size (often ~32) and learning rate (~1e-3).
+    - Choice impacts convergence speed and model accuracy.
+    - [Keras Optimizers](https://keras.io/api/optimizers/)
+  - **8.3.7 Experimenting with Hyperparameters**
+    - Demonstrated network evaluation function tunes dropout, learning rate, neuron percentage, and neuron shrink rate.
+    - Uses stratified shuffle split for bootstrapping and early stopping to prevent overfitting.
+  - **8.4 Part 8.4: Bayesian Hyperparameter Optimization for Keras**
+    - Bayesian Optimization efficiently searches hyperparameter space by modeling performance.
+    - Hyperparameters optimized include dropout, learning rate, neuron percentage, and neuron shrink.
+    - Neural network structure defined by neuronPct and neuronShrink maps to layer sizes.
+    - Optimization reduces epochs and improves validation loss compared to manual tuning.
+    - Popular tools: `bayesian-optimization`, `hyperopt`, `spearmint`.
+    - [Bayesian Optimization GitHub](https://github.com/fmfn/BayesianOptimization)
+  - **8.5 Part 8.5: Current Semester’s Kaggle**
+    - Provides links to Kaggle assignments for current and previous semesters.
+  - **8.5.1 Iris as a Kaggle Competition**
+    - Kaggle Iris files include separate train, test, and sample submission CSVs.
+    - Species target is already index encoded.
+    - Example demonstrated training, evaluating with log loss, and generating submission CSV.
+  - **8.5.2 MPG as a Kaggle Competition (Regression)**
+    - Kaggle MPG files separate training and test data for regression.
+    - Neural network with two hidden layers predicts MPG.
+    - Model evaluation uses RMSE.
+    - Generates Kaggle submission with IDs and predicted MPG values.
+  - **8.5.3 Module 8 Assignment**
+    - Assignment 8 is provided for practical application of the concepts taught in the module.
