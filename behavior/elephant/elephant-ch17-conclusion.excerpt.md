@@ -1,1 +1,0 @@
-Humans often harbor hidden selfish motives behind their actions, which they conceal through self-deception to maintain social trust and avoid self-consciousness. Recognizing these hidden motives can enhance situational awareness, foster humility, and guide individuals and institutions toward more effective behavior and reform by aligning self-interest with prosocial outcomes.
