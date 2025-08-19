@@ -1,0 +1,64 @@
+![outliers-ch07-plane-crashes](outliers-ch07-plane-crashes.best.png)
+
+- **The Ethnic Theory of Plane Crashes**
+  - **Overview of Korean Air Flight 801 crash**
+    - Flight 801 departed Seoul bound for Guam and crashed into Nimitz Hill during approach, killing 228 of 254 onboard.
+    - The captain was experienced but recently diagnosed with bronchitis and was tired.
+    - The glide slope was unavailable, and poor weather forced the crew to rely on visual landing.
+    - The crash occurred due to late recognition of altitude and failure to abort landing.
+    - See [NTSB Aircraft Accident Report KAL 801](https://www.ntsb.gov/investigations/AccidentReports)
+  - **Korean Air's crash record and consequences**
+    - Korean Air experienced numerous crashes between 1970s and 1990s, with an accident rate over seventeen times the U.S. average.
+    - The airline faced international restrictions, safety rating downgrades, and suspended partnerships.
+    - Reports revealed poor training, crew morale issues, and procedural violations.
+    - The Korean government acknowledged the problem as national credibility at stake.
+    - See [Boeing Statistical Summary of Commercial Jet Airplane Accidents](https://www.boeing.com/commercial/safety/)
+  - **Typical factors contributing to modern plane crashes**
+    - Crashes usually result from a chain of minor errors, often involving fatigue, poor weather, and lack of crew coordination.
+    - Human error in communication and teamwork is more prevalent than technical or skill failures.
+    - The Avianca 052 crash exemplifies these patterns, with fuel exhaustion and miscommunication amid severe weather and pilot fatigue.
+    - The role of human factors in aviation safety is central to crash prevention protocols.
+    - See [Human Factors Analysis and Classification System](https://hfacs.com/)
+  - **Avianca Flight 052 crash case study**
+    - The crash resulted from pilot fatigue, autopilot malfunction, severe weather, and ultimately fuel exhaustion.
+    - The first officer's mitigated speech failed to communicate urgency to Air Traffic Control effectively.
+    - Cultural factors, including high power distance and deference to authority, inhibited assertive communication.
+    - The crash underscores the need for clear cockpit communication and assertiveness training.
+    - See [Avianca Flight 052 Accident Report](https://planecrashinfo.com/1990/1990-01.htm)
+  - **Impact of cultural dimensions on cockpit communication**
+    - Hofstede's cultural dimensions such as power distance and uncertainty avoidance influence pilot communication and hierarchy.
+    - Cultures with high power distance (e.g., Korea, Colombia, Brazil) show greater deference to authority, reducing subordinate assertiveness.
+    - Low power distance cultures (e.g., USA, Scandinavia) encourage more open communication and challenge to authority.
+    - These cultural factors can affect critical cockpit communication and flight safety.
+    - See [Hofstede Insights](https://www.hofstede-insights.com/)
+  - **Mitigated speech and its dangers in aviation**
+    - Mitigated speech downplays urgency and can obscure critical safety information in high-stakes situations.
+    - First officers tend to mitigate requests to captains due to hierarchical relationships.
+    - Effective Crew Resource Management (CRM) encourages clear, assertive communication regardless of rank.
+    - Training programs now teach standardized communication protocols to overcome mitigation risks.
+    - See [Crew Resource Management Training](https://www.faa.gov/newsroom/crew-resource-management)
+  - **Korean Air’s cultural context and communication challenges**
+    - Korean social norms involve strict hierarchy, multiple honorific speech levels, and strong deference to seniority.
+    - This cultural legacy contributed to poor crew communication and hesitance to challenge captains.
+    - These norms conflicted with Western cockpit communication expectations, exacerbating crash risk.
+    - Cultural misinterpretations also occurred between Korean pilots and international air traffic controllers.
+    - See [Culture and Aviation Communication](https://asjgulf.com/culture-and-aviation-communication/)
+  - **NTSB findings on Korean Air Flight 801**
+    - The glide slope was out of service, and the captain relied on visual approach in poor weather and fatigue.
+    - The VOR beacon was located on a mountain, misleading pilots during descent.
+    - Fatigue impaired pilot decision-making and situational awareness.
+    - Flight crew coordination broke down during critical final approach.
+    - See [NTSB Safety Recommendation Report](https://www.ntsb.gov/safety/safety-recs/)
+  - **Reforms and turnaround of Korean Air**
+    - Hired David Greenberg from Delta to lead flight operations and improve safety culture.
+    - Enforced English language proficiency for better communication and reduced cultural hierarchy effects.
+    - Adopted Western-style CRM training and empowered first officers to assert themselves.
+    - Achieved spotless safety record post-1999 and became part of global airline alliances.
+    - Received Phoenix Award in 2006 for its transformation.
+    - See [Korean Air Safety Transformation](https://aviation-safety.net/database/operator/airline.php?var=449)
+  - **Conclusion: Importance of acknowledging cultural legacies**
+    - Cultural legacies profoundly affect professional behavior and safety-critical communication.
+    - Aviation safety improves when organizational culture and training address these cultural factors explicitly.
+    - Recognizing and managing cultural influences is crucial for global airline operations' success.
+    - Ignoring culture risks repeated accidents despite technological advances.
+    - See [Ethnic Theory of Plane Crashes, Malcolm Gladwell](https://www.gladwell.com/outliers/)
