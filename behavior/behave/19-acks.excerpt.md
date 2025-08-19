@@ -1,1 +1,0 @@
-The author expresses deep gratitude to brilliant colleagues, students, editors, agents, and family members whose support, feedback, and collaboration were essential in shaping and completing the book. Special thanks are given to those who challenged the author’s ideas, helped with the final stages, and endured personal interruptions during the writing process.
