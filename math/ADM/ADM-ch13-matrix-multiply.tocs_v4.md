@@ -1,0 +1,42 @@
+![ADM-ch13-matrix-multiply](ADM-ch13-matrix-multiply.best.png)
+
+- **Matrix Multiplication**
+  - **Input and Problem Description**
+    - The problem involves multiplying an x × y matrix A by a y × z matrix B to produce an x × z matrix.
+    - Matrix multiplication is a foundational operation in linear algebra with broad applications.
+    - Matrix multiplication algorithms affect performance in tasks like transitive closure, parsing, solving systems, and matrix inversion.
+  - **Basic Algorithm and Implementation Details**
+    - The straightforward algorithm runs in O(xyz) time using three nested loops.
+    - Loop order can be permuted to affect cache performance, causing a 10-20% variation in runtime.
+    - An example implementation appears in Section 2.5.4 (page 45).
+    - When matrices have bandwidth b, multiplication complexity can be reduced to O(xbz).
+  - **Faster Algorithms and Optimization**
+    - Asymptotically faster algorithms exist, such as Strassen’s O(n^2.81) algorithm.
+    - These faster methods require large matrices to outperform the cubic algorithm and can be numerically less stable.
+    - Dynamic programming can optimize multiplying a chain of matrices by choosing the best parenthesization.
+    - Optimization is beneficial for irregular-sized matrices and repeated chain multiplications but not when matrices share dimensions.
+  - **Applications and Interpretations**
+    - Multiplying adjacency matrices counts paths of exact length k between graph vertices.
+    - A squared adjacency matrix entry A^2[i,j] ≥ 1 confirms a length-2 path from i to j.
+    - Results extend to counting nonsimple paths that may revisit vertices.
+  - **Efficient Implementations and Libraries**
+    - High-performance codes like that by D’Alberto and Nicolau switch between Strassen and cubic algorithms at optimal matrix sizes.
+    - LAPACK provides widely used numerical routines for matrix multiplication.
+    - Algorithm 601 from the ACM Collected Algorithms covers sparse and dense matrix multiplication.
+  - **Historical and Advanced Algorithms**
+    - Strassen's algorithm marked the start of improving asymptotic matrix multiplication.
+    - The best known exponent currently is O(n^2.376) by Coppersmith and Winograd.
+    - There is a conjecture that Θ(n^2) complexity suffices.
+    - Winograd's algorithm reduces multiplication count by half but adds bookkeeping overhead.
+  - **Engineering and Practical Considerations**
+    - Efficient implementations must carefully manage cache memory.
+    - Empirical crossover points between Strassen and cubic algorithms are about n=100 to 128.
+  - **Graph and Boolean Matrix Multiplication**
+    - Squaring graphs relates to Hamiltonian cycles and graph square roots.
+    - Boolean matrix multiplication reduces to general matrix multiplication.
+    - The four-Russians algorithm speeds Boolean matrix multiplication using preprocessing to O(n^3 / lg n) or better.
+  - **Further Reading**
+    - Strassen’s original paper [Str69].
+    - The book [CLRS01] for algorithm details including Winograd and dynamic programming-based chain multiplication.
+    - LAPACK and LINPACK via Netlib as detailed in Section 19.1.5.
+    - Four-Russians algorithm exposition [Man89].

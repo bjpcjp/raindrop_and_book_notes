@@ -1,0 +1,39 @@
+![ADM-ch15-graphs-network-flow](ADM-ch15-graphs-network-flow.best.png)
+
+- **Network Flow**
+  - **Input Description**
+    - The input is a directed graph with edges labeled by capacities.
+    - A source node (s) and a sink node (t) define the flow start and end points.
+  - **Problem Description**
+    - The task is to find the maximum flow routed from source to sink without exceeding edge capacities.
+    - Network flow models many real-world problems like shipping goods and resource allocation.
+  - **Discussion**
+    - Network flow algorithms outperform general linear programming solvers for modeled problems.
+    - Maximum flow and minimum-cost flow represent two primary classes of network flow problems.
+    - Problems such as bipartite matching, shortest path, and connectivity can be solved via network flow.
+  - **Maximum Flow**
+    - Variables represent flow on edges, bounded by edge capacities.
+    - Flow conservation holds at all nodes except source and sink.
+    - The goal is to maximize the sum of flows into the sink node.
+  - **Minimum Cost Flow**
+    - Includes edge costs to send one unit of flow.
+    - The solution minimizes total cost for a targeted flow amount.
+    - Constraints include capacity restrictions and fixed total flow.
+  - **Special Considerations**
+    - Multiple sources/sinks can be managed by introducing a super-source and super-sink.
+    - Uniform capacities allow faster specialized algorithms.
+    - Uniform edge costs permit use of simpler maximum flow algorithms.
+    - Multicommodity flows handle multiple material types with distinct demands.
+    - Integral multicommodity flow problems are NP-complete.
+  - **Algorithms and Implementations**
+    - Augmenting path methods find paths with residual capacity iteratively until optimal.
+    - Preflow-push methods surpass augmenting path methods by concurrent path augmentation.
+    - Recommended implementations include Goldberg's codes HIPR and PRF for max flow, and CS for minimum cost flow.
+    - Libraries like GOBLIN and LEDA offer comprehensive graph optimization toolsets.
+    - The DIMACS challenge provides multiple well-known network flow implementations.
+  - **Notes**
+    - The fundamental max-flow min-cut theorem was developed by Ford and Fulkerson.
+    - Network flow computation aims for O(nm) time complexities, with the fastest known algorithm running at O(nm lg(n²/m)).
+    - Multicommodity flow hardness and related expositions are referenced in multiple works.
+    - Network coding theory extends network flow concepts to optimize information flow.
+    - Further reading includes [Network Flows: Theory, Algorithms, and Applications](https://www.amazon.com/Network-Flows-Theory-Algorithms-Applications/dp/013617549X) by Ahuja, Magnanti, and Orlin.

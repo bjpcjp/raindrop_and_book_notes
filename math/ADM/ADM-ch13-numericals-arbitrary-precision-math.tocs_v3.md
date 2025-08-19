@@ -1,45 +1,31 @@
-[Representative image](ADM-ch13-numericals-arbitrary-precision-math.best.png)
+![ADM-ch13-numericals-arbitrary-precision-math](ADM-ch13-numericals-arbitrary-precision-math.best.png)
 
 - **13.9 Arbitrary-Precision Arithmetic**
-  - **Input description**
-    - The input consists of two very large integers, x and y.
-    - Operations to perform include addition, subtraction, multiplication, and division.
-  - **Problem description**
-    - Standard programming languages support only limited precision integer and real arithmetic.
-    - Representing extremely large integers, such as the U.S. national debt in pennies or RSA keys of 1000+ digits, requires arbitrary-precision arithmetic.
-  - **Considerations when using large integers**
-    - Use computer algebra systems like Maple or Mathematica for problem-specific large integer computations.
-    - For embedded applications, use an existing arbitrary precision math library to gain extra functionality like GCD calculations.
-  - **Precision type decision**
-    - Determine if fixed upper bounds on integer size exist; if so, fixed-length arrays suffice.
-    - Arbitrary-precision requires flexible structures like linked lists of digits.
-  - **Base for arithmetic**
-    - Base-10 representation is simplest for implementing arbitrary precision arithmetic.
-    - Higher bases, ideally up to the square root of the maximum hardware integer, improve performance by reducing digit count.
-    - Conversion between native base and base-10 is required for input/output.
-  - **Performance considerations**
-    - High-precision arithmetic is slower due to subroutine calls versus hardware addition.
-    - Assembly language and bit-level operations can speed up critical inner loops.
-  - **Algorithms for arithmetic operations**
-    - Addition uses digit-wise addition with carries; efficient parallel algorithms exist for hardware.
-    - Subtraction is treated as addition with sign adjustments and careful borrow handling.
-    - Multiplication relies on digit-by-digit schoolhouse algorithms or Karatsuba’s O(n^1.59) method for large numbers; even faster FFT-based algorithms exist (see section 13.11).
-    - Division uses long-division methods involving multiplication and subtraction; division can be reduced to multiplication.
-    - Exponentiation uses divide-and-conquer to achieve O(log n) multiplications.
-  - **Modular arithmetic and Chinese remainder theorem**
-    - Chinese remainder theorem uniquely represents integers via residues modulo coprime moduli.
-    - Addition, subtraction, and multiplication are supported in residue systems for efficient manipulation.
-    - Division is not directly supported in modular residue arithmetic.
-  - **Related polynomial algorithms**
-    - Many integer algorithms apply to polynomial computations.
-    - Horner’s rule optimizes polynomial evaluation from O(n^2) multiplications to O(n).
-  - **Implementations**
-    - Major computer algebra systems (Maple, Mathematica, Axiom, Macsyma) support high-precision arithmetic by default.
-    - GNU Multiple Precision Arithmetic Library (GMP) is the premier C/C++ library for fast arbitrary precision.
-    - Java’s BigInteger class provides arbitrary-precision integer operations and modular arithmetic.
-    - Additional libraries include PARI, LiDIA, NTL, MIRACL for number theory, and ARPREC, MPFUN90 for high precision in Fortran/C++.
-  - **References and notes**
-    - Donald Knuth’s "The Art of Computer Programming" is a primary reference for arithmetic algorithms.
-    - Karatsuba’s and Schönhage-Strassen’s algorithms improve multiplication time complexity.
-    - Euclid’s algorithm for greatest common divisor is foundational and well documented.
-    - See [GMP library](http://gmplib.org/) for practical implementation details.
+  - **Input and Problem Description**
+    - The problem focuses on computing addition, subtraction, multiplication, and division for very large integers.
+    - Standard integers are insufficient for very large numbers like national debt or cryptographic keys.
+    - Large integers require specialized representations and algorithms beyond 32-bit or 64-bit limits.
+  - **Implementation Considerations**
+    - Developers must assess whether their application requires arbitrary precision or fixed upper bounds on integer size.
+    - Arrays or linked lists can represent integers depending on size constraints.
+    - Choosing the arithmetic base impacts efficiency; higher bases reduce digit count but complicate input/output conversion.
+    - Low-level optimization such as assembly or bitwise operations can speed up arithmetic.
+  - **Basic Arithmetic Algorithms**
+    - Addition uses the school method with carries, optimal for its linear time complexity.
+    - Subtraction leverages addition of negatives and careful borrow handling, typically subtracting smaller absolute value from larger.
+    - Multiplication avoids repeated addition; school method or Karatsuba's O(n^1.59) algorithm is recommended, with FFT-based methods for very large inputs.
+    - Division uses long division method requiring multiplication and subtraction, but can be reduced to multiplication.
+    - Exponentiation benefits from divide-and-conquer algorithms reducing multiplications to O(log n).
+  - **Advanced Techniques and Theorems**
+    - Chinese remainder theorem allows representation of large integers via residues modulo coprime integers, enabling modular addition, subtraction, and multiplication.
+    - Horner’s rule efficiently evaluates polynomials with linear time complexity instead of O(n²).
+  - **Available Implementations**
+    - Computer algebra systems like Maple and Mathematica offer built-in arbitrary-precision arithmetic and high-level languages.
+    - GNU Multiple Precision Arithmetic Library (GMP) is a leading C/C++ library for embedded applications.
+    - Java's BigInteger class supports arbitrary-precision and modular arithmetic.
+    - Other specialized packages include ARPREC, MPFUN90, and libraries PARI, LiDIA, NTL, and MIRACL for number theory.
+  - **References and Further Reading**
+    - Donald Knuth’s *The Art of Computer Programming* for elementary arithmetic algorithms.
+    - Sources on Karatsuba and FFT multiplication: [AHU74], [Man89], [SS71].
+    - Bernstein’s work on fast arithmetic operations: [Ber04b].
+    - Comprehensive texts on modular arithmetic, Euclid’s algorithm, and the Chinese remainder theorem: [CLRS01], [BS96], [Sho05].

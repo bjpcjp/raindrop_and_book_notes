@@ -1,0 +1,104 @@
+![ADM-book-algorithm-design-manual](ADM-book-algorithm-design-manual.best.png)
+
+- **Practical Algorithm Design**
+  - **Introduction to Algorithm Design**
+    - Algorithms solve well-defined, general problems by transforming input instances to output.
+    - Correctness, efficiency, and ease of implementation are three desirable algorithm properties.
+    - Differentiates between algorithms (guaranteed correct) and heuristics (may fail).
+    - Covers examples: insertion sort, robot tour optimization (TSP), movie scheduling.
+    - Further reading: [The Algorithm Design Manual, 2nd Edition](https://www.springer.com/gp/book/9781848000704)
+  - **Robot Tour Optimization**
+    - Models robot arm movement as finding the shortest cycle tour through points.
+    - Nearest-neighbor and closest-pair heuristics are intuitive but can fail to find shortest tours.
+    - The Traveling Salesman Problem (TSP) is computationally intractable for large n.
+    - Brute force guarantees optimality but is impractical for real-world problem sizes.
+    - Further reading: TSP problem summary in Section 16.4 (page 533).
+  - **Selecting the Right Jobs**
+    - Models scheduling as selecting the largest subset of mutually non-overlapping intervals.
+    - Simple heuristics like earliest job first or shortest job first fail on certain inputs.
+    - An optimal efficient algorithm selects jobs based on earliest finish times, proven correct.
+    - Exhaustive search is impractical for large n; efficient algorithms exist only for special cases.
+    - Further reading: Interval scheduling problem in Section 14.9 (page 468).
+  - **Reasoning about Correctness**
+    - Algorithm correctness requires precise problem and algorithm specifications.
+    - Proofs of correctness involve assumptions and logical reasoning; proofs by induction are common.
+    - Counterexamples demonstrate algorithm incorrectness effectively.
+    - Modeling problems narrowly can enable efficient algorithms.
+    - Further reading: Program verification by Gries [Gri89].
+  - **Expressing Algorithms**
+    - Algorithms can be described in English, pseudocode, or programming languages.
+    - Clear exposition is essential; pseudocode should clarify rather than obscure ideas.
+    - Further reading: Algorithm descriptions in [CLRS01].
+  - **Problems and Properties**
+    - Precise input and output definitions are necessary to prove correctness.
+    - Restrictions on problem instances sometimes enable efficient algorithms.
+    - Compound goals complicate correctness and solvability.
+    - Study of catalog problems enhances problem formulation skills.
+  - **Demonstrating Incorrectness**
+    - Counterexamples must be simple and verifiable.
+    - Techniques include thinking small, exhaustive case analysis, exploiting ties and extremes.
+    - Hunting for counterexamples is a critical algorithm design skill.
+  - **Induction and Recursion**
+    - Inductive proofs relate base cases and inductive steps to demonstrate correctness.
+    - Recursion in algorithms parallels mathematical induction.
+    - Risks include boundary errors and overlooking changes in optimal solutions after data changes.
+    - Further reading: Inductive proofs in classic algorithm texts.
+  - **Summations**
+    - Summations describe algorithmic runtimes and can be proved by induction.
+    - Arithmetic progressions and geometric series are fundamental summation types.
+    - Closed forms aid asymptotic analysis in algorithm efficiency.
+    - Further reading: Summation techniques in Chapter 2.
+  - **Modeling the Problem**
+    - Modeling translates real-world applications into abstract algorithmic structures.
+    - Common structures: permutations, subsets, trees, graphs, points, polygons, and strings.
+    - Modeling is a crucial step towards effective algorithm design.
+    - Recursive decomposition underpins many algorithmic approaches.
+    - Further reading: Catalog of problems in Part II.
+  - **Combinatorial Objects**
+    - Permutations represent orderings; subsets represent selections.
+    - Trees capture hierarchical relations; graphs depict arbitrary relationships.
+    - Points and polygons model geometric configurations; strings represent character sequences.
+  - **Recursive Objects**
+    - Permutations, subsets, trees, graphs, points, polygons, and strings all admit recursive decompositions.
+    - Basis cases define smallest usable instances; recursion aids algorithmic design.
+  - **About the War Stories**
+    - Real-world case studies illustrate the impact of careful algorithm design.
+    - War stories enhance understanding by demonstrating practical problem-solving.
+    - Further reading: Jon Bentley's Programming Pearls [Ben90], Brooks's The Mythical Man Month [Bro95].
+  - **War Story: Psychic Modeling**
+    - Covers a lottery ticket coverage problem framed as a set cover instance.
+    - Initial modeling errors were corrected by refining the definition of coverage.
+    - Involves generating k-subsets and applying heuristic search for near-optimal solutions.
+    - The problem exemplifies the importance of accurate problem modeling.
+    - Further reading: Set cover problem in Section 18.1 (page 621).
+
+
+- **Algorithm Analysis**
+  - **The RAM Model of Computation**
+    - Models a computer executing each simple operation and memory access in one step.
+    - Abstracts away machine-specific details for language- and machine-independent analysis.
+    - Despite simplifications, the RAM model effectively predicts real algorithm performance.
+    - Further reading: RAM model basics in [CLRS01], Section 2.1.
+  - **Best, Worst, and Average-Case Complexity**
+    - Defines complexity based on input size and performance over all input instances.
+    - Worst-case complexity is most useful for ensuring guarantees under all inputs.
+    - Graphical representation helps contrast best, worst, and average behaviors.
+  - **The Big Oh Notation**
+    - Big Oh defines an asymptotic upper bound on algorithm runtime, ignoring constants and low-order terms.
+    - Also defines Ω (lower bound) and Θ (tight bound) for runtime complexity.
+    - Simplifies comparison of algorithms by focusing on dominant growth terms.
+    - Formal definitions involve constants c and thresholds n0 beyond which bounds hold.
+    - Further reading: Big Oh and related notation in [CLRS01], Section 3.1.
+  - **Growth Rates and Dominance Relations**
+    - Lists common complexity classes: constant, logarithmic, linear, superlinear (n log n), polynomial (quadratic, cubic), exponential, factorial.
+    - Dominance relations determine which functions grow faster asymptotically.
+    - Practical impact shown via runtime estimates for common growth rates (Figure 2.4).
+  - **Working with the Big Oh**
+    - Summation of Big Oh functions dominated by the asymptotically largest.
+    - Constants are ignored in Big Oh; multiplication follows accordingly.
+    - Big Oh notation is transitive; proofs rely on chaining constants and bounds.
+  - **Reasoning About Efficiency**
+    - Illustrates how to analyze algorithms like selection sort, insertion sort, pattern matching, and matrix multiplication.
+    - Nested loops often translate into multiplicative runtime components.
+    - Highlights the use of summations, upper/lower bounds, and asymptotic simplifications.
+    - Further reading: Algorithm runtime analysis in [Man89], Chapter on Complexity Analysis.

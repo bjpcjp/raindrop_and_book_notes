@@ -1,0 +1,38 @@
+![ADM-ch10-how-to-design-algos](ADM-ch10-how-to-design-algos.best.png)
+
+- **How to Design Algorithms**
+  - **Introduction to Algorithm Design**
+    - Designing algorithms requires creativity and managing a vast space of choices.
+    - The right problem-solving attitude is essential beyond theoretical knowledge.
+    - Asking guiding questions continually improves the design process.
+    - Comparing strategy (big picture) versus tactics (minor details) is crucial in problem-solving.
+    - The book and questions aim to provide “the Right Stuff” to avoid common pitfalls.
+  - **Key Questions to Guide Algorithm Design**
+    - **1. Understanding the Problem**
+      - Clarify input, output, and problem scope with examples.
+      - Assess importance of optimality, instance size, speed, and implementation effort.
+      - Identify the type of problem (numerical, graph, geometric, string, set).
+      - Early questions focus on detailed problem comprehension without needing technical expertise.
+    - **2. Finding Simple Algorithms or Heuristics**
+      - Consider brute force and verify correctness and feasibility given problem size.
+      - Explore heuristics based on simple rules and evaluate their effectiveness and speed.
+      - Ensure heuristic applicability to input types and assess implementation complexity.
+    - **3. Consulting Algorithm Catalogs and Resources**
+      - Search the book’s problem catalog and external resources for known solutions.
+      - Verify correct keyword searching and explore online resources like the associated webpage.
+      - Checking repositories and scholarly search engines is encouraged.
+    - **4. Special Cases and Simplifications**
+      - Investigate if ignoring or fixing input parameters simplifies the problem.
+      - Analyze why special-case solutions do not generalize.
+      - Determine if the problem is a special case of a broader known problem.
+    - **5. Algorithm Design Paradigms Relevant to the Problem**
+      - Consider sorting, divide-and-conquer, and dynamic programming approaches.
+      - Assess the role of data structures like hash tables and heaps for repeated operations.
+      - Explore randomization, linear/integer programming, and complexity considerations like NP-completeness.
+      - Compare problem to known NP-complete problems (e.g., satisfiability, traveling salesman).
+    - **6. Handling Stuck Situations**
+      - Suggest hiring an expert consultant if needed.
+      - Recommend revisiting earlier questions to revise answers or approach.
+  - **Additional Guidance and Resources**
+    - Problem-solving blends art and skill development.
+    - [How to Solve It by George Pólya](https://en.wikipedia.org/wiki/How_to_Solve_It) is recommended for problem-solving techniques.

@@ -1,0 +1,94 @@
+![ADM-ch08-dynamic-programming](ADM-ch08-dynamic-programming.best.png)
+
+- **Dynamic Programming**
+  - **Caching vs. Computation**
+    - Dynamic programming trades space for time by caching results to avoid repeated computations.
+    - Recursive Fibonacci calculation is exponential in time due to recomputation of subproblems.
+    - Caching computed Fibonacci values reduces time complexity to linear.
+    - Further optimization removes recursion by iteratively computing Fibonacci numbers.
+    - See [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for deeper insight.
+  - **Approximate String Matching**
+    - Measures string similarity using edit distance with operations: substitution, insertion, deletion.
+    - Recursive approaches to edit distance have exponential time complexity due to repeated subproblems.
+    - Dynamic programming implementation using a matrix stores subproblem results, yielding O(|P||T|) time.
+    - Reconstruction of the edit path is done using parent pointers stored during computation.
+    - Special cases include substring matching and longest common subsequence using tailored cost functions.
+  - **Longest Increasing Sequence**
+    - Defines li as the length of the longest increasing subsequence ending at element si.
+    - Recurrence: li = max(lj + 1 for all j < i where sj < si), l0 = 0.
+    - Algorithm runs in O(n^2) time; can be improved to O(n log n) with advanced data structures.
+    - Stores predecessor indices to reconstruct the subsequence.
+  - **War Story: Evolution of the Lobster**
+    - Morphing images requires finding correspondences between features in two lines of pixels.
+    - Problem modeled as aligning runs of pixels without crossing matches.
+    - Dynamic programming finds minimal cost alignment considering merges, splits, and positional offsets.
+    - Demonstrated by morphing a lobster into a human head.
+  - **The Partition Problem**
+    - Problem: partition sequence S into k contiguous parts minimizing the maximum sum in any part.
+    - Dynamic programming recurrence computes optimal partition cost M[n,k] using prefix sums.
+    - Algorithm runs in O(k n^2) time, improving over naive exponential search.
+    - Uses auxiliary matrix D to reconstruct the partitions.
+  - **Parsing Context-Free Grammars**
+    - Parsing uses dynamic programming to identify valid nonterminals generating substrings.
+    - The CKY algorithm evaluates M[i,j,X] booleans; parses input in O(n^3) time.
+    - Generalized to minimal edits with costs to handle errors or substitutions.
+    - Also applicable to minimum weight triangulation of polygons solved via similar recurrences.
+  - **Limitations of Dynamic Programming: TSP**
+    - Dynamic programming requires the principle of optimality and inherent ordering of subproblems.
+    - Longest simple path and traveling salesman problems lack such ordering and have exponential states.
+    - Advanced DP formulations reduce complexity but remain exponential and limited to small inputs.
+    - Highlights necessity of problem structure and ordering for efficient DP application.
+  - **War Story: What’s Past is Prolog**
+    - Minimizing trie size for Prolog rule heads optimized by permuting argument order.
+    - Preserving lexicographical order of leaves enables a polynomial DP solution.
+    - Problem is NP-complete without order constraint but solvable efficiently with ordering.
+    - DP partitions rules by character runs and finds minimal total trie size.
+  - **War Story: Text Compression for Bar Codes**
+    - PDF-417 two-dimensional bar codes store text with multiple modes of character sets.
+    - Encoding uses mode latch and shift commands with variable length character coding.
+    - Greedy heuristics improved by a DP algorithm that finds the minimal bit encoding.
+    - DP runs in O(n) time and yields average 8% compression improvement over heuristic.
+    - Compression optimization critical for space-limited bar code labels.
+
+- **Exercises**
+  - **Edit Distance Problems**
+    - Extend edit distance to include swap operations for neighboring transpositions.
+    - Determine if a string Z is a shuffle of two strings X and Y using dynamic programming.
+    - Compute longest common substring of two strings in Θ(nm) time.
+    - Relate longest common subsequence, shortest common supersequence, and edit distance without substitutions.
+  - **Greedy Algorithm Problems**
+    - Analyze greedy algorithms for packing programs on disks by size.
+    - Design an algorithm for minimum coin change with arbitrary denominations; greedy fails generally.
+    - Count distinct ways to make change using dynamic programming.
+    - Prove correctness of earliest deadline first scheduling on single processor.
+  - **Number Problems**
+    - Provide O(nT) DP algorithm for knapsack exact sum problem.
+    - Solve integer partition problem in O(nM) time, M being sum of input values.
+    - Find maximum contiguous sum on a circular array efficiently.
+    - Optimize order of string breaks to minimize total copy cost in O(n^3).
+    - Encode data strings from a dictionary minimizing number of code words.
+    - Calculate champion retention probability in probabilistic chess matches using DP.
+    - Solve egg dropping problem with k eggs and n floors via DP recurrence.
+  - **Graph Problems**
+    - Find safe paths avoiding bad neighborhoods on city grid in O(XY).
+    - Count number of safe shortest paths across grid avoiding bad neighborhoods in O(XY).
+  - **Design Problems**
+    - Prove greedy solves equal height book shelving optimally.
+    - Give DP algorithm to minimize total shelf height with variable book heights.
+    - Compute minimum finger movement dialing sequence on telephone keypad in O(n k^3).
+    - Provide Θ(n) DP algorithm for maximum subvector sum.
+    - Decide parenthesization results in given element with nonassociative multiplication in poly-time.
+    - Construct tree with optimal worst-case cost given asymmetric move costs.
+  - **Interview Problems**
+    - Find minimum number of coins for change.
+    - Identify subarray with maximum sum in array with negative numbers.
+    - Determine feasibility of generating string from magazine cutouts with double-sided constraints.
+  - **Programming Challenges**
+    - References to online judge problems with dynamic programming related challenges, e.g., "Is Bigger Smarter?" and "Cutting Sticks".
+
+- **Chapter Notes**
+  - Dynamic programming developed by Bellman; edit distance by Wagner and Fischer.
+  - Minimum weight triangulation NP-completeness resolved by Mulzer and Rote.
+  - Morphing and Prolog trie problems referenced with author publications.
+  - The CKY parsing algorithm and generalizations cited with key original papers.
+  - See [Dynamic Programming Wikipedia](https://en.wikipedia.org/wiki/Dynamic_programming) for additional background.

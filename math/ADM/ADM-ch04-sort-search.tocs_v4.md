@@ -1,0 +1,49 @@
+![ADM-ch04-sort-search](ADM-ch04-sort-search.best.png)
+
+- **Sorting and Searching**
+  - **Applications of Sorting**
+    - Many algorithms become efficient through sorting as a building block, achieving O(n log n) performance instead of quadratic.
+    - Sorting enables efficient solutions to problems such as binary search, closest pair, element uniqueness, frequency distribution, selection, and convex hull construction.
+    - The convex hull algorithm relies on sorting points by x-coordinate and then inserting points left-to-right with efficient deletions.
+    - Sorting usually dominates problem complexity and is worthwhile when using efficient algorithms.
+    - Further reading: [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)
+  - **Pragmatics of Sorting**
+    - Sorting criteria include ascending or descending order, sorting keys vs. entire records, handling equal keys via stability, and non-numerical data considerations.
+    - Sorting algorithms should be parameterized by custom comparison functions for flexibility.
+    - Standard library functions like C’s qsort provide generic and efficient sorting.
+  - **Heapsort: Fast Sorting via Data Structures**
+    - Heapsort is selection sort implemented efficiently using heaps, raising runtime from O(n²) to O(n log n).
+    - A heap is a binary tree with the heap property (parents dominate children), stored implicitly in an array with parent/child indexing.
+    - Heaps support O(log n) insertion (bubble up) and extraction of minimum (bubble down) operations.
+    - Building a heap naively takes O(n log n), but a linear-time algorithm exists via bottom-up heapify.
+    - Heapsort is an in-place sorting algorithm with guaranteed O(n log n) worst-case performance.
+    - Further reading: [Priority Queues, The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)
+  - **War Story: Give me a Ticket on an Airplane**
+    - Real-world airfare pricing is complex with multiple fares and combinability rules, making shortest path reductions infeasible.
+    - To find cheapest fare combinations without enumerating all pairs, use a best-first approach with a priority queue to generate pairs by increasing sum order dynamically.
+    - Duplicate pairs must be managed carefully using supplemental data structures like hash tables.
+  - **Mergesort: Sorting by Divide-and-Conquer**
+    - Mergesort recursively divides data into halves, sorts each, then merges two sorted lists in O(n) time.
+    - The overall runtime is O(n log n) due to log n levels with linear work per level.
+    - Mergesort is stable and works especially well on linked lists but needs auxiliary memory for array merges.
+    - Further reading: [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition)
+  - **Quicksort: Sorting by Randomization**
+    - Quicksort partitions around a pivot separating data into less and greater piles, sorts recursively.
+    - Worst-case runtime is O(n²) when pivot choices are poor, but average expected runtime is O(n log n) via random pivot selection.
+    - Randomization removes input order bias and improves robustness.
+    - Quicksort is typically faster in practice than mergesort or heapsort due to simpler inner loops.
+    - Further reading: [Randomized Algorithms, Motwani & Raghavan](https://www.cambridge.org/core/books/randomized-algorithms/8B3C913B32258859D3519BE4A293247D)
+  - **War Story: Skiena for the Defense**
+    - External sorting dominates large-data use cases where disk I/O costs overshadow in-memory sorting complexity.
+    - Multiway mergesort and data block management are key to efficient external sorting.
+    - Benchmarks like Minutesort gauge real-world sorting performance based on data volume, hardware, and cost.
+  - **Binary Search and Related Algorithms**
+    - Binary search locates elements in O(log n) time on sorted arrays by repeated halving.
+    - Variants find counts of occurrences, search with unknown array size (one-sided binary search), and numerical root finding.
+    - Binary search embodies divide-and-conquer principles.
+  - **Divide-and-Conquer**
+    - Divide-and-conquer solves problems by splitting into subproblems, solving recursively, and merging results.
+    - Many algorithms’ runtimes satisfy recurrences of form T(n) = aT(n/b) + f(n).
+    - Master theorem characterizes solutions into three cases based on f(n) relative to n^log_b a.
+    - Examples: mergesort (O(n log n)), binary search (O(log n)), and Strassen’s matrix multiplication (O(n^2.81)).
+    - Further reading: [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition)

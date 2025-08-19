@@ -1,9 +1,29 @@
-[Representative image](ADM-ch17-geometry-polygon-simplification.best.png)
+![ADM-ch17-geometry-polygon-simplification](ADM-ch17-geometry-polygon-simplification.best.png)
 
-- **17.12 Simplifying Polygons**  
-  - Polygon simplification reduces vertex count while maintaining shape fidelity.  
-  - Key issues include whether to use convex hull, vertex insertion vs. deletion, polygon simplicity, and image noise cleanup.  
-  - The Douglas-Peucker algorithm incrementally refines a polygon by adding vertices to minimize maximum deviation.  
-  - Simplification in 3D is NP-complete; heuristic and approximation algorithms exist for polyhedra.  
-  - Implementations include Douglas-Peucker code by Snoeyink, simplification envelopes, QSlim, Cocone, Powercrust, and CGAL.  
-  - Further reading: [Douglas-Peucker algorithm implementation](http://www.cs.unc.edu/~snoeyink/papers/DPsimp.arch), [Powercrust](http://www.cs.utexas.edu/users/amenta/powercrust/).
+- **17.12 Simplifying Polygons**
+  - **Problem Overview**
+    - Simplification seeks a polygon or polyhedron p′ with fewer vertices that closely approximates the original polygon p.
+    - Primary applications are noise reduction in scanned shapes and data compression in graphics rendering.
+  - **Key Issues in Shape Simplification**
+    - The convex hull provides the simplest simplification but removes concavities crucial for recognizing some shapes.
+    - Simplification methods differ in whether they only delete vertices or also move/insert vertices for better approximations.
+    - Maintaining a simple polygon without self-intersections is important to prevent artifacts; minimum-link path methods aid this.
+    - Image noise can be reduced via Fourier transform filtering, distinct from polygon simplification methods.
+  - **Douglas-Peucker Algorithm**
+    - Starts with the simplest polygon (two vertices) and iteratively inserts the vertex farthest from the approximation edge.
+    - Runs in O(kn) time for inserting k points in a polygon of n vertices.
+    - Widely used basis for shape simplification, with efficient implementations available ([HS94]).
+  - **Simplification in Three Dimensions**
+    - Simplification becomes NP-complete for minimal-size surfaces separating two polyhedra.
+    - Heuristic extensions of planar algorithms exist for polyhedral simplification.
+  - **Additional Methods and Implementations**
+    - Simplification envelopes generate level-of-detail hierarchies preserving holes and preventing self-intersections.
+    - QSlim uses quadric-based simplification for rapid, high-quality surface approximations.
+    - Medial-axis transform simplification trims polygon skeletons to yield simpler polygons; Cocone and Powercrust implement this for 3D.
+    - CGAL supports extreme simplification like smallest enclosing circle/sphere calculations.
+  - **Notes and Further Reading**
+    - Douglas-Peucker underlies most schemes with optimizations from [HS94, HS98].
+    - The link distance polygon simplification method is detailed in [GHMS93].
+    - Shape simplification algorithms are surveyed in [HG97].
+    - Medial-axis transformation approaches are discussed in [TH03].
+    - Polygon simplicity testing can be performed in linear time via Chazelle’s triangulation algorithm [Cha91].

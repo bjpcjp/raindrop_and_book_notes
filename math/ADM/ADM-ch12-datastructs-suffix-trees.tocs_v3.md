@@ -1,35 +1,34 @@
-[Representative image](ADM-ch12-datastructs-suffix-trees.best.png)
+![ADM-ch12-datastructs-suffix-trees](ADM-ch12-datastructs-suffix-trees.best.png)
 
 - **12.3 Suffix Trees and Arrays**
   - **Input and Problem Description**
-    - The input is a reference string S for which a data structure must be built.
-    - The problem is to quickly find all positions where an arbitrary query string q occurs in S.
+    - The input is a reference string S and the problem is to build a data structure for quickly finding all occurrences of an arbitrary query string q in S.
+    - Suffix trees and arrays are efficient data structures for substring searches.
+    - Refer to the discussion of suffix trees and arrays for more details on their usage and construction.
   - **Suffix Trees**
-    - A suffix tree is a trie of all proper suffixes of the input string S.
-    - It enables substring search in linear time with respect to the query length |q|.
-    - Collapsing paths in the trie reduces space from O(n²) to O(n) by labeling edges with substring indices.
-    - There exist O(n) time algorithms to construct suffix trees efficiently using clever pointers.
-    - Suffix trees support applications such as substring search, longest common substring, and palindrome finding.
-    - For in-depth study, see [Gusfield 1997](https://web.stanford.edu/class/cs166/), [Crochemore and Rytter 2003](https://www.cambridge.org/us/academic/subjects/computer-science/algorithmics-complexity-computer-algebra-and-computational-geometry/algorithmic-string-processing-2nd-edition).
-  - **Applications of Suffix Trees**
-    - Finding all occurrences of q in S takes O(|q| + k) time, where k is the number of occurrences.
-    - Finding the longest substring common to multiple strings is achieved by building a combined suffix tree and analyzing node labels.
-    - Finding the longest palindrome involves building a suffix tree for S and its reverse.
+    - A suffix tree is a trie of all proper suffixes of a string S.
+    - It enables substring testing in linear time relative to the length of the query string q.
+    - Naive trie-based suffix trees require O(n²) time and space, but linear-space collapsed suffix trees store edges as substring indices.
+    - Linear-time algorithms exist for constructing collapsed suffix trees using clever pointer structures.
+    - Applications include finding all occurrences of q, longest common substrings among strings, and finding the longest palindrome in S.
+    - For deeper study see Gusfield [Gus97] and Crochemore and Rytter [CR03].
   - **Suffix Arrays**
-    - A suffix array stores all suffixes of S sorted lexicographically by their starting positions.
-    - Binary searching the suffix array for q permits substring location in O(log n) time plus |q| character comparisons.
-    - Suffix arrays use roughly four times less memory than suffix trees and are easier to implement.
-    - Efficient suffix array construction can be done by first building suffix trees or through modern linear-time algorithms.
-    - Refer to [PST07 survey](https://link.springer.com/chapter/10.1007/978-3-540-74352-4_7) for implementations and construction algorithms.
-  - **Implementations and Resources**
-    - Numerous suffix array and suffix tree implementations are available in C/C++ and Java.
-    - BioJava provides a SuffixTree class for biological data processing.
-    - Libstree offers a C implementation of Ukkonen’s suffix tree algorithm.
-    - Additional packages include Nelson’s C++ code, Strmat collection, and Pizza&Chili compressed text indexes.
-  - **Historical Notes and Further Reading**
-    - Tries were first proposed by Fredkin in 1962.
-    - Efficient suffix tree algorithms were developed by Weiner, McCreight, and Ukkonen.
-    - Suffix arrays were invented by Manber and Myers in 1993, with recent linear-time algorithms emerging in 2003.
-    - Compressed full-text indexes extend suffix trees and arrays to near-entropy size with good query performance.
-    - Constant time least common ancestor queries augment suffix tree applications.
-    - For comprehensive theoretical background and algorithms, see [Gusfield 1997](https://web.stanford.edu/class/cs166/), [Crochemore and Rytter 2003](https://www.cambridge.org/us/academic/subjects/computer-science/algorithmics-complexity-computer-algebra-and-computational-geometry/algorithmic-string-processing-2nd-edition), and [Makinen and Navarro 2007](https://link.springer.com/chapter/10.1007/978-3-540-74352-4_7).
+    - A suffix array is a sorted array of all suffixes of S represented by their starting positions.
+    - Searching for a substring q can be done by binary search in O(log n) comparisons plus |q| character checks.
+    - Suffix arrays require roughly four times less memory than suffix trees and are easier to implement.
+    - Efficient suffix array construction algorithms exist, some building from suffix trees; recent algorithms achieve linear time.
+    - A comprehensive survey of suffix array algorithms and implementations is available at [PST07].
+  - **Implementations**
+    - Numerous suffix array and tree implementations exist in C/C++ and Java.
+    - Notable resources include Schürmann and Stoye’s C implementation [SS07], Pizza&Chili corpus compressed indexes, BioJava’s SuffixTree class, and libstree implementing Ukkonen’s algorithm.
+    - Additional code collections include Nelson’s C++ suffix tree code and Strmat exact pattern matching tools by Gusfield.
+  - **Notes and Related Work**
+    - Tries were introduced by Fredkin [Fre62], derived from the word “retrieval.”
+    - Suffix tree construction algorithms were developed by Weiner, McCreight, and Ukkonen.
+    - Suffix arrays were introduced by Manber and Myers, related to Pat trees by Gonnet and Baeza-Yates.
+    - Linear-time suffix array algorithms emerged in 2003 from multiple teams [KSPP03, KA03, KSB05].
+    - Recent work includes compressed full-text indexes with near-entropy size and efficient query times [MN07].
+    - Least common ancestor (LCA) data structures enable constant-time queries on suffix trees and are foundational for related algorithms.
+    - Further readings include Gusfield’s book [Gus97] and Crochemore and Rytter [CR03].
+  - **Related Problems**
+    - Suffix trees and arrays relate to string matching, text compression, and longest common substring problems, referenced on pages 628, 637, and 650 respectively.

@@ -1,0 +1,30 @@
+![ADM-ch17-geometry-polygon-partitions](ADM-ch17-geometry-polygon-partitions.best.png)
+
+- **Polygon Partitioning**
+  - **Problem Description**
+    - The goal is to partition a polygon or polyhedron into a small number of simple, typically convex, pieces.
+    - Convex pieces simplify many geometric algorithms by making problems easier to handle than on nonconvex polygons.
+    - Different partitioning problems depend on whether pieces must be triangles, allow overlapping covers, or permit adding extra vertices (Steiner points).
+    - Triangulations divide polygons into n−2 triangles, which are the simplest convex polygons but not always minimal in piece count.
+    - Refer to Section 17.3 for a detailed discussion of triangulation techniques.
+  - **Partitioning Variants**
+    - Partitioning divides the polygon interior into nonoverlapping pieces, whereas covering allows overlapping pieces.
+    - Partitioning is preferred when unique point membership in pieces is required; covering may be used for tasks like painting.
+    - Adding Steiner vertices inside the polygon or splitting edges can reduce the number of pieces but complicate algorithms.
+  - **Heuristics and Algorithms**
+    - The Hertel-Mehlhorn heuristic starts from any triangulation and deletes chords that preserve convexity, ensuring no internal angles over 180 degrees.
+    - This heuristic guarantees at most four times the minimum number of convex pieces and runs efficiently.
+    - Dynamic programming can find the minimal number of diagonals but runs in O(n^4) time in the simplest form.
+    - Faster algorithms achieve O(n + r^2 min(r^2, n)) time, where r is the count of reflex vertices; some use interior vertices to reduce piece count further.
+    - Decomposition into monotone polygons is another alternative, characterized by chains where horizontal lines intersect at most once.
+  - **Implementations**
+    - Many triangulation codes start by trapezoidal or monotone polygon decompositions.
+    - CGAL provides libraries implementing the Hertel-Mehlhorn heuristic, optimal convex partitioning (O(n^4)), and monotone polygon partitioning (O(n log n)).
+    - GEOMPACK is a suite of Fortran 77 codes supporting 2D and 3D triangulations and convex decompositions.
+  - **Related Literature and Notes**
+    - Comprehensive surveys include works by Keil [Kei00], O’Rourke and Suri [OS04], and Keil and Sack [KS85].
+    - The Hertel-Mehlhorn heuristic is described in sources like [HM83] and [O’R01].
+    - Dynamic programming algorithms for minimum convex decompositions originate from Keil and Snoeyink [KS02].
+    - An advanced algorithm minimizing convex pieces with Steiner points appears in [CD85].
+    - Lien and Amato provide heuristics for polygons with holes and polyhedra [LA06].
+    - The art gallery problem, related to polygon covering by star-shaped polygons, is detailed in O’Rourke’s book [O’R87].

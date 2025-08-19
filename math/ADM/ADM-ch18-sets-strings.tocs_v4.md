@@ -1,0 +1,57 @@
+![ADM-ch18-sets-strings](ADM-ch18-sets-strings.best.png)
+
+- **Sets and String Problems**
+  - **18.1 Set Cover**
+    - The problem is to find the smallest collection of subsets whose union equals the universal set.
+    - Variations include set packing, vertex cover, and hitting set, with distinct constraints and complexities.
+    - The greedy heuristic offers a logarithmic approximation of the optimal solution.
+    - Integer linear programming formulations allow weighted and exact solutions.
+    - For more, see [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).
+  - **18.2 Set Packing**
+    - Select mutually disjoint subsets from a collection to cover the universal set.
+    - Includes exact cover and partial solutions with singleton subsets to handle uncovered elements.
+    - Greedy heuristics and integer programming formulations are effective for approximate solutions.
+    - Set packing generalizes independent set and scheduling crew assignment problems.
+    - See [Symphony MILP Solver](http://branchandcut.org/SPP/) for implementations.
+  - **18.3 String Matching**
+    - Find occurrences of a pattern string within a text.
+    - Algorithms vary from naive O(mn) to linear-time Knuth-Morris-Pratt and Boyer-Moore solutions.
+    - Multiple pattern matching uses finite automata like Aho-Corasick to improve efficiency.
+    - Pattern length, frequency, and text preprocessing influence algorithm choice.
+    - Refer to [Strmat](http://www.cs.ucdavis.edu/~gusfield/strmat.html) for implementations.
+  - **18.4 Approximate String Matching**
+    - Compute the minimal-cost sequence of insertions, deletions, and substitutions to transform one string into another.
+    - Dynamic programming forms the backbone, with space and time optimizations available.
+    - Bit-parallel algorithms and filtering techniques improve performance for certain cases.
+    - Scoring schemes include uniform costs and affine gap penalties to model biological alignments.
+    - See Navarro and Raffinot [NR07](https://doi.org/10.1007/978-3-540-76900-3) for advanced techniques.
+  - **18.5 Text Compression**
+    - Create shorter encodings of text for storage or transmission, with lossless vs. lossy distinctions.
+    - Static methods like Huffman codes rely on frequency, while adaptive methods like Lempel-Ziv build dictionaries on the fly.
+    - Preprocessing, such as the Burrows-Wheeler transform, can greatly enhance compression ratios.
+    - Practical tools include gzip (Lempel-Ziv) and bzip2 (Burrows-Wheeler).
+    - Recommended reading includes Sayood [Say05](https://www.elsevier.com/books/data-compression/sayood/978-0-12-812630-2).
+  - **18.6 Cryptography**
+    - Encode and decode messages securely using keys, classified into Caesar shifts, block ciphers, and public key cryptography.
+    - Modern security relies on AES, RSA, and their derivatives, with key sizes and algorithm choice crucial for security level.
+    - Checksum and cryptographic hash functions ensure data integrity and support digital signatures.
+    - Implementation examples include Nettle and Crypto++ libraries.
+    - See Handbook of Applied Cryptography [MOV96](http://cacr.uwaterloo.ca/hac/) for comprehensive coverage.
+  - **18.7 Finite State Machine Minimization**
+    - Reduce deterministic finite automata to minimal equivalent machines.
+    - Techniques involve state partitioning and equivalence refinement, with Hopcroft’s O(n log n) algorithm as standard.
+    - Conversion between NFAs, DFAs, and regular expressions involves potential exponential state blowup.
+    - Minimization improves storage and execution efficiency in pattern matching and control systems.
+    - Grail+, FSM library, and JFLAP provide practical implementations.
+  - **18.8 Longest Common Substring/Subsequence**
+    - Identify the longest string that appears as a substring or subsequence in multiple input strings.
+    - Exact substring commonality uses suffix trees for linear-time computation.
+    - Dynamic programming solves longest common subsequence in O(mn) time for two strings.
+    - Specialized algorithms speed computation when strings have unique characters or for permutations.
+    - ClustalW and MSA tools support multiple biological sequence alignments.
+  - **18.9 Shortest Common Superstring**
+    - Find the shortest string containing all input strings as substrings.
+    - Applications include DNA sequence assembly and data compression of sparse matrices.
+    - The problem reduces to an asymmetric traveling salesman problem and is NP-complete.
+    - Greedy heuristics iteratively merge pairs of strings with maximum overlap, achieving constant-factor approximations.
+    - CAP3, PCAP, and Celera assemblers serve as advanced practical tools.

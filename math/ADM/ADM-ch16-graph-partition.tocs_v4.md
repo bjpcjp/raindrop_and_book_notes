@@ -1,0 +1,38 @@
+![ADM-ch16-graph-partition](ADM-ch16-graph-partition.best.png)
+
+- **16.6 Graph Partition**
+  - **Input description**
+    - The input consists of a weighted graph \(G = (V, E)\) and integers \(k\) and \(m\).  
+    - The goal is to partition the vertices into \(m\) roughly equal-sized subsets.  
+    - The total edge cost spanning the subsets should be at most \(k\).  
+  - **Problem description**
+    - The problem involves dividing vertices into balanced parts to minimize edges cut between subsets.  
+    - Graph partitioning supports divide-and-conquer algorithms by enabling equal-sized problem divisions.  
+    - Minimizing the edge cut simplifies merging solutions and preserves cluster coherence.  
+  - **Applications and motivation**
+    - Graph partition improves data locality and produces less cluttered graph visualizations.  
+    - It plays a critical role in parallel algorithms, such as finite element methods for physical simulations.  
+    - Partitioning equal-sized pieces with a small interface optimizes parallel computation.  
+  - **Graph partitioning objectives**
+    - Minimum cut set finds the smallest edge set disconnecting the graph, efficiently obtained via network flow or randomized algorithms.  
+    - Balanced graph partitioning seeks cuts partitioning vertices into roughly equal subsets but is NP-complete.  
+    - Special graphs like trees and planar graphs guarantee small separators found efficiently (e.g., planar separator theorem).  
+    - Maximum cut finds the largest edge cut to maximize communication but is NP-complete; heuristics assist.  
+  - **Basic approach and heuristics**
+    - Start with an initial vertex partition, then iteratively move vertices to improve the cut size.  
+    - Decision to move vertex \(v\) depends on neighbors’ partition majority, based on its degree.  
+    - Multiple iterations and randomized techniques (e.g., simulated annealing) help reach local optima.  
+    - Recursive partitioning extends the approach to more than two components.  
+  - **Spectral partitioning methods**
+    - Use eigenvectors of the graph Laplacian matrix for initial bisection.  
+    - Spectral methods identify partition regions well but benefit from local optimization refinements.  
+  - **Implementations**
+    - Chaco includes Kernighan-Lin and spectral methods, targeting parallel computing partitioning.  
+    - METIS scales to graphs with over a million vertices and supports parallel and hypergraph partitioning.  
+    - Other codes include Scotch and JOSTLE, each suited for different graph partitioning needs.  
+  - **Notes and theoretical results**
+    - Kernighan-Lin and Fiduccia-Mattheyses algorithms form the basis of local improvement heuristics.  
+    - Planar separator theorem and linear-time separator algorithms by Lipton and Tarjan aid decomposition.  
+    - Random partitions expect to cut half the edges; Goemans and Williamson provide an 0.878-approximation for max-cut via semidefinite programming.  
+  - **Related problems**
+    - Edge and vertex connectivity and network flow problems connect closely to graph partitioning tasks.

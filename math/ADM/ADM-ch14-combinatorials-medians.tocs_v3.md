@@ -1,26 +1,33 @@
-[Representative image](ADM-ch14-combinatorials-medians.best.png)
+![ADM-ch14-combinatorials-medians](ADM-ch14-combinatorials-medians.best.png)
 
-- **14.3 Median and Selection**
-  - **Input and Problem Description**
-    - The input consists of a set of n numbers or keys and an integer k.
-    - The problem is to find the key smaller than exactly k of the n keys.
-    - Median finding is a specific case of the selection problem, which finds the kth element in sorted order.
-  - **Applications of Selection**
-    - Selection helps filter outlying elements by identifying percentile boundaries for noisy data.
-    - It enables identifying top candidates in scenarios such as computer chess move evaluation.
-    - Selection is used to compute deciles and other regular intervals for data distribution analysis.
-    - Special order statistics include finding the smallest (k=1), largest (k=n), and median (k=n/2) elements.
-  - **Discussion on Median and Selection Algorithms**
-    - Sorting the data and selecting the kth element takes O(n log n) time but provides full order information.
-    - A randomized expected O(n) algorithm based on quicksort selects a pivot and recursively partitions data.
-    - Worst-case linear time algorithms exist but are more complex and less practical than the expected-time method.
-    - Streaming data and single-pass constraints necessitate approximate selection methods, including random sampling.
-    - Computing the mode requires O(n log n) time due to element uniqueness lower bounds and sorting.
-    - Improvements on mode finding may leverage fast median computations under special conditions.
-  - **Implementation and Further Notes**
-    - The C++ STL offers the nth_element function, an implementation of the linear expected-time selection algorithm.
-    - Hoare’s algorithm is foundational for linear time median and selection; Floyd and Rivest’s method reduces comparisons on average.
-    - Streaming algorithms for large data sets are well-reviewed by Muthukrishnan.
-    - Theoretical bounds on median comparisons have been established by Dor and Zwick, showing 2.95n comparisons suffice.
-    - Tight combinatorial bounds and optimal algorithms for mode computation are documented in the cited literature.
-    - Relevant further reading includes [CLRS](https://mitpress.mit.edu/books/introduction-algorithms-third-edition), [Muthukrishnan (2005)](https://dl.acm.org/doi/10.1145/1081870.1081874), and [Hoare (1961)](https://dl.acm.org/doi/10.1145/366622.366649).
+- **Median and Selection**
+  - **Input description and problem statement**
+    - The input consists of a set of n numbers or keys, and an integer k.  
+    - The problem is to find the key smaller than exactly k of the n keys.  
+    - Median finding is a special case of selection, focusing on the middle element.  
+  - **Applications of selection**
+    - Selection helps filter outlying elements by identifying percentile bounds.  
+    - It assists in identifying top candidates for further analysis, e.g., in chess programs.  
+    - Selection is used to compute deciles and other order statistics.  
+    - Special cases include finding the smallest, largest, and median elements.  
+  - **Algorithmic complexity and approaches**
+    - Sorting and then selecting kth element requires O(n log n) time.  
+    - An expected linear-time algorithm uses randomized partitioning similar to quicksort.  
+    - Worst-case linear-time algorithms for median and selection also exist but are more complex.  
+    - Selecting random pivots helps avoid worst-case quadratic behavior.  
+  - **Handling data streams and approximate methods**
+    - Exact median finding is expensive when data can only be seen once or is too large for storage.  
+    - Random sampling provides approximate quantiles by storing a subset of the data.  
+    - Combining decile summaries from blocks improves accuracy for streaming data analysis.  
+  - **Finding the mode and complexity limits**
+    - The mode is the element appearing most frequently in the data set.  
+    - Computing the mode requires sorting (O(n log n)) and a linear pass to find the longest run.  
+    - There is an Ω(n log n) lower bound for mode computation due to the element uniqueness problem.  
+    - Theoretical improvements exist for datasets where the mode is large, leveraging median computations.  
+  - **Implementations and notes**
+    - The C++ STL provides a linear expected-time selection method (nth_element).  
+    - The expected-time median algorithm was introduced by Hoare (1961).  
+    - Further reading on median and selection includes [CLRS01](https://example.org), [Raw92](https://example.org), and streaming algorithms surveyed by [Muthukrishnan05](https://example.org).  
+    - Theoretical and combinatorial bounds are given by Dor and Zwick (1999, 2001) and others.  
+  - **Related problems**
+    - Related concepts include priority queues and sorting algorithms as foundational tools.

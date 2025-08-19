@@ -1,106 +1,78 @@
-[Representative image](ADM-AlgorithmDesignManual.best.png)
+![ADM-AlgorithmDesignManual](ADM-AlgorithmDesignManual.best.png)
 
 - **Preface**
-  - The book provides practical techniques and resources for algorithm design aimed at both students and professionals.
-  - Key features include a catalog of algorithmic problems, real-world "war stories," and an electronic component with code resources.
-  - The book emphasizes modeling applications to known problems rather than developing new algorithms from scratch.
-  - Pedagogical improvements include expanded discussion, false starts, "Stop and Think" problems, and links to programming challenges.
-  - Further references include [The Algorithm Design Manual](https://www.springer.com/gp/book/9781848000698).
-- **Contents**
-  - **I Practical Algorithm Design**
-    - **1 Introduction to Algorithm Design**
-      - Defines algorithms and algorithmic problems with examples such as sorting.
-      - Describes desirable algorithm properties: correctness, efficiency, and ease of implementation.
-      - Introduces heuristic vs. exact algorithms with examples: Robot Tour Optimization (TSP) and Movie Scheduling.
-      - Establishes importance of reasoning about correctness and problem modeling.
-    - **1.1 Robot Tour Optimization**
-      - Presents the Traveling Salesman Problem (TSP) as finding the shortest cycle visiting all points.
-      - Discusses nearest-neighbor and closest-pair heuristics, highlighting their failures on certain instances.
-      - Explores exhaustive search as a guaranteed correct but impractical solution due to factorial runtime.
-      - Emphasizes difference between heuristics and algorithms.
-    - **1.2 Selecting the Right Jobs**
-      - Introduces the Movie Scheduling Problem for selecting the maximal set of non-overlapping intervals.
-      - Shows that naive heuristics like earliest-job-first or shortest-job-first may fail.
-      - Presents an optimal greedy algorithm selecting jobs by earliest completion time.
-      - Highlights importance of counterexamples to verify algorithm correctness.
-    - **1.3 Reasoning about Correctness**
-      - Explains the necessity of precise algorithm descriptions and formal or informal proofs.
-      - Discusses problem specifications needing clear inputs and output properties.
-      - Stresses that counterexamples disprove algorithm correctness.
-      - Advises on techniques for finding counterexamples: thinking small, exhaustively, focusing on ties and extremes.
-      - Covers induction and recursion as key proof techniques, illustrated by insertion sort and a recursive increment function.
-    - **1.4 Modeling the Problem**
-      - Defines modeling as formulating real-world problems in terms of well-studied combinatorial structures.
-      - Lists common structures: permutations, subsets, trees, graphs, points, polygons, and strings.
-      - Shows recursive nature of these structures and their decompositions.
-      - Emphasizes that proper modeling facilitates finding existing algorithmic solutions.
-    - **1.5 About the War Stories**
-      - War stories illustrate real-world algorithm design experiences.
-      - They provide practical insight into applying algorithms under actual conditions.
-      - The stories reference catalog problems to demonstrate modeling benefits.
-    - **1.6 War Story: Psychic Modeling**
-      - Describes a real project involving lottery ticket selection modeled as a set cover problem.
-      - Shows how initial incorrect problem modeling led to suboptimal results.
-      - Demonstrates the importance of validating models on small examples before implementation.
-      - Applies ranking/unranking of subsets, bit vector data structures, and combinatorial search heuristics.
-      - Resulted in heuristic solutions guiding commercial lottery ticket optimization.
-    - **1.7 Exercises**
-      - Contains exercises on counterexamples, proofs of correctness, induction, summations, estimations, implementation, and interview problems.
-      - Includes links to programming challenges at [programming-challenges.com](http://www.programming-challenges.com).
-  - **II The Hitchhiker’s Guide to Algorithms**
-    - **11 A Catalog of Algorithmic Problems**
-      - Serves as a reference to 75 important algorithm problems from literature.
-      - Provides input/output specifications and known results for each problem.
-    - **12 Data Structures**
-      - Surveys key data structures: dictionaries, priority queues, suffix trees, graph structures, set structures, and kd-trees.
-      - Explains their algorithmic uses and implementation considerations.
-    - **13 Numerical Problems**
-      - Covers fundamental numerical algorithms including solving linear equations, matrix operations, optimization, linear programming, random number generation, factoring, and discrete Fourier transform.
-    - **14 Combinatorial Problems**
-      - Details problems related to sorting, searching, median selection, permutations, subsets, partitions, graph generation, calendrical calculations, and scheduling.
-    - **15 Graph Problems: Polynomial-Time**
-      - Explores polynomial-time solvable graph problems such as connected components, topological sorting, minimum spanning trees, shortest paths, transitive closure, matching, Eulerian circuits, connectivity, network flows, and planar graph drawing.
-    - **16 Graph Problems: Hard Problems**
-      - Describes NP-hard graph problems including clique, independent set, vertex cover, traveling salesman, Hamiltonian cycle, graph partition, coloring, graph isomorphism, Steiner trees, and feedback sets.
-    - **17 Computational Geometry**
-      - Discusses geometric algorithms: convex hull, triangulation, Voronoi diagrams, nearest neighbor, range searching, point location, intersection detection, bin packing, medial axis transform, polygon partitioning, polygon simplification, shape similarity, motion planning, line arrangements, and Minkowski sums.
-    - **18 Set and String Problems**
-      - Covers problems related to set cover, set packing, string matching, approximate string matching, text compression, cryptography, finite state machine minimization, longest common substring/subsequence, shortest common superstring.
-    - **19 Algorithmic Resources**
-      - Provides references to software systems, data sources, online bibliographies, and consulting services related to algorithms.
-- **Chapter 1: Introduction to Algorithm Design**
-  - Algorithm defined as procedure to solve a well-specified problem with general instances and output.
-  - Sorting used as prototypical example illustrating algorithm correctness and generality.
-  - Three desirable algorithm properties are correctness, efficiency, and implementability.
-  - Algorithms differ from heuristics by providing correctness guarantees.
-- **Section 1.1 Robot Tour Optimization**
-  - Formulates TSP as shortest cycle visiting all points in plane.
-  - Nearest-neighbor heuristic visits closest next unvisited point but can produce suboptimal tours.
-  - Closest-pair heuristic considers endpoints of chains but also fails on some inputs.
-  - Exhaustive enumeration ensures shortest tour but is factorial-time and impractical.
-- **Section 1.2 Selecting the Right Jobs**
-  - Movie scheduling problem: select maximal compatible subset of interval jobs.
-  - Heuristics like earliest start or shortest job first may fail due to job overlap.
-  - Optimal scheduling selects jobs by earliest completion time and removes conflicting jobs.
-  - Efficient, correct algorithms can be found by analyzing problem structure.
-- **Section 1.3 Reasoning about Correctness**
-  - Formal proofs have explicit statements, assumptions, reasoning chains, and a conclusion.
-  - Algorithm expression uses English, pseudocode, or programming language with appropriate clarity.
-  - Problem specification must define precise inputs and output properties.
-  - Counterexamples defeat incorrect algorithms and should be simple and verifiable.
-  - Induction and recursion provide frameworks to prove correctness, paying attention to base cases and incremental steps.
-- **Section 1.4 Modeling the Problem**
-  - Abstracting real-world problems into combinatorial structures enables reusing known algorithms.
-  - Structures include permutations, subsets, trees, graphs, points, polygons, strings.
-  - Recursive decomposition of such structures guides algorithm design.
-- **Section 1.5 About the War Stories**
-  - Real-world experience examples demonstrating application of algorithms.
-  - They aid understanding how algorithm design applies to practical problems.
-- **Section 1.6 War Story: Psychic Modeling**
-  - Lottery ticket problem modeled as set cover with parameters controlling ticket size and coverage.
-  - Initial mis-modeling led to incorrect solutions.
-  - Adjusting coverage criteria and using bit vectors and combinatorial search improved results.
-  - Illustrates importance of model validation before coding.
-- **Section 1.7 Exercises**
-  - Exercises test understanding of counterexamples, proofs, induction, summation, estimation, and implementation.
-  - Includes interview and programming challenge problems.
+  - The book stresses the importance of algorithm design techniques and resources for practical computer science.
+  - Three key features highlighted are a catalog of algorithmic problems, war stories illustrating real-world applications, and electronic resources for implementations.
+  - Emphasis is placed on design over formal mathematical analysis.
+  - The book is intended for students and professionals, suitable for traditional and active learning courses.
+  - Further reading includes [The Algorithm Design Manual website](http://www.cs.sunysb.edu/~algorith) and Cormen et al. [CLRS01].
+
+- **I Practical Algorithm Design**
+  - **1 Introduction to Algorithm Design**
+    - Defines algorithms in terms of problem instances and solutions, emphasizing correctness and implementation ease.
+    - Presents practical examples such as robot tour optimization (Traveling Salesman Problem) and movie scheduling.
+    - Explains the difference between heuristics and guaranteed algorithms.
+    - Discusses techniques to reason about correctness, including proofs, counterexamples, induction, and recursive structures.
+    - Highlights the critical role of modeling problems using common combinatorial objects like permutations, subsets, graphs, trees, and strings.
+    - War stories illustrate real applications of algorithm design principles.
+    - Further reading: Bentley’s Programming Pearls [Ben90], Gries [Gri89].
+  
+  - **2 Algorithm Analysis**
+    - Introduces the RAM model as a machine-independent model for analyzing algorithms.
+    - Defines best-case, worst-case, and average-case complexities.
+    - Presents the Big Oh notation as a tool to express asymptotic upper bounds on algorithm running times, emphasizing worst-case for robustness.
+    - Formalizes Big Oh, Omega, and Theta notation with constants and threshold values.
+    - Provides examples and clarifies the meaning and use of Big Oh notation.
+    - Further reading: [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms) by Cormen et al.
+
+  - **3 Data Structures**
+    - (Not provided in the excerpt, no summary available)
+
+  - **4 Sorting and Searching**
+    - (Not provided in the excerpt, no summary available)
+
+  - **5 Graph Traversal**
+    - (Not provided in the excerpt, no summary available)
+
+  - **6 Weighted Graph Algorithms**
+    - (Not provided in the excerpt, no summary available)
+
+  - **7 Combinatorial Search and Heuristic Methods**
+    - (Not provided in the excerpt, no summary available)
+
+  - **8 Dynamic Programming**
+    - (Not provided in the excerpt, no summary available)
+
+  - **9 Intractable Problems and Approximation Algorithms**
+    - (Not provided in the excerpt, no summary available)
+
+  - **10 How to Design Algorithms**
+    - (Not provided in the excerpt, no summary available)
+
+- **II The Hitchhiker’s Guide to Algorithms**
+  - **11 A Catalog of Algorithmic Problems**
+    - (Not provided in the excerpt, no summary available)
+
+  - **12 Data Structures**
+    - (Not provided in the excerpt, no summary available)
+
+  - **13 Numerical Problems**
+    - (Not provided in the excerpt, no summary available)
+
+  - **14 Combinatorial Problems**
+    - (Not provided in the excerpt, no summary available)
+
+  - **15 Graph Problems: Polynomial-Time**
+    - (Not provided in the excerpt, no summary available)
+
+  - **16 Graph Problems: Hard Problems**
+    - (Not provided in the excerpt, no summary available)
+
+  - **17 Computational Geometry**
+    - (Not provided in the excerpt, no summary available)
+
+  - **18 Set and String Problems**
+    - (Not provided in the excerpt, no summary available)
+
+  - **19 Algorithmic Resources**
+    - (Not provided in the excerpt, no summary available)

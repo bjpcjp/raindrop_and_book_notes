@@ -1,43 +1,35 @@
-[Representative image](ADM-ch17-geometry-voronoi-diagrams.best.png)
+![ADM-ch17-geometry-voronoi-diagrams](ADM-ch17-geometry-voronoi-diagrams.best.png)
 
 - **Voronoi Diagrams**
-  - **Input description**
-    - The input is a set S of points p1, ..., pn.
-    - These points serve as the sites for constructing Voronoi regions.
-    - Voronoi diagrams partition space so that every region contains points closest to a specific site.
-  - **Problem description**
-    - Space is decomposed into regions around each point where all points are closer to that point than any other in S.
-    - The goal is to define cells that represent regions of influence around each site.
+  - **Input and Problem Description**
+    - Input consists of a set S of points \( p_1, \ldots, p_n \).
+    - The problem is to partition space into regions where each region contains points closest to a specific \( p_i \) than any other point in S.
+    - Voronoi diagrams represent the region of influence around each given site.
   - **Applications**
-    - Nearest neighbor search uses Voronoi cells to find closest points.
-    - Facility location can be optimized by placing new sites at Voronoi vertices to maximize distance to existing sites.
-    - Largest empty circle problem finds maximal empty regions centered at Voronoi vertices.
-    - Path planning utilizes Voronoi edges to maximize obstacle clearance.
-    - Quality triangulations are related to Delaunay triangulations, duals of Voronoi diagrams, which maximize minimum angles.
-    - See Section 17.5 for nearest neighbor search and Section 17.3 for triangulations.
-  - **Construction methods**
-    - Edges are segments of perpendicular bisectors between sites.
-    - Randomized incremental construction inserts sites in random order, impacting few regions each time.
-    - Fortune’s sweepline algorithm is optimal (Θ(n log n)) and widely used.
-    - This algorithm projects sites into cones in 3D and reprojects to 2D to obtain Voronoi diagrams.
-  - **High-dimensional relationships**
-    - Delaunay triangulations in d dimensions correspond to convex hulls in d+1 dimensions.
-    - Mapping points (x1, ..., xd) to (x1, ..., xd, Σ x_i²) allows constructing Voronoi diagrams from convex hulls.
-    - Refer to Section 17.2 for higher-dimensional convex hull algorithms.
+    - Nearest neighbor search is performed by locating the Voronoi cell containing a query point.
+    - Facility location problems use Voronoi vertices to position new sites that maximize distance from existing ones.
+    - Largest empty circle centers correspond to Voronoi vertices, useful for locating large undeveloped areas.
+    - Path planning leverages edges of Voronoi diagrams to maximize distance from obstacles.
+    - Quality triangulations arise by using the Delaunay triangulation, the Voronoi diagram’s dual, which maximizes minimum angles.
+  - **Construction Methods**
+    - Each Voronoi edge is part of the perpendicular bisector between two points in S.
+    - Randomized incremental construction adds sites in random order, affecting few regions per insertion.
+    - Fortune’s sweepline algorithm constructs diagrams in optimal \( \Theta(n \log n) \) time with a reasonable implementation complexity.
+    - Construction relates to convex hulls in \(d+1\) dimensions via projection, aiding higher-dimensional diagrams.
   - **Variations**
-    - Non-Euclidean metrics adapt Voronoi diagrams for alternative distance measures like driving time on roads.
-    - Power diagrams incorporate site power to model variable influence regions, e.g., radio transmission maps.
-    - Kth-order Voronoi diagrams partition space by sets of k nearest points; furthest-site diagrams use distance to the furthest point.
-    - Point location methods on these diagrams enable efficient queries.
+    - Non-Euclidean metrics adjust Voronoi diagrams to consider factors like road networks and travel time.
+    - Power diagrams assign differing influence powers to sites, modeling scenarios like radio station coverage.
+    - \(k\)th-order and furthest-site diagrams partition space by sets of \(k\) closest or furthest points.
   - **Implementations**
-    - Fortune’s Sweep2 code in C is a standard 2D implementation available from Netlib.
-    - C++ libraries CGAL and LEDA provide Voronoi and Delaunay triangulation algorithms in 2D and 3D.
-    - Qhull is a popular C program for convex hulls, Delaunay triangulations, and Voronoi vertices in dimensions 2 to 8.
-    - Ken Clarkson’s Hull code offers additional higher-dimensional convex hull construction.
-  - **Historical notes**
-    - Voronoi diagrams, also known as Dirichlet tessellations, were initially studied by Dirichlet in 1850.
-    - G. Voronoi published seminal work in 1908; naming conventions reflect the last discoverer.
-    - Key surveys include [Aurenhammer 1991] and [Fortune 2004] for diagram variants and construction algorithms.
-    - The first O(n log n) divide-and-conquer algorithm is due to Shamos and Hoey (1975).
-    - The relationship between Delaunay triangulations and convex hulls is detailed in [de Berg et al. 2000] and [O’Rourke 2001].
-    - Further references include [Okabe et al. 2000] for comprehensive coverage and [Megiddo 1983] for linear-time smallest enclosing circle algorithms.
+    - Fortune’s Sweep2 is a popular C implementation for 2D Voronoi diagrams.
+    - The CGAL and LEDA libraries offer C++ tools for 2D and 3D diagrams and triangulations.
+    - Higher-dimensional diagrams can be constructed using convex hull software like Qhull and Hull.
+    - Qhull handles dimensions up to about eight and constructs Delaunay triangulations, Voronoi vertices, and related structures.
+  - **Historical Notes and References**
+    - Voronoi diagrams, also called Dirichlet tessellations, were first studied by Dirichlet (1850) and later by Voronoi (1908).
+    - Early \( O(n \log n) \) algorithms by Shamos and Hoey use divide-and-conquer.
+    - Fortuna’s sweepline algorithm and the convex hull connection with Delaunay triangulations are well documented.
+    - Complete treatments and surveys include works by Okabi et al., Aurenhammer, Fortune, and others.
+    - \(k\)th-order diagrams can be constructed in \( O(n^3) \) time, with point location enabling \(k\)-nearest neighbor queries efficiently.
+    - The smallest enclosing circle problem relates to high-order Voronoi diagrams and has linear-time solutions based on low-dimensional linear programming.
+    - Relevant external resources: [Fortune’s sweepline algorithm](http://www.netlib.org/voronoi/), [Qhull](http://www.qhull.org/), [CGAL](https://www.cgal.org), [Aurenhammer survey](https://doi.org/10.1007/3-540-09489-9_4).

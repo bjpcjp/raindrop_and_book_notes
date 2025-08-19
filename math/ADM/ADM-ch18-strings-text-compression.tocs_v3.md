@@ -1,64 +1,39 @@
-[Representative image](ADM-ch18-strings-text-compression.best.png)
+![ADM-ch18-strings-text-compression](ADM-ch18-strings-text-compression.best.png)
 
 - **Text Compression**
-  - **Input description**
-    - The input is a text string S that must be compressed.
-    - The goal is to create a shorter string S' from which S can be exactly reconstructed.
-    - Compression addresses limitations of secondary storage and network bandwidth.
-    - Further reading: [Sayood, Data Compression Book](https://example.org)
-  - **Problem description**
-    - Data compression aims to find space-efficient encodings for files.
-    - The rise of networks increased the importance of reducing transmission bits.
-    - Compression methods range from ad hoc to general algorithms.
-    - Further reading: [Maximum Compression](http://www.maximumcompression.com/)
-  - **Issues in selecting a compression algorithm**
-    - **Lossy vs. Lossless encoding**
-      - Lossless encodings are needed for document storage to ensure fidelity.
-      - Lossy compression sacrifices exact recovery but achieves higher compression.
-      - Lossy methods suit images, video, and audio where minor artifacts are imperceptible.
-      - Further reading: [Salomon, Data Compression](https://example.org)
-    - **Data simplification before compression**
-      - Preprocessing such as removing whitespace or formatting can improve compression.
-      - The Burrows-Wheeler transform rearranges input to increase compressibility.
-      - It sorts cyclic shifts and uses the last character of each sorted shift.
-      - The transform is reversible and yields 10–15% better compression often.
-      - Further reading: [Burrows-Wheeler transform](https://example.org)
-    - **Patent considerations**
-      - Some algorithms like LZW were patented but may now be expired.
-      - Selecting non-patented variants often yields comparable performance.
-      - Legal status influences algorithm adoption.
-    - **Compressing image data**
-      - Run-length encoding is a simple lossless method for images with large uniform regions.
-      - Its effectiveness depends on bit allocation and image traversal order.
-      - For advanced media, standards like JPEG and MPEG are recommended.
-      - Further reading: [JPEG compression](https://example.org)
-    - **Real-time compression requirements**
-      - Decompression speed often outweighs compression speed in importance.
-      - Systems like operating systems require fast, symmetric compression/decompression.
-      - Streaming applications prioritize rapid decoding.
-  - **Text compression algorithm classes**
-    - **Static algorithms (Huffman codes)**
+  - **Input Description**
+    - The input is a text string S.
+    - The goal is to produce a shorter text string S′ that can be losslessly reconstructed to S.
+  - **Problem Description**
+    - Data compression aims to find space-efficient encodings for data files.
+    - Increased data volume and network usage drive interest in compression.
+    - Compression reduces storage requirements and effective transmission bandwidth.
+  - **Discussion**
+    - Compression methods vary between lossy and lossless, depending on fidelity requirements.
+    - Preprocessing, such as removing redundancy or applying transforms like Burrows-Wheeler, can improve compression effectiveness.
+    - Patent restrictions affect algorithm choice; some patents have expired while others remain contentious.
+    - Simple methods like run-length coding suit some image data but fail on noisy images.
+    - Real-time compression requires balancing speed and compression ratio, with decompression often prioritized for speed.
+  - **Text Compression Algorithms**
+    - **Static Algorithms**
+      - Build a coding table from the entire document before encoding.
       - Huffman codes assign variable-length codes based on symbol frequency.
-      - The code tree is built using a greedy algorithm in O(n log n) time.
-      - They require two passes: one to build codes and another to encode.
-      - Disadvantages include storing code tables and limited redundancy exploitation.
-      - Further reading: [Huffman coding](https://example.org)
-    - **Adaptive algorithms (Lempel-Ziv)**
-      - Lempel-Ziv builds coding tables dynamically as text is read.
-      - It adapts to local character distributions and encodes frequent substrings.
-      - Encoders and decoders stay synchronized via clever protocols.
-      - It is highly robust across data types and generally hard to outperform.
-      - Further reading: [Lempel-Ziv algorithm](https://example.org)
+      - Requires two passes over data and storing the coding table with the output.
+      - Best suited for nonuniform symbol distributions but limited on higher-order redundancy.
+      - See [CLRS Book](https://mitpress.mit.edu/books/introduction-algorithms) for foundational Huffman coding.
+    - **Adaptive Algorithms**
+      - Build and update coding tables dynamically during encoding and decoding.
+      - Lempel-Ziv algorithms adapt to local character distributions and capture frequent substrings.
+      - Can achieve robust compression across varied data types and adapt to locality in text.
+      - Widely deployed in popular tools like gzip.
+      - Original algorithms described in [Lempel-Ziv papers](https://ieeexplore.ieee.org/document/1054015).
   - **Implementations**
-    - gzip is a popular Lempel-Ziv variant under GNU license.
-    - bzip2 uses the Burrows-Wheeler transform and offers tighter compression at the cost of speed.
-    - High-compression algorithms expend significant run-time for marginal gains.
-    - Further reading: [gzip official site](http://www.gzip.org)
-  - **Notes and research**
-    - Key texts include Sayood [Say05], Salomon [Sal06], and Bell, Cleary, and Witten [BCW90].
-    - Surveys and foundational papers are available for Huffman, Lempel-Ziv, and Burrows-Wheeler.
-    - The IEEE Data Compression Conference is the premier research venue.
-    - Further reading: [IEEE Data Compression Conference](http://www.cs.brandeis.edu/~dcc/)
-  - **Related problems**
-    - Connections exist to shortest common superstring problems.
-    - Cryptography shares conceptual overlaps with data compression techniques.
+    - gzip uses an LZ variant and is available under GNU license.
+    - bzip2 uses Burrows-Wheeler transform for better compression at the cost of speed.
+    - Advanced compressors maximize compression but at high computational cost.
+    - Various implementations and comparisons listed at [Maximum Compression](http://www.maximumcompression.com).
+  - **Notes and References**
+    - Foundational texts include Sayood [Say05] and Salomon [Sal06].
+    - Classical references include Bell, Cleary, and Witten [BCW90].
+    - Research and updates published at the IEEE Data Compression Conference [DCC](http://www.cs.brandeis.edu/~dcc).
+    - The Burrows-Wheeler transform introduced in [BW94].

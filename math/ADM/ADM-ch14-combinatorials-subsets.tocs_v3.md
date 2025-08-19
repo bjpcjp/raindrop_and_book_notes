@@ -1,41 +1,32 @@
-[Representative image](ADM-ch14-combinatorials-subsets.best.png)
+![ADM-ch14-combinatorials-subsets](ADM-ch14-combinatorials-subsets.best.png)
 
-- **14.5 Generating Subsets**
-  - **Problem Description**
-    - The problem is to generate all, a random, or the next subset of the integers {1, ..., n}.
-    - Subsets represent selections of objects where order does not matter.
-    - Many algorithmic problems rely on finding optimal or particular subsets.
-  - **Subset Counting and Order**
-    - There are 2^n distinct subsets of an n-element set including the empty and full sets.
-    - Subset generation grows exponentially but slower than permutations (n!).
-    - Maintaining subsets in sorted or canonical order improves testing equality.
-  - **Primary Subset Sequence Methods**
-    - **Lexicographic Order**
-      - Sort subsets in natural sorted order but can be difficult to generate efficiently.
-      - For {1,2,3}, lex order is {}, {1}, {1,2}, {1,2,3}, {1,3}, {2}, {2,3}, {3}.
-    - **Gray Code Order**
-      - Adjacent subsets differ by exactly one element insertion or deletion.
-      - Constructed recursively by reflecting and adding the nth element.
-      - Enables efficient exhaustive search updates by changing one element at a time.
-    - **Binary Counting**
-      - Represents each subset as n-bit binary string indicating element inclusion.
-      - Generates subsets by counting from 0 to 2^n−1 and mapping bits to elements.
-      - Supports easy generation of all, next, previous, and random subsets via bit operations.
-  - **Related Generation Problems**
-    - **K-Subsets**
-      - Generate subsets exactly of size k, fewer than the total 2^n subsets.
-      - Typically generated in lexicographic order using ranking functions based on smallest elements.
-    - **Strings**
-      - Subset generation is equivalent to producing all 2^n true/false strings.
-      - Techniques apply to alphabets of size α with α^n total strings.
+- **14. COMBINATORIAL PROBLEMS**
+  - **14.5 GENERATING SUBSETS**
+    - There are 2ⁿ subsets of an n-element set, including the empty set and the full set itself.  
+    - Subsets have no implied order among elements, but maintaining sorted order simplifies comparison.  
+    - Three primary sequence orders for generating subsets are lexicographic, Gray code (minimum change), and binary counting.  
+    - Lexicographic order is natural but difficult to generate; Gray code optimizes by changing one element at a time; binary counting maps subsets directly to n-bit binary numbers.  
+    - Generating random subsets can be done by random integer selection or independent coin flips per element; the coin flip method avoids bias.  
+  - **Generation Variants**
+    - **K-subsets**  
+      - K-subsets contain exactly k elements and are fewer than all subsets.  
+      - Lexicographic generation facilitates ranking and efficient subset retrieval.  
+      - Recursive approaches determine subset elements based on counts of smaller subsets.  
+    - **Strings**  
+      - Generating all subsets is equivalent to generating all 2ⁿ strings of true/false values.  
+      - Techniques generalize to generating strings over alphabets of size α, producing αⁿ total strings.  
   - **Implementations and Resources**
-    - Kreher and Stinson provide C implementations for subsets and k-subsets including lexicographic and Gray code orders.
-    - The Combinatorial Object Server offers interactive generation and source code in multiple languages.
-    - Nijenhuis and Wilf provide efficient Fortran algorithms for random and sequential generation of subsets and k-subsets.
-    - Combinatorica package for Mathematica includes algorithms for subsets and strings in various orders.
-    - Primary references: Knuth [Knu05b], Kreher & Stinson [KS99], Ruskey [Rus03], Wilf [Wil89].
-  - **Gray Code Background**
-    - Originally developed to robustly transmit digital signals by minimizing single-bit changes.
-    - Corresponds to Hamiltonian cycles on an n-dimensional hypercube.
-    - Savage's survey details Gray codes for many combinatorial objects.
-    - Gray code concepts are applied in puzzle solutions like the Spinout puzzle by ThinkFun.
+    - Kreher and Stinson [KS99] provide C implementations for subsets and k-subsets including lex and Gray code orders, available online.  
+    - The Combinatorial Object Server offers interactive tools and implementations in C, Pascal, and Java for combinatorial objects.  
+    - C++ combinatorics package by Frank Th. Janusz includes subset and combination generation routines.  
+    - Nijenhuis and Wilf [NW78] offer efficient Fortran implementations and random subset/k-subset generation; see ACM Algorithm 515 [BL77] for lex k-subsets.  
+    - Mathematica's Combinatorica package supports random and sequenced subsets in various orders; details in Section 19.1.9.  
+    - Knuth [Knu05b] is the foundational reference on subset generation algorithms.  
+  - **Gray Codes**
+    - Gray codes list subsets so that successive subsets differ by exactly one element insertion or deletion.  
+    - They allow efficient exhaustive search algorithms that update coverage incrementally.  
+    - Constructed recursively by reflecting and appending elements, Gray codes link to Hamiltonian cycles on hypercubes.  
+    - Originally invented to improve analog signal robustness, Gray codes have broad combinatorial utility.  
+    - Savage [Sav97] offers an extensive survey of Gray code applications and theory.  
+  - **Related Problems**
+    - Connection to permutation generation and partition generation, referenced in adjacent sections.

@@ -1,38 +1,34 @@
-[Representative image](ADM-ch17-geometry-intersections.best.png)
+![ADM-ch17-geometry-intersections](ADM-ch17-geometry-intersections.best.png)
 
-- **17.8 Intersection Detection**
-  - **Input Description**
-    - The input consists of a set S of lines and line segments or a pair of polygons/polyhedra.
-    - The goal is to identify which line segment pairs intersect or find the intersection of two polygons or polyhedra.
-    - Intersection detection is critical for applications requiring immediate identification of intersections, such as virtual-reality simulations.
-  - **Applications and Issues**
-    - Intersection detection prevents unrealistic scenarios in virtual reality, like passing through walls.
-    - Important in VLSI design-rule checking to detect errors such as crossing metal strips before fabrication.
-    - Several factors influence algorithms: detection versus computation, types of intersecting objects, and expected number of intersections.
-  - **Algorithmic Considerations**
-    - Detecting intersection existence is often simpler than computing exact intersection points.
-    - Intersecting lines differ from line segments; lines intersect at one point, whereas segment intersection is more complex.
-    - Output-sensitive algorithms run in O(n log n + k) time, where k is the number of intersections, often using planar sweepline techniques.
-  - **Special Cases and Extensions**
-    - Visibility queries translate to line segment intersection problems.
-    - Intersection of convex polygons runs in O(n + m) time and is simpler than for nonconvex polygons, which may yield disconnected, complex intersections.
-    - Polyhedra intersection is complicated as they can intersect without edge intersections.
-  - **Repeated Intersection Searches and Optimizations**
-    - In scenarios with static scenes and moving objects, bounding simpler enclosing objects like boxes improve efficiency.
-    - Intersection checks first test these bounding boxes before detailed geometric checks.
-  - **Planar Sweep Algorithm**
-    - Sweeping a vertical line from left to right manages events: insertion, deletion, and intersection of segments.
-    - An event queue (priority queue) and horizon data structure (balanced tree) manage the sweep line status.
-    - Convex polygon intersections simplify sweepline implementation, requiring fewer data structure needs.
-  - **Implementations and Software**
-    - Libraries such as LEDA and CGAL implement the Bentley-Ottmann algorithm for line segment intersection in O((n + k) log n) time.
-    - Robust C programs exist for convex polygon intersection as documented by O’Rourke.
-    - Collision detection libraries like SWIFT++ efficiently detect intersections and distances among polyhedral models.
-    - Qhull software computes mutual intersections of half-spaces and convex hulls in general dimensions.
-  - **Additional Notes and References**
-    - Mount provides a comprehensive survey on intersection algorithms.
-    - Foundational texts include [dBvKOS00](#), [CLRS01](#), [PS85](#), with special cases like rectangle intersections detailed by Preparata and Shamos.
-    - Optimal O(n log n + k) algorithms by Chazelle and Edelsbrunner exist, with simpler randomized approaches covered by Mulmuley.
-    - Lin and Manocha survey collision detection techniques and software.
-  - **Related Problems**
-    - Intersection detection relates closely to maintaining arrangements and motion planning.
+- **Intersection Detection**
+  - **Input Description and Problem Statement**
+    - Input consists of sets of lines, line segments, or pairs of polygons/polyhedra.
+    - The problem is to identify intersecting pairs of line segments or the intersection of polyhedra/polygons.
+    - Intersection detection is crucial for applications such as virtual-reality collision detection and VLSI layout checking.
+  - **Issues in Intersection Detection**
+    - Distinguishes between detecting intersection existence versus computing exact intersections.
+    - Intersection behavior differs between infinite lines (one intersection if slopes differ) and line segments (more complex).
+    - Algorithms exist with output-sensitive runtimes depending on number of intersections (k), e.g., O(n log n + k).
+    - Visibility queries reduce to line-segment intersection problems in obstacle environments.
+    - Convex shapes allow more efficient intersection algorithms, with O(n + m) time for convex polygon intersections.
+    - Nonconvex polygons may have disconnected intersections and potentially quadratic complexity.
+    - Polyhedra intersection is more complex as intersections can occur without edge intersection.
+    - Repeated intersection queries benefit from enclosing simple bounding objects (e.g., boxes) for efficiency.
+  - **Planar Sweep Algorithms**
+    - Use a vertical sweep line moving left to right to detect intersections efficiently.
+    - Events processed include insertion (segment start), deletion (segment end), and intersection (segments swap).
+    - Data structures used: event queue (priority queue by x-coordinate) and horizon data structure (balanced tree).
+    - For convex polygons, the sweep simplifies due to limited edges intersecting the sweep line and polygonal ordering.
+  - **Implementations and Resources**
+    - The Bentley-Ottmann algorithm finds all k intersections in O((n + k) log n) time.
+    - Libraries supporting intersection algorithms include LEDA and CGAL with C++ implementations.
+    - O’Rourke provides a robust C program for convex polygon intersection.
+    - UNC’s GAMMA group offers the SWIFT++ library for collision detection of rigid polyhedra.
+    - Qhull is the standard tool for finding convex hulls and half-space intersections.
+    - Further surveys and books include works by Mount, de Berg et al., and Preparata & Shamos.
+    - Advanced algorithms for line-segment intersection include Chazelle and Edelsbrunner’s optimal algorithm and Mulmuley’s randomized approaches.
+    - Lin and Manocha provide a comprehensive survey on collision detection techniques.
+    - [CGAL](https://www.cgal.org)
+    - [Bentley-Ottmann Algorithm](https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm)
+    - [Qhull](http://www.qhull.org/)
+    - [Mount Survey on Intersection Algorithms](https://doi.org/10.1007/s00454-004-1148-8)

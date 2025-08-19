@@ -1,40 +1,36 @@
-[Representative image](ADM-ch16-graph-partition.best.png)
+![ADM-ch16-graph-partition](ADM-ch16-graph-partition.best.png)
 
-- **Graph Partition**
-  - **Input Description**
-    - The input consists of a weighted graph \( G = (V, E) \) and integers \( k \) and \( m \).
-    - The goal is to partition the vertices into \( m \) roughly equal-sized subsets.
-    - The total edge cost spanning the subsets should not exceed \( k \).
-  - **Problem Description and Applications**
-    - Graph partitioning is essential for divide-and-conquer algorithms to break problems into equal-sized pieces.
-    - Minimizing edges cut in partitions simplifies merging solutions.
-    - It aids clustering by grouping “similar” vertices and improves data locality and visualization.
-    - Critical in parallel algorithms, such as finite element methods, to minimize interface size between partitions.
-  - **Flavors of Graph Partitioning**
-    - Minimum cut set: smallest edge set disconnecting the graph, efficiently found by network flow or randomized algorithms; may produce unbalanced partitions.
-    - Balanced graph partition: partitions vertices into roughly equal pieces with a small cut; this problem is NP-complete but heuristics work well.
-    - Maximum cut: finds the edge cut with maximum total weight, used in circuit communication modeling; also NP-complete.
-    - Special graphs like trees and planar graphs have known small separators, useful for decomposition.
-  - **Basic Approaches and Heuristics**
-    - Initial partitions are constructed randomly or using problem-specific strategies.
-    - Iterative improvement moves vertices to reduce cut size, evaluated by neighbors’ partition.
-    - Process may require multiple iterations due to dependencies on neighbors’ moves.
-    - Randomization techniques, especially simulated annealing, improve outcomes.
-    - Recursive application handles more than two partitions.
-  - **Spectral Partitioning Methods**
-    - Use linear algebra and the graph Laplacian’s eigenvectors for initial bi-partition.
-    - Spectral methods identify general partition areas effectively.
-    - Local optimization methods can refine spectral partitions.
+- **16.6 Graph Partition**
+  - **Input description**
+    - Input consists of a weighted graph G = (V, E) and integers k and m.
+    - The goal is to partition vertices into m roughly equal-sized subsets.
+    - The total edge cost spanning the subsets must be at most k.
+  - **Problem description**
+    - Partitioning aims to create roughly equal-sized pieces with minimal interconnecting edge costs.
+    - This supports efficient divide-and-conquer, data locality, and cleaner visualizations.
+    - Practical applications include clustering similar objects and parallel computations like finite element methods.
+  - **Discussion**
+    - Graph partitioning is NP-complete but heuristics yield practical solutions.
+    - Special graph classes (trees, planar graphs) have guaranteed small separators to aid partitioning.
+    - Variants include minimum cut set, balanced graph partition, and maximum cut, each with specific objectives.
+  - **Basic heuristic approach**
+    - Initial partitioning can be random or problem-specific.
+    - Vertex movement decisions depend on neighbor distribution and are repeated to reach a local optimum.
+    - Local optima may be far from global solutions; randomization (e.g., simulated annealing) improves results.
+    - For multiple partitions, recursive application of heuristics is recommended.
+  - **Spectral partitioning methods**
+    - Use eigenvectors of the Laplacian matrix, especially the second-lowest eigenvector, for bisection.
+    - Spectral methods locate good partition regions but benefit from local optimization refinement.
   - **Implementations**
-    - Chaco: widely used for parallel computing graph partitioning; implements Kernighan-Lin and spectral methods; [Chaco](http://www.cs.sandia.gov/~bahendr/chaco.html).
-    - METIS: efficient for large graphs, supports parallel and hypergraph partitioning; [METIS](http://glaros.dtc.umn.edu/gkhome/views/metis).
-    - Other notable tools include Scotch and JOSTLE.
-  - **Notes and References**
-    - Kernighan-Lin and Fiduccia-Mattheyses algorithms underpin local improvement heuristics.
-    - Spectral methods detailed in [Chu97, PSL90].
-    - Planar separator theorem by Lipton and Tarjan, with algorithms available [LT79, LT80].
-    - Random partitions expect to cut half the edges.
-    - Goemans-Williamson provide a 0.878-approximation for maximum cut via semidefinite programming [GW95].
-  - **Related Problems**
-    - Edge and vertex connectivity are related areas (page 505).
-    - Network flow is connected to minimum cut problems (page 509).
+    - Chaco provides multiple partitioning algorithms including Kernighan-Lin and spectral methods ([Chaco](http://www.cs.sandia.gov/~bahendr/chaco.html)).
+    - METIS scales to graphs over 1,000,000 vertices and has variants for parallel and hypergraph partitioning ([METIS](http://glaros.dtc.umn.edu/gkhome/views/metis)).
+    - Other implementations include Scotch ([Scotch](http://www.labri.fr/perso/pelegrin/scotch/)) and JOSTLE ([JOSTLE](http://staffweb.cms.gre.ac.uk/~wc06/jostle/)).
+  - **Notes**
+    - Fundamental heuristics derive from Kernighan-Lin and Fiduccia-Mattheyses algorithms.
+    - Spectral methods are detailed in [Chu97, PSL90].
+    - The planar separator theorem and efficient algorithms come from Lipton and Tarjan.
+    - Random vertex partitions cut about half the edges on average.
+    - Goemans and Williamson developed a 0.878-approximation algorithm for maximum cut using semidefinite programming ([Goemans-Williamson 1995](https://doi.org/10.1137/0222019)).
+  - **Related problems**
+    - Edge and vertex connectivity (see section 15.8).
+    - Network flow problems (see section 15.9).

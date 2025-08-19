@@ -1,45 +1,33 @@
-[Representative image](ADM-ch16-graphs-hard-cliques.best.png)
+![ADM-ch16-graphs-hard-cliques](ADM-ch16-graphs-hard-cliques.best.png)
 
-- **Clique Problem Overview**
-  - **Problem Description**
-    - The goal is to find the largest subset of vertices S such that every pair of vertices in S share an edge.
-    - Cliques represent complete subgraphs where all vertices are mutually adjacent.
-    - Real-world applications include detecting large groups of closely connected individuals or suspiciously similar tax returns.
-  - **Computational Complexity and Challenges**
-    - Finding a maximum clique is NP-complete and is hard to approximate within a factor of \(n^{1/2 - \epsilon}\).
-    - Worst-case difficulty of finding large cliques makes heuristic or approximate methods necessary.
-    - For theoretical foundations on complexity, see [Karp (1972)](section 9.3.3).
-
-- **Algorithmic Approaches and Heuristics**
-  - **Maximal Clique Heuristics**
-    - A maximal clique is one that cannot be expanded by adding any adjacent vertex.
-    - Sorting vertices by degree and greedily adding vertices adjacent to all clique members runs in \(O(n + m)\) time.
-    - Introducing randomness in vertex ordering and multiple trials can improve clique size.
-  - **Finding Large Dense Subgraphs**
-    - Instead of strict cliques, one can seek large subgraphs with the minimum vertex degree \( \geq k \).
-    - The largest such subgraph can be constructed by iteratively deleting vertices with degree less than \(k\).
-    - This algorithm runs in \(O(n + m)\) time and can yield dense but not necessarily complete subgraphs.
-  - **Algorithms for Planar Graphs**
-    - Planar graphs have maximum clique size 4 due to planarity constraints.
-    - Efficient algorithms check neighborhoods of low-degree vertices to identify small cliques (size 3 or 4).
-    - This iterative vertex removal exploiting planar properties reduces the problem efficiently.
-  - **Exact Clique-Finding via Backtracking**
-    - Exhaustive search uses pruning based on adjacency to avoid exploring impossible cliques.
-    - Upper bounds on clique size can be obtained from vertex degrees to reduce search space.
-    - Removing vertices below certain degree thresholds accelerates the search.
-    - Randomized heuristics such as simulated annealing may yield good solutions practically.
-
-- **Implementations and Resources**
-  - **Available Software and Challenges**
-    - The Cliquer library provides exact branch-and-bound clique algorithms in C ([Cliquer](http://users.tkk.fi/~pat/cliquer.html)).
-    - DIMACS Implementation Challenge produced various algorithms and datasets for clique and independent set problems, available via FTP from dimacs.rutgers.edu.
-    - Other programs include dfmax.c and dmclique.c adopting greedy or branch-and-bound strategies.
-  - **Additional Implementations**
-    - Kreher and Stinson’s C programs offer branch-and-bound algorithms with effective lower bounds ([Kreher & Stinson](http://www.math.mtu.edu/~kreher/cages/Src.html)).
-    - GOBLIN offers branch-and-bound algorithms capable of handling graphs up to 150–200 vertices ([GOBLIN](http://www.math.uni-augsburg.de/~fremuth/goblin.html)).
-  - **Further Reading and Surveys**
-    - Comprehensive surveys on maximum clique problems are available in Bomze et al. [BBPP99].
-    - Branch-and-bound optimization techniques and experimental results can be found in [JS01].
-    - Theoretical hardness of approximation was studied in [Håstad (1982)].
-    - See related problems: Independent Set (page 528) and Vertex Cover (page 530).
-    - For densest subgraph problem and applications to link spam detection, consult [GKT05] and heuristics in [AITT00].
+- **16.1 Clique**
+  - **Input description**
+    - The input is a graph \(G = (V, E)\) representing vertices and edges.
+  - **Problem description**
+    - The problem asks for the largest subset \(S \subseteq V\) where every pair \((x, y) \in S\) is connected by an edge.
+    - This represents a clique or a complete subgraph in the graph.
+  - **Discussion**
+    - Cliques represent groups of closely connected vertices, such as social cliques in a high school friendship graph.
+    - Identifying cliques can reveal clusters in related objects, with applications like detecting tax fraud by finding suspiciously similar tax forms.
+    - Finding the maximum clique is NP-complete and hard to approximate within \(n^{1/2 - \epsilon}\).
+  - **Approaches and heuristics**
+    - Finding a maximal clique can be done by sorting vertices by degree and greedily adding vertices adjacent to all current clique members in \(O(n+m)\) time.
+    - Large dense subgraphs are an alternative to cliques, found by repeatedly deleting vertices with degree less than \(k\) to generate high-degree subgraphs efficiently.
+    - In planar graphs, cliques larger than four cannot exist; algorithms check low-degree vertices exhaustively for small cliques.
+  - **Exact search methods**
+    - Exhaustive backtracking searches all vertex subsets, pruning early when adjacency fails.
+    - Upper bounds on clique size come from vertex degrees and ordering; vertices unlikely to be in the max clique are deleted first.
+    - Randomized heuristics like simulated annealing can find large cliques efficiently.
+  - **Implementations**
+    - Cliquer: A C library for weighted graphs using branch-and-bound, available at [Cliquer](http://users.tkk.fi/~pat/cliquer.html).
+    - Source codes from the DIMACS challenge implement branch-and-bound and greedy algorithms.
+    - Kreher and Stinson offer C branch-and-bound programs for maximum clique finding.
+    - GOBLIN provides algorithms for large cliques on graphs up to 150-200 vertices.
+  - **Notes**
+    - Bomze et al. provide a comprehensive survey on maximum cliques.
+    - The NP-completeness proof is by Karp, relating clique to vertex cover and independent set problems.
+    - The densest subgraph problem seeks subsets with highest average degree, solvable approximately by deleting low-degree vertices.
+    - Clique hardness of approximation is demonstrated under standard complexity assumptions.
+  - **Related Problems**
+    - Independent set (page 528)
+    - Vertex cover (page 530)

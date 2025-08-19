@@ -1,34 +1,38 @@
-[Representative image](ADM-ch15-graphs-connected-components.best.png)
+![ADM-ch15-graphs-connected-components](ADM-ch15-graphs-connected-components.best.png)
 
 - **Connected Components**
-  - **Input description**
+  - **Input description and problem statement**
     - The input is a directed or undirected graph G.
-    - The problem requires identifying distinct pieces or components where no path exists between some vertex pairs.
-  - **Problem description**
-    - Vertices x and y belong to different components if no path connects them.
-    - Connected components represent the pieces of the graph.
-  - **Discussion**
-    - Connected components cluster vertices that share paths.
-    - Finding connected components is key to identifying natural clusters and preprocessing for graph algorithms.
-    - Testing connectivity uses depth-first search (DFS) or breadth-first search (BFS), both operating in O(n + m) time.
-  - **Directed graph connectivity**
-    - Weak connectivity ignores edge direction and tests connectivity as if the graph were undirected.
-    - Strong connectivity requires a directed path between every pair of vertices.
-    - Testing weak connectivity is linear time by treating edges as undirected.
-    - Testing strong connectivity involves two DFS traversals of the graph and its edge-reversed version.
-    - The two-DFS algorithm labels vertices by finish times and identifies strongly connected components.
-  - **Other connectivity notions**
-    - Connectivity measures graph robustness to vertex or edge removal.
-    - Biconnected components separate the graph based on vertex cuts and can be found in linear time using DFS.
-    - Trees are connected acyclic undirected graphs and cycle detection uses DFS back edges.
-  - **Implementations**
-    - BFS and DFS are implemented in common graph libraries such as Boost Graph Library, LEDA, JUNG, and JGraphT.
-    - The book’s C language library includes connectivity algorithms like strongly connected and biconnected components.
-  - **Historical notes**
-    - DFS predates modern computing, originating in the 19th century for maze pathfinding.
-    - BFS was introduced by Moore in 1957 for shortest path problems.
-    - Tarjan pioneered linear-time DFS algorithms for strongly connected components.
-    - Kosaraju and Sharir developed simpler algorithms for strongly connected components.
+    - The problem is to identify components where vertices x and y belong to different components if no path exists between them.
+  - **Key concepts and applications**
+    - Two vertices are in the same component if there exists some path between them.
+    - Connected components identify natural clusters in sets of items based on similarity relationships modeled as edges.
+    - Testing connectivity is a fundamental preprocessing step in graph algorithms to avoid subtle bugs.
+  - **Algorithms for undirected graph connectivity**
+    - Depth-first search (DFS) or breadth-first search (BFS) can identify connected components by labeling discovered vertices with component numbers.
+    - The algorithm runs in O(n + m) time when using adjacency lists.
+  - **Connectivity in directed graphs**
+    - Weak connectivity disregards edge directions, while strong connectivity requires directed paths between every pair of vertices.
+    - Weakly connected components can be found by turning directed edges into undirected ones and applying DFS.
+    - Strong connectivity testing involves a two-DFS approach: one on the graph, one on the graph with reversed edges.
+    - Strongly connected components form unique partitions of the vertices.
+  - **Additional notions of connectivity**
+    - Biconnected components relate to graph vulnerability when removing vertices disconnects the graph.
+    - Biconnected components are found in linear time using DFS.
+  - **Identifying trees and cycles**
+    - A tree is a connected, cycle-free undirected graph with n − 1 edges for n vertices.
+    - DFS can detect cycles via back edges, which define directed cycles in directed graphs.
+    - Directed acyclic graphs (DAGs) have no cycles, making topological sorting applicable.
+  - **Implementations and tools**
+    - Graph implementations often include BFS and DFS to cover connectivity testing.
+    - C++ Boost Graph Library, LEDA, JUNG, and JGraphT provide implementations for connected and strongly connected components.
+    - The book’s accompanying library offers C implementations of basic connectivity algorithms.
+  - **Historical and academic notes**
+    - DFS dates back to the nineteenth century and was first used for maze pathfinding.
+    - BFS was first reported for shortest path discovery by Moore in 1957.
+    - Hopcroft and Tarjan established DFS as fundamental for efficient graph algorithms.
+    - The first linear-time strongly connected components algorithm is due to Tarjan; Sharir and Kosaraju devised a simpler two-DFS method.
+    - Further studies discuss improved algorithms for dense graphs and connectivity.
   - **Related problems**
-    - Connectivity relates to edge-vertex connectivity and shortest path problems.
-    - More information appears in sections on edge-vertex connectivity (page 505) and shortest paths (page 489).
+    - Edge-vertex connectivity and shortest path problems relate to connected components.
+    - See also [Boost Graph Library](http://www.boost.org/libs/graph/doc) for algorithm implementations.

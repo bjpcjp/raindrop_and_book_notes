@@ -1,32 +1,31 @@
-[Representative image](ADM-ch12-datastructs-graphs.best.png)
+![ADM-ch12-datastructs-graphs](ADM-ch12-datastructs-graphs.best.png)
 
-- **Graph Data Structures**
-  - **Basic Representations**
-    - The two fundamental graph representations are adjacency matrices and adjacency lists.
-    - Adjacency lists are generally preferred for most applications due to flexibility and efficiency.
-    - The choice depends on graph size, density, algorithms used, and whether the graph is dynamic.
-    - See [Section 5.2](page 151) for detailed explanations and C implementations of adjacency lists.
-  - **Choosing Data Structures**
-    - Graph size and density heavily influence the suitability of adjacency matrices versus lists.
-    - Dense graphs justify adjacency matrices despite their quadratic space usage.
-    - Algorithms like all-pairs shortest path suit adjacency matrices, while DFS favors adjacency lists.
-    - Static graphs benefit from space-saving packed arrays in adjacency lists.
-  - **Special Graph Types**
-    - Planar graphs have at most 3n−6 edges and should be represented with adjacency lists.
-    - Planar embeddings are best represented geometrically, with algorithms detailed in [Section 15.12](page 520).
-    - Hypergraphs generalize edges to connect multiple vertices, represented by incidence matrices or bipartite incidence structures.
-  - **Large and Hierarchical Graphs**
-    - Very large graphs require lean representations, such as bit vector-packed matrices or pointer-eliminating adjacency lists.
-    - Hierarchical decomposition clusters vertices into compressed subgraphs for scalable management.
-    - Natural decompositions are preferable over heuristic graph partition algorithms for large graphs.
+- **12.4 Graph Data Structures**
+  - **Input and Problem Description**
+    - The input is a graph G.
+    - The problem is to represent graph G using a flexible, efficient data structure.
+    - The two basic data structures for graphs are adjacency matrices and adjacency lists.
+  - **Choosing a Graph Data Structure**
+    - Adjacency matrices suit small or very dense graphs, while adjacency lists suit sparse or large graphs.
+    - Factors to consider include graph size, density, intended algorithms, and whether the graph will be modified.
+    - Attributes of vertices or edges are best stored as extra fields in adjacency list records.
+  - **Special Graph Types and Representations**
+    - Planar graphs are always sparse with at most 3n − 6 edges and are best represented by adjacency lists or geometrically if embeddings matter.
+    - Hypergraphs generalize graphs by allowing edges with more than two vertices and can be represented by incidence matrices or bipartite incidence structures.
+  - **Handling Very Large Graphs**
+    - Very large graphs require lean data structures, such as packed bit vectors or arrays to reduce pointer overhead.
+    - Hierarchical representations cluster vertices into subgraphs for compression and scalability.
+    - Natural or application-specific decompositions are preferred over heuristic partitions for large graphs.
   - **Implementations and Libraries**
-    - LEDA provides a comprehensive commercial graph library in C++.
-    - The Boost Graph Library offers generic C++ graph data structures and algorithms.
-    - JUNG, JDSL, and JGraphT are notable Java graph libraries with varied focuses and licenses.
-    - The Stanford Graphbase offers a flexible CWEB implementation useful for study.
-  - **Notes and Further Issues**
-    - Adjacency lists gained prominence with linear-time algorithms by Hopcroft and Tarjan.
-    - Compact static graph representations yield significantly improved algorithm performance.
-    - Bit-minimization of graph representations and dynamic graph algorithms are active research areas.
-    - Hierarchically-defined graphs appear commonly in VLSI design with specialized algorithms available.
-    - Consult [CLRS01], [AHU83], and [Tar83] for standard algorithms; [Ber89] for hypergraphs; and [SLL02](http://www.boost.org/libs/graph/doc) for Boost Graph Library.
+    - LEDA provides a high-quality C++ graph data type but is commercial.
+    - The Boost Graph Library offers open-source C++ implementations of adjacency lists, matrices, and edge lists.
+    - JUNG, JDSL, and JGraphT are popular Java graph libraries with algorithm support.
+    - The Stanford Graphbase offers a flexible graph data structure in CWEB.
+    - Other tools include the Programming Challenges library (C) and Combinatorica in Mathematica.
+  - **Research and Notes**
+    - Adjacency lists' efficiency is demonstrated by linear-time algorithms like those of Hopcroft and Tarjan.
+    - Compact static graph types speed up graph algorithms, as shown by Naher and Zlotowski.
+    - Minimizing bit representation of graphs and dynamic graph algorithms are active research areas.
+    - Hierarchically-defined graphs appear frequently in VLSI design and have specific algorithms for planarity testing, connectivity, and minimum spanning trees.
+  - **Related Topics**
+    - Relevant related areas include set data structures and graph partitioning.

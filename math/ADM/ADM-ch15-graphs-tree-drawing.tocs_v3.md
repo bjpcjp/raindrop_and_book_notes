@@ -1,30 +1,39 @@
-[Representative image](ADM-ch15-graphs-tree-drawing.best.png)
+![ADM-ch15-graphs-tree-drawing](ADM-ch15-graphs-tree-drawing.best.png)
 
-- **Drawing Trees**
+- **15.11 Drawing Trees**
   - **Input description**
-    - The input is a tree T, a graph without any cycles.
-    - Trees are always planar graphs and should be drawn so edges do not cross.
-    - Tree drawing applications include file system hierarchies, family trees, syntax trees, and evolutionary trees.
+    - The input is a tree T, defined as a graph with no cycles.
   - **Problem description**
-    - The task is to create a nice drawing of the tree T.
-    - Different aesthetics depend on whether the tree is free or rooted.
+    - The goal is to produce a visually pleasing drawing of the given tree T.
   - **Discussion**
-    - Rooted trees define a hierarchy from a single root node, influencing the drawing order of children.
-    - Free trees lack a root and hierarchical order; their drawing must respect connection topology.
-    - Selecting a center vertex or a root is crucial for producing natural drawings.
-    - The tree center either consists of one vertex or two adjacent vertices and can be found in linear time.
-  - **Drawing methods**
-    - Ranked embeddings place the root at the top center, partitioning the page into vertical strips for subtrees.
-    - Ranked embeddings illustrate hierarchy depth but may produce narrow strips, potentially cramping nodes.
-    - Radial embeddings place the root/center in the middle, dividing space into angular sectors for subtrees.
-    - Radial embeddings use space more efficiently and better suit free trees.
-  - **Implementations**
-    - GraphViz is a popular open-source graph drawing program supporting spline edges and large graphs.
-    - Commercial products such as Tom Sawyer Software, yFiles, and iLOG’s JViews offer advanced tree drawing features.
-    - Combinatorica provides Mathematica implementations of tree drawing algorithms.
-  - **Notes**
-    - Tree drawing is well-studied, with surveys and books documenting various algorithms.
-    - The problem can be NP-complete under certain aesthetic criteria.
-    - Specialized tree layouts, such as Van Emde Boas layouts, improve external memory performance.
-  - **Related Problems**
-    - Tree drawing relates closely to drawing graphs and planar drawings.
+    - Tree drawing applications vary by use, including family trees, syntax trees, and phylogenetic trees.
+    - Differences arise between drawing free trees and rooted trees, impacting layout and interpretation.
+    - Rooted trees reflect hierarchical order radiating from a designated root node.
+    - Free trees lack roots and hierarchical structure, suitable for MST visualizations or spatial embeddings.
+  - **Drawing properties and algorithms**
+    - Trees are planar and can be drawn without edge crossings.
+    - General planar drawing algorithms exist but simpler specialized algorithms suffice for trees.
+    - Spring-embedding heuristics work well for free trees but may be slow for some applications.
+    - Rooted trees can be drawn using ranked or radial embeddings after selecting a root or tree center.
+  - **Root selection and tree center**
+    - Selecting a tree center (one or two adjacent vertices minimizing maximum distance) improves drawings.
+    - The center can be found by repeatedly pruning leaves until one or two vertices remain.
+  - **Ranked embeddings**
+    - Place root at top center, divide page into strips for each subtree.
+    - Draw each subtree recursively by positioning child roots centered in their strips.
+    - Suitable for hierarchical data like family or corporate structures.
+    - Narrow strips and cramped vertices can arise with deep recursion; strip widths should adapt to subtree sizes.
+  - **Radial embeddings**
+    - Place root or center at drawing center with angular sectors for subtrees.
+    - Radial drawings better use space and visually reflect distance from center via concentric circles.
+    - Especially suitable for free trees without inherent hierarchy.
+  - **Implementations and software**
+    - GraphViz is a popular, well-supported tool for graph and tree drawing using splines.
+    - Commercial products include Tom Sawyer Software, yFiles, and iLOG’s JViews, all offering trials.
+    - Mathematica’s Combinatorica provides implementations of rooted and radial tree layout algorithms.
+  - **Additional resources and notes**
+    - Comprehensive coverage available in the forthcoming Handbook of Graph Drawing and Visualization.
+    - Notable books include those by Battista et al., Kaufmann and Wagner, and Jünger and Mutzel.
+    - Heuristics and complexity results are discussed in research references such as [RT81], [Moe90], and [BJL06].
+    - Related tree layouts like Van Emde Boas improve external memory performance.
+    - See also sections "Drawing graphs" (page 513) and "Planar drawings" (page 520) for connected topics.

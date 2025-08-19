@@ -1,32 +1,31 @@
-[Representative image](ADM-ch15-graphs-topological-sort.best.png)
+![ADM-ch15-graphs-topological-sort](ADM-ch15-graphs-topological-sort.best.png)
 
-- **Topological Sorting**
-  - **Input description**
-    - The input is a directed acyclic graph (DAG) G = (V, E), also known as a partial order or poset.
-    - The graph structure defines precedence constraints among tasks or items.
-  - **Problem description**
-    - The goal is to find a linear ordering of vertices such that for each edge (i, j), vertex i precedes vertex j.
-    - This ordering is known as a topological sort or linear extension.
-  - **Discussion**
-    - Topological sorting plays a fundamental role in algorithms on DAGs, analogous to DFS in general graphs.
-    - It is useful for scheduling tasks respecting precedence constraints represented by edges.
-    - The three important facts are: only DAGs can be sorted topologically, every DAG can be sorted, and multiple valid orderings often exist.
-  - **Algorithms**
-    - The simplest linear-time algorithm repeatedly identifies source vertices (in-degree zero), removes their outgoing edges, and continues until all vertices are processed.
-    - An alternative method orders vertices by decreasing DFS finishing time, yielding a valid topological order.
-    - Both methods run in O(n + m) time, where n is vertices and m is edges.
-  - **Special considerations**
-    - Generating all linear extensions is computationally hard and often requires backtracking, which enumerates all valid orderings by iteratively choosing source vertices.
-    - Sampling random linear extensions can be done by starting from one extension and randomly swapping pairs if the order remains valid.
-    - For graphs that are not acyclic, the feedback vertex set or arc set problems aim to remove minimal sets to eliminate cycles, though both are NP-complete.
-    - Heuristics involve deleting offending vertices or edges to restore acyclicity, but may remove more than necessary.
-  - **Implementations**
-    - Many graph libraries include topological sorting, such as the Boost Graph Library and LEDA for C++, and JDSL and JGraphT for Java.
-    - The Combinatorial Object Server provides programs for generating and counting linear extensions.
-    - The book’s associated C library offers implementations of topological sorting and other graph algorithms.
-  - **Notes**
-    - Counting linear extensions is #P-complete, indicating high computational complexity.
-    - Efficient algorithms exist for generating linear extensions with constant amortized time or sampling uniformly at random with polynomial expected time.
-    - Key references include [CLRS01](https://mitpress.mit.edu/books/introduction-algorithms), Brightwell and Winkler [BW91], and Pruesse and Ruskey [PR86].
-  - **Related problems**
-    - Directly related problems include sorting and feedback edge/vertex set problems for cycle elimination.
+- **15.2 Topological Sorting**  
+  - **Input description**  
+    - The input is a directed acyclic graph (DAG) represented as G = (V, E).  
+    - A DAG is also known as a partial order or poset.  
+  - **Problem description**  
+    - The goal is to find a linear ordering of vertices such that for each edge (i, j), vertex i appears before vertex j.  
+    - This linear ordering is called a topological sort or linear extension.  
+  - **Discussion**  
+    - Topological sorting orders vertices and edges of a DAG in a simple and consistent way.  
+    - It is fundamental for task scheduling under precedence constraints.  
+    - Three key facts: only DAGs can be topologically sorted; every DAG has at least one topological sort; many valid orders may exist.  
+  - **Algorithms and complexity**  
+    - The simplest linear-time algorithm uses sources (vertices with in-degree zero), removes their edges, and repeats, running in O(n + m) time.  
+    - An alternate algorithm orders vertices by decreasing DFS finishing times, also producing a linear extension.  
+  - **Special considerations**  
+    - Listing all linear extensions may be required but can be exponential in number and is NP-hard to count.  
+    - Backtracking algorithms and random sampling techniques exist to handle all linear extensions.  
+    - For non-acyclic graphs, feedback vertex and arc sets remove minimal conflicting items to restore acyclicity, though these problems are NP-complete.  
+  - **Implementations**  
+    - Popular graph libraries like Boost Graph Library, LEDA, and JGraphT include topological sorting routines.  
+    - The Combinatorial Object Server offers C programs for generating and counting linear extensions.  
+    - The book's associated C library also provides implementations for topological sorting.  
+  - **Notes and further reading**  
+    - Counting linear extensions is #P-complete, a complexity class including NP-hard problems.  
+    - Efficient algorithms exist for generating linear extensions in constant amortized time with adjacency transpositions.  
+    - Sampling linear extensions uniformly at random can be done in expected O(n³ log n) time.  
+    - Key references include [CLRS01](https://mitpress.mit.edu/books/introduction-algorithms), Brightwell and Winkler [BW91], and Pruesse and Ruskey [PR86].  
+  - **Related problems**  
+    - Related topics include general sorting algorithms and feedback edge/vertex set problems.

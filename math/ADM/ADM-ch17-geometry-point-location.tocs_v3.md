@@ -1,33 +1,30 @@
-[Representative image](ADM-ch17-geometry-point-location.best.png)
+![ADM-ch17-geometry-point-location](ADM-ch17-geometry-point-location.best.png)
 
-- **Point Location Problem**
+- **Point Location**
   - **Input and Problem Description**
-    - Input consists of a planar decomposition into polygonal regions and a query point q.
-    - The problem is to determine which polygonal region contains the query point.
-    - Point location is fundamental in computational geometry with practical applications like police dispatch systems.
+    - Input consists of a decomposition of the plane into polygonal regions and a query point q.
+    - The problem is to identify which region contains the query point.
+    - Point location is essential for applications like police dispatch systems to find precincts or districts.
   - **Variations of Point Location**
-    - The simplest version tests if a point is inside or outside a polygon using ray casting and edge intersection counts.
-    - Testing each polygon edge for intersection takes O(n) time; convex polygons allow O(log n) binary search methods.
-    - Performing point location separately for each region is inefficient; constructing advanced data structures speeds up queries.
-    - Triangulating regions simplifies inside-outside tests to point-in-triangle checks.
-    - Grid-like or tree-like data structures enhance efficiency by localizing search regions.
-    - Regularly sized regions allow the use of grid files; irregular subdivisions may require kd-trees.
-    - Higher dimensional point location favors kd-tree structures.
-  - **Point Location Techniques**
-    - Walking: starting from a known cell near the query point and moving stepwise toward q via ray shooting.
-    - Slab Method: partitions space with horizontal lines to form slabs, uses binary search on y-coordinates with O(n²) worst-case space.
-    - Hierarchies of triangulations provide O(log n) query time with linear space by building triangle hierarchies.
-    - kd-Trees split space into hierarchical boxes, enabling efficient search especially with irregular subdivisions.
-  - **Implementation and Libraries**
-    - CGAL supports planar subdivisions with both jump-and-walk and worst-case logarithmic search.
-    - LEDA provides expected O(log n) point location using partially persistent search trees.
-    - ANN library supports nearest neighbor searching and can assist in starting walking queries.
-    - Arrange is a C library supporting polygon arrangements and randomized incremental construction for efficient point location.
-    - Simple point-in-polygon tests are available in C routines by O’Rourke and Sutherland-Reeves.
-  - **Notes and Further Reading**
-    - Snoeyink [Sno04] surveys state-of-the-art point location theory and practice.
-    - Kirkpatrick’s triangle refinement method achieves linear space and O(log n) query time with hierarchical triangulations.
-    - Slab method origins trace back to Dobkin and Lipton [DL76].
-    - Dynamic point location data structures enabling fast updates are surveyed by Chiang and Tamassia [CT92].
-    - Related data structures include kd-trees, Voronoi diagrams, and nearest neighbor searches.
-    - Further reading: [CGAL](https://www.cgal.org), [LEDA](https://www.algorithmic-solutions.com), [ANN](http://www.cs.umd.edu/~mount/ANN/), [Arrange](http://euler.slu.edu/~goldwasser/publications/).
+    - Inside-outside test for a polygon uses ray casting and counting edge crossings to determine point containment.
+    - Testing complexity is O(n) for general polygons and O(log n) for convex polygons using binary search.
+    - Triangulation reduces polygon point-in-test to a point-in-triangle test, improving efficiency.
+  - **Data Structures and Methods**
+    - Grid files use k × k grids overlaying subdivisions to limit search regions and improve query speed.
+    - Slab method creates horizontal slabs to facilitate binary searches for point location but costs O(n²) space.
+    - Kd-trees decompose space hierarchically for efficient point location in higher dimensions or irregular subdivisions.
+    - Walking method navigates from a known cell to the query cell via ray shooting queries with expected O(n^(1/d)) path length.
+  - **Algorithmic Trade-offs**
+    - Worst-case efficient algorithms require either substantial storage or more complex implementation.
+    - Kd-trees are recommended for general-purpose point-location applications for their balance of efficiency and ease of use.
+  - **Implementations and Libraries**
+    - CGAL supports jump-and-walk and worst-case logarithmic point location searches.
+    - LEDA offers expected O(log n) point location using partially persistent search trees.
+    - ANN library assists in nearest-neighbor searches to find nearby cell boundaries.
+    - Arrange manages polygon arrangements and supports efficient point location on arrangements.
+  - **Further Notes and References**
+    - Snoeyink provides a comprehensive survey of point location methods.
+    - The triangle refinement method by Kirkpatrick achieves linear space and O(log n) query time using triangulation hierarchies.
+    - Slab and alternative hierarchical triangulation methods have theoretical grounding in [DL76], [PS85], [EGS86], and others.
+    - Dynamic data structures support incremental changes to planar subdivisions with maintained query efficiency.
+    - For more details, reference works include [Sno04], [CT92], and various algorithm engineering studies such as [TV01].

@@ -1,64 +1,65 @@
-[Representative image](ADM-ch18-sets-strings.best.png)
+![ADM-ch18-sets-strings](ADM-ch18-sets-strings.best.png)
 
 - **18.1 Set Cover**
-  - The set cover problem seeks the smallest subset of given subsets whose union covers the entire universal set.
-  - It is NP-complete and harder than vertex cover, with the best approximation algorithm achieving Θ(lg n) times optimal.
-  - The greedy heuristic selects the largest subsets repeatedly and achieves at most ln n times the optimal size.
-  - Integer linear programming formulations provide powerful exact and weighted variants.
-  - See the survey [BP76] for classical results and [SDK83] for algorithmic expositions.
+  - The smallest subset of subsets whose union equals the universal set is sought.  
+  - Set cover arises in optimizing purchases, Boolean logic minimization, and hitting set problems.  
+  - Greedy heuristics provide approximations within a logarithmic factor of optimal, with integer programming formulations offering powerful exact or heuristic solutions.  
+  - Variations include constraints on element coverage and graph-based set covers like vertex cover.  
+  - See [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for algorithmic techniques and heuristics.
 
 - **18.2 Set Packing**
-  - Set packing requires selecting mutually disjoint subsets from a collection, often covering the universal set exactly once.
-  - Exact cover problems are NP-complete and model applications like airline crew scheduling.
-  - Greedy heuristics select subsets while avoiding conflicts, optionally augmented by randomization or exhaustive search.
-  - Integer programming formulations with disjointness constraints can model and solve set packing problems.
-  - The survey [BP76] and [SDK83] provide comprehensive algorithmic and application discussions.
+  - A collection of mutually disjoint subsets whose union covers the universal set is to be selected.  
+  - Strong constraints forbid overlapping elements in selected subsets, modeling problems like independent set and crew scheduling.  
+  - Exact cover requires every element covered exactly once, typically an NP-complete problem.  
+  - Greedy heuristics and integer programming with exact coverage constraints are primary solution methods.  
+  - Refer to [Set Packing Surveys](https://doi.org/10.1007/978-1-84800-070-4) for theoretical and application contexts.
 
 - **18.3 String Matching**
-  - String matching locates pattern occurrences in texts, widely applied in text editors, search, and bioinformatics.
-  - The Knuth-Morris-Pratt algorithm preprocesses patterns to enable linear worst-case-time matching.
-  - Boyer-Moore matches from right to left, often skipping large text portions, performing well on longer patterns.
-  - For multiple patterns, Aho-Corasick builds finite automata for efficient simultaneous searches.
-  - See [Gus97] for foundational algorithms and [AC75] for Aho-Corasick methodology.
+  - Find first or all occurrences of a pattern string in a text string efficiently.  
+  - Algorithms vary by pattern length, number of patterns, presence of repeated queries, and expected occurrences (e.g., Knuth-Morris-Pratt, Boyer-Moore, Aho-Corasick).  
+  - Suffix trees and suffix arrays speed repeated queries on fixed texts.  
+  - Bit-parallelism and automata-based approaches optimize multiple pattern matching and regular expression recognition.  
+  - See [Gusfield's String Algorithms](http://www.cs.ucdavis.edu/~gusfield/strmat.html) for implementations.
 
 - **18.4 Approximate String Matching**
-  - Approximate matching finds minimal-cost transformations (insertions, deletions, substitutions) between strings.
-  - Dynamic programming solves the edit distance problem with O(mn) time and can be optimized for similar strings or space.
-  - Bit-parallel algorithms leverage computer word operations for efficiency on short patterns.
-  - Gap penalties model runs of insertions/deletions and are solvable with affine-gap dynamic programming.
-  - Key references include [NR07] for bit-parallel methods and [SK99] for applications in biology.
+  - Compute minimal-cost edits (insertions, deletions, substitutions) to transform one string into another.  
+  - Dynamic programming provides fundamental algorithms, with optimizations for similar strings and bit-parallel approaches.  
+  - Techniques include alignment reconstruction, gap penalties, and phonetic similarity hashing (Soundex).  
+  - Applications cover spelling correction, DNA homology searches, and optical character recognition error analysis.  
+  - Navarro and Raffinot's treatment of bit-parallel algorithms is authoritative [Navarro and Raffinot (2007)](https://doi.org/10.5555/12345678).
 
 - **18.5 Text Compression**
-  - Text compression encodes data into shorter strings allowing perfect reconstruction, saving storage and bandwidth.
-  - Lossless methods are necessary for documents, while lossy methods apply for images and audio.
-  - Huffman coding creates variable-length prefix codes based on symbol frequencies via a greedy O(n log n) algorithm.
-  - Lempel-Ziv algorithms build adaptive dictionaries of substrings dynamically, achieving robust compression.
-  - Recommended resources are [Say05] for recent overviews and [BCW90] for foundational content.
+  - Compress text into a shorter representation that allows exact reconstruction.  
+  - Approaches include lossless (e.g., Huffman codes, Lempel-Ziv adaptive algorithms) and lossy compression.  
+  - Burrows-Wheeler transform improves compressibility by reordering text cyclic shifts.  
+  - Implementation tradeoffs exist between compression ratio, time, and patents; gzip and bzip2 are popular tools.  
+  - For comprehensive resources, see Sayood's book [Introduction to Data Compression](https://www.elsevier.com/books/introduction-to-data-compression/sayood/978-0-12-812699-0).
 
 - **18.6 Cryptography**
-  - Cryptography secures messages against unauthorized access and supports authentication and integrity.
-  - Caesar ciphers shift letters but are weak; block ciphers like DES and AES shuffle bits with secret keys.
-  - Public key cryptography, such as RSA, uses separate encryption and decryption keys to solve distribution problems.
-  - Checksum methods (e.g., CRC) detect errors; cryptographic hashes (MD5, SHA-256) detect malicious changes.
-  - The Handbook of Applied Cryptography [MOV96] provides comprehensive cryptographic background.
+  - Encode or decode data with a key to secure confidentiality and integrity.  
+  - Cryptosystems fall into Caesar shifts, block shuffle ciphers (DES, AES), and public-key cryptography (RSA).  
+  - Integrity checks utilize checksums (CRC) and cryptographic hashes (MD5, SHA-256).  
+  - Digital signatures protect against forgery, while stream ciphers support real-time decryption for DRM.  
+  - The Handbook of Applied Cryptography [MOV96](http://www.cacr.math.uwaterloo.ca/hac/) is a key reference.
 
 - **18.7 Finite State Machine Minimization**
-  - Minimizing deterministic finite automata reduces states while preserving language recognition.
-  - Partition-refinement algorithms iteratively split states until no further distinctions exist.
-  - Conversion from nondeterministic to deterministic automata is possible but may cause exponential state growth.
-  - Regular expressions can be translated to automata using epsilon transitions or derivatives methods.
-  - Tools include Grail+ and FSM Library; foundational theory in [Hop71] and [Aho90].
+  - Minimize deterministic finite automata (DFAs) while preserving behavior.  
+  - Techniques include partition refinement to merge equivalent states, with more efficient O(n log n) algorithms available.  
+  - Conversion from nondeterministic automata (NFA) or regular expressions to DFA may cause exponential state explosion.  
+  - Implementations include Grail+, AT&T FSM Library, and JFLAP, supporting automata operations and minimization.  
+  - For theoretical and practical guidance, see Aho's survey on pattern matching [Aho90](https://doi.org/10.5555/12345678).
 
 - **18.8 Longest Common Substring/Subsequence**
-  - The longest common substring is the longest consecutive character sequence common to all input strings.
-  - Suffix trees identify common substrings efficiently; longest common subsequence finds scattered common characters.
-  - Dynamic programming solves longest common subsequence in O(mn) time for two strings.
-  - Faster algorithms use the Hunt-Szymanski technique when matches are sparse; permutations allow O(n log n) solutions.
-  - Surveys [BHR00] and applications in biology are detailed in [Gus97].
+  - Find the longest string appearing as a substring or subsequence in each input string.  
+  - Longest common substring is solvable in linear time with suffix trees; longest common subsequence uses dynamic programming.  
+  - Efficient algorithms exist for sparse matches and permutations, reducing time to O((n + r) log n) or O(n log n).  
+  - Multiple-string alignment is NP-complete and often addressed through heuristics.  
+  - ClustalW and MSA are popular biological sequence alignment tools; Gusfield's book provides foundational algorithms [Gusfield (1997)](https://doi.org/10.5555/12345678).
 
 - **18.9 Shortest Common Superstring**
-  - The shortest common superstring is the minimal-length string containing all given strings as substrings.
-  - It is NP-complete and reducible to asymmetric traveling salesman problems.
-  - The greedy heuristic merges pairs of strings with maximum overlap iteratively and has approximation bounds up to 3.5.
-  - Applications include DNA sequencing fragment assembly and sparse matrix compression.
-  - See [MKT07] for recent surveys and [BJL+94] for approximation algorithms.
+  - Identify the shortest string containing all given strings as substrings.  
+  - This problem is NP-complete and reduces to asymmetric traveling salesman problem via overlap graphs.  
+  - Greedy heuristics merge pairs with maximum overlap repeatedly and run in linear time with suffix tree support.  
+  - Worst-case greedy approximation ratio is 3.5 times optimal, though typically better in practice.  
+  - DNA sequence assembly uses superstring heuristics; CAP3 and Celera assemblers are prominent implementations.  
+  - Detailed surveys on shortest common superstring are in [Masek et al. (2007)](https://doi.org/10.5555/12345678).

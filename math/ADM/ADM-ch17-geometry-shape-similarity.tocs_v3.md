@@ -1,42 +1,28 @@
-[Representative image](ADM-ch17-geometry-shape-similarity.best.png)
+![ADM-ch17-geometry-shape-similarity](ADM-ch17-geometry-shape-similarity.best.png)
 
 - **Shape Similarity**
-  - **Input description**
-    - The input consists of two polygonal shapes, P1 and P2.
-    - The problem is to determine how similar the two shapes are.
-  - **Problem description**
-    - Shape similarity underlies many pattern recognition tasks, such as optical character recognition (OCR).
-    - The goal is to identify unknown shapes by matching them against a library of known shape models.
-    - Shape similarity is ill-defined because "similar" depends on the application context.
+  - **Input Description**
+    - The input consists of two polygonal shapes, labeled P1 and P2.  
+  - **Problem Description**
+    - The problem asks how similar the two polygons P1 and P2 are.  
+    - Shape similarity is fundamental to pattern recognition tasks such as optical character recognition (OCR).  
   - **Discussion**
-    - No single algorithm can solve all shape-matching problems; extensive tuning is usually required.
-    - Multiple approaches to shape similarity include:
-      - **Hamming distance**
-        - Measures the area difference between overlaid polygons (symmetric difference).
-        - Requires proper alignment, simplified in applications like OCR without rotation.
-        - Efficient on bit-mapped images but only captures a crude notion of shape.
-        - Refer to polygon intersection and area computation techniques ([Section 17.8](page 591), [Section 17.1]).
-      - **Hausdorff distance**
-        - Measures the maximum distance from points on one shape to the closest points on the other.
-        - Not symmetric and sensitive to protrusions; less impacted by small boundary noise.
-        - Alignment remains a challenging and time-consuming task.
-        - Optimal linear-time algorithms exist for convex polygons ([Ata83]) and general cases ([HK90]).
-      - **Comparing skeletons**
-        - Uses thinning algorithms to extract tree-like skeletons representing shape structure.
-        - Compares topology and edge features via subgraph isomorphism methods ([Section 16.9](page 550)).
-      - **Support Vector Machines (SVM)**
-        - Learning-based methods that classify shapes based on extracted features (area, sides, holes).
-        - Require significant data and tuning to achieve good performance.
-        - Black-box classifiers may fail unexpectedly without interpretability.
-        - Several implementations are available, including LIBSVM and SVMlight.
+    - Shape similarity is application-dependent and inherently ill-defined, requiring tailored algorithms and extensive tuning.  
+    - Hamming distance measures the symmetric difference area between two aligned polygons, requiring polygon intersection and union computations.  
+    - Proper alignment is challenging and often simplified in applications like OCR by using reference landmarks or restricting rotations.  
+    - Hausdorff distance measures the greatest minimum distance from points on one polygon to the other and is sensitive to protrusions but robust to boundary noise.  
+    - Comparing skeletons uses thinning to reduce shapes to tree-like graphs and compares topology and edge features via subgraph isomorphism.  
+    - Support Vector Machines (SVMs) utilize feature extraction and training data to classify shapes, requiring large datasets and tuning to perform well.  
+    - Black-box classifiers like SVMs may fail unpredictably if the decision rationale is unknown, illustrated by a military image classification example.  
   - **Implementations**
-    - A C implementation of Hausdorff-based comparison is available at Cornell’s website.
-    - Angle-turning function metric implementations are also provided online.
-    - Major SVM libraries include Kernel-machine library, SVMlight, and LIBSVM.
+    - A Hausdorff distance image comparison implementation in C is available at [Cornell Hausdorff](http://www.cs.cornell.edu/vision/hausdorff/hausmatch.html).  
+    - Angle-turning function-based distance metrics have C implementations by Eugene K. Ressler at [Stony Brook Algorithms](http://www.cs.sunysb.edu/~algorith).  
+    - Several SVM libraries exist, including Kernel-Machine Library, SVMlight, and LIBSVM.  
   - **Notes**
-    - General references on pattern classification include [DHS00, JD88].
-    - Computational geometry-based approaches to shape similarity are surveyed in [AG00].
-    - Optimal alignment algorithms for translation without rotation run in O((n + m) log(n + m)) time [dBDK+98].
-    - Approximate algorithms exist for translation and rotation alignment [ACP+07].
+    - General pattern classification references include [DHS00] and [JD88].  
+    - Various computational geometry approaches are summarized in surveys by Alt and Guibas [AG00] and others.  
+    - Optimal alignment of convex polygons under translation is computable in O((n + m) log(n + m)) time [dBDK+98].  
+    - Linear-time algorithms for Hausdorff distance between convex polygons exist [Ata83], with general algorithms in [HK90].  
   - **Related Problems**
-    - Related problems addressed include graph isomorphism ([page 550]) and thinning ([page 598]).
+    - Graph isomorphism relates to skeleton-based shape comparison.  
+    - Thinning assists in extracting skeletons from polygonal shapes.

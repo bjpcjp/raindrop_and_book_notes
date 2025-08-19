@@ -1,77 +1,83 @@
-[Representative image](ADM-ch08-dynamic-programming.best.png)
+![ADM-ch08-dynamic-programming](ADM-ch08-dynamic-programming.best.png)
 
 - **Dynamic Programming**
-  - The technique addresses optimization problems by systematically searching all possibilities while storing results to avoid recomputation.
-  - Dynamic programming combines correctness guarantees of exhaustive search with efficiency of caching subproblem results.
-  - Problems suited to dynamic programming often feature an inherent left-to-right order on components such as strings, trees, polygons, and sequences.
-  - Further reading: [The Algorithm Design Manual, Dynamic Programming](https://doi.org/10.1007/978-1-84800-070-4)
+  - Algorithms for optimization problems require proof of global optimality beyond greedy and exhaustive search.
+  - Dynamic programming efficiently implements recursive solutions by caching partial results to avoid recomputation.
+  - It is especially effective on combinatorial objects with a natural left-to-right order like strings and polygons.
+  - [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) by Steven S. Skiena contains detailed coverage.
 
-- **Caching vs. Computation**
-  - Caching stores intermediate results of recursive computations such as Fibonacci numbers to trade space for significant time savings.
-  - Recursive Fibonacci calculation without caching is exponential due to repeated computation of the same subproblems.
-  - Cached or iterative dynamic programming implementations reduce Fibonacci computation time to linear, with linear or constant space requirements.
-  - Binomial coefficients can be computed efficiently via dynamic programming by building Pascal’s triangle using a recurrence relation.
-  - Further reading: [Dynamic Programming by Example: Fibonacci](https://doi.org/10.1007/978-1-84800-070-4)
+  - **Caching vs. Computation**
+    - Recursive Fibonacci computation suffers exponential time due to repeated subproblem evaluations.
+    - Caching stores subproblem results, transforming exponential recursion into linear-time computation.
+    - Dynamic programming eliminates recursion by evaluating from base cases upward, further optimizing space.
+    - Binomial coefficients can be computed via similar recurrence relations with efficient table evaluations.
+    - [Dynamic Programming and Recursion](https://en.wikipedia.org/wiki/Dynamic_programming) offers background.
 
-- **Approximate String Matching**
-  - Defines edit distance using costs for substitution, insertion, and deletion to measure string similarity in the presence of errors.
-  - Recursive algorithms for edit distance are correct but suffer from exponential runtime due to overlapping subproblems.
-  - Dynamic programming improves efficiency by constructing a two-dimensional cost table storing results of subproblems, running in O(|P|·|T|) time.
-  - Parent pointer tables enable reconstruction of the sequence of edit operations from the DP matrix.
-  - Variations of edit distance, such as substring matching, longest common subsequence, and maximum monotone subsequence, are solved via modifying cost functions and DP boundaries.
-  - Further reading: [Wagner and Fischer, The String-to-String Correction Problem](https://doi.org/10.1145/360825.360852)
+  - **Approximate String Matching**
+    - Edit distance measures string similarity based on substitution, insertion, and deletion costs.
+    - Recursive edit distance algorithms recompute subproblems exponentially, whereas dynamic programming caches results.
+    - Dynamic programming tables store costs and parent pointers to compute minimal edit sequences in O(|P||T|) time.
+    - Variants include substring matching, longest common subsequence, and maximum monotone subsequence implemented via cost adaptations.
+    - [Wagner–Fischer algorithm](https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm) is the classical method.
 
-- **Longest Increasing Sequence**
-  - The recurrence relates the length of the longest increasing subsequence ending at each element based on previous elements smaller than the current one.
-  - Overall longest increasing subsequence is the maximum of all such ending lengths.
-  - Time complexity of the naive dynamic program is O(n²), with more advanced data structures enabling O(n log n) algorithms.
-  - Auxiliary predecessor pointers allow reconstruction of one longest increasing subsequence.
-  - Further reading: [Longest Increasing Subsequence on GeeksforGeeks](https://www.geeksforgeeks.org/longest-increasing-subsequence-dp-3/)
+  - **Longest Increasing Sequence**
+    - The longest increasing subsequence problem identifies the maximum-length sorted subsequence of a numerical sequence.
+    - Dynamic programming recurrence defines lengths of longest sequences ending at each element.
+    - Predecessor tracking enables reconstruction of the optimal subsequence.
+    - Naive implementation runs in O(n²), with advanced methods achieving O(n log n).
+    - [Longest Increasing Subsequence](https://en.wikipedia.org/wiki/Longest_increasing_subsequence) details methods and improvements.
 
-- **War Story: Evolution of the Lobster**
-  - The image morphing problem reduces to matching line segments using dynamic programming through non-crossing interval correspondences.
-  - The solution involves splitting lines into runs of pixels and computing minimal-cost matchings based on run length differences and positions.
-  - Dynamic programming exploits the left-to-right order and non-crossing conditions to ensure subproblems are independent and combinatorial explosion is avoided.
-  - Further reading: [Morphing Techniques in Computer Graphics](https://doi.org/10.1145/202306.202319)
+  - **War Story: Evolution of the Lobster**
+    - Morphing images requires matching corresponding pixel runs between two images without crossing intervals.
+    - Dynamic programming aligns runs by minimizing cost functions over length and position differences.
+    - The problem decomposes recursively into smaller subproblems due to order and non-crossing constraints.
+    - Results enable realistic morph sequences without inappropriate feature alignment.
+    - [Image Morphing Techniques](https://link.springer.com/chapter/10.1007/978-1-4612-1560-4_11) discusses related algorithms.
 
-- **The Partition Problem**
-  - Given a list of sizes and a number k, partition the list into k contiguous parts minimizing the largest sum among parts.
-  - A recursive definition expresses the minimal maximum partition sum in terms of smaller subproblems, yielding a DP with O(k n²) time complexity.
-  - Prefix sums enable efficient computation of partition sums without repeated summations.
-  - A backtracking table stores divider positions enabling reconstruction of the optimal partitions.
-  - Further reading: [The Linear Partition Problem](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.48.6712)
+  - **The Partition Problem**
+    - Partitioning a sequence into k contiguous ranges to minimize the maximum range sum models workload balancing.
+    - Recurrence relation combines partitions by evaluating all possible divider placements.
+    - Dynamic programming with prefix sums computes optimal partitions in O(k n²) time.
+    - Auxiliary tables store divider locations to reconstruct optimal partitions.
+    - [Linear Partition Problem](https://en.wikipedia.org/wiki/Partition_problem) for related concepts.
 
-- **Parsing Context-Free Grammars**
-  - Parsing is the process of deriving a string from a grammar represented using rules in Chomsky Normal Form.
-  - The Cocke-Kasami-Younger (CKY) algorithm uses dynamic programming to test if substrings are generated by certain nonterminals.
-  - Complexity is O(n³) time due to testing all partitions and grammar rules over O(n²) substrings.
-  - Extensions include the parsimonious parser, which finds the minimal number of substitutions needed for a string to be generated by a grammar.
-  - Further reading: [CKY Parsing Algorithm](https://en.wikipedia.org/wiki/CYK_algorithm)
+  - **Parsing Context-Free Grammars**
+    - Parsing maps strings to parse trees based on context-free grammar rules in Chomsky normal form.
+    - Dynamic programming tracks all nonterminals generating substrings of the input.
+    - The CKY algorithm uses O(n³) time and O(n²) space to parse strings of length n.
+    - Extensions allow minimal edit-cost parsing and error correction by generalizing cost functions.
+    - [CKY algorithm](https://en.wikipedia.org/wiki/CYK_algorithm) explains parsing techniques.
 
-- **Minimum Weight Triangulation**
-  - Triangulations partition a polygon into non-overlapping triangles using diagonals.
-  - The recurrence computes the minimal triangulation cost by choosing a vertex k to pair with a chord (i, j) and recursively triangulating sub-polygons.
-  - Time complexity is cubic O(n³), and space complexity is O(n²).
-  - Presence of interior points complicates the problem, making it NP-complete for general point sets.
-  - Further reading: [Computational Geometry: Algorithms and Applications](https://doi.org/10.1007/978-3-540-77974-2)
+  - **Minimum Weight Triangulation**
+    - Triangulating polygons involves partitioning into triangles with minimum sum of internal diagonal lengths.
+    - Dynamic programming selects the optimal vertex to pair with boundary edges, recursively triangulating subpolygons.
+    - The algorithm runs in O(n³) time with O(n²) space.
+    - Including points inside polygons renders the problem NP-complete.
+    - [Minimum-weight triangulation problem](https://en.wikipedia.org/wiki/Minimum-weight_triangulation) for details.
 
-- **Limitations of Dynamic Programming: TSP**
-  - The longest simple path and traveling salesman problems lack inherent left-to-right order, resulting in exponential state space.
-  - Dynamic programming recurrences must respect the principle of optimality; states must sufficiently summarize subproblems.
-  - Encoding the path explicitly requires tracking subsets of vertices, leading to O(2^n) complexity even with dynamic programming.
-  - Dynamic programming is effective primarily on problems where objects possess 1-D orderings.
-  - Further reading: [Held-Karp Algorithm for TSP](https://doi.org/10.1145/3147.3165)
+  - **Limitations of Dynamic Programming: TSP**
+    - Without inherent left-to-right ordering, dynamic programming may require exponential time/space due to complex state spaces.
+    - Longest simple path and traveling salesman problems illustrate failures of naive dynamic programming due to cycles and missing ordering.
+    - Expanded state definitions with subsets reduce, but do not eliminate, exponential complexity.
+    - The principle of optimality must hold for dynamic programming to be correct and efficient.
+    - [Traveling Salesman Problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) covers algorithmic challenges.
 
-- **War Story: What’s Past is Prolog**
-  - Minimizing trie size for rule head unification in Prolog requires finding an ordering of character positions that reduces trie edges.
-  - Maintaining lexicographic leaf order imposes constraints that enable a polynomial-time dynamic programming solution.
-  - Without leaf order constraints, the problem becomes NP-complete.
-  - The dynamic programming recurrence computes minimal edge counts by choosing character positions and summing costs of induced subtries.
-  - Further reading: [Trie Data Structures](https://en.wikipedia.org/wiki/Trie)
+  - **War Story: What’s Past is Prolog**
+    - Optimizing trie data structures for Prolog rules requires reordering characters under leaf order constraints.
+    - Dynamic programming can find minimal tries maintaining rule order despite exponential naive search space.
+    - The small number of possible consecutive runs enables polynomial-time evaluation.
+    - Without order constraints, the optimization becomes NP-complete.
+    - [Tries](https://en.wikipedia.org/wiki/Trie) provide background on trie data structures.
 
-- **War Story: Text Compression for Bar Codes**
-  - PDF-417 is a 2D bar code symbology supporting multiple text modes, each encoding a subset of alphanumeric characters.
-  - Mode switches and latches change encoding context, incurring additional cost.
-  - Finding the minimal-length encoding is solved precisely by dynamic programming computing minimal cost encodings per mode per position.
-  - The DP runs in O(n) time with constant mode states, improving storage utilization by 8% on average over greedy approaches.
-  - Further reading: [PDF417 Bar Code Specification](https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdf417.pdf)
+  - **War Story: Text Compression for Bar Codes**
+    - PDF-417 bar codes use multiple character modes to compactly represent alphanumeric and punctuation text.
+    - Encoding involves mode latch and mode shift commands, complicating optimal code selection.
+    - Dynamic programming finds the minimal-cost encoding by tracking minimal costs per position and mode.
+    - Optimal encoding showed an observed 8% improvement over heuristic greedy algorithms.
+    - [PDF-417](https://en.wikipedia.org/wiki/PDF417) page explains barcode symbology and encoding.
+
+  - **Chapter Notes**
+    - Dynamic programming is attributed to Bellman; edit distance algorithms to Wagner and Fischer.
+    - Minimum weight triangulation hardness and polynomial algorithms are active research topics.
+    - Parsing and edit distance generalizations are well-documented in algorithmic literature.
+    - [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) remains an authoritative source.

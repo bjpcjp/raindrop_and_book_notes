@@ -1,11 +1,13 @@
-[Representative image](ADM-ch16-graphs-sets-independent.best.png)
+![ADM-ch16-graphs-sets-independent](ADM-ch16-graphs-sets-independent.best.png)
 
-- **Graph Problems: Hard Problems**
-  - **Independent Set**
-    - The independent set problem seeks the largest vertex subset with no two vertices adjacent in the graph.  
-    - It relates closely to facility location, coding theory, and scheduling problems where conflicts must be avoided.  
-    - Maximum independent set is algorithmically identical to maximum clique in the graph complement and connected to vertex coloring problems.  
-    - A basic heuristic selects the lowest-degree vertex, adds it to the independent set, and removes it and its neighbors, repeating until empty.  
-    - Efficient solutions exist for trees and bipartite graphs, while the general problem remains NP-complete.  
-    - Algorithmic resources include branch-and-bound from GOBLIN and GRASP heuristics by Resende et al.  
-    - For further information, see [Maximum Independent Set](https://en.wikipedia.org/wiki/Maximum_independent_set).
+- **16.2 Independent Set**  
+  - The problem asks for the largest subset of vertices with no two adjacent in graph G = (V, E).  
+  - Independent sets model facility dispersion and coding theory problems by avoiding conflicts.  
+  - The maximum independent set in G corresponds exactly to the maximum clique in the complement graph G̅.  
+  - Vertex coloring partitions vertices into independent sets, linking independent set problems to coloring heuristics.  
+  - The simplest heuristic adds lowest-degree vertices and removes their neighbors to find a maximal independent set.  
+  - Maximum independent sets in trees can be found in linear time using leaf-stripping and deletion of adjacent nodes.  
+  - Efficient algorithms for maximum clique can be applied to find maximum independent sets via graph complementation.  
+  - Additional algorithms include branch-and-bound (GOBLIN) and GRASP heuristics for approximate solutions.  
+  - The problem remains NP-complete even for planar cubic graphs but is solvable efficiently for bipartite graphs.  
+  - See [GOBLIN Graph Library](http://www.math.uni-augsburg.de/~fremuth/goblin.html) and [ACM Algorithm 787](http://www.research.att.com/~mgcr/src/) for implementations.

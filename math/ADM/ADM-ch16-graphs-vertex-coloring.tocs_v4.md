@@ -1,0 +1,34 @@
+![ADM-ch16-graphs-vertex-coloring](ADM-ch16-graphs-vertex-coloring.best.png)
+
+- **16.7 Vertex Coloring**
+  - **Input description**
+    - The input is a graph G = (V, E) for vertex coloring.
+    - Each vertex represents an entity to be colored.
+    - Edges indicate adjacency that forbids identical colors.
+  - **Problem description**
+    - Assign colors to vertices so adjacent vertices never share a color.
+    - The objective is to minimize the number of colors used.
+    - The minimal number of colors is called the graph's chromatic number.
+  - **Discussion**
+    - Vertex coloring applies in scheduling and compiler register allocation.
+    - Variables with overlapping lifespans are connected to prevent same-color assignments.
+    - The problem is NP-complete, requiring heuristics or backtracking for solutions.
+  - **Special cases of interest**
+    - Bipartite graphs can be colored with two colors using DFS in O(n + m) time.
+    - Planar graphs can be colored with at most four colors, with a simple 6-color algorithm using low-degree vertex deletion.
+    - Edge-coloring problems relate to vertex coloring and have efficient approximate algorithms.
+  - **Incremental methods and heuristics**
+    - Vertices are colored sequentially using heuristics like largest-degree first.
+    - Brèlaz’s heuristic dynamically selects vertices based on the number of adjacent colors.
+    - Color interchange can improve colorings by swapping colors in connected components, though it increases complexity.
+  - **Implementations and resources**
+    - Culberson’s and Trick’s webpages provide bibliographies and DSATUR algorithm codes.
+    - DIMACS Implementation Challenge and GraphCol offer algorithms and heuristics.
+    - Boost Graph Library and GOBLIN library provide implementations in C++.
+    - Pascal, Fortran, and Mathematica implementations are available for backtracking and heuristics.
+  - **Notes**
+    - Classical heuristics include largest-first and smallest-last orderings.
+    - The four-color theorem guarantees planar graphs are 4-colorable but NP-complete to test 3-colorability.
+    - Brooks’ theorem bounds chromatic number by maximum vertex degree plus one.
+    - Approximation algorithms exist but with limited guarantees, as vertex coloring is hard to approximate.
+    - Key references include [Culberson’s graph coloring page](http://web.cs.ualberta.ca/~joe/Coloring/) and [Four-color theorem exposition](https://en.wikipedia.org/wiki/Four_color_theorem).

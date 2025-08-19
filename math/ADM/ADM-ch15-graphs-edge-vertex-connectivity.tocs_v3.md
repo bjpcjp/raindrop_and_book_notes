@@ -1,48 +1,42 @@
-[Representative image](ADM-ch15-graphs-edge-vertex-connectivity.best.png)
+![ADM-ch15-graphs-edge-vertex-connectivity](ADM-ch15-graphs-edge-vertex-connectivity.best.png)
 
 - **Edge and Vertex Connectivity**
-  - **Input Description**
-    - The input is a graph G, and optionally a pair of vertices s and t.
-    - The problem focuses on finding the smallest subsets of vertices or edges that disconnect G or separate s from t.
-  - **Problem Description and Discussion**
-    - Edge connectivity is the smallest number of edges whose deletion disconnects the graph.
-    - Vertex connectivity is the smallest number of vertices whose deletion disconnects the graph.
-    - Vertex connectivity is always less than or equal to edge connectivity.
-    - Minimum vertex degree is an upper bound for both edge and vertex connectivity.
-    - Connectivity testing relates to network reliability, such as preventing communication in telephone networks.
-  - **Connectivity Problems of Interest**
-    - **Is the graph already disconnected?**
-      - Testing connectivity is done by depth-first or breadth-first search.
-      - For directed graphs, strong connectivity means a directed path between every pair of vertices.
-    - **Is there one weak link in my graph?**
-      - A graph is biconnected if no single vertex removal disconnects it.
-      - Articulation vertices and bridges are single vertices or edges whose removal disconnects the graph.
-      - Linear-time algorithms based on DFS exist to identify articulation points and bridges.
-    - **What if I want to split the graph into equal-sized pieces?**
-      - The graph partition problem seeks small cut sets dividing the graph into roughly equal parts.
-      - The problem is NP-complete but solvable with heuristics.
-    - **Are arbitrary cuts OK, or must I separate a given pair of vertices?**
-      - Two problem types: minimum cut for the whole graph and minimum (s−t) cut.
-      - Any (s−t) connectivity algorithm can be used for all pairs to find general connectivity.
-      - For edge connectivity, n−1 runs suffice using a fixed vertex and all others.
-  - **Network-Flow Techniques**
-    - Maximum flow between two vertices equals the weight of the smallest edge cut disconnecting them.
-    - Edge connectivity can be found by minimizing flows between a fixed vertex and all others.
-    - Vertex connectivity relates to Menger’s theorem: k-connectivity equals existence of k vertex-disjoint paths.
-    - Constructing a transformed graph with split vertices converts vertex-disjoint paths to edge-disjoint paths.
+  - **Input and Problem Description**
+    - The input is a graph G, optionally including a pair of vertices s and t.
+    - The problem seeks the smallest subset of vertices or edges whose deletion disconnects G or separates s from t.
+    - Vertex connectivity is the minimum number of vertices to remove to disconnect the graph, while edge connectivity is the analogous measure for edges.
+  - **Basic Connectivity Problems**
+    - Testing if a graph is connected involves depth-first or breadth-first search identifying connected components in linear time.
+    - Directed graph connectivity distinguishes between strong connectivity (a path exists between every vertex pair) and weak connectivity.
+  - **Weak Links in Graphs**
+    - A graph is biconnected if no single vertex removal disconnects it.
+    - Articulation vertices and bridges are vertices or edges whose removal disconnects the graph.
+    - Linear-time algorithms based on depth-first search exist for identifying articulation points and bridges.
+  - **Graph Partitioning**
+    - Partitioning seeks a small cut set dividing the graph into roughly equal-sized parts.
+    - Used to split large systems (e.g., programs) into maintainable units by minimizing edges between parts.
+    - The problem is NP-complete but solvable via heuristics.
+  - **General vs. s–t Connectivity**
+    - Two main problem types: finding the smallest cut for the entire graph or for separating a specific vertex pair s and t.
+    - s–t connectivity algorithms applied over all pairs can solve general connectivity.
+    - For edge connectivity, testing n−1 pairs suffices due to guaranteed separation.
+  - **Network Flow Techniques**
+    - Edge connectivity can be found via maximum flow computations, equating maximum flow between vi and vj with minimum disconnecting edge sets.
+    - Vertex connectivity relates to Menger’s theorem, connecting it to vertex-disjoint paths.
+    - A transformed graph G' is constructed to translate vertex connectivity to edge connectivity problems.
+    - For more details, see [Section 15.9 Network Flow](page 509).
   - **Implementations and Libraries**
-    - MINCUTLIB offers high-performance codes for various cut algorithms [MINCUTLIB](http://www.avglab.com/andrew/soft.html).
-    - The Boost Graph Library supports connectivity and edge connectivity testing [Boost Graph Library](http://www.boost.org/libs/graph/doc).
-    - GOBLIN and LEDA libraries provide extensive graph optimization and connectivity support.
-    - Combinatorica in Mathematica offers edge and vertex connectivity routines with biconnected and strongly connected components.
-  - **Notes on Algorithms and Theory**
-    - Menger’s theorem underlies connectivity via number of disjoint paths.
-    - Ford-Fulkerson theorem relates maximum flow to minimum cuts.
-    - Karger’s randomized contraction algorithm finds minimum cuts in expected O(m log³ n) time.
-    - Deterministic contraction algorithms exist with O(n(m + n log n)) time.
-    - Non-flow-based k-connectivity algorithms run in O(k n²) time, with special cases for 3- and 4-connectivity.
-    - Minimum-cut methods have practical applications in computer vision and image segmentation.
-  - **Related Problems**
-    - Connected components identification.
-    - Network flow computations.
-    - Graph partitioning methods.
+    - MINCUTLIB offers high-performance codes for multiple cut algorithms, available for noncommercial use.
+    - Boost Graph Library provides connectivity and edge connectivity testing.
+    - GOBLIN and LEDA libraries include extensive support for edge and vertex connectivity.
+    - Combinatorica offers Mathematica implementations of connectivity problems.
+  - **Theoretical Foundations and Algorithms**
+    - Menger’s theorem and the max-flow min-cut theorem underpin correctness.
+    - Karger's randomized contraction algorithm finds minimum cuts in expected O(m log^3 n) time.
+    - Deterministic contraction algorithms exist with O(n(m + n log n)) runtime.
+    - Experimental comparisons and heuristic improvements appear in [CGK+ 97].
+    - Randomized algorithms are discussed in [Motwani and Raghavan 1995](https://example.org).
+  - **Applications and Related Problems**
+    - Minimum-cut methods apply to image segmentation and computer vision.
+    - Specialized algorithms exist for small k-connectivity testing.
+    - Related topics include connected components, network flow, and graph partitioning.

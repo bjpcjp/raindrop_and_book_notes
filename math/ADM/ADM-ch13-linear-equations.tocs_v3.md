@@ -1,46 +1,36 @@
-[Representative image](ADM-ch13-linear-equations.best.png)
+![ADM-ch13-linear-equations](ADM-ch13-linear-equations.best.png)
 
 - **13.1 Solving Linear Equations**
   - **Input description**
-    - The input consists of an m×n matrix A and an m×1 vector b representing m linear equations in n variables.
-    - The goal is to find the vector x such that A·x = b.
+    - The input is an m×n matrix A and an m×1 vector b representing m linear equations in n variables.
+    - These inputs define the linear system A · x = b to be solved.
   - **Problem description**
-    - Solving linear systems answers the question: what vector x satisfies A · x = b?
-    - Linear systems arise in about 75% of scientific computing problems.
-    - Examples include electrical circuit analysis and mechanical truss force calculations.
+    - The goal is to find the vector x such that A · x = b.
+    - Solving linear systems is essential in scientific computing and various engineering analyses.
   - **Discussion**
-    - Some systems have no solution, e.g., 2x + 3y = 5 and 2x + 3y = 6.
-    - Singular systems with multiple solutions arise when rows are scalar multiples of each other.
-    - The determinant of the coefficient matrix indicates singularity when zero.
-    - Gaussian elimination is the standard basic algorithm for solving linear equations.
-    - The algorithm proceeds by scaling and adding equations to eliminate variables stepwise.
-    - The time complexity of Gaussian elimination is O(n³).
-    - Partial reduction plus backsubstitution uses 50% fewer floating-point operations than naive Gaussian elimination.
-  - **Issues to worry about**
-    - Roundoff errors accumulate during row operations and worsen near singular matrices.
-    - Numerical stability is improved by selecting pivot elements and scaling equations properly.
-    - Substitute solutions back into original equations to test accuracy.
-    - Iterative methods refine initial solutions for better accuracy.
-    - Special linear systems may have more efficient solution algorithms than general solvers.
-    - Sparse and banded matrices allow specialized algorithms reducing time complexity.
-    - When solving many systems with the same matrix A but different b vectors, LU-decomposition is effective.
-  - **LU-decomposition**
-    - LU-decomposition factors A into L and U, lower and upper triangular matrices.
-    - Solving A·x = b reduces to solving two triangular systems: L·y = b and U·x = y.
-    - Backsubstitution steps in LU solve take O(n²) time after O(n³) decomposition.
-  - **Matrix inversion**
-    - Solving linear systems is equivalent to matrix inversion.
-    - Matrix inversion is slower and less efficient than Gaussian elimination.
-    - LU-decomposition also facilitates computing determinants and matrix inversion.
+    - Solving linear systems arises in about 75% of scientific computing problems.
+    - Systems may have no solution, a unique solution, or infinitely many solutions; singular systems have zero determinant.
+    - Gaussian elimination transforms the system to enable easy back-substitution for the solution.
+    - The time complexity of Gaussian elimination on an n×n system is O(n³).
+    - Numerical stability and roundoff errors are critical considerations during Gaussian elimination.
+    - Pivot selection and equation scaling reduce numerical errors, emphasizing the importance of reliable solver libraries.
+    - Specialized solver routines exist for particular matrix types to improve efficiency.
+    - Sparse and banded matrices allow use of optimized algorithms reducing computational effort.
+    - Repeated solves with the same coefficient matrix benefit from LU-decomposition to reduce runtime.
+  - **LU-Decomposition**
+    - LU-decomposition factorizes A into lower and upper triangular matrices L and U such that L · U = A.
+    - Solving A · x = b reduces to solving two triangular systems, each in O(n²) time after O(n³) decomposition.
+    - LU-decomposition aids matrix inversion and determinant computation efficiently.
+  - **Matrix Inversion**
+    - Solving linear systems is equivalent to matrix inversion but inversion is thrice as slow as Gaussian elimination.
+    - It is recommended to avoid explicit matrix inversion when solving linear systems.
   - **Implementations**
-    - LAPACK is the standard library for solving linear systems, originating from LINPACK.
-    - LAPACK variants exist for C (CLAPACK), C++ (LAPACK++), and Java (JScience, JAMA).
-    - The Template Numerical Toolkit (TNT) interfaces C++ to LAPACK routines.
-    - Numerical Recipes provides routines and guidance for numerical solution methods.
-  - **Notes**
-    - Golub and van Loan is the standard reference for algorithms solving linear systems.
-    - Additional references include [CLRS01], and numerical analysis texts [BT92, CK07, SK00].
-    - Parallel algorithms for linear systems are well studied and important for practical use.
-    - Matrix inversion can be performed in matrix multiplication time using Strassen's algorithm.
+    - LAPACK and its variants like CLAPACK (C) and LAPACK++ (C++) are standard libraries for solving linear systems.
+    - JScience and JAMA provide matrix packages in Java.
+    - Numerical Recipes offers accessible routines and guidance for reliable numerical solutions.
+  - **Notes and References**
+    - Golub and van Loan [GL96] is the standard algorithm reference for linear systems.
+    - Other references include [CLRS01], numerical analysis texts [BT92, CK07, SK00], and surveys on data structures [PT05].
+    - Parallel algorithms for linear systems are well-studied and widely applied [Gal90, KSV97, Ort88].
   - **Related Problems**
-    - Matrix multiplication and determinant calculation are related linear algebra problems.
+    - Matrix multiplication and determinant/permanent computations are closely related and referenced on pages 401 and 404 respectively.

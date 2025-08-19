@@ -1,49 +1,35 @@
-[Representative image](ADM-ch15-graphs-network-flow.best.png)
+![ADM-ch15-graphs-network-flow](ADM-ch15-graphs-network-flow.best.png)
 
 - **Network Flow**
   - **Input Description**
-    - A directed graph G is provided where each edge (i, j) has a capacity cij.
-    - The problem includes a specified source node s and sink node t.
-    - The objective is to find the maximum flow from s to t respecting edge capacities.
+    - The problem input is a directed graph G with edge capacities for each directed edge (i, j).
+    - A source node s and a sink node t are provided.
+    - The objective is to maximize the flow routed from s to t without exceeding edge capacities.
   - **Problem Description**
-    - Maximum flow seeks the greatest possible flow from s to t constrained by edge capacities.
-    - The flow variables xij respect capacities 0 ≤ xij ≤ cij and flow conservation at all vertices except s and t.
-    - The goal is to maximize the sum of flows leaving s or equivalently entering t.
-  - **Discussion**
-    - Network flow applies broadly beyond physical flow, including logistics and resource allocation.
-    - Many linear programming problems can be modeled and solved faster using network flow methods.
-    - Problems such as bipartite matching, shortest path, and connectivity relate closely to network flow.
-  - **Primary Classes of Network Flow Problems**
-    - **Maximum Flow**
-      - Flow variables represent the amount sent on each edge bounded by capacity.
-      - Flow conservation ensures equal inflow and outflow at all non-source/non-sink vertices.
-      - The target is maximizing total flow entering the sink node t.
-    - **Minimum Cost Flow**
-      - Each edge has a cost dij per unit flow and a target flow amount f from s to t.
-      - The problem minimizes total cost subject to capacity and flow amount constraints.
-      - This extends maximum flow with an additional flow-cost objective.
+    - Seeks the maximum flow from source to sink while respecting capacity constraints of each edge.
+    - The maximum flow problem models a wide range of applications beyond physical flow, including resource allocation in communication networks.
+  - **Key Concepts**
+    - Maximum Flow involves variables xij denoting flow through edges constrained by capacities.
+    - Flow conservation requires the sum of flows into and out of each node (except s and t) to be equal.
+    - Minimum Cost Flow extends maximum flow by adding per-unit flow costs, with a target flow amount.
   - **Special Considerations**
-    - Multiple sources and sinks can be handled by introducing super-source and super-sink nodes.
-    - Networks with edge capacities 0 or 1 admit faster specialized algorithms.
-    - Uniform edge costs allow the use of maximum flow algorithms rather than minimum cost flow techniques.
-    - Multicommodity flow models multiple types of flow with distinct source-destination pairs, but integral versions are NP-complete.
-  - **Algorithms and Implementations**
-    - **Augmenting Path Methods**
-      - These algorithms successively find augmenting paths of positive capacity and improve flow.
-      - Optimality is achieved when no augmenting path remains.
-      - Choosing augmenting paths poorly can slow convergence substantially.
-    - **Preflow-Push Methods**
-      - These allow temporary violations of flow conservation to push flow more efficiently.
-      - Multiple paths can be augmented in parallel, improving speed.
-      - Considered the best choice for practical implementations.
-    - **Available Implementations**
-      - Goldberg’s HIPR and PRF codes for maximum flow are recommended, with HIPR preferred.
-      - The CS code by Goldberg is preferred for minimum cost flow problems.
-      - C++ libraries like GOBLIN and commercial LEDA offer extensive graph optimization capabilities.
-      - The DIMACS challenge provides several network flow implementations and benchmarks.
-  - **Notes**
-    - The fundamental max-flow, min-cut theorem originates from Ford and Fulkerson.
-    - Network flow algorithms have a steady history of improving time complexity, with fastest general algorithms running in O(nm log(n²/m)) time.
-    - Multicommodity flow problems are computationally hard in integral cases.
-    - Network coding theory uses information replication to achieve flow limits beyond traditional routing.
-    - Recommended literature includes [Ahuja, Magnanti & Orlin 1993](https://www.amazon.com/Network-Flows-Prentice-Hall-Operations-Research/dp/013617549X) and classical algorithm texts like [CLRS](https://mitpress.mit.edu/books/introduction-algorithms-third-edition).
+    - Multiple sources/sinks can be handled by introducing super-source and super-sink nodes.
+    - Identical arc capacities (0 or 1) allow faster, specialized algorithms.
+    - Identical edge costs simplify the problem to maximum flow.
+    - Multicommodity flow models multiple types of flow, but integer solutions are NP-complete.
+  - **Algorithmic Approaches**
+    - Augmenting path methods find paths with positive capacity repeatedly to increase flow.
+    - Preflow-push methods push flow from one vertex to another, ignoring flow conservation temporarily for efficiency.
+    - Preflow-push algorithms generally outperform augmenting path algorithms.
+  - **Implementations**
+    - Recommended maximum flow codes include HIPR and PRF by Andrew Goldberg and collaborators.
+    - CS code is preferred for minimum-cost flow problems.
+    - Other libraries include GOBLIN and LEDA, providing extensive graph optimization features.
+    - The DIMACS Implementation Challenge offers various implementations in C, such as Rothberg's preflow-push and Dinic/Karzanov algorithms.
+  - **Notes and Further Reading**
+    - The foundational book on network flows is [AMO93].
+    - Additional algorithmic expositions appear in [CCPS98], [CLRS01], and [PS98].
+    - Multicommodity flow hardness is covered by [Eve79a].
+    - The maximum-flow, minimum-cut theorem is due to Ford and Fulkerson [FF62].
+    - The fastest known maximum flow algorithm runs in O(nm lg(n²/m)) time [GT88].
+    - Network coding theory achieves information flow at max-flow min-cut limits [YLCZ05].

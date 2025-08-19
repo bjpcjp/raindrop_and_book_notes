@@ -1,55 +1,56 @@
-[Representative image](ADM-ch04-sort-search.best.png)
+![ADM-ch04-sort-search](ADM-ch04-sort-search.best.png)
 
 - **Sorting and Searching**
   - **Applications of Sorting**
-    - Sorting algorithms can run in O(n log n), improving on naive O(n²) methods for large n.  
-    - Sorting enables efficient solutions for searching, closest pair, element uniqueness, frequency distribution, selection, and convex hull problems.  
-    - Sorting often dominates the running time, but using efficient sorting routines avoids bottlenecks.  
-    - Further reading: [S. S. Skiena, The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)  
+    - Sorting enables algorithmic improvements from naive O(n²) to O(n log n) for large n.
+    - Sorting is foundational for problems such as binary search, closest pair, element uniqueness, frequency distribution, selection, and convex hull construction.
+    - Sorting often behaves like a data structure due to its utility in various algorithmic contexts.
+    - See Section 14.1 for broader problem catalog applications of sorting.
+    - Further reading: [The Algorithm Design Manual](https://link.springer.com/book/10.1007/978-1-84800-070-4)
   - **Pragmatics of Sorting**
-    - Sorting order (increasing or decreasing), stability, key selection, and handling of equal keys are crucial considerations.  
-    - Non-numerical data sorting requires custom comparison functions, often provided as arguments to generic sorting routines.  
-    - The standard C library function `qsort` illustrates generic sorting via comparison functions.  
+    - Sorting order (increasing/decreasing) and stability affect algorithm suitability.
+    - Stable sorting requires preserving relative order among equal keys, often via secondary keys.
+    - Sorting complex records necessitates specifying key fields and maintaining data integrity.
+    - Sorting routines, like C’s `qsort`, utilize comparison functions to ensure application-specific orderings.
+    - Using built-in library sorts is recommended for efficiency and reliability.
   - **Heapsort: Fast Sorting via Data Structures**
-    - Heapsort improves selection sort by using a heap data structure to achieve O(n log n) time.  
-    - Heaps support efficient insert and extract-min operations in O(log n) time via bubbling operations.  
-    - The heap can be stored implicitly in arrays without pointers, mapping tree structure using index arithmetic.  
-    - Heap construction can be improved from O(n log n) to O(n) time using a bottom-up bubble down approach.  
-    - Heapsort is in-place and runs in worst-case O(n log n) time, making it practical for in-memory sorting.  
-    - Further reading: Priority queue implementations are detailed in catalog Section 12.2.  
+    - Heaps implement priority queues supporting efficient insert and extract-min in O(log n) time.
+    - Implicit binary tree representation via arrays and indexing avoids pointers for heaps.
+    - Heapsort runs in worst-case O(n log n) time by building a heap and repeatedly extracting min.
+    - Heap construction can be optimized from O(n log n) to O(n) via bottom-up bubble-down heapify.
+    - Heapsort is in-place and suitable for main memory sorting; priority queues have wide applications.
   - **War Story: Give me a Ticket on an Airplane**
-    - Real-world airfare pricing is complex due to many fares and combinability rules, making naive shortest-path models infeasible.  
-    - Efficient search algorithms use priority queues and incremental expansion of candidate pairs sorted by combined cost.  
-    - Managing duplicates requires auxiliary data structures such as hash tables.  
-    - The approach generalizes to multi-leg itineraries and enables interactive response times.  
+    - Airfare pricing complexity arises from combinatorial fare sets and restrictive rules.
+    - Evaluating combinations efficiently requires generating pairwise sums in sorted order.
+    - A priority queue can produce next-cheapest pair sums dynamically without enumerating all.
+    - Duplicate management may be handled via hash tables to avoid redundant evaluations.
+    - Problem generalizes to multiple-leg itineraries and is practical for interactive use.
   - **Mergesort: Sorting by Divide-and-Conquer**
-    - Mergesort recursively splits the array, sorts each half, and merges sorted halves in linear time.  
-    - Merging two sorted lists requires at most n−1 comparisons, leading to O(n log n) total time.  
-    - Mergesort is especially suitable for linked lists and is a classic example of divide-and-conquer.  
-    - Requires auxiliary buffer space for arrays, but can merge linked lists in-place.  
+    - Mergesort recursively divides the array in halves, sorts each, then merges results.
+    - Merging two sorted lists takes O(n) time by sequentially comparing front elements.
+    - Mergesort guarantees worst-case O(n log n) time with stable sorting behavior.
+    - Requires auxiliary buffer for arrays; well-suited for linked lists without extra space.
   - **Quicksort: Sorting by Randomization**
-    - Quicksort partitions the array around a pivot, recursively sorting sub-arrays left and right of the pivot.  
-    - Pivot selection affects performance: ideal pivots lead to O(n log n), worst pivots degrade to O(n²).  
-    - Randomized pivot selection ensures expected O(n log n) performance on any input.  
-    - Quicksort generally outperforms mergesort and heapsort in practice due to simpler inner loops.  
-    - Further reading: Detailed randomized algorithm discussion in [MR95], [MU05].  
+    - Quicksort partitions elements by a pivot into lower and higher subarrays recursively.
+    - Linear-time partitioning followed by recursive calls yield average-case O(n log n) time.
+    - Worst case is O(n²) when pivots are consistently poor (smallest or largest element).
+    - Randomized pivot selection ensures expected O(n log n) running time independent of input.
+    - Randomization techniques in algorithms reduce worst-case scenarios and improve robustness.
+    - Further reading: [Randomized Algorithms](https://mitzenmacher.upfal.org/book.html) by Mitzenmacher and Upfal
   - **War Story: Skiena for the Defense**
-    - External sorting on very large files prioritizes minimizing costly disk I/O over internal sorting speed.  
-    - Multiway mergesort using memory-resident heaps merges sorted runs efficiently.  
-    - Benchmarks like Minutesort highlight the importance of engineering in external sorting.  
-    - Lessons emphasize avoiding lawsuits and considering constant factors, not just asymptotic complexity.  
+    - External sorting dominates in practical large-scale applications due to disk I/O costs.
+    - Disk characteristics make minimizing seeks and maximizing sequential reads/writes critical.
+    - Multiway mergesort using heaps effectively merges large sorted runs on disk in external memory.
+    - Benchmarking is complicated by hardware and data characteristics; practical sorting differs greatly from theoretical.
   - **Binary Search and Related Algorithms**
-    - Binary search locates keys in O(log n) time by recursively halving the search space.  
-    - Variants enable counting duplicate occurrences in O(log n), one-sided search for unbounded arrays, and numerical root-finding.  
-    - Numerical root-finding by bisection is a robust algorithm that halves intervals until the root is approximated.  
-    - Binary search exemplifies divide-and-conquer principles.  
+    - Binary search finds keys in O(log n) time by recursive halving on sorted arrays.
+    - Variants exist to count occurrences, identify exact boundaries of duplicates, and perform one-sided searches.
+    - Numerical problems such as computing square roots can be solved by binary (bisection) search.
+    - Binary search exemplifies divide-and-conquer principles for efficient problem solving.
   - **Divide-and-Conquer**
-    - This paradigm breaks problems into smaller subproblems, recursively solves them, and merges results.  
-    - Typical runtime recurrences have the form T(n) = aT(n/b) + f(n).  
-    - The master theorem characterizes runtime behavior into three cases depending on f(n) relative to n^{log_b a}.  
-    - Examples include mergesort, binary search, fast heap construction, and Strassen’s matrix multiplication.  
-    - Understanding recurrences aids algorithm design and complexity analysis.  
-    - Further reading: Standard references include [CLRS01], [KT06], [Man89].  
-  - **Exercises**
-    - The exercises cover sorting applications, heaps, quicksort, other sorting algorithms, lower bounds, searching, implementation challenges, interview preparation, and programming challenges.  
-    - Emphasis on algorithm design, complexity analysis, and practical considerations.
+    - Divide-and-conquer algorithms split problems into smaller instances, solve recursively, then combine.
+    - Recurrence relations model their time complexity, generally of the form T(n) = aT(n/b) + f(n).
+    - The Master Theorem provides cases to solve such recurrences to determine total running time.
+    - Examples include mergesort (O(n log n)), binary search (O(log n)), faster heap construction (O(n)), and Strassen’s matrix multiplication (O(n^2.81)).
+    - Understanding recurrences is key to analyzing recursive algorithm efficiency.
+    - Further reading: [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms) by Cormen et al.

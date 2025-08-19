@@ -1,0 +1,33 @@
+![ADM-ch18-strings-cryptography](ADM-ch18-strings-cryptography.best.png)
+
+- **Cryptography Overview**
+  - **Classes of Cryptosystems**
+    - Caesar shifts involve rotating the alphabet or using arbitrary permutations for encoding.
+    - Block Shuffle Ciphers repeatedly shuffle bits guided by keys, exemplified by DES and triple DES.
+    - Public Key Cryptography uses separate keys for encoding and decoding, with RSA as a classic example.
+    - Security depends on the selected algorithm and key length relative to intended threats.
+    - See [Cryptolounge Algorithms](http://www.cryptolounge.org/wiki/Category:Algorithm) for more details.
+  - **Security Considerations**
+    - Cryptography’s strength depends on the weakest link, often user practices rather than algorithms.
+    - Symmetric key algorithms require shorter keys than public key algorithms for equivalent security.
+    - NIST and RSA Labs recommend 80-bit symmetric keys equivalent to 1024-bit asymmetric keys.
+    - Advances in computing power can quickly obsolesce older cryptosystems like DES.
+    - Refer to [Handbook of Applied Cryptography](http://www.cacr.math.uwaterloo.ca/hac/) for technical depth.
+  - **Practical Cryptographic Problems**
+    - Validating data integrity against random corruption uses checksums or cyclic-redundancy checks.
+    - Detecting deliberate data corruption requires cryptographic hashes like MD5 and SHA-256.
+    - Proving file authenticity uses digital signatures comprising checksums encrypted with private keys.
+    - Digital rights management requires fast decryption methods often using pseudorandom bit streams.
+    - The Boost CRC Library [Boost CRC](http://www.boost.org/libs/crc/) offers implementations for checksums.
+  - **Implementation Resources**
+    - Nettle is a comprehensive low-level cryptographic library supporting hash and block cipher algorithms.
+    - Crypto++ is a C++ class library including DES, AES, RSA, and hash schemes.
+    - Popular open source tools such as GnuPG and OpenSSL demonstrate practical cryptography.
+    - Nettle: [Nettle Library](http://www.lysator.liu.se/~nisse/nettle) provides foundational algorithms.
+    - Crypto++: [Crypto++ Library](http://www.cryptopp.com/) offers extensive cryptographic implementations.
+  - **Historical and Reference Notes**
+    - DES was a federal standard from 1976 until replaced due to short key length vulnerabilities.
+    - RSA security relies on the complexity of factoring and primality testing.
+    - Serious vulnerabilities have been found in MD5; SHA family algorithms provide stronger hashing.
+    - Key historical references include [Schneier’s Cryptography Overview](https://www.schneier.com/book/) and [Kahn’s History of Cryptography](https://www.kahnbooks.com/).
+    - RSA Laboratories homepage [RSA Labs](http://www.rsa.com/rsalabs/) offers detailed RSA insights.

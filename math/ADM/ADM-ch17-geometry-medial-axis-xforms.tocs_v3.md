@@ -1,35 +1,46 @@
-[Representative image](ADM-ch17-geometry-medial-axis-xforms.best.png)
+![ADM-ch17-geometry-medial-axis-xforms](ADM-ch17-geometry-medial-axis-xforms.best.png)
 
 - **Medial-Axis Transform**
-  - **Input description**
-    - The input is a polygon or polyhedron \( P \).
-    - The problem is to find points within \( P \) that have more than one closest point on the boundary.
-    - The medial-axis extracts a simple and robust representation of the polygon’s shape.
-  - **Discussion**
-    - The medial-axis represents the polygon’s skeleton, useful for thinning and shape reconstruction.
-    - It is always a tree for polygons without holes, facilitating dynamic programming for shape classification.
-    - For polygons with holes, the skeleton forms an embedded planar graph but remains manageable.
-    - Skeletons reflect shape centers, supporting applications like motion planning.
-  - **Geometric data approach**
-    - Uses Voronoi diagrams of line segments defining the polygon edges.
-    - The medial-axis is the portion of the line-segment Voronoi diagram inside \( P \).
-    - The straight skeleton is related but uses bisectors equidistant to supporting lines rather than edges.
-    - Straight skeletons have polygonal edges and are simpler to compute than the medial axis.
-    - For convex polygons, the medial axis, straight skeleton, and Voronoi diagram coincide.
-  - **Image data approach**
-    - Pixel-based images correspond to lattice points on an integer grid.
-    - Skeletons can be computed via a “brush fire” thinning algorithm that simulates fire spreading inward.
-    - The algorithm deletes non-skeleton boundary pixels iteratively until a thin (1-2 pixel width) object remains.
-    - Pixel-based skeletons are easier to implement but less geometrically accurate and may lack connectivity.
-    - Exact medial-axis properties are difficult to achieve in discrete pixel representations.
+  - **Input description: A polygon or polyhedron P**
+    - The input is a polygon or polyhedron defined by a collection of line segments.
+    - The polygon may include holes, affecting the form of the medial axis.
+    - Input representation influences the computation approach for the medial-axis transform.
+  - **Problem description: Points with multiple closest boundary points**
+    - The medial axis consists of points inside P with more than one closest boundary point.
+    - These points define the shape's skeleton or thinned representation.
+    - The skeleton helps identify the shape’s center and supports applications such as shape reconstruction.
+  - **Discussion: Uses and properties of medial-axis transforms**
+    - The transform yields a simple, robust shape representation useful in thinning and skeletonization.
+    - For polygons without holes, the medial axis is a tree; with holes, it is an embedded planar graph.
+    - Medial axes enable measuring edit distances between skeletons for shape recognition and classification.
+    - Relevant to applications like computer vision and optical character recognition.
+    - [De Berg et al., "Computational Geometry"](https://example.org) offers further details on medial-axis use.
+  - **Computing medial-axis transforms**
+    - **Geometric data approach**
+      - Constructs the medial axis via the portion of the Voronoi diagram of polygon edges lying inside P.
+      - Voronoi diagrams of line segments segment the plane by proximity to edges.
+      - The straight skeleton is a related structure, easier to compute and polygonal but not always centered.
+      - CGAL provides implementations for straight skeleton and offset contours.
+      - See VRONI for efficient Voronoi diagrams of line segments: [VRONI Project](http://www.cosy.sbg.ac.at/~held/projects/vroni/vroni.html).
+    - **Image data approach**
+      - Approximates the polygon from pixel lattices and applies pixel-based thinning algorithms.
+      - Employs a "brush fire" method simulating inward boundary burning to detect skeleton points.
+      - Pixel-based methods are simpler but lack exact geometric properties, resulting in possible disconnected or approximate skeletons.
+      - Pixel-based skeleton extraction operates in linear time relative to the image pixel count.
   - **Implementations**
-    - CGAL package computes straight skeletons and offset contours of polygons.
-    - VRONI robustly computes Voronoi diagrams of segments, points, and arcs; suitable for medial-axis transforms.
-    - Cocone constructs approximate medial-axis transforms for 3D point clouds to interpolate surfaces.
-    - Powercrust approximates medial-axis transforms to reconstruct geometrically correct surfaces from dense samples.
-  - **Notes and references**
-    - The medial-axis transform was introduced for shape similarity studies in biology [Blu67].
-    - It is fundamental to surface reconstruction algorithms like Powercrust [ACK01a, ACK01b].
-    - Medial-axis of polygons can be computed in \( O(n \log n) \) time for arbitrary polygons; linear time for convex ones.
-    - Straight skeletons have subquadratic construction algorithms and applications in virtual building roof models.
-    - For thorough surveys and additional theory, see [dBvKOS00], [O’R01], and [Pav82].
+    - CGAL offers polygon straight skeleton computation and offset contour routines.
+    - VRONI efficiently computes Voronoi diagrams of line segments for medial-axis extraction in polygons.
+    - Cocone approximates medial-axis transforms for polyhedral surfaces from point clouds in 3D.
+    - Powercrust uses discrete medial axis approximations for surface reconstruction from dense point samples.
+    - Related software links: [Cocone](http://www.cse.ohio-state.edu/~tamaldey/cocone.html), [Powercrust](http://www.cs.utexas.edu/users/amenta/powercrust/).
+  - **Notes**
+    - Thinning methods in image processing are surveyed in [LLS92, Ogn93].
+    - Medial-axis introduced for biological shape similarity in [Blu67].
+    - Pattern recognition applications reviewed in [DHS00].
+    - Algorithms run in O(n log n) for general polygons and linear time for convex polygons.
+    - Straight skeleton algorithms introduced in [AAAG95] with improvements in [EE99].
+    - Uses include defining roof structures in virtual models [LD03].
+    - Additional references provide comprehensive algorithmic and theoretical background, e.g., [dBvKOS00, O’R01, Pav82].
+  - **Related problems**
+    - Connection to Voronoi diagrams (see page 576).
+    - Relation to Minkowski sums (see page 617).

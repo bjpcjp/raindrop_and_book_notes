@@ -1,0 +1,32 @@
+![ADM-ch15-graphs-matching](ADM-ch15-graphs-matching.best.png)
+
+- **Matching**
+  - **Problem Description**
+    - The problem seeks the largest set of edges where each vertex is incident to at most one edge, defining a matching.
+    - Bipartite graphs model common matching problems, such as worker-task assignments or marriage pairings.
+    - Applications include maximizing task assignments and rearranging string characters to maximize displacement.
+    - Bipartite matching problems benefit from faster algorithms due to the absence of odd-length cycles.
+    - See [Lovász and Plummer, Matching Theory](https://www.springer.com/gp/book/9780387979759) for foundational theory.
+  - **Variations and Extensions**
+    - Matching generalizes to allow multiple tasks per employee by vertex replication, changing the problem to star coverings.
+    - Edge weights allow optimization for suitability, requiring maximum weight matching algorithms.
+    - Weighted and unweighted matching problems require different algorithmic approaches.
+  - **Algorithmic Approaches**
+    - Maximum cardinality matching is found by searching augmenting paths as per Berge’s theorem.
+    - Bipartite matching algorithms leverage network flow transformations and run efficiently.
+    - Weighted matching commonly uses the Hungarian algorithm.
+    - General graph matching incorporates blossoms to handle odd-length cycles.
+    - The Hopcroft-Karp algorithm finds maximum bipartite matching in O(√n m) time.
+    - Edmond’s algorithm and Gabow’s implementation solve general matching problems in polynomial time.
+    - Further details on augmenting path methods and Hungarian algorithm appear in [CLRS](https://mitpress.mit.edu/books/introduction-algorithms-third-edition).
+  - **Implementations and Software**
+    - High-performance C codes exist for weighted and unweighted bipartite matching by Goldberg, Kennedy, and Cherkassky et al.
+    - DIMACS Challenge archives offer multiple matching algorithm implementations in Fortran and C.
+    - Libraries such as GOBLIN and LEDA implement both maximum cardinality and weighted matching on bipartite and general graphs.
+    - Blossom IV and Kececioglu-Pecqueur code are available for general graph matchings.
+    - The Stanford GraphBase includes a Hungarian algorithm implementation with practical visualization examples.
+  - **Theoretical Insights and Related Problems**
+    - Stable marriage problems are related but distinct, solvable in O(n²) time with guaranteed stable matches.
+    - Maximum matching size equals minimum vertex cover size in bipartite graphs, linking matching to vertex cover and independent set problems.
+    - Matching is connected to broader graph optimization problems including Eulerian cycles and network flows.
+    - Survey articles such as [Galil 1986](https://doi.org/10.1137/0909003) provide comprehensive overviews of matching algorithms.

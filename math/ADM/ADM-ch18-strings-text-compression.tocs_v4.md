@@ -1,0 +1,52 @@
+![ADM-ch18-strings-text-compression](ADM-ch18-strings-text-compression.best.png)
+
+- **Text Compression**
+  - **Input description**
+    - The input is a text string S.
+    - The goal is to produce a shorter text string S′ from which S can be exactly reconstructed.
+  - **Problem description**
+    - Data compression seeks space-efficient encodings for given data files.
+    - The increase in data volume and storage capacity influences the importance of compression.
+  - **Discussion**
+    - Secondary storage devices fill quickly despite growing capacity.
+    - Compression improves effective network bandwidth by reducing bits transmitted.
+    - Preprocessing such as removing redundant spaces or applying the Burrows-Wheeler transform improves compressibility.
+    - Lossless encoding is required for document storage, while lossy encoding yields higher compression in multimedia.
+    - Patented algorithms such as LZW have licensing considerations; alternatives often exist.
+    - Compression algorithms must be chosen based on input type, real-time requirements, and tradeoffs between compression ratio and speed.
+    - Popular lossy compression methods like JPEG and MPEG are recommended for audio/video/image data.
+  - **Common issues in selecting compression algorithms**
+    - Lossy vs. lossless encoding depends on the exactness needed after decompression.
+    - Data simplification before compression enhances performance.
+    - Patent status can affect algorithm choice and implementation.
+    - Image compression frequently uses run-length coding for similar pixel value runs.
+    - Real-time decompression may take precedence over compression speed.
+  - **Types of text compression algorithms**
+    - **Huffman codes**
+      - Assign variable-length codes based on character frequency.
+      - Constructed via a greedy algorithm combining least frequent symbols repeatedly.
+      - Resulting codes reduce space by assigning shorter codes to common symbols.
+      - Require two passes over the document and explicit storage of the coding table.
+      - Best for exploiting symbol frequency, less effective on higher-order redundancies.
+      - Refer to [CLRS01] and [AHU83] for implementations and theory.
+    - **Lempel-Ziv algorithms**
+      - Build coding tables dynamically as the text is read.
+      - Adapt to local text changes and exploit repeated substrings of variable length.
+      - Robust across different data types and often outperform application-specific algorithms.
+      - Used by popular programs like gzip implementing Lempel-Ziv variations.
+      - Recommended for general use due to balance of speed and compression quality.
+  - **Transforms and preprocessing**
+    - The Burrows-Wheeler transform rearranges text cyclic shifts to create runs of repeated characters.
+    - Results in 10-15% higher compressibility than the original text.
+    - Computable in linear time and perfectly reversible if the last character is unique.
+    - Used by programs like bzip2 for tighter compression than gzip.
+  - **Implementations and recommendations**
+    - gzip uses a Lempel-Ziv based public domain algorithm under GNU license.
+    - bzip2 utilizes the Burrows-Wheeler transform for improved compression at higher cost.
+    - Extensive comparisons and software are available at [Maximum Compression](http://www.maximumcompression.com/).
+  - **Notes and references**
+    - Comprehensive books include Sayood [Say05] and Salomon [Sal06].
+    - Foundational works: Huffman codes [Huf52], Lempel-Ziv [Wel84, ZL78], Burrows-Wheeler [BW94].
+    - The IEEE Data Compression Conference advances research in this mature field.
+  - **Related Problems**
+    - Shortest common superstring and cryptography are relevant topics linked to text compression.

@@ -1,0 +1,37 @@
+![ADM-ch15-graphs-planarity](ADM-ch15-graphs-planarity.best.png)
+
+- **15.12 Planarity Detection and Embedding**  
+  - **Input description**  
+    - The input is a graph \( G \).  
+  - **Problem description**  
+    - Determine if \( G \) can be drawn in the plane with no two edges crossing.  
+    - If planar, produce such a drawing or embedding.  
+  - **Discussion**  
+    - Planar drawings clarify graph structure by eliminating edge crossings.  
+    - Planar graphs are sparse with \( |E| \leq 3|V| - 6 \) for nontrivial graphs.  
+    - Every planar graph contains a vertex of degree at most 5 due to Euler’s formula.  
+    - Planarity testing algorithms often use depth-first search and consider cycles and connecting paths.  
+    - Insertion of paths incrementally can cause cramped and hard-to-understand drawings.  
+    - Better algorithms produce planar-grid embeddings with vertices on a bounded grid for improved clarity.  
+    - The crossing number minimization problem is NP-complete; heuristics find large planar subgraphs to embed.  
+  - **Implementations**  
+    - LEDA library provides linear-time planarity testing and planar-grid embeddings.  
+    - JGraphEd Java framework includes PQ-tree and straight-line grid embedding algorithms.  
+    - PIGALE C++ library focuses on planar graph drawings and planarity testing with obstruction identification.  
+    - GRASP heuristics by Ribeiro and Resende implement largest planar subgraph finding in Fortran.  
+  - **Notes**  
+    - Kuratowski’s theorem states planar graphs exclude subgraphs homeomorphic to \( K_{3,3} \) or \( K_5 \).  
+    - Fary’s theorem states every planar graph admits a straight-line embedding.  
+    - Hopcroft and Tarjan provided the first linear-time planarity testing algorithm.  
+    - Booth and Lueker developed a PQ-tree-based planarity test.  
+    - Efficient planar grid embeddings were introduced by de Fraysseix, Pach, and Pollack.  
+    - Nishizeki and Rahman’s book gives an overview of planar drawing algorithms.  
+    - Outerplanar graphs can be recognized and embedded in linear time and exclude subgraphs homeomorphic to \( K_{2,3} \).  
+  - **Related Problems**  
+    - Graph partitioning and tree drawing are related graph problems addressed in other sections.  
+  - **Further reading**  
+    - [Algorithm Repository](http://www.cs.sunysb.edu/~algorith)  
+    - [LEDA Library](https://www.algorithmic-solutions.com)  
+    - [JGraphEd](http://www.jharris.ca/JGraphEd/)  
+    - [PIGALE](http://pigale.sourceforge.net/)  
+    - Nishizeki and Rahman, *Planar Graph Drawing* (2004)

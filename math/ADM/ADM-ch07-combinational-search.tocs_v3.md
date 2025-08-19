@@ -1,58 +1,67 @@
-[Representative image](ADM-ch07-combinational-search.best.png)
+![ADM-ch07-combinational-search](ADM-ch07-combinational-search.best.png)
 
-- **Combinatorial Search and Heuristic Methods**
-  - **Backtracking**
-    - Backtracking systematically enumerates all configurations of a search space by depth-first traversal of a partial solution tree.
-    - The algorithm extends partial solutions and prunes infeasible paths to improve efficiency.
-    - Core components include solution testing, candidate construction, and move/unmove operations.
-    - Examples illustrate constructing all subsets, permutations, and paths in graphs.
-    - See [The Algorithm Design Manual](https://link.springer.com/book/10.1007/978-1-84800-070-4) for implementation details.
-  - **Search Pruning**
-    - Pruning eliminates partial solutions that cannot lead to full solutions, dramatically improving backtracking efficiency.
-    - Exploiting symmetry and cost-based pruning are effective pruning strategies.
-    - Pruning reduces infeasible search space exponentially for problems like TSP.
-    - Effective pruning enables solving small optimization problems up to 15–50 items.
-  - **Sudoku**
-    - Solving Sudoku via backtracking involves representing the sequence of open squares and their valid candidate digits.
-    - Selecting the most constrained square and applying look-ahead pruning significantly reduces search time.
-    - Pruning can reduce solution time from hours to seconds on challenging puzzles.
-    - Sudoku puzzles are designed to have a unique solution, allowing early termination upon finding one.
-  - **War Story: Covering Chessboards**
-    - The problem is to cover all 64 squares with pieces threatening them; exact cover was unknown for over a century.
-    - Pruning by maximum threat coverage and exploiting symmetries allowed efficient backtracking.
-    - Two-phase pruning (weak vs strong attacks) reduced search space by over 95%.
-    - The solution demonstrated coverage with fewer pieces under some assumptions.
-  - **Heuristic Search Methods**
-    - Heuristic methods search large combinatorial spaces when exact search is impractical, focusing on solution space representation and cost functions.
-    - Random sampling selects candidate solutions uniformly at random but is inefficient for problems with sparse good solutions.
-    - Local search iteratively improves solutions via neighborhood transitions but can get stuck in local optima.
-    - Simulated annealing probabilistically accepts worse solutions early on to escape local optima, guided by a cooling schedule.
-    - Simulated annealing outperforms random sampling and local search for TSP and other problems.
-    - Relevant resource: [Local Search in Combinatorial Optimization](https://www.springer.com/gp/book/9780792374759).
-  - **War Story: Only it is Not a Radio**
-    - Selective assembly seeks to maximize functioning assemblies by matching parts with total defect below a threshold.
-    - The problem generalizes to hypergraph matching and constrained bin packing, both NP-complete.
-    - Simulated annealing swaps parts between bins to optimize assembly quality and maximize functional assemblies.
-    - This method improved factory results, e.g., increasing working not-radios from six to seven.
-  - **War Story: Annealing Arrays**
-    - Fabrication of oligonucleotide arrays requires minimizing array size while covering all strings.
-    - Simulated annealing optimizes prefix-suffix coverage with operations like swap, add, delete, and usefulness-based moves.
-    - A tailored cost function balances array dimensions and coverage quality.
-    - The method compressed an HIV 7-mer array from 192×192 to 130×132 within acceptable computation time.
-  - **Other Heuristic Search Methods**
-    - Genetic algorithms simulate natural selection with populations and genetic operators but often underperform compared to simulated annealing.
-    - Disadvantages include unnatural modeling and slower convergence due to uninformed mutations.
-    - Other methods include neural networks and ant colony optimization, but their advantage remains unclear.
-    - Recommended focus is on simulated annealing for effective heuristic search.
-    - See [Handbook of Metaheuristics](https://link.springer.com/book/10.1007/1-84628-642-9) for more.
-  - **Parallel Algorithms**
-    - Parallelism can improve performance but may have limited speedup and debugging challenges.
-    - Load balancing is critical; naive partitioning can cause bottlenecks, as illustrated by the pyramidal number problem.
-    - Parallel algorithms are best used when data partitions are independent with minimal inter-processor communication.
-    - Consider sequential optimizations before parallelism due to complexity and limited gains.
-    - See [Introduction to Parallel Algorithms](https://mitpress.mit.edu/books/introduction-parallel-algorithms) for reference.
-  - **War Story: Going Nowhere Fast**
-    - Parallelizing a search for Waring’s conjecture failed due to uneven workload distribution and system constraints.
-    - Problem size affected runtime per subtask, stressing the importance of balanced partitioning.
-    - Single slowest task limited total parallel execution time in a tightly coupled system.
-    - Lessons emphasize the need for workload estimation and smart task assignment in parallel computation.
+- **7 Combinatorial Search and Heuristic Methods**
+  - **7.1 Backtracking**
+    - Backtracking systematically iterates through all possible configurations of a solution space using depth-first search.
+    - The search models solutions as vectors, extending partial solutions stepwise and pruning infeasible extensions.
+    - Key application-specific routines include checking for solutions, generating candidates, processing solutions, and managing moves.
+    - Detailed examples cover constructing all subsets, permutations, and simple paths in graphs.
+    - For more on permutations and subsets, see Sections 14.4 and 14.5 of the referenced manual.
+  - **7.2 Search Pruning**
+    - Pruning cuts off search branches where partial solutions cannot yield valid complete solutions, greatly improving efficiency.
+    - Symmetry exploitation, such as fixing the start vertex in TSP, reduces search redundancy.
+    - Effective pruning is critical to solving problems of size typically ranging from 15 to 50 items.
+  - **7.3 Sudoku**
+    - Sudoku solving utilizes backtracking by selecting the next cell to fill and the possible numbers to assign, pruning impossible or invalid moves.
+    - Selecting the most constrained empty square dramatically speeds up the search.
+    - Implementations employ routines to find possible values, make moves, undo moves, and detect solutions.
+    - Lookahead pruning identifies dead-ends earlier, substantially reducing search complexity.
+    - Comparative results demonstrate that lookahead and constrained square selection reduce search steps by orders of magnitude.
+  - **7.4 War Story: Covering Chessboards**
+    - The problem analyzes placing eight main chess pieces to threaten all 64 board squares simultaneously.
+    - Naive exhaustive search is infeasible, so pruning uses piece mobility limits and piece ordering by mobility.
+    - Symmetry reductions and weak vs. strong threat definitions enable more efficient search.
+    - Final analysis showed no arrangements covering all 64 squares with bishops on opposite colors, but seven pieces suffice when superimposing queen and knight.
+    - See [RHS89] for deeper details on this classical combinatorial problem.
+  - **7.5 Heuristic Search Methods**
+    - Heuristics provide approximate solutions to intractable combinatorial optimization problems without enumerating the full solution space.
+    - Three methods discussed are random sampling, local search (hill-climbing), and simulated annealing.
+    - Random sampling uniformly selects random solutions but performs poorly when good solutions are rare or when solution space coherence exists.
+    - Local search improves solutions by iterative local modifications but risks getting trapped in local optima.
+    - Simulated annealing probabilistically accepts worse solutions to escape local optima and employs a cooling schedule to decrease randomness.
+    - Comparative TSP experiments show simulated annealing outperforming both random sampling and local search in quality and convergence speed.
+    - For more on heuristic algorithms and their applications, see [AL97] and [DT04].
+    - Sample problems include maximum cut, maximum independent set, and circuit board placement with natural cost functions and transitions.
+  - **7.6 War Story: Only it is Not a Radio**
+    - Problem deals with selective assembly to maximize the number of functional multi-part devices with bounded total defect.
+    - The problem maps to hypergraph matching (NP-complete) and constrained bin packing.
+    - A simulated annealing heuristic moves/swaps parts across assemblies, scoring solutions by number of working assemblies plus proximity of others to defect limits.
+    - This approach improved factory results by producing more working assemblies than previously achieved.
+  - **7.7 War Story: Annealing Arrays**
+    - Designing dense oligonucleotide arrays for DNA sequencing requires minimizing array size covering a given set of strings.
+    - The solution models states as subsets of prefixes and suffixes and uses simulated annealing with moves like swap, add, delete, and usefulness-based operations.
+    - The multi-term cost function balances array dimensions and string coverage to steer annealing towards smaller arrays.
+    - The final optimized HIV 7-mer array was reduced from 192×192 to 130×132, computed in about fifteen minutes.
+    - See [BS97] and [CGJ98] for further reading on array design and selective assembly.
+  - **7.8 Other Heuristic Search Methods**
+    - Methods like genetic algorithms, neural networks, and ant colony optimization also address combinatorial problems via nature-inspired analogies.
+    - Genetic algorithms maintain populations and evolve solutions via crossover and mutation, but often perform worse and slower than simulated annealing in practice.
+    - Practical implementations require careful consideration due to complexity and slow convergence.
+    - The author recommends simulated annealing over genetic algorithms for heuristic optimization.
+  - **7.9 Parallel Algorithms**
+    - Parallel processing can speed up algorithm execution but often yields limited speedup compared to improving sequential algorithms.
+    - Effective parallelization requires minimizing interprocessor communication and careful load balancing.
+    - Debugging parallel programs is more challenging due to nondeterminism.
+    - Naive parallelization of brute-force search may be inferior to optimized sequential algorithms.
+    - For safe parallelization, partition workloads into independent subproblems when possible.
+  - **7.10 War Story: Going Nowhere Fast**
+    - Parallelization of Waring’s conjecture checking on a hypercube failed due to improper workload balancing.
+    - Splitting input numeric intervals equally ignored variable computation times per integer.
+    - Final processors running slow subranges stalled the entire computation.
+    - Lesson: load balancing based on computational complexity is essential in parallel processing.
+  - **7.11 Exercises**
+    - Exercise topics cover backtracking implementations including derangements, multiset permutations, graph isomorphism, anagrams, subgraph isomorphism, and turnpike reconstruction.
+    - Combinatorial optimization exercises include bandwidth minimization, maximum satisfiability, maximum clique, vertex and edge coloring, feedback vertex sets, and set cover problems.
+    - Interview problems focus on permutations, subsets, anagrams, digit-to-letter mappings, and unique sequence enumerations.
+    - Programming challenges listed from online judge platforms offer practice on related combinatorial problems.
+    - Relevant external resources include [SR03], [AL97], and online judge archives for practice implementations.

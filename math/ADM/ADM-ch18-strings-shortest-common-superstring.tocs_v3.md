@@ -1,27 +1,30 @@
-[Representative image](ADM-ch18-strings-shortest-common-superstring.best.png)
+![ADM-ch18-strings-shortest-common-superstring](ADM-ch18-strings-shortest-common-superstring.best.png)
 
 - **18.9 Shortest Common Superstring**
   - **Problem Description**
-    - The shortest common superstring is the shortest string containing every string in a set as a substring.  
-    - Finding a common superstring is easy, but minimizing its length is NP-complete.  
-    - The problem has notable applications in DNA sequence assembly, casino slot machine symbol reconstruction, and data/matrix compression.  
-    - For further reading on applications and complexity, see [Shortest Common Superstring Wikipedia](https://en.wikipedia.org/wiki/Shortest_common_superstring_problem).  
-  - **Reduction to Traveling Salesman Problem**
-    - The problem reduces to an asymmetric traveling salesman problem on an overlap graph.  
-    - Vertices represent strings; edge weights correspond to the non-overlapping portion between pairs of strings.  
-    - Asymmetric TSP instances are significantly harder to solve practically than symmetric ones.  
+    - The shortest common superstring is the minimal string containing all input strings as substrings.
+    - This problem is NP-complete for all reasonable classes of strings.
+    - The problem arises in applications such as slot machine pattern reconstruction, data compression, and DNA sequence assembly.
+    - Finding a shortest superstring by direct concatenation is easy, but minimizing its length is computationally difficult.
+  - **Reduction to Traveling Salesman Problem (TSP)**
+    - Construct an overlap graph where vertices represent input strings and edge weights represent the non-overlapping portion between strings.
+    - The problem reduces to finding a minimum-weight path visiting all vertices in the graph.
+    - Edge weights are asymmetric, making the resulting TSP instance asymmetric and harder to solve.
   - **Greedy Heuristic Approach**
-    - The greedy heuristic repeatedly merges the pair of strings with maximum overlap until one superstring remains.  
-    - This method can be implemented in linear time by using suffix trees to find overlaps efficiently.  
-    - The greedy heuristic guarantees a superstring no more than 3.5 times longer than optimal, but can sometimes be twice as long.  
-    - For implementation details and heuristics, consult [Gusfield 1994](https://doi.org/10.1017/CBO9780511574336).  
-  - **Applications and Advanced Topics**
-    - The shortest common superstring helps reconstruct DNA sequences from fragment reads using shotgun sequencing.  
-    - High-performance DNA assembly programs such as CAP3 and PCAP implement these algorithms.  
-    - The Celera assembler used for the human genome is open-source at [Celera Assembler](http://sourceforge.net/projects/wgs-assembler/).  
-    - Additional research on handling errors and approximation algorithms is available in [Kececioglu and Myers 1995] and [Swe 1999].  
-  - **Computational Complexity and Variations**
-    - Deciding if a superstring exists avoiding certain negative substrings is NP-complete unless spacers are introduced.  
-    - Recent advances have improved approximation factors from 3.5 to approximately 2.5 but a factor-2 approximation remains a goal.  
-    - Experiments show greedy heuristics typically produce solutions near optimal for many inputs.  
-    - Related concepts include suffix trees and text compression algorithms.
+    - Iteratively merge the two strings with maximum overlap until only one string remains.
+    - The heuristic can be implemented in linear time using suffix trees to efficiently find overlaps.
+    - Greedy may yield superstrings up to 3.5 times longer than optimal, but typically performs much better in practice.
+    - Examples show cases where greedy is fooled, but it never exceeds a 3.5 approximation ratio.
+  - **Advanced Complexity and Variations**
+    - Adding forbidden negative strings (strings that cannot appear in the final superstring) makes the problem NP-complete unless a spacer character is allowed.
+    - Handling substitution errors in strings is studied in advanced shortest common superstring variants.
+  - **Applications and Implementations**
+    - DNA sequence assembly uses shortest common superstrings to piece together fragments from shotgun sequencing.
+    - CAP3 and PCAP are notable assemblers using these principles, capable of handling mammalian-scale data.
+    - The Celera assembler, originally for human genome sequencing, is available as open source.
+  - **Notes and Further Reading**
+    - Theoretical and algorithmic progress on shortest common superstring and approximations are documented by Blum et al. [BJL+94] and others.
+    - Genetic algorithm approaches and heuristic performance experiments appear in [ZS04] and [RBT04].
+    - Analytical results on random sequences reveal limits on compression via shortest common superstring [YZ99].
+    - Recommended readings include surveys by Myers and Kececioglu [MKT07, Mye99a] and substitution error handling by Kececioglu and Myers [KM95].
+    - Links to assemblers: [CAP3 and PCAP](http://seq.cs.iastate.edu/), [Celera assembler](http://sourceforge.net/projects/wgs-assembler/).

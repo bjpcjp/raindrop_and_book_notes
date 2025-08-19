@@ -1,31 +1,36 @@
-[Representative image](ADM-ch13-discrete-fourier-xform.best.png)
+![ADM-ch13-discrete-fourier-xform](ADM-ch13-discrete-fourier-xform.best.png)
 
 - **Discrete Fourier Transform**
   - **Input description**
-    - The input is a sequence of n real or complex values \( h_i \), indexed from 0 to \( n-1 \), sampled at uniform intervals.
+    - The input is a sequence of n real or complex values \( h_i \), with indices \( 0 \le i \le n-1 \).
+    - Samples are taken at uniform intervals from a function \( h \).
   - **Problem description**
-    - The discrete Fourier transform (DFT) computes \( H_m = \sum_{k=0}^{n-1} h_k e^{2\pi i k m / n} \) for \( m = 0 \) to \( n-1 \).
+    - The discrete Fourier transform is defined as \( H_m = \sum_{k=0}^{n-1} h_k e^{-2\pi i k m / n} \) for \( 0 \le m \le n-1 \).
+    - It transforms a time series into the frequency domain.
   - **Discussion**
-    - Fourier transforms convert time-series samples into the frequency domain, simplifying certain operations.
-    - Applications include filtering, image compression, convolution and deconvolution, and computing correlation functions.
-    - Filtering removes noise by eliminating certain frequency components and then applying the inverse transform.
-    - Image compression reduces data by discarding sine function coefficients that contribute little to the image.
-    - Convolutions can be computed efficiently using Fourier transforms, reducing complexity from \( O(n^2) \) to \( O(n \log n) \).
-    - Correlation functions help detect periodicities in data using Fourier transforms.
-  - **Discrete Fourier transform and inverse formulas**
-    - The DFT is defined by \( H_m = \sum_{k=0}^{n-1} h_k e^{-2\pi i k m / n} \).
-    - The inverse transform is \( h_m = \frac{1}{n} \sum_{k=0}^{n-1} H_k e^{2\pi i k m / n} \).
-  - **Computational complexity and FFT**
-    - Direct DFT computation takes \( O(n^2) \) time.
-    - The Fast Fourier Transform (FFT) reduces this to \( O(n \log n) \) via a divide-and-conquer approach splitting into two transforms of size \( n/2 \).
-    - FFT algorithms usually require \( n \) to be a power of two, with zero-padding recommended if not.
-  - **Implementation and software libraries**
-    - FFTW is a high-performance C library supporting multi-dimensional, real, and complex FFTs.
-    - FFTPACK is a Fortran package with implementations of various Fourier transforms available on Netlib.
-    - Other implementations include ACM Algorithm 545 and GNU Scientific Library reimplementations.
-  - **Notes and further reading**
-    - Historical and theoretical context references include Cooley and Tukey [CT65], Bracewell [Bra99], Brigham [Bri88], and [PFTV07].
-    - Cache-oblivious FFT algorithms inspired FFTW.
-    - Advanced convolution algorithms include those by Schönhage and Strassen with quasi-linear time complexity.
-    - Wavelets are presented as a modern alternative to Fourier transforms for filtering.
-    - External resources: [FFTW](http://www.fftw.org/), [FFTPACK](http://www.netlib.org/fftpack), [GNU Scientific Library](http://www.gnu.org/software/gsl/).
+    - Fourier transforms convert time-domain samples into frequency-domain representations, making certain operations easier.
+    - Applications include filtering noise, image compression, convolution, deconvolution, and computing correlations.
+    - For example, filtering involves removing frequency components and applying the inverse transform to denoise data.
+    - Fourier transforms efficiently compute convolutions, reducing complexity from \( O(n^2) \) to \( O(n \log n) \) using FFT.
+  - **Definition and inverse transform**
+    - The discrete Fourier transform outputs n complex numbers each representing sine function components of given frequencies.
+    - The inverse transform is \( h_m = \frac{1}{n} \sum_{k=0}^{n-1} H_k e^{2\pi i k m / n} \), allowing conversion back to time domain.
+  - **Computational aspects and FFT**
+    - Computing the discrete Fourier transform directly takes \( O(n^2) \) time.
+    - The fast Fourier transform (FFT) algorithm reduces this to \( O(n \log n) \).
+    - FFT uses a divide-and-conquer approach, recursively splitting the problem into transforms on \( n/2 \) points.
+    - The FFT typically requires \( n \) to be a power of two; zero-padding is recommended otherwise.
+    - FFTs are often implemented in optimized hardware or tuned assembly language to meet real-time constraints.
+  - **Implementations**
+    - FFTW is a widely used C library supporting arbitrary input sizes and both real and complex data, known for speed and awarded the 1999 J. H. Wilkinson Prize.
+    - FFTPACK is a Fortran package for fast Fourier transforms including complex, real, sine, and cosine transforms, available on Netlib.
+    - The GNU Scientific Library provides a reimplementation of FFTPACK for C/C++.
+    - Algorithm 545 is a Fortran FFT implementation optimized for virtual memory performance.
+  - **Notes and references**
+    - Bracewell and Brigham provide excellent introductions to Fourier transforms and FFT.
+    - The Cooley–Tukey algorithm is credited for inventing the FFT.
+    - Cache-oblivious FFT algorithms improve memory performance, with FFTW based on such designs.
+    - Algorithms for polynomial multiplication and integer multiplication using FFTs achieve faster runtimes.
+    - The fundamental role of complex variables in fast convolution algorithms remains an open question.
+    - Wavelets are proposed as alternatives to Fourier transforms for filtering applications.
+    - See [FFTW](http://www.fftw.org/), [Netlib FFTPACK](http://www.netlib.org/fftpack), and standard references such as Bracewell [Bra99] and Brigham [Bri88].

@@ -1,0 +1,30 @@
+![ADM-ch16-graphs-traveling-salesman](ADM-ch16-graphs-traveling-salesman.best.png)
+
+- **Traveling Salesman Problem**
+  - **Input Description**
+    - The input is a weighted graph \(G\).
+    - The problem requires finding a minimum cost cycle visiting each vertex exactly once.
+  - **Problem Description and Discussion**
+    - The traveling salesman problem (TSP) is NP-complete and models finding the shortest route visiting given cities and returning home.
+    - TSP applies broadly in transportation, routing, and manufacturing, such as optimizing robot arm soldering paths.
+  - **Key Issues in Solving TSP**
+    - The problem differs if the graph is unweighted or has two cost values, reducing to Hamiltonian cycle detection.
+    - The triangle inequality property influences heuristic performance and feasibility in cost calculations.
+    - Input format varies between point sets and weighted graphs, affecting feasibility and storage requirements.
+    - Some applications allow revisiting vertices; this variation can be addressed by shortest-path preprocessing.
+    - Distance functions may be symmetric or asymmetric, with asymmetric TSP being harder to solve.
+    - Exact optimal solutions employ cutting planes or branch-and-bound methods, feasible for thousands of vertices.
+  - **Heuristics for TSP**
+    - Minimum spanning tree (MST) heuristic uses DFS on MST, yielding a tour within twice the optimal length if triangle inequality holds.
+    - Incremental insertion heuristics build tours by inserting the furthest point that minimally increases tour length, typically 5-10% over optimal.
+    - K-optimal heuristics improve tours by local edge rewiring, with 2-opt and 3-opt providing effective refinements close to optimal solutions.
+  - **Implementations and Resources**
+    - Concorde is a leading program for symmetric TSP, solving large instances optimally ([Concorde](http://www.tsp.gatech.edu/concorde)).
+    - Various codes and libraries exist covering heuristics and exact methods, including Tsp solve and GOBLIN.
+    - TSPLIB offers a repository of hard, real-world TSP instances available online.
+  - **Notes and Historical Context**
+    - Classic heuristics like the Christofides algorithm guarantee solutions no worse than 3/2 times optimal on Euclidean graphs.
+    - Polynomial-time approximation schemes provide theoretical guarantees but limited practical impact to date.
+    - Historical progress shows increasing solvable problem size due to improved algorithms and hardware.
+    - Special cases like points in convex position yield easily computable optimal tours.
+    - For further detail, see [Applegate et al. 2007](https://example.org) and related surveys.

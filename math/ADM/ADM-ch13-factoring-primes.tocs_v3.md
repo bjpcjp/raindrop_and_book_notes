@@ -1,28 +1,37 @@
-[Representative image](ADM-ch13-factoring-primes.best.png)
+![ADM-ch13-factoring-primes](ADM-ch13-factoring-primes.best.png)
 
-- **Factoring and Primality Testing**
-  - **Problem Description**
-    - The problem is to determine if an integer n is prime and, if not, to find its factors.  
-    - Factoring and primality testing have practical applications such as RSA cryptography security and hash table optimization.  
-    - Algorithms include brute-force trial division and more advanced methods like the number field sieve.  
-    - [PARI](http://pari.math.u-bordeaux.fr/) provides comprehensive computational number theory capabilities.  
-  - **Algorithms and Complexity**
-    - Simple trial division tests divisibility up to √n and runs in O(√n) time but is exponential in input size.  
-    - Faster factoring algorithms use number theory and randomness, with the number field sieve factoring integers up to 200 digits.  
-    - Randomized primality tests, like Fermat's little theorem, efficiently check compositeness probabilistically.  
-    - PGP uses these randomized tests to find large primes quickly for cryptographic keys.  
-  - **Prime Distribution and Testing Theory**
-    - The prime number theorem approximates the number of primes less than n by n/ln(n).  
-    - Large prime gaps are rare, so about ln(n) checks typically find the next prime after n.  
-    - The Miller-Rabin test improves primality testing by addressing Carmichael numbers.  
-    - The Agrawal-Kayal-Saxena (AKS) algorithm provides a polynomial-time deterministic primality test.  
-  - **Computational Tools and Libraries**
-    - LiDIA is a C++ library implementing several modern integer factorization methods.  
-    - NTL is a high-performance C++ library for number theory involving arbitrary-length integers and finite fields.  
-    - MIRACL supports multiple factorization algorithms, including the quadratic sieve.  
-  - **Historical and Theoretical Notes**
-    - Mechanical sieving devices were historically used to prove primality efficiently before computers.  
-    - The RSA-129 integer factorization took eight months and used over 1,600 computers in 1994.  
-    - The RSA-200 integer was factored in 2005, requiring resources equivalent to 55 years on a 2.2 GHz CPU.  
-    - The problem of testing compositeness lies in both NP and co-NP complexity classes and is now known to be in P.  
-    - Recommended further reading includes [Crandall and Pomerance, 2005](https://link.springer.com/book/10.1007/b97644) and [Yan, 2003].
+- **13.8 Factoring and Primality Testing**
+  - **Input description**
+    - The input is an integer \( n \).
+    - The problem is to determine if \( n \) is prime or find its factors if composite.
+  - **Problem description and discussion**
+    - Factoring and primality testing are central to RSA cryptography security.
+    - Hash tables perform better when sized by prime numbers, requiring prime identification.
+    - Integer factorization and primality testing are related but use different algorithms.
+  - **Basic algorithms**
+    - Trial division involves testing divisors up to \(\sqrt{n}\) to find factors or prove primality.
+    - Multiplicities of factors and primes larger than \(\sqrt{n}\) must be handled correctly.
+    - Trial division is not polynomial time since input size grows logarithmically with \( n \).
+  - **Efficiency improvements**
+    - Precomputed small prime tables reduce trial division steps.
+    - Bit vectors efficiently represent large prime sets, e.g., odd numbers under 1,000,000.
+  - **Advanced algorithms**
+    - Faster but still exponential-time algorithms like number field sieve factor very large integers (e.g., hundreds of digits).
+    - Randomized algorithms, based on Fermat’s little theorem, quickly test primality without full factorization.
+  - **Prime distribution insights**
+    - Prime Number Theorem estimates the count of primes less than \( n \) as approximately \( n/\ln n \).
+    - Gaps between primes are never large; roughly \(\ln n\) checks suffice to find the next prime above \( n \).
+  - **Software implementations**
+    - PARI handles arbitrary-precision integers and many mathematical functions, available at [PARI](http://pari.math.u-bordeaux.fr/).
+    - LiDIA implements modern factorization methods, available at [LiDIA](http://www.cdc.informatik.tu-darmstadt.de/TI/LiDIA/).
+    - NTL provides data structures and algorithms for large integers and algebraic structures, found at [NTL](http://www.shoup.net/ntl/).
+    - MIRACL library includes six integer factorization algorithms including quadratic sieve, at [MIRACL](http://www.shamus.ie/).
+  - **Historical and theoretical notes**
+    - The AKS algorithm proved primality testing is in deterministic polynomial time.
+    - Miller-Rabin algorithm reliably tests primality, overcoming Fermat test weaknesses.
+    - Integer factorization records include factoring RSA-129 over eight months with distributed computation and RSA-200 requiring 55 CPU years.
+    - The problem’s complexity relates to P vs NP questions, with compositeness testing now in P.
+  - **Further reading**
+    - [Crandall and Pomerance, "Prime Numbers: A Computational Perspective"](https://example.org)
+    - [Bach and Shallit, "Algorithmic Number Theory"](https://example.org)
+    - [Shoup, "A Computational Introduction to Number Theory and Algebra"](https://example.org)

@@ -1,0 +1,47 @@
+![ADM-ch15-graphs-shortest-path](ADM-ch15-graphs-shortest-path.best.png)
+
+- **Shortest Path**
+  - **Input Description**
+    - The input is an edge-weighted graph G, with designated vertices s and t.
+    - The problem requires finding the shortest path from s to t in G.
+  - **Applications and Discussion**
+    - Shortest path problems apply to transportation, communications, image segmentation, speech recognition, and graph visualization.
+    - Image segmentation uses shortest paths on a graph of pixels weighted by color transitions to define separating lines.
+    - Speech recognition maps phoneme strings to word interpretations using weighted graphs for best sentence interpretation.
+    - The graph center, used in visualization, is the vertex minimizing the maximum shortest path distance to all others.
+    - Further reading: [Section 6.4 (Speech Recognition Applications)](page 212).
+  - **Dijkstra’s Algorithm**
+    - It computes shortest paths from a source vertex x to all others efficiently by growing a set S of vertices with known shortest paths.
+    - The algorithm selects edges minimizing dist(x, u) + weight(u, v) across edges from S to V–S.
+    - Terminate early if the target vertex y is reached.
+    - An O(n²) implementation is described in [Section 6.3.1 (page 206)].
+  - **Algorithm Variants and Considerations**
+    - Use breadth-first search for unweighted graphs to find shortest paths in linear time.
+    - Use Bellman-Ford for graphs with negative edge weights; it handles negative weights but not negative cycles.
+    - Shortest paths in directed acyclic graphs (DAGs) can be found in linear time using topological sort and dynamic programming.
+    - For all-pairs shortest path, run Dijkstra n times or use Floyd-Warshall’s O(n³) algorithm; Floyd-Warshall handles negative edges but no negative cycles.
+    - Further reading: [Section 6.3.2 (Floyd-Warshall Algorithm)](page 210).
+  - **Finding Shortest Cycles (Girth)**
+    - Floyd-Warshall can find shortest cycles by looking at distances d_ii.
+    - The shortest simple cycle is found by combining shortest paths and checking edges back to start vertices.
+    - Finding longest cycles is NP-complete due to Hamiltonian cycle inclusion.
+  - **Graph Invariants Related to Shortest Paths**
+    - Eccentricity of a vertex is its maximum shortest-path distance to any other vertex.
+    - The radius is the minimum eccentricity among all vertices.
+    - The center is the set of vertices with eccentricity equal to the radius.
+    - The diameter is the maximum eccentricity among vertices.
+  - **Implementations and Performance**
+    - High-performance shortest path implementations exist, including Andrew Goldberg’s MLB C++ code.
+    - Boost Graph Library and LEDA provide comprehensive C++ implementations; JGraphT supports Java implementations.
+    - Preprocessing and heuristics can accelerate point-to-point queries on massive road networks.
+    - Further reading: [Goldberg’s shortest path software](http://www.avglab.com/andrew/soft.html).
+  - **Advanced and Related Algorithms**
+    - A* algorithm combines best-first search with lower-bound heuristics for fast point-to-point paths.
+    - k-shortest paths algorithms find multiple shortest paths with and without cycles.
+    - Specialized algorithms exist for fast girth computation in general and planar graphs.
+    - Further reading: [Eppstein’s k-shortest paths algorithm](https://doi.org/10.1137/S0097539796299993).
+  - **Notes and Resources**
+    - Foundational works include [Dijkstra (1959)](https://doi.org/10.1145/363051.363062), [Bellman-Ford (1958)](https://doi.org/10.1002/nav.3800070106), and [Floyd (1962)](https://doi.org/10.1145/367766.368168).
+    - Surveys and experiments are provided by Zwick (2001) and Mitchell (2004) for geometric shortest paths.
+    - DIMACS Implementation Challenge (2006) materials provide implementations and benchmarks.
+    - Further reading: [DIMACS Shortest Path Challenge](http://dimacs.rutgers.edu/Challenges/).

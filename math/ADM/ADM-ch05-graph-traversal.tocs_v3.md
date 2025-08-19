@@ -1,98 +1,53 @@
-[Representative image](ADM-ch05-graph-traversal.best.png)
+![ADM-ch05-graph-traversal](ADM-ch05-graph-traversal.best.png)
 
-- **Graph Traversal Overview**
-  - Graphs model diverse systems including transportation, social networks, and circuits.
-  - Graph G = (V, E) consists of vertices V and edges E representing relationships.
-  - Correct problem modeling is essential to leverage known graph algorithms.
-  - Advanced graph algorithms and applications are covered in later chapters.
-  - Further reading: [The Algorithm Design Manual, Chapter 5](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Flavors of Graphs**
-  - Graphs vary by directionality (undirected vs directed), weighting (weighted vs unweighted), and structural simplicity (simple vs non-simple).
-  - Sparsity and cyclicity influence algorithm selection and performance.
-  - Graphs can be embedded or topological, explicit or implicit, and labeled or unlabeled.
-  - The friendship graph exemplifies these flavors and their real-world implications.
-  - Further reading: [Graph Theory and Social Networks](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Data Structures for Graphs**
-  - Two primary graph representations: adjacency matrices and adjacency lists.
-  - Adjacency matrices allow O(1) edge lookup but use O(n²) space, inefficient for sparse graphs.
-  - Adjacency lists use O(n + m) space and allow efficient graph traversal for sparse graphs.
-  - Selecting adjacency lists is recommended for most applications due to space and time efficiencies.
-  - Further reading: [Graph Representations](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **War Story: I was a Victim of Moore’s Law**
-  - Combinatorica initially used adjacency matrices due to performance trade-offs in Mathematica.
-  - Hardware improvements over 15 years increased calculation speeds 200x.
-  - Switching to adjacency lists enabled scaling to graphs 50-100 times larger.
-  - Asymptotic efficiency becomes critical despite short-term hardware gains.
-  - Further reading: [Combinatorica Library](https://www.combinatorica.com)
-
-- **War Story: Getting the Graph**
-  - Inefficient dual graph construction resulted from naive triangle adjacency comparisons (O(n²) time).
-  - Using vertex-based adjacency lists for triangles reduced construction to near linear time.
-  - Proper data structures and algorithms avoid bottlenecks in large-scale graph processing.
-  - Emphasizes the importance of efficient preprocessing in algorithm pipelines.
-  - Further reading: [Dual Graphs in Computational Geometry](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Traversing a Graph**
-  - Fundamental graph problem: systematic visitation of all vertices and edges.
-  - Vertices have three states during traversal: undiscovered, discovered, processed.
-  - Uses marking to avoid redundant visits and ensure completeness.
-  - Traversal structures determine order and effectiveness.
-  - Further reading: [Fundamentals of Graph Traversal](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Breadth-First Search**
-  - Explores graph level-by-level using a FIFO queue.
-  - Produces a shortest path tree from the start vertex.
-  - Classifies edges based on their position relative to BFS levels.
-  - BFS runs in O(n + m) time and is optimal for unweighted shortest paths.
-  - Further reading: [Breadth-First Search](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Applications of Breadth-First Search**
-  - Connected Components: Identifies maximal vertex sets with paths between all pairs.
-  - Two-Coloring Graphs: Assigns alternating colors in bipartite graphs using BFS.
-  - BFS-based algorithms guarantee linear-time performance on sparse graphs.
-  - Applied in social network connectivity and scheduling.
-  - Further reading: [Graph Coloring Algorithms](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Depth-First Search**
-  - Explores graph by advancing deeply along paths using a LIFO stack (recursion).
-  - Records entry and exit times per vertex to capture traversal structure.
-  - Classifies edges into tree and back edges (undirected) or more types (directed).
-  - DFS facilitates recursive exploration and backtracking.
-  - Further reading: [Depth-First Search](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Applications of Depth-First Search**
-  - Cycle Detection: Uses back edges to identify cycles efficiently.
-  - Articulation Vertices: Identifies vertices whose removal increases graph disconnectedness using DFS timestamps and reachable ancestors.
-  - Bridges (edge biconnectivity): DFS detects edges whose removal disconnects the graph.
-  - DFS organizes graph structure to support many fundamental algorithms.
-  - Further reading: [Graph Connectivity](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Depth-First Search on Directed Graphs**
-  - Edge classification extends to tree, back, forward, and cross edges.
-  - Correct edge classification relies on discovery states and timestamps.
-  - DFS sequences each vertex to process all connected components.
-  - Enables diverse directed graph algorithms.
-  - Further reading: [DFS Edge Classification](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Topological Sorting**
-  - Ordering of DAG vertices such that all directed edges go from earlier to later vertices.
-  - Achieved by DFS-based reverse postorder labeling if no back edges are found.
-  - Essential for scheduling and task precedence problems.
-  - Ensures correctness by detecting cycles via back edges.
-  - Further reading: [Topological Sort Algorithms](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Strongly Connected Components**
-  - Partition directed graphs into maximal vertex sets where each vertex is reachable from every other.
-  - Uses DFS with low-link values and stack to identify SCCs in O(n + m) time.
-  - Considers back and cross edges to update component membership.
-  - Algorithm contracts cycles into single vertices iteratively to find all SCCs.
-  - Further reading: [Strongly Connected Components Algorithms](https://doi.org/10.1007/978-1-84800-070-4)
-
-- **Chapter Notes**
-  - Materials are based on expanded versions from foundational texts such as [SR03] and [Ski90].
-  - Combinatorica serves as a case study for practical graph algorithm libraries.
-  - Social network analysis is referenced as a rich application domain.
-  - Further reading: [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)
+- **Graph Traversal**
+  - **Flavors of Graphs**
+    - Graphs distinguish between undirected and directed edges based on edge symmetry.  
+    - Weighted graphs assign numerical values to edges or vertices, influencing shortest path calculations.  
+    - Simple graphs exclude self-loops and multiple identical edges; sparse graphs have fewer edges relative to potential connections.  
+    - Additional properties include cyclicity, embedding in geometric space, implicit versus explicit representation, and labeling of vertices.  
+    - For further depth, consult [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).  
+  - **The Friendship Graph**
+    - Models social relationships as graphs with vertices representing people and edges representing friendships.  
+    - Typically undirected, simple, and unlabeled graphs, often sparse due to natural social limits.  
+    - Can be embedded with geographic information or implicitly stored in social networks.  
+    - Illustrates importance of proper graph modeling for real-world applications.  
+  - **Data Structures for Graphs**
+    - Two main representations: adjacency matrices and adjacency lists.  
+    - Adjacency matrices enable constant-time edge access but use O(n²) space, impractical for large sparse graphs.  
+    - Adjacency lists require O(n + m) space and are preferred for most applications due to efficiency in traversal and storage.  
+    - Choosing correct data structures impacts algorithmic performance significantly; see comparative advantages in Figure 5.5.  
+  - **War Stories**
+    - Combinatorica’s initial use of adjacency matrices created performance bottlenecks addressed by switching to adjacency lists.  
+    - The importance of algorithmic asymptotics becomes clear as hardware improves and graph sizes grow.  
+    - Efficient graph construction requires appropriately designed data structures; naïve methods can cause quadratic time complexity instead of linear.  
+  - **Traversing a Graph**
+    - Graph traversal systematically visits all vertices and edges using vertex state flags: undiscovered, discovered, processed.  
+    - Traversals prevent revisiting to guarantee completion without cycles.  
+    - Properly implemented traversals have O(n + m) time complexity where n is vertices and m is edges.  
+  - **Breadth-First Search**
+    - Explores vertices level by level using a FIFO queue, creating a shortest-path tree in unweighted graphs.  
+    - Supports reconstruction of shortest paths using parent pointers.  
+    - Can be customized by processing vertices and edges early or late during traversal.  
+    - Used in algorithms for connected components and bipartite (two-color) graph checking.  
+    - See [BFS notion and applications](https://doi.org/10.1007/978-1-84800-070-4#chapter-5).  
+  - **Applications of Breadth-First Search**
+    - Identifies connected components by performing BFS from undiscovered vertices iteratively.  
+    - Detects bipartite graphs via a two-coloring scheme assigning opposite colors to adjacent vertices and checking for color conflicts.  
+  - **Depth-First Search**
+    - Explores as far as possible along a branch before backtracking, using a LIFO stack implemented naturally with recursion.  
+    - Maintains entry and exit times for vertices to deduce ancestor-descendant relationships.  
+    - Partitions undirected graph edges into tree edges and back edges.  
+  - **Applications of Depth-First Search**
+    - Detects cycles in undirected graphs by identifying back edges.  
+    - Finds articulation vertices (cut-nodes) that disconnect the graph upon removal by tracking earliest reachable ancestors and tree outdegree.  
+    - Differentiates root, bridge, and parent cut-nodes based on DFS tree structure and back edges.  
+  - **Depth-First Search on Directed Graphs**
+    - Classifies edges into tree, back, forward, and cross edges, enabling nuanced processing.  
+    - Supports topological sorting on Directed Acyclic Graphs (DAGs) by labeling vertices in reverse finish order—useful for scheduling and path computations.  
+    - Finds strongly connected components by tracking low values representing the earliest reachable vertex in a component and maintaining an active stack of vertices.  
+    - See [Topological sorting and strongly connected components](https://doi.org/10.1007/978-1-84800-070-4#chapter-15).  
+  - **Exercises**
+    - Problems span graph traversal simulation, algorithm design, directed graphs, articulation vertices, and programming challenges.  
+    - Exercises include BFS/DFS vertex order determination, shortest path counting, dual graph construction, vertex cover and independent set algorithms on trees, and cycle detection.  
+    - Programming challenges available at [Programming Challenges](http://www.programming-challenges.com) and UVA Online Judge.

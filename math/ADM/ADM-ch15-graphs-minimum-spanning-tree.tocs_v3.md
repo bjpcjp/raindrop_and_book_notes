@@ -1,33 +1,46 @@
-[Representative image](ADM-ch15-graphs-minimum-spanning-tree.best.png)
+![ADM-ch15-graphs-minimum-spanning-tree](ADM-ch15-graphs-minimum-spanning-tree.best.png)
 
-- **15.3 Minimum Spanning Tree**
-  - **Problem Description**
-    - The minimum spanning tree (MST) is the subset of edges with minimum total weight that connects all vertices in a graph without forming cycles.
-    - MST is crucial for network design problems, such as minimizing wiring in telephone networks.
-    - It identifies clusters by deleting long edges to form connected components.
-    - MST algorithms can approximate solutions to complex problems like Steiner tree and traveling salesman.
-    - MST also demonstrates that greedy algorithms can produce optimal solutions.
+- **Minimum Spanning Tree**
+  - **Problem Description and Applications**
+    - The MST is the minimum weight subset of edges that forms a tree spanning all vertices in a graph.  
+    - MST algorithms identify clusters by deleting long edges and help approximate solutions to hard problems like Steiner tree and traveling salesman.  
+    - MST algorithms serve as educational tools demonstrating the effectiveness of greedy algorithms.  
+    - Telephone companies use MST to design wiring schemes minimizing cable length.  
   - **Classical MST Algorithms**
-    - Three key algorithms for MST are Kruskal’s, Prim’s, and Boruvka’s algorithms.
-    - Kruskal’s algorithm sorts edges and adds the smallest edge that connects distinct components, running in O(m log m) time using union-find.
-    - Prim’s algorithm grows a tree from an arbitrary vertex by adding the smallest edge that connects the tree to fringe vertices, running in O(n²) or O(m + n log n) with advanced structures.
-    - Boruvka’s algorithm repeatedly adds the smallest edge connected to each tree in the forest, halving the number of trees each iteration for an O(m log n) runtime.
-  - **Practical Considerations for MST**
-    - If all graph edges have equal weight, any spanning tree is minimum and can be found using BFS or DFS.
-    - Prim’s algorithm is faster for dense graphs; Kruskal’s is better for sparse graphs; advanced data structures make Prim’s algorithm practical for both.
-    - For geometric problems with points in the plane, constructing the Delaunay triangulation allows MST computation in O(n log n) time rather than O(n²).
-    - Finding a spanning tree minimizing maximum vertex degree is NP-complete but approximation algorithms exist within one degree of optimal.
+    - Three classical algorithms efficiently compute MSTs: Kruskal’s, Prim’s, and Boruvka’s.  
+    - Kruskal’s algorithm sorts edges and adds the lowest weight edges connecting separate subtrees while avoiding cycles.  
+    - Prim’s algorithm grows the MST from an arbitrary vertex by adding the lowest-cost edge connecting fringe vertices.  
+    - Boruvka’s algorithm repeatedly adds the lowest-weight edge incident to each tree in a forest, halving the number of trees each iteration.  
+  - **Algorithm Details and Complexity**
+    - Kruskal’s algorithm, using union-find, runs in O(m log m) time.  
+    - Prim’s algorithm can be implemented in O(n²) time or O(m + n log n) with advanced priority queues.  
+    - Boruvka’s algorithm runs in O(m log n) time without complex data structures.  
+    - Combining Boruvka’s and Prim’s algorithms can yield an O(m log log n) MST algorithm.  
+  - **When to Use Which Algorithm**
+    - Prim’s is faster on dense graphs; Kruskal’s is preferred for sparse graphs.  
+    - Prim’s with pairing heaps offers practical efficiency for both dense and sparse graphs.  
+    - Unweighted graphs allow any spanning tree to be minimal, obtainable via BFS or DFS in linear time.  
+    - For planar point sets, building the Delaunay triangulation speeds MST computation to O(n log n).  
+  - **Spanning Trees with Constraints**
+    - Finding a spanning tree with maximum degree 2 is NP-complete (equivalent to Hamiltonian path).  
+    - Approximation algorithms exist for spanning trees with nearly minimum maximum degree.  
   - **Implementations and Libraries**
-    - Implementations of Prim’s and Kruskal’s algorithms exist in various graph libraries, including Boost Graph Library, LEDA, and JDSL.
-    - Empirical studies suggest Prim’s algorithm with appropriate priority queues is generally fastest.
-    - Combinatorica provides Mathematica implementations for MST and spanning tree counting.
-    - The author’s preferred C language library contains basic graph algorithms, including MST.
-  - **Historical and Theoretical Notes**
-    - MST problem dates back to Boruvka’s algorithm in 1926, while Prim’s and Kruskal’s appeared in the mid-1950s.
-    - Optimal MST algorithms utilize Fibonacci or pairing heaps, with pairing heaps offering lower overhead.
-    - Combining Boruvka’s with Prim’s yields an O(m log log n) algorithm.
-    - Advanced algorithms achieve near-linear or linear time MST computations, such as Karger, Klein, and Tarjan’s randomized linear-time algorithm.
-    - MST is connected to matroid theory, allowing greedy algorithms to find maximum weighted independent sets.
-    - Dynamic graph algorithms maintain MSTs efficiently under edge insertions or deletions in polylogarithmic amortized time.
-    - Spanner networks balance MST total weight and shortest path approximation between vertices.
-    - References for further study include [Boost Graph Library](http://www.boost.org/libs/graph/doc), [Combinatorica](https://www.wolfram.com/combinatorica/), and [Narasimhan and Smid (2007)](https://www.springer.com/gp/book/9783642029843).
+    - Prim’s and Kruskal’s are implemented in major graph libraries such as Boost Graph Library and LEDA.  
+    - Empirical studies favor Prim’s with appropriate priority queues as the fastest method on most graphs.  
+    - Mathematica implementations are available via Combinatorica.  
+  - **Historical Context and Advanced Results**
+    - The MST problem dates back to Boruvka in 1926, with Prim’s and Kruskal’s algorithms published in the mid-1950s.  
+    - Advanced MST algorithms use Fibonacci and pairing heaps to improve practical performance.  
+    - The fastest known algorithms include randomized linear-time methods and algorithms with inverse Ackermann function complexity.  
+    - MST problems relate to matroid theory and greedy algorithms as established by Edmonds.  
+  - **Related Problems and Extensions**
+    - MST relates closely to problems like Steiner tree and traveling salesman.  
+    - Spanner networks are subgraphs balancing total weight and shortest-path approximations, related to MST.  
+    - Dynamic graph algorithms maintain MSTs efficiently under edge updates.  
+    - Algorithms exist for generating spanning trees in order from minimum to maximum weight and for enumerating all spanning trees in constant amortized time.  
+  - **References for Further Reading**
+    - [Boost Graph Library](http://www.boost.org/libs/graph/doc) for implementations.  
+    - [Combinatorica](https://library.wolfram.com/infocenter/MathSource/7450/) for Mathematica algorithms.  
+    - [Narashimhan and Smid’s monograph on spanner networks](https://link.springer.com/book/10.1007/978-3-540-44188-4).  
+    - [Wu and Chao’s monograph on MSTs](https://www.springer.com/gp/book/9781441918428).  
+    - Edmonds, J. "Matroids and greedy algorithms" (1971) for matroid connections.

@@ -1,46 +1,33 @@
-[Representative image](ADM-ch13-linear-programming.best.png)
+![ADM-ch13-linear-programming](ADM-ch13-linear-programming.best.png)
 
 - **Linear Programming**
-  - **Input Description**
-    - Specifies a set S of n linear inequalities on m variables in the form \(\sum_{j=1}^m c_{ij} \cdot x_j \ge b_i\), for \(1 \le i \le n\).
-    - Defines the linear optimization function \(f(X) = \sum_{j=1}^m c_j \cdot x_j\).
-  - **Problem Description**
-    - Seeks the variable assignment \(X^*\) that maximizes the objective function \(f\) while satisfying all inequalities S.
-  - **Applications**
-    - Includes resource allocation scenarios where investment is optimized subject to constraints.
-    - Approximates solutions for overdetermined and inconsistent linear equation systems minimizing error terms.
-    - Provides solutions or reductions for numerous graph algorithms and combinatorial optimization problems.
-  - **Algorithmic Approach**
-    - The simplex method operates by iteratively moving to higher vertices within the convex feasible region.
-    - Sophisticated data structures improve performance on large, sparse problems.
-    - Interior-point methods provide efficient alternatives by traversing the interior of the solution space.
-  - **Implementation Considerations**
-    - Advises using existing LP solver software over custom implementations for efficiency and robustness.
-    - Highlights numerical stability, pivot rule selection, and sparsity in large-scale problem handling.
-  - **Common Issues**
-    - Integrality Constraints: Differentiates between linear, integer, and mixed integer programs; integer programming is NP-complete.
-    - Variable vs Constraint Count: Notes preference for primal or dual LP formulation depending on relative sizes.
-    - Nonlinearity: Addresses challenges and strategies for nonlinear and quadratic programming problems.
-    - Input Model Compatibility: Describes transformations to standard form (nonnegative variables, minimization objective, equality constraints).
-  - **Available Implementations**
-    - Mentions free solvers: lp_solve (handles MIP), CLP (fast on LPs), and GLPK (large-scale LP and MIP).
-    - References NEOS for remote optimization service access.
-    - Cites Algorithm 551 and 552 for simplex-based overdetermined systems in Fortran.
-    - Provides official repository links such as [lp_solve](http://lpsolve.sourceforge.net/5.5/), [COIN-OR CLP](http://www.coin-or.org/), [GLPK](http://www.gnu.org/software/glpk/).
-  - **Historical and Theoretical Notes**
-    - The simplex algorithm was invented by George Dantzig in 1947.
-    - Worst-case exponential complexity demonstrated by Klee and Minty, but practical performance is efficient.
-    - Smoothed analysis explains typical simplex efficiency; recent polynomial-time randomized simplex algorithms have been developed.
-    - Khachian's ellipsoid algorithm proved polynomial-time solvability in 1979; Karmarkar's interior-point method improved practical and theoretical results.
-    - Semidefinite programming generalizes and extends linear programming to matrix variables and quadratic constraints.
-    - Linear programming is P-complete under log-space reductions, implying unlikely existence of efficient parallel algorithms under standard complexity assumptions.
-  - **Related Problems**
-    - Directly relates to constrained and unconstrained optimization methods.
-    - Network flow problems are special cases of linear programming formulations.
-  - **Further Reading**
-    - USENET LP FAQ at http://www-unix.mcs.anl.gov/otc/Guide/faq/
-    - Smoothed analysis and complexity results by Spielman and Teng [ST04].
-    - [lp_solve](http://lpsolve.sourceforge.net/5.5/)
-    - [COIN-OR CLP](http://www.coin-or.org/)
-    - [GLPK](http://www.gnu.org/software/glpk/)
-    - NEOS Optimization Server http://www.mcs.anl.gov/home/otc/Server/
+  - **Input description**
+    - The input consists of a set S of n linear inequalities on m variables, each inequality having the form ∑(cij · xj) ≥ bi for 1 ≤ i ≤ n.
+    - The objective function f(X) = ∑(cj · xj) is linear and must be maximized.
+    - The problem is to find the variable assignment X maximizing f while satisfying all constraints.
+  - **Problem description and applications**
+    - Linear programming is fundamental in optimization and operations research.
+    - Applications include resource allocation, approximation of inconsistent linear equations, and solving many graph problems like shortest path and network flow.
+    - Integer linear programming is relevant for problems with integrality constraints but is NP-complete.
+  - **Algorithmic approaches**
+    - The simplex method is the standard algorithm, walking along vertices of a convex polytope to find the optimal solution.
+    - Interior-point methods offer alternatives that traverse the polytope interior and often outperform simplex.
+    - Efficient implementations handle sparsity, numerical stability, and pivoting rules.
+  - **Key issues in linear programming**
+    - Integrality constraints cause NP-completeness, addressed by cutting plane techniques.
+    - Duality allows solving either the primal or dual formulation depending on the ratio of variables to constraints.
+    - Nonlinear objectives or constraints may require alternate modeling or quadratic programming techniques.
+    - Standard LP formulations require variables to be nonnegative and constraints as equalities, addressed by problem transformations.
+  - **Implementations and resources**
+    - Several free solvers exist, including lp_solve, CLP, and GLPK, with CLP leading in speed for linear programming.
+    - NEOS offers remote optimization services for solving problems without local software.
+    - Historical and survey algorithms include simplex-based Fortran codes and references for overdetermined systems.
+    - The USENET FAQ and referenced URLs provide extensive resources and software lists.
+  - **Historical and theoretical notes**
+    - The simplex algorithm was invented in 1947; worst-case complexity is exponential but practical performance is good.
+    - Smoothed analysis explains simplex efficiency under noise, and randomized polynomial-time simplex variants exist.
+    - The ellipsoid algorithm proved polynomial-time solvability in 1979; Karmarkar’s interior-point method improves upon it.
+    - Semidefinite programming generalizes linear programming with positive semidefinite constraints.
+    - Linear programming is P-complete, implying unlikely efficient parallelization unless P equals NC.
+  - **Related problems**
+    - Linear programming relates closely to constrained and unconstrained optimization and network flow problems.

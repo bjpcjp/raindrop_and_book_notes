@@ -1,47 +1,150 @@
-[Representative image](ADM-ch01-intro.best.png)
+![ADM-ch01-intro](ADM-ch01-intro.best.png)
 
 - **Introduction to Algorithm Design**
   - **What is an algorithm?**
-    - An algorithm is a procedure to accomplish a specific task and is the idea behind any reasonable computer program.
-    - It must solve a general, well-specified problem, defined by input instances and the expected output.
-    - Sorting is an example, where the input is a sequence of keys and the output is a sorted permutation.
-    - Different algorithms solve sorting; insertion sort is one example discussed with a C implementation.
-    - For more, see [The Algorithm Design Manual](https://link.springer.com/book/10.1007/978-1-84800-070-4).
-  - **Robot Tour Optimization**
-    - Problem involves finding the shortest closed cycle visiting a set of points, relevant to robot arm tool paths.
-    - The nearest-neighbor heuristic is simple and efficient but fails to guarantee the shortest tour.
-    - The closest-pair heuristic improves on nearest-neighbor but also can produce suboptimal tours.
-    - The optimal solution involves enumerating all permutations, which is computationally infeasible for large n.
-    - The problem is an instance of the Traveling Salesman Problem (TSP); see Section 16.4 for details.
-  - **Selecting the Right Jobs**
-    - The movie scheduling problem seeks the largest set of mutually non-overlapping intervals from given job intervals.
-    - EarliestJobFirst heuristic can fail if the earliest job is long; ShortestJobFirst can also fail by blocking better schedules.
-    - ExhaustiveScheduling checks all subsets but is exponential in complexity and infeasible for large n.
-    - The OptimalScheduling algorithm selects jobs by earliest completion time, producing a correct and efficient solution.
-    - This problem is a special case of the independent set problem; see Section 16.2.
-  - **Reasoning about Correctness**
-    - Proofs of correctness involve clear statements, assumptions, logical chains, and conclusions.
-    - Algorithm descriptions use English, pseudocode, or real programming languages, with clarity prioritized.
-    - Problems require precise input and output specifications to allow correctness proofs.
-    - Counter-examples are used to demonstrate incorrectness; they must be verifiable and simple.
-    - Mathematical induction and recursion are key methods to prove correctness, especially for incremental algorithms like insertion sort.
-    - Summation formulae underpin analysis and proofs; arithmetic progressions and geometric series are fundamental.
-    - For formal proofs, see [Gries, The Science of Programming](https://mitpress.mit.edu/books/science-programming).
-  - **Modeling the Problem**
-    - Proper modeling maps real-world problems to abstract combinatorial structures (permutations, subsets, trees, graphs, points, polygons, strings).
-    - Successful modeling can reduce or eliminate the need for new algorithm design by leveraging known solutions.
-    - These structures are recursive, decomposable into smaller similar components.
-    - Understanding cataloged algorithm problems enables effective application modeling.
-    - Avoid overconstraining or underconstraining problems, as it affects algorithm correctness and efficiency.
-    - Refer to catalog problems in Part II of the text for extensive examples.
-  - **About the War Stories**
-    - Real-world algorithmic case studies illustrate the impact of careful design and modeling.
-    - The stories capture authentic problem-solving mindsets and reference catalog problems.
-    - Reading algorithmic war stories aids understanding of practical applications and challenges.
-  - **War Story: Psychic Modeling**
-    - The problem involved constructing minimal sets of lottery tickets to guarantee a win given partial information.
-    - This is a set cover problem, known to be NP-complete.
-    - Key components included k-subset generation, covering criteria, bit vector data structures, and search mechanisms including heuristics.
-    - Initial modeling errors led to too broad coverage; refining coverage criteria yielded practical solutions.
-    - The story illustrates the importance of accurate problem modeling before implementation.
-    - See [Set cover problem on Wikipedia](https://en.wikipedia.org/wiki/Set_cover_problem) for further details.
+    - An algorithm is a procedure for solving a specific, well-defined problem.
+    - It operates on any instance of the problem, producing the desired output.
+    - Sorting serves as a canonical example of an algorithmic problem.
+    - Algorithms must be correct, efficient, and easy to implement.
+    - See [The Algorithm Design Manual](https://link.springer.com/book/10.1007/978-1-84800-070-4) for foundational concepts.
+  - **Insertion Sort Algorithm**
+    - Insertion sort incrementally inserts elements into their correct position.
+    - It is a general sorting algorithm that works equally well on names and numbers.
+    - Correctness can be justified through an animation (Figure 1.1) and inductive reasoning.
+  - **Properties of Good Algorithms**
+    - Desirable properties include correctness, efficiency, and ease of implementation.
+    - Industrial needs sometimes prioritize "good enough" solutions over optimality.
+    - Proof of correctness is required to formally verify an algorithm’s validity.
+  
+- **Robot Tour Optimization**
+  - **Problem Statement**
+    - The goal is to find the shortest closed tour visiting all given points.
+    - This problem models robot arms performing repetitive tasks like soldering.
+  - **Nearest-Neighbor Heuristic**
+    - Visits nearest unvisited point iteratively until all points are visited.
+    - Simple to implement and understand but can yield suboptimal tours.
+    - Counterexamples exist that cause the heuristic to perform poorly.
+  - **Closest-Pair Heuristic**
+    - Connects closest pairs of chain endpoints to build a tour incrementally.
+    - Can generate better tours than nearest-neighbor in some examples.
+    - Still fails on some input sets, yielding solutions significantly longer than optimal.
+  - **Optimal TSP Algorithm**
+    - Enumerates all n! permutations to find the minimal tour.
+    - Correct and guaranteed to find the shortest tour but computationally infeasible for large n.
+    - The traveling salesman problem (TSP) remains a central challenge in algorithm design.
+    - See Section 16.4 for TSP details.
+
+- **Selecting the Right Jobs**
+  - **Problem Statement**
+    - Scheduling maximal number of non-overlapping movie projects for maximum payoff.
+    - Projects have specified start and end dates and cannot overlap.
+  - **Heuristic Approaches**
+    - Earliest-start heuristic picks the earliest starting job first but can block many other jobs.
+    - Shortest-job-first heuristic selects the shortest jobs but can also produce suboptimal schedules.
+  - **Exhaustive Scheduling**
+    - Tests all 2^n subsets to find the largest compatible set of jobs.
+    - Correct but computationally exponential and infeasible for large n.
+  - **Optimal Scheduling Algorithm**
+    - Selects jobs with earliest completion dates greedily.
+    - Proven to produce the largest non-overlapping schedule efficiently.
+    - Relates to interval graphs, a special graph class with polynomial-time solvable independent set.
+    - See [Golumbic’s book](https://www.cambridge.org/core/books/algorithmic-graph-theory-and-perfect-graphs/54B10B668999FCF41718D0FD25ECFE75) for interval graphs.
+
+- **Reasoning about Correctness**
+  - **Proof Structure**
+    - Consists of a clear statement, assumptions, logical reasoning, and conclusion notation (QED).
+    - Formal proofs are challenging but essential for verifying algorithms.
+  - **Expressing Algorithms**
+    - Common forms: English, pseudocode, and real programming language code.
+    - Pseudocode balances ease of expression and precision.
+    - Clarity is paramount to effectively communicate the algorithm’s core idea.
+  - **Problems and Properties**
+    - Correct algorithm proof requires precisely specifying allowed inputs and required outputs.
+    - Narrowing problem scope may help find correct and efficient algorithms.
+    - Avoid ambiguous or compound goals for clarity and solvability.
+  - **Demonstrating Incorrectness**
+    - A single counterexample disproves an algorithm’s correctness.
+    - Good counterexamples are simple and verifiable.
+    - Techniques to find counterexamples include thinking small, exhaustive cases, tie situations, and extremal examples.
+  - **Induction and Recursion**
+    - Mathematical induction is the primary method for proving correctness of recursive/incremental algorithms.
+    - Recursive algorithms solve problems by breaking them into smaller instances.
+    - Care is needed to avoid boundary errors and invalid inductive assumptions.
+  - **Summations**
+    - Summations express the sum of sequences; closed forms exist for arithmetic and geometric progressions.
+    - Summations are used extensively in algorithm analysis.
+    - Proofs involving summations often rely on induction.
+    - See Section 2.2 for a formal explanation of Big Theta notation.
+
+- **Modeling the Problem**
+  - **Combinatorial Objects**
+    - Algorithmic problems often model real-world applications via fundamental structures:
+      - Permutations for orderings (e.g., tours, sequences).
+      - Subsets for selections (e.g., committees, clusters).
+      - Trees for hierarchies (e.g., family trees, taxonomies).
+      - Graphs for relationships/networks.
+      - Points for geometric locations.
+      - Polygons for shapes and boundaries.
+      - Strings for sequences of characters.
+    - Familiarity with these problems enables mapping of applications to known algorithms.
+  - **Recursive Objects**
+    - Many fundamental structures can be described recursively by decomposing into smaller instances of the same type.
+    - Examples:
+      - Permutations by removing the first element.
+      - Subsets by presence/absence of an element.
+      - Trees by removing root or leaf nodes.
+      - Graphs by removing vertices or edges.
+      - Points by partitioning into subsets.
+      - Polygons by inserting chords to subdivide.
+      - Strings by removing initial characters.
+    - Recursive decomposition aids algorithm design and correctness proofs.
+
+- **About the War Stories**
+  - **Purpose and Approach**
+    - Real-world case studies illustrate the impact of algorithm design on performance.
+    - Stories include successes and failures to reflect authentic problem-solving processes.
+    - They underscore the importance of proper problem modeling.
+  - **Integration with Catalog**
+    - War stories often relate to catalog problems in Part II.
+    - Catalog references facilitate deeper understanding and application reuse.
+    - Promotes the mindset and skills of a proficient algorist.
+
+- **War Story: Psychic Modeling**
+  - **Problem Context**
+    - A company needed an algorithm to minimize lottery tickets bought given psychic predictions.
+    - The problem reduces to a set cover variant where tickets cover winning number subsets.
+  - **Initial Modeling and Approach**
+    - Represented tickets as k-subsets covering l-subsets of an n-element candidate set.
+    - Proposed bit-vector data structures to track coverage and iterative selection of tickets.
+    - Applied exhaustive search for small n and randomized search heuristics for larger n.
+  - **Modeling Correction and Outcome**
+    - Initial model attempted to cover all possible winning subsets, leading to over-coverage.
+    - Adjusted the coverage criteria to better reflect guaranteed winning combinations.
+    - Achieved near-optimal ticket set results acceptable to the client.
+    - Demonstrates the necessity of validating and refining problem models early.
+  - **Related reading:** Section 18.1 on set cover problem and combinatorial coverage.
+
+- **Chapter Notes**
+  - Algorithm design philosophies vary; alternative presentations include [CLRS01], [KT06], and [Man89].
+  - Formal proofs of correctness are vital; see [Gri89] for program verification techniques.
+  - Movie scheduling is a special case of the independent set problem on interval graphs; Golumbic [Gol04] details this.
+  - Jon Bentley’s "Programming Pearls" and Brooks’s "The Mythical Man Month" offer valuable algorithmic war stories.
+  - The lotto ticket problem solution is detailed in [YS96].
+
+- **Exercises**
+  - **Finding Counterexamples**
+    - Tasks include disproving algorithms via specific examples in arithmetic and combinatorial problems.
+    - Examples concern knapsack heuristics, set cover greedy algorithm, and custom road network scenarios.
+  - **Proofs of Correctness**
+    - Exercises focus on inductive proofs for recursive algorithms such as multiplication, polynomial evaluation, and bubble sort.
+  - **Induction**
+    - Prove summation formulae, divisibility properties, and structural graph properties by induction.
+  - **Estimation**
+    - Problems on real-world quantity approximations, timescale calculations, and resource estimations.
+  - **Implementation Projects**
+    - Implement and compare traveling salesman heuristics.
+    - Develop ticket set coverage testing and optimization programs.
+  - **Interview Problems**
+    - Puzzles involving division without operators, ranking horses by races, and Fermi estimation problems.
+  - **Programming Challenges**
+    - Linked coding exercises on number theory and scheduling at [Programming Challenges](http://www.programming-challenges.com) and [UVA Online Judge](http://online-judge.uva.es).

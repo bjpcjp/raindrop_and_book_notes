@@ -1,0 +1,43 @@
+![ADM-ch14-combinatorials-permutations](ADM-ch14-combinatorials-permutations.best.png)
+
+- **14.4 Generating Permutations**
+  - **Input description and problem statement**
+    - The input is an integer n for generating permutations of length n.
+    - The problem involves generating all, a random, or the next permutation of length n.
+    - Permutations describe arrangements or orderings critical to many algorithmic problems.
+  - **Permutation count and order**
+    - There are n! permutations of n items, which grows very rapidly (e.g., 12! = 479,001,600).
+    - Generating all permutations for n > 12 is impractical due to factorial growth.
+    - Lexicographic order is the natural numeric sorting order for permutations.
+  - **Ranking and Unranking paradigms**
+    - Ranking assigns a numeric position to a permutation within an ordered set.
+    - Unranking finds the permutation corresponding to a given numeric position.
+    - Rank and unrank functions must be inverses: unrank(rank(p), n) = p.
+    - Examples illustrate recursive ranking and unranking for permutations.
+  - **Applications of ranking and unranking**
+    - Sequencing permutations by computing next or previous order permutations.
+    - Generating random permutations by selecting a random rank and unranking it.
+    - Tracking seen permutations efficiently with bit vectors indexed by rank.
+  - **Incremental change methods**
+    - Generate permutations by sequences of swaps between elements.
+    - These algorithms are concise and can run in average constant time per permutation.
+    - Only a single swap occurs between successive permutations.
+    - Minimum change order ensures swaps involve adjacent elements, as in Johnson-Trotter.
+  - **Permutations with duplicates**
+    - Multisets with duplicates require methods to avoid producing identical permutations.
+    - Use backtracking and lexicographic order to generate distinct permutations.
+  - **Random permutation generation algorithms**
+    - The recommended algorithm initializes the array and swaps each element with a random element from its current position onward.
+    - An alternative algorithm swapping with any element from the entire array fails to produce uniform permutations.
+    - Empirical testing is advised to verify uniformity of random permutation generators.
+  - **Implementations and references**
+    - C++ STL provides next_permutation and prev_permutation functions for lexicographic order sequencing.
+    - Resources include Kreher and Stinson implementations, Combinatorial Object Server, and Nijenhuis and Wilf's Fortran routines.
+    - Combinatorica offers Mathematica implementations for various permutation operations.
+    - Notable literature includes Knuth [Knu05a] and Sedgewick [Sed77].
+    - Myrvold and Ruskey provide linear-time ranking/unranking algorithms.
+    - For historical methods, see Magee and Olkin [MO63].
+  - **Related problems**
+    - Random number generation.
+    - Generating subsets.
+    - Generating partitions.

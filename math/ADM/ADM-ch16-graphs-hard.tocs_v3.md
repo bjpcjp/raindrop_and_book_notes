@@ -1,84 +1,84 @@
-[Representative image](ADM-ch16-graphs-hard.best.png)
+![ADM-ch16-graphs-hard](ADM-ch16-graphs-hard.best.png)
 
 - **Graph Problems: Hard Problems**
-  - All problems in this section are NP-complete, except graph isomorphism whose complexity status is open.
-  - NP-completeness reductions serve as practical evidence that no efficient algorithm exists.
-  - Recommended approaches include combinatorial search, heuristics, approximation algorithms, and restricted instance algorithms.
-  - Key references are Garey and Johnson for NP-completeness theory and Crescenzi and Kann for approximation algorithms.
+  - All problems presented are NP-complete except graph isomorphism, whose complexity remains unknown.
+  - NP-completeness theory equates the existence of polynomial algorithms across all such problems.
+  - Recommended strategies include combinatorial search, heuristics, approximation algorithms, and algorithms for restricted instances.
+  - Key references include [Garey and Johnson 1979](https://example.org), [Crescenzi and Kann 2003](http://www.nada.kth.se/~viggo/problemlist/), and others on approximation algorithms.
 
 - **Clique**
-  - Identifies the largest complete subgraph in a graph where every vertex is connected to every other vertex in the subset.
-  - Finding the maximum clique is NP-complete and hard to approximate within a factor of \(n^{1/2-\epsilon}\).
-  - Heuristics include finding maximal cliques quickly and seeking large dense subgraphs instead.
-  - Specialized algorithms exist for planar graphs which contain cliques of size at most four.
-  - Refer to [Cliquer](http://users.tkk.fi/~pat/cliquer.html) for exact branch-and-bound implementations.
+  - Finds the largest subset of vertices all mutually connected in the input graph.
+  - Maximum clique is NP-complete and hard to approximate within a factor of n^{1/2 - ε}.
+  - Heuristics include finding maximal cliques, dense subgraphs, and special-case algorithms for planar graphs.
+  - Exact solutions rely on backtracking with pruning using degree-based upper bounds.
+  - Refer to implementations like Cliquer and GOBLIN; see [Bomze et al. 1999] for comprehensive surveys.
 
 - **Independent Set**
-  - Seeks the largest subset of vertices with no edges between them (i.e., no two vertices in the subset are adjacent).
-  - Closely related to the clique problem via graph complement and to vertex coloring via color classes.
-  - A greedy heuristic selects the lowest-degree vertex repeatedly to find a maximal independent set.
-  - Maximum independent set can be found in linear time for trees.
-  - See the clique-finding algorithms in Section 16.1 as dual solutions for independent sets.
+  - Determines the largest vertex subset containing no edges between them in the graph.
+  - Equivalent to the clique problem in the complement graph; also related to vertex coloring.
+  - Simple heuristics select lowest-degree vertices iteratively to build a maximal independent set.
+  - Polynomial solutions exist for special cases such as trees and bipartite graphs.
+  - See clique-solving programs and GRASP heuristics by Resende et al. for implementations.
 
 - **Vertex Cover**
-  - Finds the smallest subset of vertices such that every edge in the graph is incident to at least one selected vertex.
-  - Problem reduced to set cover where each vertex corresponds to sets of edges.
-  - Vertex cover and independent set are complementary problems; the minimum vertex cover corresponds to the complement of maximum independent set.
-  - A greedy heuristic chooses highest-degree vertices iteratively; a known 2-approximation can be derived from maximal matchings.
-  - See [COVER](http://www.nicta.com.au/people/richters/) for stochastic local search vertex cover solvers.
+  - Finds the smallest vertex subset covering all edges in the graph.
+  - Equivalently formulates as set cover in restricted instances; closely related to independent set.
+  - Greedy heuristic adds highest-degree vertices iteratively; guarantees a 2-approximation via maximal matching.
+  - Dominating set and edge cover problems differ from vertex cover but are related.
+  - Effective solvers like COVER and libraries like JGraphT include heuristics and approximations.
 
 - **Traveling Salesman Problem**
-  - Finds the minimum-cost cycle visiting each vertex exactly once in a weighted graph.
-  - Problem variants based on triangle inequality satisfaction, graph symmetry, and feasibility of vertex revisits are discussed.
-  - Recommended heuristics include minimum spanning tree based tours, incremental insertion, and k-opt local optimizations.
-  - The Christofides heuristic guarantees a 3/2-approximation on Euclidean graphs.
-  - Concorde solver is the state-of-the-art choice for exact solutions and can handle thousands of vertices.
+  - Seeks a minimum cost cycle visiting each vertex exactly once in a weighted graph.
+  - Variants depend on weight properties such as triangle inequality, symmetry, and graph completeness.
+  - Heuristics include minimum spanning tree based tours, incremental insertion methods, and k-opt local improvements.
+  - Optimal solvers like Concorde address large instances; PTAS exist for Euclidean cases.
+  - Extensive references include [Applegate et al. 2007], [Arora 1998], and [Mitchell 1999].
 
 - **Hamiltonian Cycle**
-  - Determines if a graph has a cycle visiting each vertex exactly once, a special case of TSP with costs 1 or 2.
-  - Longest path and cycle problems are also NP-complete but solvable in linear time on DAGs.
-  - Dense graphs with minimum vertex degree at least \(n/2\) must contain Hamiltonian cycles.
-  - Backtracking with pruning is the practical approach to solve the general problem.
-  - Use TSP solvers like Concorde for Hamiltonian cycle via reductions.
+  - Determines whether a graph contains a cycle visiting each vertex exactly once.
+  - It is a special NP-complete case of the traveling salesman problem with uniform costs.
+  - Polynomial-time solutions exist for DAGs (longest path), but general graphs require backtracking.
+  - Dense graphs with minimum degree ≥ n/2 are guaranteed to be Hamiltonian.
+  - Solvers include Concorde TSP code and specialized backtracking algorithms like Vandegriend’s implementation.
 
 - **Graph Partition**
-  - Partitions vertices into roughly equal-sized subsets minimizing the edge-cut cost across subsets.
-  - The minimum cut for connectivity can be found efficiently but may produce unbalanced partitions.
-  - Balanced graph partitioning is NP-complete; heuristics include local optimization and spectral partitioning using graph Laplacian eigenvectors.
-  - Well-known partitioning codes include Chaco, METIS, Scotch, and JOSTLE.
-  - The planar separator theorem guarantees small separators of size \(O(\sqrt{n})\) for planar graphs.
+  - Partitions graph vertices into m roughly equal subsets minimizing cross-partition edge cost.
+  - Minimum cut disconnects graphs but may produce unbalanced partitions; balanced partitions are NP-complete.
+  - Special planar and tree graphs have known small separators that guarantee balanced partitions.
+  - Heuristics involve iterative vertex moves, local optimizations, spectral bisection based on Laplacian eigenvectors.
+  - Leading tools include Chaco, METIS, Scotch, and JOSTLE; foundational works by Kernighan-Lin and Lipton-Tarjan.
 
 - **Vertex Coloring**
-  - Colors vertices with the minimum number of colors so that no two adjacent vertices share the same color.
-  - Bipartite graphs are 2-colorable with a linear-time test; planar graphs can be colored with four colors (four-color theorem).
-  - Incremental and heuristic methods such as DSATUR and color interchange improve coloring.
-  - Exact computation is NP-complete; approximation guarantees are weak.
-  - Refer to Culberson’s [Graph Coloring Page](http://web.cs.ualberta.ca/~joe/Coloring/) for implementations and resources.
+  - Colors graph vertices using minimum colors so adjacent vertices differ in color.
+  - Bipartite graphs are 2-colorable; planar graphs require at most 4 colors (four-color theorem).
+  - Exact chromatic number computation is NP-complete; heuristics use incremental coloring and dynamic strategies like DSATUR.
+  - Color interchange optimizations enhance heuristics; register allocation is a primary application.
+  - Resources include Culberson’s coloring page and the Second DIMACS Implementation Challenge.
 
 - **Edge Coloring**
-  - Assigns colors to edges so that adjacent edges receive different colors, minimizing the number of colors.
-  - Vizing’s theorem bounds required colors to at most \(\Delta+1\), where \(\Delta\) is the maximum vertex degree.
-  - Edge coloring is NP-complete to compute optimally but bipartite graphs are polynomial-time solvable.
-  - Can be reduced to vertex coloring on line graphs but specialized algorithms for edge coloring are more efficient.
-  - Implementations include Vizing’s constructive algorithm and GOBLIN’s branch-and-bound methods.
+  - Assigns colors to edges so no two edges sharing a vertex have the same color, minimizing total colors.
+  - Vizing’s theorem ensures coloring with at most Δ+1 colors, where Δ is maximum vertex degree.
+  - The problem reduces to vertex coloring of the line graph but direct algorithms are more efficient.
+  - NP-complete to decide optimal edge-chromatic number beyond Vizing’s bound.
+  - Implementations based on Vizing’s constructive proof exist; resources include GOBLIN and Combinatorica.
 
 - **Graph Isomorphism**
-  - Tests whether two graphs are identical via a vertex bijection preserving adjacency.
-  - The problem is not known to be in P nor NP-complete; it is suspected to lie in-between.
-  - Variants include subgraph isomorphism, induced subgraph isomorphism, labeled graphs, and tree isomorphism.
-  - Practical solutions use vertex invariants like degree, shortest path multisets, and backtracking with pruning.
-  - Use programs like [nauty](http://cs.anu.edu.au/~bdm/nauty/) and [VFLib](http://amalfi.dis.unina.it/graph/) for efficient isomorphism testing.
+  - Tests whether two graphs are identical via a vertex mapping preserving edges.
+  - Problem complexity is unknown; neither known to be in P nor NP-complete.
+  - Variants include subgraph isomorphism, labeled graph matching, and special cases like trees with efficient algorithms.
+  - Equivalence classes based on invariants (degree, shortest paths) prune search space in backtracking.
+  - Leading tools include nauty, VFLib, GraphGrep, and Valiente’s implementations; see [McKay 1981] for theory.
 
 - **Steiner Tree**
-  - Finds the minimum tree connecting a subset of vertices, possibly adding extra Steiner points to reduce total cost.
-  - Applications include network design and VLSI routing; problem is NP-hard beyond trivial cases.
-  - MST provides a provably good approximation; geometric Steiner points satisfy degree-3 with 120-degree angle constraints.
-  - Specialized packages include GeoSteiner for geometric problems and FLUTE for rectilinear Steiner trees.
-  - Phylogenetic tree inference tools like PHYLIP implement related Steiner-like algorithms.
+  - Finds the minimal tree connecting a specified subset of vertices (terminals), possibly using intermediate points.
+  - Differentiates from MST by allowing extra Steiner points; Euclidean, rectilinear, and graph variants exist.
+  - Steiner tree is NP-hard; MST approximations offer guaranteed bounds (3/2 for Euclidean).
+  - Geometric constraints provide candidate Steiner points through angle and degree conditions.
+  - Recommended software includes GeoSteiner, FLUTE, and GOBLIN; phylogenic tree construction tools like PHYLIP and PAUP also relate.
 
 - **Feedback Edge/Vertex Set**
-  - Identifies the smallest set of edges or vertices to remove to eliminate cycles and produce an acyclic digraph.
-  - Feedback sets simplify scheduling and ranking by breaking cyclic dependencies.
-  - Finding minimum feedback sets is NP-complete; heuristics use vertex ordering and maximum acyclic subgraph approximations.
-  - Minimum feedback edge sets in undirected graphs can be found via depth-first search back edges, but vertex set remains NP-complete.
-  - GRASP heuristics and GOBLIN implementations provide practical approximate solutions.
+  - Seeks the minimum set of edges or vertices whose removal makes a directed graph acyclic.
+  - Applications include scheduling with precedence constraints, ranking tournaments, and race condition elimination.
+  - Heuristics construct vertex orders minimizing backward edges; feedback vertex set reduces to vertex cover over back edges.
+  - For undirected graphs, minimal feedback edge sets correspond to back edges in DFS; vertex set remains NP-complete.
+  - Implementations include GRASP heuristics and tools like GOBLIN and Stanford GraphBase’s econ order; see [Festa et al. 1999].

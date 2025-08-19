@@ -1,0 +1,59 @@
+![ADM-ch03-datastructs](ADM-ch03-datastructs.best.png)
+
+- **Data Structures**
+  - **3.1 Contiguous vs. Linked Data Structures**
+    - Data structures classify as contiguous if based on arrays and linked if based on pointers.
+    - Arrays provide constant-time access, space efficiency, and good memory locality but have fixed size.
+    - Linked structures allow flexible size and insertion/deletion but require extra space for pointers and lack efficient random access.
+    - Dynamic arrays grow by doubling size and copying elements, achieving amortized O(n) total work.
+    - Further details: [The Algorithm Design Manual, Section 3](https://doi.org/10.1007/978-1-84800-070-4_3)
+  - **3.2 Stacks and Queues**
+    - Stacks operate in LIFO order with push and pop operations.
+    - Queues operate in FIFO order with enqueue and dequeue operations.
+    - Both can be implemented via arrays or linked lists depending on known size constraints.
+    - Queues are essential for breadth-first search in graphs.
+  - **3.3 Dictionaries**
+    - Dictionaries enable access by content via operations: search, insert, delete, minimum, maximum, predecessor, and successor.
+    - Implementations in unsorted and sorted arrays show significant tradeoffs in operation times.
+    - Sorted arrays allow O(log n) search but O(n) insert/delete; unsorted arrays allow O(1) insertion but O(n) search.
+    - Linked list dictionary implementations vary in complexity depending on singly/doubly linked and sorted/unsorted.
+  - **3.4 Binary Search Trees**
+    - Binary search trees store keys so left subtree keys are less and right subtree keys are greater than the root.
+    - Basic operations (search, insertion, deletion, traversal) take O(h) time, where h is tree height.
+    - Tree height varies from O(log n) for balanced trees to O(n) for degenerate trees.
+    - Balanced trees (e.g., red-black trees, splay trees) guarantee O(log n) height ensuring efficient operations.
+    - Using balanced trees, sorting can be done in O(n log n) time using insertion and traversal.
+  - **3.5 Priority Queues**
+    - Priority queues store items with keys, support insert, find-minimum/find-maximum, and delete-minimum/delete-maximum.
+    - Implementations using unsorted arrays, sorted arrays, and balanced binary search trees show differing time tradeoffs.
+    - Maintaining a pointer to the minimum enables O(1) find-minimum in all structures.
+    - Priority queues underpin efficient algorithms and appear in applications including scheduling and graph searches.
+  - **3.6 War Story: Stripping Triangulations**
+    - Triangular meshes in graphics can be efficiently rendered by partitioning triangles into strips.
+    - Finding minimal strips resembles finding Hamiltonian paths, which is NP-complete.
+    - Greedy heuristics using priority queues and dictionaries reduce computation from O(n²) to approximately O(n·k).
+    - Priority queues maintained using bounded-height queues enable efficient updates reflecting strip length changes.
+    - Experiments demonstrate significant improvement in strip length and runtime using these heuristics.
+  - **3.7 Hashing and Strings**
+    - Hash tables map keys to array indices using hash functions to provide efficient dictionary operations.
+    - Collisions are resolved using chaining (linked lists) or open addressing (probing).
+    - Expected search, insert, and delete in hash tables are O(1), with traversal O(n + m).
+    - Rabin-Karp algorithm uses rolling hash functions for expected linear-time string pattern matching.
+    - Hashing enables applications like plagiarism detection, document deduplication, and cryptographic file authentication.
+  - **3.8 Specialized Data Structures**
+    - Specialized data structures address structured data such as strings, geometry, graphs, and sets.
+    - Examples include suffix trees/arrays for strings, kd-trees for spatial data, adjacency matrices/lists for graphs, and union-find for set partitions.
+    - These structures optimize operations specific to their domain beyond generic dictionaries or lists.
+  - **3.9 War Story: String ’em Up**
+    - DNA sequences modeled as strings over a four-letter alphabet require efficient dictionary operations for sequencing.
+    - Initial implementations using binary search trees and hash tables were limited by runtime or memory.
+    - Suffix trees exploit common prefixes/suffixes to speed multiple related substring queries.
+    - Compressed suffix trees use linear space enabling practical operations on very long sequences.
+    - Iterative profiling and data structure improvements led to scalable solutions for sequencing by hybridization problems.
+    - See [Suffix Trees and Their Applications](https://doi.org/10.1007/978-1-4615-1539-1).
+  - **3.10 Exercises**
+    - Exercises cover stacks, queues, and lists, including checking balanced parentheses and reversing linked lists.
+    - Tree-related exercises involve balanced trees, dictionary operations, and data structure augmentations for order-statistics.
+    - Applications include bin packing heuristics, range minimum queries, and subset sum via black box queries.
+    - Implementation projects recommend building and comparing dictionary data structures and cracking simple ciphers.
+    - Interview and programming challenge questions focus on practical data structure manipulations, such as detecting loops and linked list reversals.

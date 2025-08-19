@@ -1,52 +1,55 @@
-[Representative image](ADM-ch12-datastructs-dictionaries.best.png)
+![ADM-ch12-datastructs-dictionaries](ADM-ch12-datastructs-dictionaries.best.png)
 
 - **12.1 Dictionaries**
   - **Input description**
-    - Describes dictionaries as a set of n records identified by one or more key fields.
-    - The data structure must support efficient location, insertion, and deletion by key.
+    - The input consists of a set of n records identified by one or more key fields.
   - **Problem description**
-    - Requires building and maintaining a data structure for handling query keys.
-    - Emphasizes efficiency in search, insert, and delete operations.
+    - The task is to build and maintain a data structure for efficient location, insertion, and deletion of records by any query key q.
   - **Discussion**
-    - Dictionaries are fundamental data structures with many implementations such as hash tables, skip lists, and search trees.
-    - Choosing the right implementation impacts performance and depends on application characteristics.
-    - Abstracting dictionary operations via explicit method calls promotes cleaner code and easier experimentation.
+    - Dictionaries are essential abstract data types in computer science.
+    - Various implementations include hash tables, skip lists, and binary search trees, affecting performance significantly.
+    - Isolating dictionary implementation from its interface enables easier experimentation and cleaner code.
   - **Choosing the right data structure**
-    - Considers factors like number of items, known frequencies of operations, access patterns, and performance priorities.
-    - Highlights that avoiding poor data structure choices matters more than finding the single best option.
-  - **Unsorted linked lists or arrays**
-    - Suitable for small data sets but inefficient for large sizes due to linear search times.
-    - Self-organizing lists improve average search time by moving accessed keys to the front.
-    - Arrays have better cache performance than linked lists.
-  - **Sorted linked lists or arrays**
-    - Sorted linked lists rarely worth the complexity due to lack of binary search.
-    - Sorted arrays are appropriate when few insertions or deletions occur.
-  - **Hash tables**
-    - Appropriate for moderate to large numbers of keys (100 to 10,000,000).
-    - Use hash functions mapping keys to integer buckets for quick access.
-    - Design decisions include collision resolution, table size, and choice of hash function.
-    - Advises evaluation of key distribution across buckets and adjusting hash functions accordingly.
-  - **Binary search trees**
-    - Support fast insertions, deletions, and queries.
-    - Performance depends on balancing strategy; unbalanced trees can degrade to linked lists.
-    - Balanced trees include red-black, AVL, and 2/3 trees; splay trees exploit skewed access patterns.
-    - Implementation quality often outweighs theoretical differences among tree types.
-  - **B-trees**
-    - Suitable for very large data sets exceeding main memory capacity.
-    - Collapse several binary tree levels into one node to reduce disk access frequency.
-    - Benefit from understanding memory hierarchy characteristics like page size.
-    - Performance sensitive to swapping and disk access patterns.
-  - **Skip lists**
-    - Maintain a hierarchy of sorted linked lists with probabilistic promotion of elements.
-    - Enable expected logarithmic query time with simpler implementation compared to balanced trees.
-    - Offer ease of analysis and coding.
+    - Consider factors such as data size, knowledge of operation frequencies, access patterns, and performance priorities.
+    - Different choices suit static, semi-dynamic, or fully dynamic datasets and uniform or skewed access patterns.
+  - **Data structure options**
+    - **Unsorted linked lists or arrays**
+      - Suitable for small data sets; linked structures exhibit poor cache performance.
+      - Self-organizing lists improve average search times by moving accessed keys to the front.
+    - **Sorted linked lists or arrays**
+      - Sorted linked lists are rarely worth maintaining unless removing duplicates.
+      - Sorted arrays work if insertions and deletions are infrequent.
+    - **Hash tables**
+      - Preferred for moderate-to-large datasets (100 to 10 million keys).
+      - Use of hash functions mapping keys to buckets enables quick key localization.
+      - Design decisions include collision handling, table size, and choice of hash function.
+      - A suitable hash function enables efficient calculation of successive window hashes.
+      - Monitoring key distribution across buckets is critical for performance.
+      - Refer to Section 3.7 for detailed hashing discussion.
+    - **Binary search trees**
+      - Support fast insertions, deletions, and queries.
+      - Performance depends on balancing strategies (unbalanced, AVL, red-black, splay trees).
+      - Splay trees exploit access locality by moving accessed keys to the root.
+      - Implementation skill often outweighs the choice of tree variant.
+    - **B-trees**
+      - Best for very large data sets exceeding main memory capacity.
+      - Collapse multiple search steps into large nodes to minimize disk accesses.
+      - Performance depends on virtual memory and storage interaction.
+      - Useful as applications become bottlenecked by data transfer costs.
+    - **Skip lists**
+      - Maintain multiple levels of sorted linked lists with probabilistic balancing.
+      - Provide expected O(lg n) search times.
+      - Easier to analyze and implement than balanced trees.
   - **Implementations**
-    - Notes availability of mature libraries like C++ STL, LEDA, and Java Collections.
-    - Reports experiments favoring hashing for dictionaries, with skip lists and 2-4 trees effective among tree structures.
+    - Modern languages provide container libraries, e.g., C++ STL, LEDA, Java Collections.
+    - Research identifies hashing as the top dictionary implementation for many scenarios.
+    - External sources include Josuttis [Jos99], Meyers [Mey01], Musser [MDS01], and [MN99].
   - **Notes**
-    - References classic and modern texts for comprehensive study including Knuth, Sedgewick, and Goodrich/Tamassia.
-    - Mentions surveys and challenges like DIMACS that provide datasets and code.
-    - Highlights importance of memory hierarchy and cache-oblivious data structures.
-    - Describes amortized analysis as a method for bounding total time across sequences of operations.
-    - Suggests related problems like sorting and searching for additional context.
-    - Provides external references such as [STL Documentation](http://www.sgi.com/tech/stl/), [LEDA](https://www.algorithmic-solutions.com), and [JDSL](http://www.jdsl.org/) for further study.
+    - Knuth [Knu97a] remains a foundational resource on dictionaries despite missing newer structures.
+    - The Handbook of Data Structures and Applications [MS05] offers current surveys.
+    - DIMACS 1996 challenge provided practical implementations and datasets.
+    - Cache and memory hierarchy effects dominate algorithm performance.
+    - Cache-oblivious data structures guarantee performance without tuning for block size.
+    - Amortized analysis balances expensive and cheap operations over time.
+  - **Related problems**
+    - Sorting and searching are closely connected problems referenced on pages 436 and 441.

@@ -1,57 +1,63 @@
-[Representative image](ADM-ch03-datastructs.best.png)
+![ADM-ch03-datastructs](ADM-ch03-datastructs.best.png)
 
 - **Data Structures**
-  - **Contiguous vs. Linked Data Structures**
-    - Data structures are classified as contiguous (arrays, matrices, heaps, hash tables) or linked (lists, trees, graph adjacency lists).
-    - Contiguous structures offer constant-time access and memory locality but fixed size constraints.
-    - Linked structures allow dynamic size and flexible insertions/deletions but require extra pointer space and lack efficient random access.
-    - Further exploration in [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).
-  - **Stacks and Queues**
-    - Stacks implement last-in, first-out retrieval via push and pop operations; queues implement first-in, first-out via enqueue and dequeue.
-    - Both can be efficiently realized using arrays or linked lists; choice depends on known size constraints.
-    - Queues are foundational in breadth-first graph searches.
-    - See [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms) for more details.
-  - **Dictionaries**
-    - Dictionaries enable operations like search, insert, delete, successor, predecessor, minimum, and maximum based on key values.
-    - Implementations using unsorted and sorted arrays have complementary trade-offs between operation costs.
-    - Linked list implementations further diversify runtime characteristics depending on whether they are singly or doubly linked and sorted or unsorted.
-    - An extensive catalog available in Section 12.1 of the source text.
-  - **Binary Search Trees**
-    - Nodes contain data, parent, left, and right pointers; maintain ordering such that left subtree nodes have smaller keys and right subtree nodes have larger keys.
-    - Support search, insertion, deletion, minimum, maximum, and traversal operations efficiently, generally in O(h) time where h is the tree height.
-    - Unbalanced insertions can cause worst-case height O(n), balanced search trees guarantee O(log n) height.
-    - Balanced variants like red-black and splay trees ensure logarithmic time complexity on all dictionary operations.
-    - See the [Binary Search Trees section](https://doi.org/10.1007/978-1-84800-070-4_3) for a full treatment.
-  - **Priority Queues**
-    - Support operations Insert, Find-Minimum/Maximum, and Delete-Minimum/Maximum.
-    - Useful in scheduling, simulations, and graph algorithms.
-    - Implementations over unsorted arrays, sorted arrays, and balanced binary search trees reveal differing operation time complexities.
-    - The heap data structure is a notable efficient implementation.
-    - Detailed implementations in Section 12.2 of the catalog.
-  - **Hashing and Strings**
-    - Hash functions map keys and strings to integer indices for efficient dictionary lookup.
-    - Collision resolution methods include chaining with linked lists and open addressing with probing.
-    - Hashing enables expected constant-time dictionary operations assuming good hash distribution.
-    - Rabin-Karp algorithm employs rolling hashes for expected linear-time substring pattern matching.
-    - Hashing applications extend to plagiarism detection and cryptographic integrity verification.
-    - See [Knuth's discussion](https://doi.org/10.5555/58056) for optimization details.
-  - **Specialized Data Structures**
-    - String structures like suffix trees/arrays accelerate pattern matching.
-    - Geometric structures organize spatial data for efficient queries.
-    - Graph data structures include adjacency lists and matrices impacting algorithm design.
-    - Set data structures support membership queries; union-find algorithms maintain set partitions.
-    - Catalog coverage in Sections 12.3–12.6.
-  - **War Stories**
-    - **Stripping Triangulations**
-      - Partitioning triangulated meshes into triangle strips reduces rendering overhead.
-      - Uses dual graph transformation and greedy heuristics for strip optimization.
-      - Priority queues and dictionaries underpin efficient strip selection and updates.
-      - Greedy heuristics significantly reduce total strip cost compared to naive approaches.
-      - [ESV96 paper](https://doi.org/10.1109/VISUAL.1996.568122) details the implementation.
-    - **String ’em Up**
-      - DNA sequencing by hybridization necessitated efficient dictionary search for substrings.
-      - Initial binary search tree and hash table implementations were insufficient in speed or memory.
-      - Suffix trees leverage shared substrings for more efficient repeated searches but require high memory.
-      - Compressed suffix trees solve memory issues, enabling handling of very long strings.
-      - Illustrates data structure choice and optimization based on problem characteristics.
-      - See detailed discussion in Section 12.3.
+  - **3.1 Contiguous vs. Linked Data Structures**
+    - Data structures classify as contiguous (arrays, matrices, heaps, hash tables) or linked (lists, trees, graph adjacency lists).
+    - Contiguous arrays offer constant-time access, space efficiency, and memory locality.
+    - Linked structures allow flexible memory allocation, ease of insertion and deletion, but incur pointer overhead and lack efficient random access.
+    - Dynamic arrays grow by doubling size, offering amortized linear time for insertions.
+    - See [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for more.
+  - **3.2 Stacks and Queues**
+    - Stacks use Last-In-First-Out (LIFO) order with push and pop operations.
+    - Queues use First-In-First-Out (FIFO) order with enqueue and dequeue operations.
+    - Both can be implemented via arrays or linked lists depending on size constraints.
+    - Queues are fundamental in breadth-first graph search algorithms.
+    - More on container types in [Data Structures and Algorithms in Java](https://example.org).
+  - **3.3 Dictionaries**
+    - Dictionaries support search, insert, and delete operations based on keys.
+    - Additional operations include finding minimum, maximum, successor, and predecessor keys.
+    - Implementations vary between unsorted arrays, sorted arrays, and linked lists, each with different time complexities.
+    - Trade-offs exist between efficient search and update operations depending on data structure used.
+    - See detailed dictionary implementations in [Algorithms, 4th Edition](https://example.org).
+  - **3.4 Binary Search Trees**
+    - Binary search trees have nodes with keys, left/right child pointers, and optional parent pointers.
+    - Search, insertion, deletion, and traversal operations run in O(h) time, where h is the height of the tree.
+    - Poor insertion order can produce unbalanced trees of height O(n).
+    - Balanced search trees (e.g., red-black, splay trees) guarantee O(log n) height and operations.
+    - Further study in [CLRS, Chapter 12](https://example.org).
+  - **3.5 Priority Queues**
+    - Priority queues support insert, find-minimum (or maximum), and delete-minimum (or maximum) operations.
+    - Implementations vary over unsorted arrays, sorted arrays, and balanced binary search trees with distinct time complexities.
+    - Storing a pointer to the minimum element can optimize find-minimum to O(1).
+    - Priority queues underlie various algorithms including event simulation and graph algorithms.
+    - Explore heaps in detail in [Introduction to Algorithms](https://example.org).
+  - **3.6 War Story: Stripping Triangulations**
+    - Triangulated surfaces can be partitioned into strips to improve rendering efficiency.
+    - Finding minimal strip covers corresponds to covering the dual graph with paths, an NP-complete problem.
+    - Naive and greedy heuristics differ in strip count and runtime complexity.
+    - Using priority queues and dictionaries drastically improves performance for optimizing strip covers.
+    - See [ESV96] for implementation details.
+  - **3.7 Hashing and Strings**
+    - Hash functions map keys (including strings) to integers used as indices in hash tables.
+    - Collision resolution is done via chaining (linked lists) or open addressing (probing).
+    - Hashing supports dictionary operations with expected O(1) insert/search/delete.
+    - Rabin-Karp algorithm uses rolling hash for efficient expected linear-time substring searches.
+    - Applications include duplicate detection, plagiarism detection, and cryptographic data integrity.
+    - Knuth’s work provides an in-depth study of hashing: [Knuth's The Art of Computer Programming](https://example.org).
+  - **3.8 Specialized Data Structures**
+    - Specialized structures exist for strings (suffix trees/arrays), geometric data (kd-trees), graphs (adjacency lists/matrices), and sets (bit vectors, union-find).
+    - These structures optimize particular operations like pattern matching, spatial queries, or graph traversals.
+    - Understanding specialized data structures is vital for efficient domain-specific algorithms.
+    - Catalog entries provide extensive details: see Section 12 in [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).
+  - **3.9 War Story: String ’em Up**
+    - DNA sequences as strings over a four-letter alphabet motivate advanced string algorithms.
+    - Sequencing by hybridization requires building all consistent substrings efficiently.
+    - Binary search trees and hash tables proved insufficiently fast or space-efficient.
+    - Suffix trees and compressed suffix trees enable efficient substring queries with linear space.
+    - Persistence and profiling aided identifying and optimizing bottleneck dictionary operations.
+    - More on suffix trees in [Algorithms on Strings, Trees and Sequences](https://example.org).
+  - **3.10 Exercises**
+    - Exercises cover topics like linked list manipulation, balanced tree modifications, dictionary operations, bin packing heuristics, partial sums, data structure design for ordered operations, and string operations.
+    - Challenge problems include dictionary implementations, Caesar cipher decoding, and algorithmic puzzles.
+    - Interview problems focus on practical data structure manipulations and algorithm design.
+    - Programming challenges provide hands-on experience with problem-solving and implementation.

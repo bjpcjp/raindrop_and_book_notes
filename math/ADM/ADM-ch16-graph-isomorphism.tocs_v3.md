@@ -1,31 +1,35 @@
-[Representative image](ADM-ch16-graph-isomorphism.best.png)
+![ADM-ch16-graph-isomorphism](ADM-ch16-graph-isomorphism.best.png)
 
 - **Graph Isomorphism**
   - **Problem Description**
-    - Graph isomorphism tests whether there exists a vertex mapping between two graphs such that edges correspond exactly.
-    - The problem detects if two graphs are identical by preserving edges under a vertex mapping.
-    - It can be used to identify graph duplicates, avoiding redundant computation.
-  - **Applications and Variations**
-    - Subgraph isomorphism checks if a smaller graph is contained within a larger one, with induced subgraph isomorphism imposing stricter conditions.
-    - Graph labeling constraints speed up isomorphism testing by pruning invalid vertex pairings.
-    - Specialized algorithms exist for trees and planar graphs that exploit structural properties to speed up matching.
-  - **Algorithmic Approach**
-    - The basic algorithm involves backtracking through all vertex permutations to find isomorphisms.
-    - Vertex equivalence classes based on invariants such as degree, shortest path distances, and counts of length-k paths dramatically reduce the search space.
-    - Highly symmetric graphs are more challenging due to larger equivalence classes.
-  - **Practical Implementations**
-    - Nauty is a leading C library providing efficient automorphism group computations and canonical labeling.
-    - VFLib offers multiple algorithms for graph and subgraph isomorphism with comprehensive benchmarking.
-    - GraphGrep supports graph querying in large graph databases.
-    - Valiente’s implementations focus on tree and subgraph isomorphism atop LEDA.
-  - **Complexity and Theoretical Notes**
-    - Graph isomorphism is neither known to be NP-complete nor proven to be solvable in polynomial time.
-    - Known polynomial algorithms exist for specific graph classes like planar graphs and bounded-degree graphs.
-    - The problem lies uniquely between P and NP-complete in complexity theory.
-    - Related concepts include automorphisms and isomorphism-complete problems such as bipartite graph isomorphism.
-  - **Further Reading**
-    - Nauty website: [http://cs.anu.edu.au/~bdm/nauty/](http://cs.anu.edu.au/~bdm/nauty/)
-    - VFLib: [http://amalfi.dis.unina.it/graph/](http://amalfi.dis.unina.it/graph/)
-    - GraphGrep: [http://www.cs.nyu.edu/shasha/papers/graphgrep/](http://www.cs.nyu.edu/shasha/papers/graphgrep/)
-    - Valiente’s webpage: [http://www.lsi.upc.edu/~valiente/algorithm/](http://www.lsi.upc.edu/~valiente/algorithm/)
-    - Kreher and Stinson implementations: [http://www.math.mtu.edu/~kreher/cages/Src.html](http://www.math.mtu.edu/~kreher/cages/Src.html)
+    - Two graphs G and H are isomorphic if there is a mapping f from vertices of G to vertices of H preserving edges.
+    - Isomorphism testing detects whether two graphs are identical in structure.
+    - Applications include avoiding redundant operations on duplicate graphs and pattern recognition.
+  - **Terminology and Variations**
+    - An automorphism is a graph mapping to itself; the set of all automorphisms forms the automorphism group.
+    - Variations include subgraph isomorphism, induced subgraph isomorphism, and labeled versus unlabeled graphs.
+    - Different problem types influence complexity and applicable algorithms.
+  - **Special Cases and Applications**
+    - Tree isomorphism and planar graph isomorphism have specialized, faster algorithms.
+    - Tree isomorphism algorithms work inward from leaves using labels and vertex degrees.
+    - Graph isomorphism enables chemical compound structure analysis and graph database indexing.
+  - **Computational Complexity**
+    - The graph isomorphism problem is neither known to be solvable in polynomial time nor NP-complete.
+    - Conventional wisdom places it in a complexity class between P and NP-complete if P ≠ NP.
+    - Worst-case algorithms involve backtracking through permutations but include pruning heuristics.
+  - **Equivalence Class Partitioning for Efficiency**
+    - Preprocessing assigns vertices to equivalence classes using invariants like vertex degree.
+    - Distance multisets from shortest path matrices further refine vertex partitioning.
+    - Counting length-k paths via adjacency matrix powers provides additional vertex invariants.
+  - **Implementations**
+    - Nauty is a leading C language package for automorphism and isomorphism testing producing canonical forms.
+    - VFLib is a graph-matching library implementing multiple isomorphism algorithms with performance benchmarks.
+    - GraphGrep focuses on querying large graph databases efficiently.
+    - Valiente provides C++ implementations for tree and graph isomorphism integrated with LEDA.
+    - Kreher and Stinson offer group-theoretic C implementations for graph isomorphism and related operations.
+  - **Notes and Further Reading**
+    - Polynomial-time algorithms exist for planar graphs and bounded-degree graphs.
+    - Distance-based heuristics were introduced by [Shapiro and Dinneen 1976].
+    - Tree isomorphism linear-time algorithms are described in [AHU74].
+    - The complexity of bipartite graph isomorphism is complete and equivalents are known.
+    - See [McKay's Nauty](http://cs.anu.edu.au/~bdm/nauty/), [Valiente 2002](http://www.lsi.upc.edu/~valiente/algorithm/), and surveys such as [CH06].

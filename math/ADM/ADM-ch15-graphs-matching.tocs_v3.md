@@ -1,36 +1,36 @@
-[Representative image](ADM-ch15-graphs-matching.best.png)
+![ADM-ch15-graphs-matching](ADM-ch15-graphs-matching.best.png)
 
 - **Matching**
-  - **Problem Description**
-    - The problem seeks the largest set of edges in a graph so that each vertex is incident to at most one edge.
-    - Common applications include assigning tasks to workers ensuring no worker is overloaded.
-    - The problem is formalized as finding a maximum matching in a graph.
-  - **Key Concepts**
-    - Matching problems are often modeled on bipartite graphs for simplicity and efficiency.
-    - Augmenting paths alternate edges in and out of the current matching to increase matching size.
-    - Berge’s theorem states a matching is maximum if no augmenting paths exist.
-    - Odd-length cycles called blossoms pose challenges in general, non-bipartite graphs.
-  - **Algorithmic Approaches**
-    - Bipartite matching commonly uses network flow transformations.
-    - Weighted matchings apply matrix-oriented Hungarian algorithms.
-    - The Hopcroft-Karp algorithm finds shortest augmenting paths in O(√n m) time.
-    - Edmond’s algorithm and Gabow’s implementation address general graph matching with cubic time complexity.
-  - **Applications and Examples**
-    - Matching frameworks apply to worker-task assignments, marriage problems, and string permutation problems.
-    - Stable matching guarantees existence and can be found in O(n²) time.
-    - Medical resident-hospital assignments use stable matching algorithms.
-  - **Software Implementations**
-    - High-performance codes such as Goldberg’s CSA (weighted) and BIM (unweighted) exist.
-    - The First DIMACS Implementation Challenge collected various matching solvers.
-    - Libraries like GOBLIN and LEDA provide C++ implementations for weighted and unweighted matching.
-    - Blossom IV offers efficient minimum-weight perfect matching in C.
-  - **Theoretical Notes**
-    - Lovász and Plummer [LP86] provide authoritative coverage on matching theory.
-    - Matching size equals minimum vertex cover size in bipartite graphs.
-    - Maximum matching, minimum vertex cover, and maximum independent set can be solved in polynomial time on bipartite graphs.
-    - Stable marriage theory is well studied in [GI89] and found efficiently by Gale-Shapley [GS62].
-  - **References and Resources**
-    - [Lovász and Plummer on Matching Theory](https://example.org)
-    - [Hopcroft and Karp Algorithm](https://example.org)
-    - [Hungarian Algorithm Survey](https://example.org)
-    - [DIMACS Implementation Challenge](ftp://dimacs.rutgers.edu/pub/netflow/matching)
+  - **Input description**
+    - The input is a (weighted) graph G = (V, E).
+    - The problem requires finding the largest set of edges E′ such that each vertex in V is incident to at most one edge in E′.
+  - **Problem description**
+    - The goal is to find a maximum matching, where no vertex is repeated in the matched edges.
+    - Applications include assigning tasks to workers so no worker is overloaded.
+  - **Discussion and applications**
+    - Matching is a powerful algorithmic tool widely applicable across domains.
+    - Common applications include bipartite matching, such as pairing boys to compatible girls or rearranging characters in a string.
+    - The matching framework can be extended to handle multiple jobs per employee by vertex replication.
+    - Weighted matching seeks to maximize total suitability scores rather than just cardinality.
+    - [Lovász and Plummer's book](https://books.google.com/books?id=4f6UyX1i1XIC) is a definitive reference on matching theory.
+  - **Algorithms and theory**
+    - Maximum cardinality matching is computed via augmenting paths that alternate between matched and unmatched edges.
+    - Berge’s theorem states no augmenting path exists if and only if the matching is maximum.
+    - Bipartite graphs exclude odd-length cycles, simplifying matching algorithms.
+    - Network flow transformations enable maximum bipartite matching solutions.
+    - Edmond’s algorithm solves general graph matching including blossoms (odd cycles).
+    - Hopcroft-Karp algorithm runs in O(√n m) time for bipartite graphs.
+    - The Hungarian algorithm solves weighted bipartite matching efficiently.
+    - [CLRS book](https://mitpress.mit.edu/books/introduction-algorithms-third-edition) contains expositions on network flow and matching.
+  - **Implementations**
+    - High-performance implementations include Goldberg’s CSA for weighted matching and Cherkassky’s BIM for unweighted bipartite matching.
+    - The DIMACS Implementation Challenge collected multiple solvers in various languages.
+    - GOBLIN and LEDA libraries provide C++ implementations for matching problems.
+    - Blossom IV and other codes implement efficient algorithms for weighted and unweighted matching in general graphs.
+    - [DIMACS repository](http://dimacs.rutgers.edu/pub/netflow/matching) offers code and instance generators.
+  - **Notes and related theory**
+    - Maximum matching size equals minimum vertex cover size in bipartite graphs.
+    - Stable matching problems, distinct from maximum matching, guarantee at least one stable solution found in O(n²) time.
+    - Stable marriage problems model real-life applications like medical resident matching.
+    - The theory of stable matching is fully treated in [Gale and Shapley's work](https://math.mit.edu/~gs/).
+    - Related problems include Eulerian cycles and network flows as described in referenced sections.

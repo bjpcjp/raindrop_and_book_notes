@@ -1,42 +1,37 @@
-[Representative image](ADM-ch14-combinatorials-job-scheduling.best.png)
+![ADM-ch14-combinatorials-job-scheduling](ADM-ch14-combinatorials-job-scheduling.best.png)
 
-- **Job Scheduling**
+- **14.9 Job Scheduling**
   - **Input description**
-    - The input is a directed acyclic graph where vertices represent jobs and edges imply precedence constraints.
-    - Each edge (u, v) means job u must be completed before job v.
-    - The graph must be acyclic to avoid unsolvable dependency cycles.
+    - The input is a directed acyclic graph (DAG) where vertices represent jobs and edges represent precedence constraints.
+    - Edges imply that one task must be completed before another can begin.
   - **Problem description**
-    - The problem seeks a schedule that completes all jobs in minimum time or with minimum processors.
-    - Proper scheduling avoids bottlenecks and inefficient processor use.
-    - Examples include assigning people to jobs, meetings to rooms, and courses to exam periods.
-  - **Related scheduling problems and techniques**
-    - Topological sorting creates schedules consistent with precedence constraints.
-    - Bipartite matching assigns jobs to suitably skilled people.
-    - Vertex and edge coloring schedule jobs into non-conflicting time slots.
-    - Traveling salesman and Eulerian cycle solve route efficiency problems in scheduling.
-  - **Precedence-constrained scheduling for DAGs**
-    - Critical paths are the longest paths which determine the minimum total completion time.
-    - Minimum completion time with unlimited workers equals the length of the critical path.
-    - Completion time can be computed in O(n + m) time using topological order and scheduling jobs as soon as prerequisites complete.
-    - Optimizing trade-offs between number of workers and completion time is NP-complete.
-  - **Approaches to complex scheduling constraints**
-    - Simplify constraints to known problem types, solve, then adjust schedules manually if needed.
-    - Use linear-integer programming to model and solve more complex constraints.
-  - **Job-shop scheduling without precedence constraints**
-    - Assign jobs to identical machines to minimize total elapsed time.
-    - Modeled as a bin-packing problem where machines are bins and jobs are items with time sizes.
-    - Heuristics exist for tasks with allowable start and finish times.
-    - Preemption and task splitting simplify scheduling significantly.
-  - **Implementations and tools**
-    - JOBSHOP: C programs for job-shop scheduling by Applegate and Cook.
-    - Tablix: open source timetabling software supporting parallel computation.
-    - LEKIN: educational job-shop scheduling system supporting multiple environments.
-    - ILOG CP: commercial state-of-the-art scheduling software.
-    - Algorithm 520: Fortran code for multiple-resource network scheduling available on Netlib.
-  - **Further notes and resources**
-    - Comprehensive scheduling overviews in Brucker [Bru07], Pinedo [Pin02], and the Handbook of Scheduling [LA04].
-    - A taxonomy classifies job-shop problems by machine environment, constraints, and objectives.
-    - Gantt charts visualize scheduling with time on the x-axis and machines on rows.
-    - Project scheduling techniques are known as PERT/CPM.
-    - Timetabling problems are studied in the PATAT conference series.
-    - Relevant related topics include topological sorting, matching, vertex and edge coloring, and bin packing.
+    - The goal is to find a schedule minimizing total completion time or processor usage.
+    - Scheduling must respect job precedence and duration.
+  - **Discussion**
+    - Proper scheduling prevents idle resources and bottlenecks in parallel processing.
+    - Job scheduling connects to other problems like topological sorting, bipartite matching, coloring, and routing.
+    - Precedence constraints must be acyclic to avoid deadlocks.
+  - **Key scheduling problems**
+    - Critical path analysis identifies the longest path to completion, defining minimal total time.
+    - Minimum completion time is determined by maximizing parallel execution under precedence constraints.
+    - Balancing number of workers versus completion time is NP-complete.
+  - **Approaches and considerations**
+    - Ignoring or relaxing constraints can simplify problem solving.
+    - Linear-integer programming can model complex constraints.
+    - Preemptive scheduling and machine flexibility ease problem difficulty.
+  - **Job-shop scheduling**
+    - Assigns jobs without precedence to identical machines to minimize total elapsed time.
+    - Can be modeled as a bin-packing problem.
+    - Sophisticated heuristics exist based on task size and deadlines.
+  - **Implementations**
+    - JOBSHOP: a C program suite for job-shop scheduling ([Applegate and Cook](http://www2.isye.gatech.edu/~wcook/jobshop/)).
+    - Tablix: open source timetabling software with parallel support ([tablix.org](http://tablix.org)).
+    - LEKIN: flexible job-shop scheduling system for education ([stern.nyu.edu](http://www.stern.nyu.edu/om/software/lekin)).
+    - ILOG CP: state-of-the-art commercial scheduling software ([ilog.com](http://www.ilog.com/products/cp/)).
+    - Algorithm 520: Fortran network scheduling code available from Netlib.
+  - **Notes**
+    - Scheduling literature is vast and well-surveyed in [Brucker 2007](https://www.springer.com/gp/book/9783540239539) and [Pinedo 2002](https://www.springer.com/gp/book/9780387950203).
+    - The α|β|γ taxonomy classifies job-shop scheduling problem variants.
+    - Gantt charts visualize scheduling with time on x-axis and machines on rows.
+    - Precedence scheduling techniques are known as PERT/CPM.
+    - Timetabling issues are addressed in the PATAT conference proceedings ([PATAT](http://www.asap.cs.nott.ac.uk/patat/patat-index.shtml)).

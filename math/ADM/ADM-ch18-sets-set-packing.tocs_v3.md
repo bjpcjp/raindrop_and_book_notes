@@ -1,26 +1,28 @@
-[Representative image](ADM-ch18-sets-set-packing.best.png)
+![ADM-ch18-sets-set-packing](ADM-ch18-sets-set-packing.best.png)
 
 - **Set Packing**
   - **Input description**
-    - The input is a set of subsets \( S = \{S_1, \ldots, S_m\} \) of the universal set \( U = \{1, \ldots, n\} \).
+    - The input consists of a set of subsets \( S = \{S_1, \ldots, S_m\} \) of a universal set \( U = \{1, \ldots, n\} \).
+    - The goal is to select a collection of mutually disjoint subsets whose union is the universal set.
   - **Problem description**
-    - The goal is to select a collection of mutually disjoint subsets from \( S \) whose union is the universal set.
-    - The problem requires that no element is covered by more than one selected subset.
+    - The problem requires selecting subsets that do not overlap in their elements.
+    - Applications include independent set problems on graphs and scheduling airline flight crews.
   - **Discussion**
-    - Set packing problems model constraints where subsets cannot overlap, related to independent set problems in graphs.
-    - Applications include scheduling airline flight crews with constraints on crew composition and assignments.
-    - Variations include exact cover, requiring every element to appear exactly once, which is NP-complete.
-    - Partial solutions using singleton subsets allow expansion into exact covers by covering leftover elements.
-    - Problems lying between set cover and exact cover can be approached by penalizing subsets covering already covered elements.
-    - Greedy heuristics select subsets based on size and remove conflicting subsets, sometimes enhanced by randomization or exhaustive search.
-    - Integer programming formulations use 0-1 variables to represent subset selection and enforce coverage constraints.
+    - Set packing problems arise where strict constraints prevent elements from being covered by more than one subset.
+    - The independent set problem maps to a set packing problem with edges as universal elements.
+    - The airplane scheduling problem models a perfect packing where each plane and crew member appear in exactly one subset.
+    - The problem variants include exact cover, minimum-cardinality packing, and soft penalties for overlapping coverage.
+    - The problem is NP-complete, often requiring exponential search or heuristics.
+    - Relevant heuristics are greedy approaches similar to those used in set cover.
+    - Integer programming formulation uses binary variables \( s_i \) that indicate subsets selected with a constraint ensuring each element is covered once.
   - **Implementations**
-    - Set cover implementations can be adapted to support set packing constraints.
-    - Pascal codes for exhaustive search and heuristics are referenced in [SDK83].
-    - SYMPHONY provides a mixed-integer linear programming solver with set partitioning capabilities.
+    - Set cover algorithms are more common but modifiable for set packing constraints.
+    - Pascal implementations exist for exhaustive search and heuristics.
+    - SYMPHONY solver supports set partitioning and is accessible at [http://branchandcut.org/SPP/](http://branchandcut.org/SPP/).
   - **Notes**
-    - Survey articles on set packing include [BP76, Pas97].
-    - Combinatorial auction bidding strategies reduce to set-packing problems as discussed in [dVV03].
-    - Set-packing relaxations and reduction rules are detailed in [BW00] and [SDK83], including application to airplane scheduling.
+    - Survey articles include [BP76] and [Pas97].
+    - Combinatorial auction bidding strategies reduce to set-packing problems ([dVV03]).
+    - Relaxations for integer programs and algorithmic reductions are discussed in [BW00] and [SDK83].
   - **Related Problems**
-    - Independent set problems relate closely, as do set cover problems.
+    - Independent set problem (see Section 16.2).
+    - Set cover problem (see Section 18.1).

@@ -1,0 +1,34 @@
+![ADM-ch18-strings-longest-common-substring](ADM-ch18-strings-longest-common-substring.best.png)
+
+- **18.8 Longest Common Substring/Subsequence**
+  - **Problem Description**
+    - The problem seeks the longest string appearing as a substring or subsequence in all input strings.
+    - It is useful for detecting similarities across multiple texts and finding consensus among biological sequences.
+    - The longest common subsequence serves as insight into conserved gene regions across species.
+  - **Longest Common Substring**
+    - Longest common substring consists of consecutive matching characters across strings.
+    - It can be identified in linear time using suffix trees by building a combined suffix tree of all input strings.
+    - The deepest node with descendants from each string indicates the longest common substring.
+    - For more, see Section 12.3 on suffix trees.
+  - **Longest Common Subsequence**
+    - Uses dynamic programming where M[i, j] stores the length of the longest common subsequence of prefixes S[1..i], T[1..j].
+    - Recurrence relations handle matching and non-matching character cases efficiently in O(nm) time.
+    - Reconstruction of the subsequence is done by backtracking from M[n, m].
+  - **Efficient Algorithms for Sparse Matches**
+    - When few matching character pairs exist, the algorithm treats matches as points in a plane to find a longest nondecreasing path.
+    - Uses bucketing by character and sorts points to achieve O((n + r) log n) time, where r is number of matching pairs.
+  - **Handling Special Cases**
+    - For permutations (strings without repeating characters), the problem reduces to longest increasing subsequence solvable in O(n log n).
+    - The longest common subsequence of a permutation and the sorted sequence {1,...,n} is the longest increasing subsequence.
+    - The combinatorica Mathematica package implements this based on Young tableaux.
+  - **Multiple Strings Alignment**
+    - Extends dynamic programming to k strings, but runs in exponential O(2^k n^k) time, making it infeasible for large k.
+    - Heuristics involve pairwise alignments merged progressively, though optimal alignment is often unknowable.
+    - Popular tools include ClustalW ([link](http://www.ebi.ac.uk/Tools/clustalw/)) and MSA ([link](http://www.ncbi.nlm.nih.gov/CBBresearch/Schaﬀer/msa.html)).
+  - **Additional Notes and References**
+    - The longest common subsequence problem relates to edit distance concepts.
+    - Hunt and Szymanski's algorithm optimizes cases with few repeated characters, with expositions by Aho and Manber.
+    - Recent bit-parallel algorithms further improve efficiency.
+    - Masek and Paterson's algorithm uses "four Russians" method for constant alphabets.
+    - Extensive surveys exist, such as Dancik for expected LCS length and Gusfield/Durbin for computational biology.
+    - Plagiarism detection applications leverage longest common substring techniques ([SWA03]).

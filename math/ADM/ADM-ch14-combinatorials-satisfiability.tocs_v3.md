@@ -1,37 +1,38 @@
-[Representative image](ADM-ch14-combinatorials-satisfiability.best.png)
+![ADM-ch14-combinatorials-satisfiability](ADM-ch14-combinatorials-satisfiability.best.png)
 
 - **14.10 Satisfiability**
-  - **Input description**
+  - **Input Description and Problem Statement**
     - The input is a set of clauses expressed in conjunctive normal form (CNF).
-    - Each clause is a disjunction (OR) of literals.
-  - **Problem description**
-    - The problem asks if there exists a truth assignment to Boolean variables that satisfies every clause simultaneously.
-    - This checks for a configuration consistent with all logical constraints.
-  - **Discussion**
-    - Satisfiability (SAT) is the original NP-complete problem foundational to complexity theory.
-    - CNF formulas require all clauses to be true; DNF formulas require any clause to be true.
-    - Converting between CNF and DNF can cause exponential growth in formula size, affecting complexity.
-    - Special cases: 1-SAT is trivial, 2-SAT solvable in linear time, and 3-SAT is NP-complete.
-  - **Issues in satisfiability testing**
-    - CNF or DNF form influences solution difficulty; DNF satisfiability is trivial unless contradictory clauses exist.
-    - Clause size (k) affects complexity, with 3-SAT marking NP-completeness threshold.
-    - Exact satisfiability requires backtracking algorithms like Davis-Putnam; many heuristics and pruning exist.
-    - Relaxations focus on maximizing the number of satisfiable clauses for optimization.
-  - **Implementations**
-    - Modern SAT solvers have progressed considerably and participate in annual competitions.
-    - Leading solvers as of 2007 include Rsat, PicoSAT, and MiniSAT, all available online.
-    - SAT Live! offers current papers, programs, and test sets for satisfiability research.
-  - **Notes**
-    - The Davis-Putnam-Logemann-Loveland (DPLL) algorithm is a foundational backtracking method.
-    - Local search techniques complement DPLL, especially for hard problem classes.
-    - Influential solvers include Chaﬀ; surveys cover ongoing SAT solver developments.
-    - Faster worst-case algorithms exist for 3-SAT, but all remain non-polynomial.
-    - Garey and Johnson [GJ79] is the main reference on NP-completeness.
-    - Additional references include works on Cook’s theorem, Karp’s hardness results, and 2-SAT algorithms.
-  - **Related Problems**
-    - Constrained optimization problems and the traveling salesman problem share relevant complexity aspects.
-  - **Further reading**
-    - [SAT Competition](http://www.satcompetition.org/)
-    - [SAT Live!](http://www.satlive.org/)
-    - [Garey and Johnson, 1979](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/GareyJohnson.pdf)
-    - [Kautz et al., 2007](https://link.springer.com/book/10.1007/978-3-540-74796-9)
+    - The problem asks if there exists a truth assignment to Boolean variables that simultaneously satisfies all clauses.
+    - Satisfiability tests logical consistency of configurations or objects under given constraints.
+    - Applications include verifying hardware and software system correctness.
+  - **Formula Representations and Complexity**
+    - CNF formulas require all clauses to be satisfied; each clause is an OR of literals.
+    - Disjunctive normal form (DNF) requires satisfying any one clause; each clause is an AND of literals.
+    - DNF satisfiability is trivial unless clauses contain both a literal and its negation.
+    - CNF satisfiability is NP-complete, complicated by potential exponential growth when converting between CNF and DNF.
+  - **Clause Size and Problem Variants**
+    - k-SAT variant restricts clauses to at most k literals each.
+    - 1-SAT is trivial; variables can be assigned directly.
+    - 2-SAT is solvable in linear time and models some problems cleverly.
+    - 3-SAT and beyond are NP-complete and represent a complexity threshold.
+  - **Exact vs. Approximate Solutions**
+    - Exact satisfiability solutions use backtracking algorithms such as Davis-Putnam.
+    - Worst-case testing involves 2^m truth assignments, where pruning strategies are essential.
+    - Real-world “random” instances are often easier than worst-case scenarios.
+    - Relaxed optimization seeks assignments satisfying most clauses, an NP-complete maximization problem.
+    - Random assignments satisfy k-SAT clauses with probability 1 - (1/2)^k, facilitating heuristic approaches.
+  - **Hardness Proofs and Practical Approaches**
+    - Proving NP-completeness is crucial when problem complexity is unknown.
+    - Starting proofs from basic NP-complete problems like 3-SAT and vertex cover is recommended.
+    - Modern SAT solvers significantly improve practical problem solving.
+    - Top SAT solvers (2007 industrial competition): Rsat, PicoSAT, MiniSAT.
+    - The [SAT Competition webpage](http://www.satcompetition.org/) and [SAT Live!](http://www.satlive.org/) provide resources.
+  - **Historical and Theoretical Context**
+    - Davis-Putnam-Logemann-Loveland (DPLL) algorithm is a foundational backtracking approach.
+    - Local search techniques complement DPLL for certain problem classes.
+    - Chaﬀ is a significant SAT solver introduced in 2001.
+    - Worst-case 3-SAT solving algorithms operate in O*(1.4802^n) time.
+    - Primary references include [Garey and Johnson 1979](https://www.springer.com/gp/book/9780387900446), [Cook 1971], and surveys by [Kautz et al. 2007](https://mitpress.mit.edu/books/satisfiability-handbook).
+  - **Related Areas**
+    - Related combinatorial and optimization problems include constrained optimization and traveling salesman problem.

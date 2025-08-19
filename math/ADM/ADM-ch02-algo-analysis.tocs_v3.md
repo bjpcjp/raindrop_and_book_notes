@@ -1,74 +1,71 @@
-[Representative image](ADM-ch02-algo-analysis.best.png)
+![ADM-ch02-algo-analysis](ADM-ch02-algo-analysis.best.png)
 
 - **Algorithm Analysis**
   - **The RAM Model of Computation**
-    - The RAM model abstracts computation by assuming every simple operation and memory access takes exactly one time step.  
-    - Loops and subroutines are sequences of these simple operations; their time depends on iteration counts and program specifics.  
-    - The RAM model disregards memory hierarchy effects and hardware optimizations but remains a practical basis for machine-independent algorithm analysis.  
-    - The utility of this model is analogous to the flat Earth approximation for local measurements—simpler yet sufficiently accurate.  
-    - Further reading: [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).  
+    - The RAM model assumes each simple operation and each memory access takes exactly one time step.
+    - Loops and subroutines are modeled as compositions of single-step operations, with run time proportional to their iterations.
+    - The model assumes unlimited memory and ignores caching or disk-related delays.
+    - Despite its simplifications, the RAM model effectively predicts algorithm performance on real machines.
+    - Useful comparison: flat Earth model analogy clarifies the practical utility of simplified abstractions.
   - **Best, Worst, and Average-Case Complexity**
-    - Worst-case complexity measures the maximum steps taken on any input of size n, defining an upper bound on performance.  
-    - Best-case and average-case complexities measure the minimum and mean steps respectively over inputs of size n.  
-    - Worst-case analysis is preferred in practice due to its reliability and simplicity, analogous to risk assessment in gambling.  
+    - Worst-case complexity is the maximum number of steps taken for any input of size n.
+    - Best-case complexity is the minimum steps for any input of size n.
+    - Average-case complexity represents the mean steps over all inputs of size n.
+    - Worst-case analysis is preferred for reliability and predictability in algorithm evaluation.
+    - [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4)
   - **The Big Oh Notation**
-    - Big Oh notation simplifies complexity functions by ignoring constant factors and lower order terms, focusing on growth rate dominant terms.  
-    - Formal definitions: O(g(n)) represents an upper bound, Ω(g(n)) a lower bound, and Θ(g(n)) a tight asymptotic bound.  
-    - Big Oh equality represents membership of a function in a growth class rather than strict equality.  
-    - Constants c and threshold n0 assure validity beyond a certain problem size.  
+    - Big Oh gives an asymptotic upper bound on algorithm running time, ignoring constants and lower-order terms.
+    - Defines O(g(n)) for upper bounds, Ω(g(n)) for lower bounds, and Θ(g(n)) when both apply.
+    - Assumes a large enough input size n0 beyond which inequalities hold.
+    - Simplifies complex exact formulas and smoothes over minor fluctuations in time.
+    - Practice examples reinforce understanding of the notation and its applications.
   - **Growth Rates and Dominance Relations**
-    - Common time complexities ordered by growth: constant, logarithmic, linear, superlinear (n log n), quadratic, cubic, exponential, factorial.  
-    - Dominance denotes that one function eventually outgrows another as n increases, formalized via Big Oh relations and limits.  
-    - Practical implications: algorithms with factorial or exponential growth are unusable for large inputs; logarithmic and linear complexities scale well.  
-    - Further reading: [Concrete Mathematics](https://doi.org/10.5555/58080) by Knuth et al.  
-- **Working with the Big Oh**
-  - **Adding and Multiplying Functions**
-    - The Big Oh sum of two functions is dominated by the maximum growth—O(f(n)) + O(g(n)) = O(max(f(n), g(n))).  
-    - Multiplying Big Oh functions multiplies their growth rates: O(f(n)) * O(g(n)) = O(f(n) * g(n)).  
-    - Multiplying by positive constants does not affect asymptotic behavior.  
-  - **Transitivity of Big Oh**
-    - Big Oh relations are transitive: if f = O(g) and g = O(h), then f = O(h).  
-- **Reasoning About Efficiency**
-  - **Selection Sort**
-    - Selection sort has nested loops accumulating Θ(n²) comparisons due to summing decreasing iteration counts from n-1 to 1.  
-  - **Insertion Sort**
-    - Worst-case running time is upper bounded by O(n²) by assuming maximum inner loop iterations without early termination.  
-  - **String Pattern Matching**
-    - Naive substring search checks all possible alignments, leading to a worst-case time complexity of O(nm), where n and m are text and pattern lengths.  
-    - Simplifications use inequalities and Big Oh properties to drop lower order and negative terms.  
-  - **Matrix Multiplication**
-    - Standard matrix multiplication executes three nested loops, leading to O(xyz) steps for dimensions x, y, z; cubic O(n³) in the square case.  
-- **Logarithms and Their Applications**
-  - **Logarithms and Binary Search**
-    - Binary search halves the search space each step, taking O(log n) steps to find an element in a sorted list.  
-  - **Logarithms and Trees**
-    - The height of a d-ary tree with n leaves is h = log_d n, reflecting exponential growth in leaf count per level.  
-  - **Logarithms and Bits**
-    - The number of binary bits needed to represent n items is w = log₂ n, due to doubling of representable patterns per bit.  
-  - **Logarithms and Multiplication**
-    - Logarithms convert multiplication into addition: log(xy) = log x + log y, facilitating manual computations and efficient exponentiation.  
-  - **Fast Exponentiation**
-    - Recursive divide-and-conquer reduces exponentiation to O(log n) multiplications by halving the exponent recursively.  
-  - **Logarithms and Summations**
-    - Harmonic numbers, summing 1/i from i=1 to n, grow approximately as ln n and explain logarithmic terms in average-case analyses like Quicksort.  
-  - **Logarithms and Criminal Justice**
-    - Sentencing guidelines use logarithmic point increases relative to doubled fraud amounts, showing punishment grows slowly compared to stolen sums.  
+    - Common time complexities range from constant, logarithmic, linear, superlinear, quadratic, cubic to exponential and factorial functions.
+    - Dominance relations classify functions by growth, e.g., n! dominates 2^n, which dominates n^3, and so forth.
+    - Tables illustrate practical limits of each complexity class in terms of feasible input sizes.
+    - Dominance determines which terms are significant in combined expressions.
+    - [Big O Cheat Sheet](https://www.bigocheatsheet.com)
+  - **Working with the Big Oh**
+    - Summation of complexities follows the dominant term; multiplication multiplies complexities.
+    - Constants factors are ignored as they do not change asymptotic behavior.
+    - Transitivity holds: if f = O(g) and g = O(h), then f = O(h).
+    - Useful in simplifying nested loops or combined steps to get overall complexity.
+  - **Reasoning About Efficiency**
+    - Selection sort’s worst-case complexity is Θ(n²) computed by summing inner loop iterations.
+    - Insertion sort’s worst case is O(n²), assuming inner loops run to maximum iterations.
+    - String pattern matching naïve algorithm runs in O(nm) worst-case time, accounting for substring checks.
+    - Matrix multiplication with three nested loops has O(xyz) complexity, or O(n³) for square matrices.
+    - Detailed walk-through clarifies fundamental analyses of typical nested loops.
+  - **Logarithms and Their Applications**
+    - Logarithms are inverse exponential functions, growing very slowly.
+    - Binary search runs in O(log n) time by repeatedly halving search space.
+    - Height of trees relates to logarithm base of node branching factor (e.g., binary tree height ~ log₂ n).
+    - Number of bits needed to represent n items is log₂ n.
+    - Logarithms simplify multiplication and enable fast exponentiation in O(log n) steps.
+    - Harmonic numbers sum to about ln n, explaining logarithmic terms in average-case analyses.
+    - Federal sentencing guidelines for fraud use logarithmic scaling for sentencing based on stolen amounts.
+    - [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition)
   - **Properties of Logarithms**
-    - Changing logarithm bases affects only constant factors, negligible in Big Oh analysis.  
-    - Logarithms compress polynomial growth to logarithmic order in algorithmic analyses.  
-- **War Story: Mystery of the Pyramids**
-  - Algorithmic optimization reduced running time for summations involving pyramidal numbers from O(n²) to approximately O(n^{4/3} log n).  
-  - Using precomputed tables of pairwise sums and binary search drastically improved scalability.  
-  - The case illustrates how algorithmic improvements far outperform hardware speedups for large-scale computational problems.  
-- **Advanced Analysis (*)**
-  - **Esoteric Functions**
-    - Includes extremely slow-growing inverse Ackermann function α(n), log log n, log n / log log n, and n^{1+ε} functions arising in specialized analyses.  
-    - Functions like n^{1/d} arise in multidimensional geometric contexts.  
-  - **Limits and Dominance Relations**
-    - Dominance can be characterized by limits: f dominates g if lim_{n→∞} g(n)/f(n) = 0.  
-    - Polynomial functions dominate logarithmic functions; exponentials dominate polynomials.  
-    - This informs the asymptotic hierarchy between complexity classes.  
-- **Exercises**
-  - Extensive problem sets covering program analysis, Big Oh notation, logarithms, summations, and algorithmic reasoning.  
-  - Includes theoretical proofs, complexity rankings, and practical interview-style problems.  
-  - Programming challenge references provided for applied practice at [Programming Challenges](http://www.programming-challenges.com) and [UVA Online Judge](http://online-judge.uva.es).
+    - Logarithm bases of 2, e (natural log), and 10 are important in computing and mathematics.
+    - Logarithms convert multiplication to addition and permit base changes with scaling factors.
+    - Base changes do not affect asymptotic growth rate due to constant multiplicative factors.
+    - Logarithms reduce polynomial functions’ growth, justifying logarithmic time complexity labels.
+  - **War Story: Mystery of the Pyramids**
+    - The problem involves representing integers as sums of pyramidal numbers with an upper bound of one billion.
+    - Initial quadratic-time brute force algorithms become impractical for large n.
+    - Improved algorithm uses precomputed sums and binary search, reducing complexity to O(n^{4/3} log n).
+    - Algorithmic improvements vastly outperform hardware speedups on large computations.
+    - Experimentation with data structures like hash tables and bit vectors further optimized performance.
+    - [Niven and Zuckerman, An Introduction to the Theory of Numbers](https://global.oup.com/academic/product/an-introduction-to-the-theory-of-numbers-9780471625469)
+  - **Advanced Analysis (*)**
+    - Esoteric functions appearing include inverse Ackermann function α(n), log log n, log n / log log n, and n^{1+ε}.
+    - These functions describe very slow or nuanced growths relevant to advanced data structure analyses.
+    - Limits from calculus underpin dominance relations; faster-growing functions dominate slower ones.
+    - Polynomials dominate logarithmic functions; higher-degree exponentials dominate lower-degree ones.
+    - Dominance implies strict ordering of complexity classes important for nuanced algorithm comparison.
+  - **Exercises**
+    - Exercises include program analysis, Big Oh proofs, summation evaluations, and logarithm identities.
+    - Problems range from simple loop-based complexity calculations to advanced limit and functional dominance proofs.
+    - Interview and programming challenges reinforce practical understanding of algorithmic concepts.
+    - Encourages practice with proofs, asymptotic reasoning, and complexity classification.
+    - Resources for further exercise and challenge problems include [Programming Challenges](http://www.programming-challenges.com) and [UVA Online Judge](http://online-judge.uva.es)

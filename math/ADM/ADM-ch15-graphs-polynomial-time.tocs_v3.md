@@ -1,75 +1,75 @@
-[Representative image](ADM-ch15-graphs-polynomial-time.best.png)
+![ADM-ch15-graphs-polynomial-time](ADM-ch15-graphs-polynomial-time.best.png)
 
 - **Graph Problems: Polynomial-Time**
-  - **15.1 Connected Components**
-    - Connected components partition vertices into subsets where paths exist between all pairs in the subset.  
-    - Both depth-first and breadth-first search find connected components in O(n + m) time on adjacency lists.  
-    - Directed graphs have weakly and strongly connected components, with linear-time algorithms available for both.  
-    - Strong connectivity can be tested via two DFS traversals: one on G and one on the reversed graph G*.  
-    - For more information on implementations and theory, see [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).  
-  - **15.2 Topological Sorting**
-    - Topological sorting finds a linear vertex order in directed acyclic graphs (DAGs) respecting edge directions.  
-    - Only DAGs can be topologically sorted and every DAG has at least one such ordering.  
-    - Algorithms include DFS-based methods and Kahn’s algorithm, both running in O(n + m) time.  
-    - Counting or listing all linear extensions is computationally hard (#P-complete), but backtracking and random sampling methods exist.  
-    - Refer to [CLRS] for standard algorithms and [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for detailed discussions.  
-  - **15.3 Minimum Spanning Tree**
-    - The MST problem seeks a minimum weight edge subset connecting all vertices without cycles.  
-    - Classical algorithms include Kruskal’s, Prim’s, and Boruvka’s, with running times depending on graph density.  
-    - MSTs identify natural clusters by deleting long edges and help approximate harder problems like Steiner trees.  
-    - Geometric MSTs in 2D can be found efficiently via Delaunay triangulation and Kruskal’s algorithm.  
-    - For detailed implementations and history, see [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) and [AMO93].  
-  - **15.4 Shortest Path**
-    - Finding shortest paths applies to routing, image segmentation, speech recognition, and graph visualization.  
-    - Dijkstra’s algorithm computes shortest paths in positively weighted graphs; Bellman-Ford handles negative weights.  
-    - For unweighted graphs, BFS suffices and runs in linear time.  
-    - Floyd-Warshall algorithm solves all-pairs shortest paths in O(n³) time, also detecting shortest cycles (girth).  
-    - Explore implementations and surveys in [CLRS] and [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).  
-  - **15.5 Transitive Closure and Reduction**
-    - Transitive closure adds edges representing all reachable vertex pairs for constant-time reachability queries.  
-    - Standard algorithms include repeated DFS/BFS, Warshall’s algorithm, and matrix multiplication approaches.  
-    - Transitive reduction removes redundant edges while preserving reachability; minimal reductions are unique only under certain conditions.  
-    - Computing minimal transitive reductions is NP-complete if restricted to edges in the original graph.  
-    - See [van Leeuwen 1990a] and [Nuu95] for surveys and implementations.  
-  - **15.6 Matching**
-    - Matching finds largest edge sets with no shared vertices, modeling assignments of workers to tasks.  
-    - Faster algorithms exist for bipartite graphs; augmenting paths characterize maximum matchings (Berge’s theorem).  
-    - Weighted matchings require specialized algorithms like the Hungarian method.  
-    - Blossom algorithms extend matching to general graphs, addressing odd-length cycles.  
-    - For theory and implementations, consult [Lovász and Plummer 1986] and Goldberg’s codes at http://www.avglab.com/andrew/soft.html.  
-  - **15.7 Eulerian Cycle/Chinese Postman**
-    - Eulerian cycles visit each edge exactly once; exist under well-defined degree conditions for graphs.  
-    - The Chinese postman problem finds the minimal cycle covering all edges when Eulerian conditions are not met.  
-    - Solution involves adding shortest paths between odd-degree vertices and solving a minimum-weight perfect matching problem.  
-    - Linear-time construction from cycle decompositions is possible once the graph is Eulerian.  
-    - Historical context and algorithms are detailed in [EJ73], Euler’s original paper, and [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4).  
-  - **15.8 Edge and Vertex Connectivity**
-    - Connectivity measures the smallest edge or vertex sets whose removal disconnects the graph or separates two vertices.  
-    - Edge connectivity ≤ vertex connectivity; both bounded above by minimum vertex degree.  
-    - Biconnected components and articulation vertices identify weak points; linear-time DFS-based algorithms exist.  
-    - Network flow techniques solve edge and vertex connectivity problems using capacity constraints and Menger’s theorem.  
-    - Refer to [CGK+97] for experiments and [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for theory.  
-  - **15.9 Network Flow**
-    - Network flow models capacity-constrained transport from source to sink in directed graphs.  
-    - Two main problem classes: maximum flow (maximize flow subject to capacities) and minimum cost flow (minimize cost for a fixed flow).  
-    - Algorithms include augmenting path and preflow-push methods; preflow-push is faster in practice.  
-    - Multicommodity flow problems are NP-complete for integral flows but solvable via linear programming for fractional flows.  
-    - Comprehensive treatments found in [AMO93] and implementations by Goldberg et al. at http://www.avglab.com/andrew/soft.html.  
-  - **15.10 Drawing Graphs Nicely**
-    - Graph drawing seeks aesthetically pleasing and structurally clear visualizations, balancing criteria like crossings, area, edge length, angular resolution, and aspect ratio.  
-    - Common approaches include circular layouts, spring embeddings simulating forces, and polyline drawings with bends.  
-    - Label placement is NP-complete but effectively approximated via heuristics related to bin packing.  
-    - Practical tools include GraphViz and commercial products such as Tom Sawyer Software.  
-    - For detailed methodologies, see [BETT99], [KW01], and the Handbook of Graph Drawing and Visualization [Tam08].  
-  - **15.11 Drawing Trees**
-    - Trees are acyclic planar graphs requiring layouts that reflect root hierarchy or free structure.  
-    - Rooted trees are typically drawn via ranked embeddings (top-down strip partitioning) or radial embeddings (centered with angular subdivisions).  
-    - The tree center, minimizing maximum distance, serves as a natural root for free-tree drawing.  
-    - Linear-time algorithms exist to find tree centers and produce planar drawings without crossings.  
-    - See [BJL06] for state-of-the-art tree layout heuristics and [BETT99] for comprehensive discussions.  
-  - **15.12 Planarity Detection and Embedding**
-    - Planarity testing decides if a graph can be drawn in the plane without edge crossings; embeddings produce such drawings.  
-    - Euler’s formula bounds planar graphs as sparse, with at most 3n − 6 edges for n vertices.  
-    - Linear-time planarity tests (e.g., Hopcroft-Tarjan, Booth-Lueker) use DFS and PQ-trees; embeddings can be constructed incrementally or via planar grid methods.  
-    - Nonplanar graphs require heuristics minimizing edge crossings, including extracting large planar subgraphs.  
-    - Well-regarded software includes LEDA, JGraphEd, and PIGALE; consult [NR04] and [The Algorithm Design Manual](https://doi.org/10.1007/978-1-84800-070-4) for algorithms and proofs.
+  - **Connected Components**
+    - Identify distinct pieces or components of a graph where vertices have no connecting path.
+    - Use depth-first or breadth-first search running in O(n + m) time for undirected graphs.
+    - Directed graphs have weakly and strongly connected components with linear-time algorithms.
+    - Related invariants include biconnected components and cycle detection in trees and DAGs.
+    - Recommended resources include Boost Graph Library and Handbook of Graph Algorithms.
+  - **Topological Sorting**
+    - Find a linear ordering of vertices in a directed acyclic graph such that edges go from left to right.
+    - Every DAG can be topologically sorted; only DAGs can be sorted.
+    - Algorithms run in O(n + m) time using DFS or queue-based methods.
+    - Counting or listing all linear extensions is #P-complete and requires backtracking algorithms.
+    - Refer to [CLRS01] and [BW91] for foundational materials.
+  - **Minimum Spanning Tree**
+    - Find the subset of edges forming a tree connecting all vertices with minimum total weight.
+    - Classical algorithms are Kruskal’s, Prim’s, and Boruvka’s, with varying implementations and complexities.
+    - MSTs have applications in clustering, approximation problems, and network design.
+    - Geometric MSTs for planar points use Delaunay triangulation for efficient computation.
+    - See [AMO93] and [KKT95] for advanced algorithms and theory.
+  - **Shortest Path**
+    - Compute shortest paths between vertices in an edge-weighted graph.
+    - Dijkstra’s algorithm handles positive weights; Bellman-Ford handles negative weights but no negative cycles.
+    - Unweighted graphs use BFS; DAGs enable linear-time shortest path via topological order.
+    - Floyd-Warshall solves all-pairs shortest paths in O(n³) time.
+    - Applications include routing, image segmentation, and graph centers; high-performance codes available ([Gol01]).
+  - **Transitive Closure and Reduction**
+    - Transitive closure adds edges to represent reachability; reduction removes redundant edges preserving reachability.
+    - Algorithms include n DFS per vertex (O(n(n + m))), Warshall’s O(n³) algorithm, and matrix multiplication.
+    - Strongly connected components reduce problem size; minimum size transitive reduction is NP-complete if edges must be from the original graph.
+    - Heuristics exist for quick approximate transitive reductions.
+    - Consult [vL90a] and [Nuu95] for surveys and advanced techniques.
+  - **Matching**
+    - Find the largest set of edges with no shared vertices in weighted or unweighted graphs.
+    - Bipartite matching has specialized, efficient algorithms; general graph matching is more complex.
+    - Augmenting paths are central to maximum matching algorithms; weighted problems solved by Hungarian method.
+    - Applications span job assignments, string rearrangements, and stable marriages.
+    - Authoritative texts include [LP86] and network flow literature.
+  - **Eulerian Cycle/Chinese Postman**
+    - Find a tour visiting every edge of the graph at least once with minimum total length.
+    - Eulerian cycles exist if degree conditions are met; otherwise, the Chinese postman problem adds edges to make the graph Eulerian.
+    - Minimum weight perfect matching on odd-degree vertices is used to augment the graph.
+    - Applications include garbage collection routes and telephone menu testing.
+    - Refer to [Eul36], [EJ73], and [Thi03] for algorithms and implementations.
+  - **Edge and Vertex Connectivity**
+    - Determine the smallest set of edges or vertices whose removal disconnects the graph.
+    - Connectivity derives from network reliability concepts (e.g., bombing nodes or cutting edges).
+    - Use network flow and Menger’s theorem to compute connectivity.
+    - Faster algorithms utilize graph contraction methods, e.g., Karger’s randomized algorithm.
+    - Consult [CGK+97], [Kar00], and classical network flow literature.
+  - **Network Flow**
+    - Maximize flow from source to sink in a directed graph respecting edge capacities.
+    - Also consider minimum cost flow with added edge costs and multicommodity flows.
+    - Algorithm classes include augmenting path and preflow-push methods.
+    - Model applications include resource allocation, transportation, matching, and connectivity.
+    - Recommended literature: [AMO93], [Gol97], and [CG94], with available high-performance codes.
+  - **Drawing Graphs Nicely**
+    - Create aesthetically pleasing drawings that reflect graph structure while minimizing crossings and optimizing edge lengths and angles.
+    - Criteria such as planar embedding, edge styles (straight or polyline), and label placement influence algorithms.
+    - General-purpose heuristics include circular layouts and spring embeddings.
+    - Good commercial and open-source tools include GraphViz and JGraphT.
+    - Refer to the Handbook of Graph Drawing and Visualization [Tam08] and [BETT99].
+  - **Drawing Trees**
+    - Produce clear visualizations of trees, distinguishing rooted and free trees.
+    - Rooted trees use ranked or radial embeddings reflecting hierarchy or distance from the center.
+    - Trees are planar, allowing cycle-free drawings.
+    - Tree centers can be found in linear time to improve layout.
+    - See [BETT99], [KW01], and [BJL06] for state-of-the-art algorithms.
+  - **Planarity Detection and Embedding**
+    - Test whether a graph can be drawn without edge crossings and produce such a drawing if possible.
+    - Planar graphs satisfy Euler’s formula and have a linear number of edges.
+    - Linear-time planarity testing algorithms rely on depth-first search and path-crossing detection.
+    - Grid embeddings avoid cramping and preserve planar properties.
+    - Tools include LEDA and PIGALE; see [Kur30] and [HT74] for foundational proofs and algorithms.

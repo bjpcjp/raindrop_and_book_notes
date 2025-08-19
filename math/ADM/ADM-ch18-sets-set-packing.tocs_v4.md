@@ -1,0 +1,30 @@
+![ADM-ch18-sets-set-packing](ADM-ch18-sets-set-packing.best.png)
+
+- **Set Packing**
+  - **Input description**
+    - The input consists of a universal set \( U = \{1, \ldots, n\} \) and a collection of subsets \( S = \{S_1, \ldots, S_m\} \).
+    - The problem requires selecting mutually disjoint subsets from \( S \).
+    - The goal is to ideally cover \( U \) using these subsets.
+  - **Problem description**
+    - The objective is to select a small collection of disjoint subsets from \( S \) whose union is \( U \).
+    - No element is allowed to appear in more than one selected subset, enforcing a packing constraint.
+  - **Discussion**
+    - Set packing problems model constraints disallowing overlapping coverage, linking to independent set problems.
+    - Applications include independent sets in graphs and airline crew scheduling, both requiring mutually exclusive assignments.
+    - Exact cover problems demand every element is covered exactly once, making the problem NP-complete and computationally expensive.
+    - Allowing singleton sets for uncovered elements reduces exact cover to minimum-cardinality set packing that is solvable with heuristics.
+    - Set packing lies between set cover and exact cover problems with respect to element coverage constraints.
+  - **Heuristics and algorithms**
+    - Greedy heuristics iteratively select subsets based on size while removing conflicting subsets.
+    - Enhancements include exhaustive search and randomization methods like simulated annealing for better packings.
+    - Integer programming formulations use 0-1 variables to model subset selection with coverage constraints.
+  - **Implementations**
+    - Existing set cover implementations can be adapted for set packing constraints.
+    - Pascal code for exhaustive search and heuristics is available in [SDK83].
+    - SYMPHONY solver supports mixed-integer linear programming for set partitioning problems.
+  - **Notes**
+    - Authoritative surveys on set packing include [BP76] and [Pas97].
+    - Combinatorial auction bidding strategies often reduce to set-packing problems [dVV03].
+    - Set-packing relaxations and algorithmic approaches are discussed in [BW00] and [SDK83].
+  - **Related problems**
+    - Set packing is closely related to the independent set problem and set cover problem, referenced on pages 528 and 621 respectively.

@@ -1,53 +1,48 @@
-[Representative image](ADM-ch12-datastructs-priority-queues.best.png)
+![ADM-ch12-datastructs-priority-queues](ADM-ch12-datastructs-priority-queues.best.png)
 
 - **12.2 Priority Queues**
   - **Input description**
-    - Input consists of records with numerically or otherwise totally-ordered keys.
-    - Priority queues provide quick access to the smallest or largest key.
-    - Useful for simulations ordering future events by time.
-  - **Problem description and discussion**
-    - Priority queues enable retrieval by highest retrieval priority, not insertion time or key match.
-    - Without insertions after initial query, sorting suffices; otherwise a priority queue is needed.
-    - Choice depends on operations needed, known maximum size, and priority changes.
-  - **Basic priority queue implementations**
+    - The input consists of a set of records with numerically or otherwise totally-ordered keys.
+  - **Problem description**
+    - The problem requires building and maintaining a data structure for quick access to the smallest or largest key in the set.
+  - **Discussion**
+    - Priority queues retrieve items based on highest priority rather than insertion time or key match.
+    - If no insertions follow the initial query, sorting records by priority suffices without a priority queue.
+    - Real priority queues are necessary when mixing insertions, deletions, and queries.
+    - The discussion highlights key questions to select an appropriate priority queue type.
+  - **Priority queue implementations**
     - **Sorted array or list**
-      - Efficient to identify and delete the smallest element.
-      - Slow insertions due to maintaining total order.
-      - Suitable when few insertions occur.
+      - Efficient for identifying and deleting the smallest element by decrementing the top index.
+      - Insertions are slow due to maintaining total order.
+      - Suitable only when few insertions occur.
     - **Binary heaps**
       - Support insertion and extract-min in O(lg n) time.
-      - Use implicit binary tree structure in an array.
-      - Best when maximum number of items is known in advance.
+      - Maintain an implicit binary tree in an array ensuring the root key is smallest in the subtree.
+      - Require a known upper bound on the number of items due to fixed array size.
+      - Dynamic arrays can help mitigate size constraints.
     - **Bounded height priority queue**
-      - Constant-time insertion and find-min when key range is limited.
-      - Uses array of linked lists as buckets for keys.
-      - Useful for graph algorithms involving vertex degrees.
+      - Use an array of buckets when key values are integers in a limited range.
+      - Achieve constant time insertion and find-min operations within the bounded range.
+      - Useful for sorting graph vertices by degree and other small discrete key ranges.
     - **Binary search trees**
-      - Effective priority queues with leftmost leaf as minimum.
-      - Suitable when unbounded key range or arbitrary dictionary operations are needed.
+      - Min and max elements found by tracing leftmost or rightmost leaves.
+      - Suitable when dictionary operations or unbounded key ranges occur without known maximum size.
     - **Fibonacci and pairing heaps**
-      - Designed to speed up decrease-key operations.
-      - Fibonacci heaps have amortized constant time insert and decrease-key.
-      - Pairing heaps provide similar bounds with less overhead.
-  - **Implementations and resources**
-    - Modern languages provide efficient priority queue libraries.
-    - C++ STL priority_queue maps to insert, findmax, deletemax operations.
-    - LEDA offers Fibonacci, pairing, Emde-Boas, and bounded height priority queues.
-    - Java Collections PriorityQueue class and JDSL provide Java alternatives.
-    - Sequence heap by Sanders offers performance advantages over binary heaps.
-    - Empirical studies validate competitiveness of binary and pairing heaps.
-  - **Notes and advanced topics**
-    - Handbook of Data Structures and Applications surveys priority queues extensively.
-    - Double-ended priority queues support both find-min and find-max.
-    - von Emde Boas queues offer O(lg lg n) operations for keys in 1 to n.
-    - Fibonacci heaps support fast decrease-key useful for shortest paths and MST.
-    - Pairing heaps have simpler implementation and good practical performance.
-    - Heap construction requires linear comparisons; Floyd’s algorithm builds in linear time.
-  - **Related problems**
-    - Dictionaries, sorting, and shortest path algorithms closely relate to priority queues.
-  - **Further reading**
-    - [C++ STL documentation](http://www.sgi.com/tech/stl/)
-    - [LEDA Library](https://www.algorithmic-solutions.com/)
-    - [Java Collections Framework](http://java.sun.com/javase/)
-    - [Sanders’ sequence heap implementations](http://www.mpi-inf.mpg.de/~sanders/programs/spq/)
-    - [Handbook of Data Structures and Applications](https://www.crcpress.com/Handbook-of-Data-Structures-and-Applications/Munro/p/book/9781420079803)
+      - Designed to optimize decrease-key operations.
+      - Decrease-key in constant amortized time; extract-min and delete in O(lg n).
+      - Fibonacci heaps have implementation complexity and high constant factors.
+      - Pairing heaps offer similar bounds with less overhead.
+  - **Implementations**
+    - Modern languages provide efficient priority queue libraries, e.g., C++ STL with push, top, and pop.
+    - LEDA offers various priority queues including Fibonacci and pairing heaps.
+    - Java provides PriorityQueue in java.util and JDSL as an alternative.
+    - Sanders’s sequence heap is experimentally twice as fast as a well-implemented binary heap.
+    - Further details and guides are available in [STL documentation](http://www.sgi.com/tech/stl/) and referenced studies.
+  - **Notes**
+    - The Handbook of Data Structures and Applications surveys priority queue aspects comprehensively.
+    - Double-ended priority queues enable simultaneous find-min and find-max operations.
+    - Bounded-height priority queues perform well in practice but lack worst-case guarantees under arbitrary operations.
+    - von Emde Boas priority queues achieve O(lg lg n) operations within bounded key universes.
+    - Fibonacci heaps support faster classical algorithms but can be complex; pairing heaps are a practical alternative.
+  - **Related Problems**
+    - Priority queues relate closely to dictionaries, sorting, and shortest path problems.

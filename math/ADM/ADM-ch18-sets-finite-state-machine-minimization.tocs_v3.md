@@ -1,33 +1,32 @@
-[Representative image](ADM-ch18-sets-finite-state-machine-minimization.best.png)
+![ADM-ch18-sets-finite-state-machine-minimization](ADM-ch18-sets-finite-state-machine-minimization.best.png)
 
 - **18.7 Finite State Machine Minimization**
   - **Minimizing deterministic finite state machines**
-    - Minimization eliminates redundant states to reduce both storage and execution costs.
-    - The basic algorithm partitions states into equivalence classes and refines them based on transition behavior.
-    - The classical approach runs in O(n²) time, while Hopcroft's algorithm achieves O(n log n) efficiency.
-    - Final equivalence classes correspond to the states in the minimized automaton.
-    - See Hopcroft [Hop71] for the O(n log n) minimization algorithm.
+    - Minimizing DFAs reduces storage and execution costs by eliminating redundant states.
+    - The algorithm partitions states into equivalence classes based on acceptance and transition behavior.
+    - The classical algorithm runs in O(n²) time, while an optimal O(n log n) algorithm by Hopcroft exists.
+    - Final equivalence classes correspond to the minimized automaton states.
+    - See [Hopcroft’s Algorithm](https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft's_algorithm) for more detail.
   - **Constructing deterministic machines from nondeterministic machines**
-    - NFAs can exist in multiple states simultaneously, whereas DFAs are in exactly one state.
-    - Any NFA can be converted to an equivalent DFA, though this can cause exponential state blowup.
-    - Minimizing DFA after conversion can reduce excessive states from NFA blowup.
-    - The exponential blowup and minimization of NFAs is PSPACE-hard, complicating implementation.
-    - Refer to standard automata theory texts like [Sip05] for proofs and explanations.
+    - Any NFA can be converted to an equivalent DFA, but conversion may cause exponential increase in states.
+    - NFA states represent subsets of DFA states since NFAs can be in multiple states simultaneously.
+    - Minimizing the resulting DFA can reduce states, but NFA minimization is PSPACE-hard.
+    - This equivalence underlies foundational automata theory and complicates practical implementation.
+    - Refer to [NFA to DFA Conversion](https://en.wikipedia.org/wiki/Deterministic_finite_automaton#From_NFA_to_DFA) for further explanations.
   - **Constructing machines from regular expressions**
-    - Two approaches exist: constructing NFAs (using ϵ-moves) or constructing DFAs directly.
-    - NFA construction via ϵ-moves is straightforward and yields O(m) states for regex length m.
-    - DFA construction via the derivatives method creates states as needed but can require O(2^m) states in worst cases.
-    - Simulation on a DFA is linear time regardless of automaton size.
-    - For more, see Brzozowski [Brz64] on derivatives method and Thompson [Tho68] on ϵ-moves.
-  - **Implementations and software tools**
-    - Grail+ is a C++ package enabling conversion and minimization of automata on large alphabets.
-    - AT&T FSM Library supports massive automata (over ten million states/transitions) on UNIX.
-    - JFLAP provides graphical tools for learning and converting between DFAs, NFAs, and regex.
-    - FIRE Engine implements multiple minimization algorithms including Hopcroft’s O(n log n) method.
-    - Links to these tools: [Grail+](http://www.csd.uwo.ca/Research/grail), [AT&T FSM](http://www.research.att.com/~fsmtools/fsm/), [JFLAP](http://www.jflap.org/), [FIRE Engine](http://www.fastar.org/).
-  - **Notes and references**
-    - Aho [Aho90] surveys pattern matching algorithms for regular expressions.
-    - Thompson’s ϵ-move technique is foundational for NFA construction.
-    - The CIAA conference covers automata implementations and applications.
-    - Equivalence testing of NFAs and DFA compression problems are PSPACE-complete.
-    - For theory, consult [HMU06], [Sip05], and Conway [Con71].
+    - Regular expressions translate to automata either as NFAs with 𝜖-moves or as DFAs via derivatives.
+    - NFAs with 𝜖-moves are simpler to construct and have O(m) states for an expression of length m.
+    - DFA construction may require O(2^m) states in the worst case, causing exponential space blowup.
+    - Simulating an input string on a DFA takes linear time regardless of automaton size.
+    - Brzozowski’s derivatives method is a key approach; see [Brzozowski’s Derivatives](https://en.wikipedia.org/wiki/Brzozowski_derivative) for details.
+  - **Implementations and tools**
+    - Grail+ provides symbolic computation and minimization of finite automata, available at http://www.csd.uwo.ca/Research/grail.
+    - The AT&T FSM Library supports large automata and weighted acceptors, found at http://www.research.att.com/~fsmtools/fsm/.
+    - JFLAP offers graphical tools for learning automata theory and converting between automata types, available at http://www.jflap.org/.
+    - FIRE Engine implements several finite automaton minimization algorithms including Hopcroft’s, accessible at http://www.fastar.org/.
+  - **Historical notes and references**
+    - Thompson introduced the 𝜖-move technique for regular expression pattern matching.
+    - Hopcroft’s O(n log n) algorithm is a landmark result for DFA minimization.
+    - The CIAA conference serves as a major venue for automata implementations and applications.
+    - Classic textbooks include [Aho et al., 1990](https://www.amazon.com/Algorithms-Strings-Trees-Applications-Computer/dp/0201558034) and [Hopcroft et al., 2006].
+    - The PSPACE-completeness of NFA problems distinguishes them from DFA problems in computational complexity.

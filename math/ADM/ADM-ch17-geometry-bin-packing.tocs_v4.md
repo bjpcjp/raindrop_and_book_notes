@@ -1,0 +1,42 @@
+![ADM-ch17-geometry-bin-packing](ADM-ch17-geometry-bin-packing.best.png)
+
+- **Input and Problem Description**
+  - The input consists of n items with sizes and m bins with specified capacities.
+  - The goal is to store all items using the smallest number of bins.
+  - Bin packing has practical applications in manufacturing and shipping to minimize cost and waste.
+  - Bin packing complexity is NP-complete, necessitating heuristics rather than optimal algorithms.
+- **Factors Affecting Bin Packing**
+  - **Shapes and Sizes of Objects**
+    - Problem character depends heavily on object shapes and sizes.
+    - One-dimensional bin packing treats sizes as integers, akin to equal-width boxes into a container.
+    - Identical box sizes simplify packing but may not yield optimal results.
+  - **Constraints on Orientation and Placement**
+    - Labels like “this side up” or “do not stack” impose packing restrictions.
+    - Restrictive labels often increase the number of bins required.
+    - Ignoring such labels simplifies the packing task.
+  - **On-line vs Off-line Problems**
+    - Off-line problems have complete knowledge of all items upfront.
+    - On-line problems receive items sequentially and must pack as they arrive.
+    - Planning and sorting items before packing improves efficiency in off-line problems.
+- **Heuristics for Bin Packing**
+  - Standard off-line heuristics sort items and insert them based on various bin selection rules.
+  - First-fit decreasing is the best heuristic: sort descending by size, insert into the first bin with space.
+  - First-fit decreasing guarantees using no more than 22% more bins than optimal in one dimension.
+  - Implementation can be O(n log n + b n) time or improved to O(n log n) with binary tree space management.
+  - Adaptations exist to handle problem-specific constraints like stacking and orientation.
+- **Packing Arbitrary Shapes**
+  - Packing arbitrary geometric shapes is simplified by enclosing each part in its minimal bounding box.
+  - Finding orientation minimizing box area/volume is possible in two and three dimensions.
+  - Nonconvex parts can waste space; maximum empty rectangle inside a box can mitigate this.
+  - More advanced spatial packing strategies exist for irregular shapes.
+- **Implementations and References**
+  - Fortran algorithms for knapsack and bin packing by Martello and Toth are available online.
+  - David Pisinger maintains C codes for knapsack and related packing problems.
+  - A near-linear time approximation algorithm for optimal packing can be accessed online.
+  - Surveys include [CFC94, CGJ96, LMM02]; latest knapsack references include [KPP04].
+- **Notes and Related Topics**
+  - Efficient algorithms exist for finding the largest empty rectangle in shapes and point sets.
+  - Sphere packing is a notable bin packing special case with links to error-correcting codes.
+  - Kepler conjecture on sphere packing density was resolved in 1998.
+  - Bin packing in the apparel industry focuses on material minimization; relevant reports are cited.
+  - Related problems include the knapsack and set packing problems.

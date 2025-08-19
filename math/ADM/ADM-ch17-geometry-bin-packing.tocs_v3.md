@@ -1,36 +1,35 @@
-[Representative image](ADM-ch17-geometry-bin-packing.best.png)
+![ADM-ch17-geometry-bin-packing](ADM-ch17-geometry-bin-packing.best.png)
 
-- **Bin Packing**
-  - **Input description**
-    - The input consists of n items with sizes \(d_1, \ldots, d_n\) and m bins with capacities \(c_1, \ldots, c_m\).
-    - The goal is to store all items using the smallest number of bins.
-  - **Problem description**
-    - Bin packing problems arise in packaging and manufacturing contexts such as cutting widgets from materials or fitting boxes into trucks.
-    - The cutting stock problem is a variant involving placement and layout within bins.
-  - **Computational complexity and heuristics**
-    - Bin packing is NP-complete, requiring heuristic rather than worst-case optimal solutions.
-    - Factors affecting heuristics include object shapes and sizes, orientation and placement constraints, and whether the problem is offline or online.
-    - Offline problems allow sorting and global planning, improving packing efficiency.
-    - [Knapsack problem discussion (Section 13.10)](Page 427) provides related complexity context.
-  - **Heuristic insertion rules**
-    - Common insertion strategies include first-fit, best-fit, tightest-fit, and random bin selection.
-    - First-fit decreasing (FFD) is the best-performing heuristic, sorting objects by decreasing size and placing them in the first bin that fits.
-    - FFD can be implemented in \(O(n \log n + bn)\), or optimized to \(O(n \log n)\) using binary trees.
-  - **Handling constraints and variants**
-    - Problem-specific constraints such as "do not stack" or fixed orientation can be managed by adjusting insertion order.
-    - Packing arbitrary shapes is more complex; placing parts in minimum-volume enclosing boxes is a common approach.
-    - Finding minimum enclosing rectangles and maximum empty rectangles aids more efficient packing within boxes.
-  - **Implementations**
-    - Martello and Toth’s Fortran implementations cover knapsack variants, available at [http://www.or.deis.unibo.it/kp.html](http://www.or.deis.unibo.it/kp.html).
-    - David Pisinger maintains C-language codes for bin packing and container loading at [http://www.diku.dk/~pisinger/codes.html](http://www.diku.dk/~pisinger/codes.html).
-    - A near-linear time approximation for packing arbitrary shapes is available at [http://valis.cs.uiuc.edu/~sariel/research/papers/00/diameter/diam_prog.html](http://valis.cs.uiuc.edu/~sariel/research/papers/00/diameter/diam_prog.html).
-  - **Notes**
-    - Surveys of bin packing and cutting stock problems are found in [CFC94, CGJ96, LMM02].
-    - The knapsack problem and variants are reviewed by Keller, Pferschy, and Pisinger [KPP04].
-    - Experimental studies on bin-packing heuristics include [BJLM83, MT87].
-    - Efficient algorithms exist to find the largest empty rectangle inside polygons [DMR97] and point sets [CDL86].
-    - Sphere packing relates to bin packing; the Kepler conjecture on densest sphere packing was resolved by Hales and Ferguson (1998) [Szp03].
-    - Conway and Sloane’s work [CS93] is authoritative on sphere packing.
-    - Milenkovic’s research addresses two-dimensional bin packing for apparel manufacturing [DM97, Mil97].
-  - **Related Problems**
-    - The knapsack problem (Page 427) and set packing (Page 625) are closely related to bin packing.
+- **Input and Problem Description**
+  - The input consists of n items with sizes and m bins with specified capacities.
+  - The objective is to store all items using the smallest number of bins possible.
+  - Bin packing applies to manufacturing and packaging problems, such as cutting stock and shipping logistics.
+  - Bin packing problems are NP-complete and typically addressed using heuristics.
+- **Factors Affecting Heuristic Choice**
+  - Object shapes and sizes greatly influence the packing approach and complexity.
+  - Constraints on orientation and placement impact packing flexibility and bin utilization.
+  - The distinction between on-line and off-line problems affects planning and packing efficiency.
+  - Sorting objects from largest to smallest usually improves packing results.
+- **Standard Heuristics and First-Fit Decreasing**
+  - Objects are sorted in decreasing order of size before insertion.
+  - Each object is placed in the first bin with sufficient room; new bins open if needed.
+  - First-fit decreasing requires at most 22% more bins than the optimal solution.
+  - Implementation time is O(n log n + bn) or faster with tree data structures.
+- **Handling Problem-Specific Constraints**
+  - Orientation and stacking constraints can be managed by adjusting insertion order.
+  - Placing fixed-orientation boxes first and sensitive boxes last optimizes packing.
+  - Flexibility in packing is improved by reserving space for particular constraints.
+- **Packing Arbitrary Shapes**
+  - General method: enclose each shape in a minimum bounding box before packing.
+  - Finding minimum bounding boxes in 2D and 3D can be computationally intensive but feasible.
+  - Nonconvex parts waste space due to internal holes; maximum empty rectangles may improve utilization.
+  - More advanced methods exist and are cited in the text for improved packing.
+- **Implementations and Resources**
+  - Fortran implementations of knapsack and bin-packing variants are available from Martello and Toth.
+  - David Pisinger maintains C-language codes for knapsack problems and variants.
+  - Approximation algorithms for optimal packing of arbitrary shapes exist and run near-linearly.
+- **Notes and Related Problems**
+  - Extensive literature surveys exist covering bin packing and the cutting stock problem.
+  - Efficient algorithms exist for finding largest empty rectangles in polygons and point sets.
+  - Sphere packing is a well-studied special case with applications in coding theory.
+  - Related problems include the knapsack problem and set packing, with references provided.
