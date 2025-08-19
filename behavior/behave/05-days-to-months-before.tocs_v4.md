@@ -1,0 +1,43 @@
+![05-days-to-months-before](05-days-to-months-before.best.png)
+
+- **Five Days to Months Before**
+  - **Nonlinear Excitation**
+    - Synaptic strength increases through repeated stimulation involving glutamate and NMDA receptors, which activate in a nonlinear, threshold-dependent manner.
+    - Learning arises from the activation of NMDA receptors after sufficient repeated glutamate release, producing an "aha" moment at the synapse.
+    - See [Synaptic Plasticity and Memory](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3458336/) for detailed mechanisms of glutamate receptors.
+  - **"Aha" Versus Actually Remembering**
+    - Long-term potentiation (LTP) sustains enhanced synaptic excitability resulting from NMDA receptor activation via calcium influx.
+    - Calcium triggers multiple synaptic changes: increased glutamate receptor insertion, enhanced receptor sensitivity, and retrograde signaling increasing presynaptic glutamate release.
+    - Long-term depression (LTD) occurs alongside LTP to selectively weaken synapses, refining neural signals rather than causing generic forgetting.
+    - Moderate stress promotes hippocampal LTP, while prolonged stress disrupts it and induces LTD, explaining cognitive deficits under chronic stress.
+    - See [Long-Term Potentiation](https://www.nature.com/scitable/topicpage/long-term-potentiation-ltp-14398212/) for further understanding of LTP and LTD.
+  - **Rescued from the Trash**
+    - New synapse formation complements LTP, with new dendritic spines and axon terminals appearing over days to weeks to stabilize memories.
+    - Environmental enrichment and activity stimulate synaptogenesis, dendritic arbor expansion, and synapse stabilization.
+    - Stress and glucocorticoids show inverted-U effects on synapse and dendrite number, with chronic stress causing atrophy in hippocampus and frontal cortex but expansion in amygdala.
+    - Hormones like estrogen also modulate dendritic spine density and branching, impacting cognitive function cyclically.
+    - See [Synaptogenesis and Neural Plasticity](https://www.frontiersin.org/articles/10.3389/fncel.2018.00057/full) for synapse formation insights.
+  - **Axonal Plasticity**
+    - Axons can sprout new projections to novel brain regions, as shown in sensory remapping in blind or deaf individuals.
+    - Injury or sensory deprivation leads to cortical remapping where spared neurons extend their projections into inactive regions, enabling cross-modal plasticity.
+    - Plasticity also occurs in motor cortex through practice and sensory cortex with skill acquisition, with rapid and lasting expansions documented in human studies.
+    - Remapping involves complex mechanisms of target recognition and integration, still a subject of active research.
+    - See [Cross-modal Plasticity](https://www.nature.com/articles/nrn3435) for more on sensory remapping.
+  - **Digging Deeper in the Ash Heap of History**
+    - Adult neurogenesis, the birth of new neurons in adulthood, was initially discovered in the 1960s but faced decades of skepticism and rejection.
+    - Convincing evidence came from studies in birds and later in mammals, showing hippocampal neurogenesis sustained in adult brains including humans.
+    - Adult neurogenesis is modulated positively by learning, exercise, estrogen, antidepressants, and inhibited by stress.
+    - New neurons integrate into circuits aiding pattern separation, a critical memory function.
+    - See [Adult Neurogenesis Review](https://www.nature.com/articles/nrn.2016.87) for comprehensive background and current findings.
+  - **Some Other Domains of Neuroplasticity**
+    - Experience, hormones, stress, and disease influence brain region sizes such as hippocampal enlargement with estrogen or cab driving, and atrophy with depression or chronic pain.
+    - Changes include not only neuron number but dendritic processes and receptor densities impacting cognition and emotion.
+    - Dopamine depletion in nucleus accumbens relates to depression and social subordination, while testosterone receptor regulation alters reward processing.
+    - Parasites like Toxoplasma gondii can change fear responses and impulsivity through neuroplastic mechanisms.
+    - See [Experience-Dependent Neuroplasticity](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653197/) for effects across brain regions.
+  - **Some Conclusions**
+    - Neuroplasticity encompasses strengthening/weakening synapses, formation of new synapses, dendritic and axonal remodeling, and adult neurogenesis.
+    - Plasticity is bidirectional and value-neutral: it enables both adaptive skill learning and maladaptive changes such as PTSD-related brain alterations.
+    - Neuroplastic potential is finite and influenced by genetic and environmental factors; vast practice is necessary but not sufficient for elite expertise.
+    - Psychological understanding of neuroplasticity fosters optimism for personal and societal transformation.
+    - See [The Brain That Changes Itself](https://www.penguinrandomhouse.com/books/296175/the-brain-that-changes-itself-by-norman-doidge-md/) by Norman Doidge for an accessible overview of neuroplasticity research.

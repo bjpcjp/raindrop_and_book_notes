@@ -1,0 +1,45 @@
+![21-endocrinology](21-endocrinology.best.png)
+
+- **Introduction to Endocrinology**
+  - **Differences Between Hormones and Neurotransmitters**
+    - Neurotransmitters act locally at synapses between neurons, affecting postsynaptic neuron excitability in milliseconds.  
+    - Hormones are chemical messengers released into the bloodstream, capable of affecting any cells with appropriate receptors throughout the body.  
+    - Hormonal effects take longer to manifest, from hours to days, and can have permanent consequences.  
+    - Neurotransmitters produce local ion flow changes, while hormones can alter protein activity, gene expression, metabolism, and cell fate.  
+    - Further reading: [Endocrine Society - Hormones](https://www.endocrine.org/topics/hormones)
+- **Hormonal Axes and Regulation**
+  - **The Neuroendocrine Axis**
+    - Hypothalamic neurons secrete releasing hormones that stimulate the pituitary gland to secrete pituitary hormones.  
+    - Pituitary hormones travel via general circulation to peripheral glands, prompting secretion of final hormones (e.g., CRH → ACTH → cortisol).  
+    - Multiple hypothalamic hormones control pituitary hormone release, including inhibitory signals.  
+    - Different stressors can produce varied combinations of hypothalamic hormones regulating ACTH.  
+    - Further reading: [NIH - Hypothalamic-Pituitary-Adrenal Axis](https://www.ncbi.nlm.nih.gov/books/NBK27901/)
+  - **Alternative Hormonal Regulation Patterns**
+    - Some hormones follow a brain/pituitary two-step pathway where the pituitary hormone acts directly on target tissues (e.g., growth hormone).  
+    - Other hormones are regulated by neural projections to glands; the pancreas and insulin secretion exemplify this.  
+    - Unconventional hormones originate from non-traditional glands like the heart or gut, with indirect brain regulation.  
+    - Further reading: [Endocrinology Textbook: Hormonal Control](https://www.endotext.org/)
+- **Hormone Biosynthesis and Receptor Function**
+  - **Hormone Production**
+    - Hormones are synthesized from abundant precursors such as simple proteins or cholesterol.  
+    - Multiple hormones can derive from a single precursor; for example, all steroid hormones originate from cholesterol.  
+    - Hormone biosynthesis typically involves only a few enzymatic steps.  
+    - Further reading: [Steroidogenesis Overview](https://www.ncbi.nlm.nih.gov/books/NBK285564/)
+  - **Hormone Receptors**
+    - Each hormone has a distinctive receptor with a binding domain complementary to the hormone’s shape.  
+    - Receptors differentiate between structurally similar hormones to prevent cross-reactivity (e.g., estrogen vs. testosterone receptors).  
+    - The receptor’s binding affinity ("avidity") and receptor number on cells can change, modifying hormone signaling duration and sensitivity.  
+    - Hormone receptor mutations can cause endocrine diseases even when hormone levels are normal.  
+    - Only cells with specific hormone receptors respond to each hormone, explaining tissue-specific effects (e.g., ER-positive breast cancer cells).  
+    - Further reading: [Nature Reviews: Hormone Receptors](https://www.nature.com/subjects/endocrinology)
+- **Hormonal Effects on Target Cells and Development**
+  - **Range of Hormonal Effects**
+    - Hormones can alter cell functions by affecting proteins, gene expression, metabolism, growth, atrophy, division, or cell death.  
+    - Examples include testosterone increasing muscle mass and progesterone promoting uterine cell proliferation.  
+    - Stress hormones can induce immune cell death, explaining stress-induced vulnerability to infections.  
+    - Thyroid hormone triggers tail cell death during tadpole metamorphosis.  
+  - **Organizational and Activational Hormone Effects**
+    - Organizational effects occur during fetal and childhood development, permanently shaping brain structure.  
+    - Activational effects influence brain function over hours to days in adulthood.  
+    - Organizational effects set the stage for later activational hormone responses.  
+    - Further reading: [Hormones and Brain Development](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3009694/)

@@ -1,0 +1,59 @@
+![02-one-second-before](02-one-second-before.best.png)
+
+- **Two One Second Before**
+  - **Introduction to proximate causes of behavior**
+    - Various disciplines provide intertwined explanations for behavior, including hormones, evolution, genes, culture, and neurobiology.
+    - This chapter focuses on neurobiology, specifically what neural events occur one second before a behavior.
+    - Understanding the brain's role offers the most proximal explanation for the muscles' movement and behavior.
+    - Foundational material covered here may overwhelm those without neuroscience background; Appendix 1 is recommended for review.
+  - **The triune brain model**
+    - The brain is metaphorically divided into three layers: ancient regulatory (layer 1), emotional mammalian limbic (layer 2), and neocortical cognition (layer 3).
+    - Layer 1 controls automatic body functions, layer 2 processes emotions influenced by sensory inputs (olfactory in rodents, visual in primates), layer 3 handles cognition and abstract thinking.
+    - The model is simplistic; substantial overlap and bidirectional flow exist among layers.
+    - Despite limitations, the triune brain offers a useful organizational framework.
+  - **The limbic system**
+    - The limbic system, central to emotion, consists of structures such as the amygdala, hippocampus, septum, habenula, and mammillary bodies.
+    - Initially confused with the rhinencephalon (olfactory brain), limbic structures are understood as processing emotion, especially in mammals.
+    - Emotion in the limbic system interacts complexly with automatic body regulation via the hypothalamus.
+    - The limbic system's circuits influence social and aggressive behaviors.
+  - **The autonomic nervous system and hypothalamus**
+    - The hypothalamus bridges emotional (layer 2) and automatic regulatory (layer 1) brain layers.
+    - The autonomic nervous system has sympathetic (SNS) and parasympathetic (PNS) branches with opposing functions: SNS activates fight/flight/sex responses releasing norepinephrine or epinephrine, PNS mediates calm states releasing acetylcholine.
+    - Emotional states affect autonomic functions which in turn feedback to influence behavior.
+    - Hormonal regulation via the hypothalamus is also significant (covered in chapter 4).
+  - **The interface between limbic system and cortex**
+    - The cortex, especially the frontal cortex, integrates sensory information and mediates higher cognitive functions.
+    - The cortex and limbic system communicate bidirectionally; emotions influence cognition and vice versa.
+    - The frontal cortex acts as the interface between emotion and cognition layers (layers 2 and 3).
+    - The cortex is convoluted into four lobes, and lateralized functions exist between left (analytical) and right (intuitive) hemispheres.
+  - **The amygdala**
+    - The amygdala is a key limbic structure for aggression, fear, and anxiety.
+    - Lesion, stimulation, and neuroimaging studies link amygdala activity to aggressive and fearful behaviors.
+    - Damage to the amygdala impairs detection of angry expressions and alters aggression and social behavior.
+    - The amygdala processes innate and learned fear, mediates anxiety in uncertain social contexts, and influences social decision-making via vigilance and distrust.
+    - It connects to sensory inputs, pain pathways (periaqueductal gray), disgust (insula), and the frontal cortex.
+    - Outputs modulate motor responses, autonomic arousal, hormonal stress response, and higher brain regions.
+    - Fear and aggression often co-occur but can dissociate; psychopathic violence shows reduced amygdala activity.
+    - Further reading: [Joseph LeDoux’s work on fear and amygdala](https://science.sciencemag.org/content/316/5823/323)
+  - **The frontal cortex**
+    - The frontal cortex is the most recently evolved brain region, critical for working memory, executive function, emotion regulation, and impulsivity control.
+    - Subregions include the dorsolateral PFC (dlPFC) for rational cognition and ventromedial PFC (vmPFC) for emotion-influenced decision-making.
+    - Damage to the frontal cortex causes behavioral disinhibition, poor judgment, and social inappropriateness, exemplified by cases like Phineas Gage.
+    - Frontal cortex activity is metabolically demanding and vulnerable under stress or cognitive load, reducing prosocial behavior.
+    - The PFC and limbic system collaborate, with the PFC regulating emotional responses, mediating fear extinction, and supporting cognitive-behavioral therapy approaches.
+    - vmPFC damage leads to utilitarian but emotionally impoverished decisions; dlPFC damage promotes impulsivity.
+    - Functional interactions influence moral decisions, social behavior, and emotion-cognition integration.
+    - Further reading: [Antonio Damasio’s somatic marker hypothesis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2862887/)
+  - **The mesolimbic/mesocortical dopamine system**
+    - Dopamine neurons originate in the ventral tegmental area and project to limbic areas (mesolimbic pathway) and prefrontal cortex (mesocortical pathway).
+    - Dopamine mediates reward processing, anticipation, motivation, and reinforcement learning.
+    - Dopamine release encodes reward prediction errors as increases or decreases relative to expectations.
+    - Dopamine responses habituate with repeated exposure, necessitating constant recalibration to new rewards.
+    - This system processes social rewards such as cooperation and punishment satisfaction and underlies behaviors like addiction and gambling through mechanisms like intermittent reinforcement.
+    - Dopamine also encodes anticipation and fuels goal-directed behavior, integral to delayed gratification and working toward long-term rewards.
+    - Interactions with frontal cortex and amygdala tune decisions involving reward magnitude, delay, and probability.
+    - Further reading: [Wolfram Schultz’s dopamine reward prediction error studies](https://www.nature.com/articles/nn1500)
+  - **A final small topic: serotonin**
+    - Low brain serotonin levels correlate with increased aggression in humans and other animals.
+    - This serotonin-aggression relationship has been observed across diverse species from mammals to invertebrates.
+    - Further reading: [Serotonin and aggression meta-analysis](https://academic.oup.com/brain/article/125/7/1527/365586)

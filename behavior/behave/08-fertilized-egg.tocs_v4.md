@@ -1,0 +1,101 @@
+![08-fertilized-egg](08-fertilized-egg.best.png)
+
+- **Back to When You Were Just a Fertilized Egg**
+  - **Do Genes Know What They Are Doing? The Triumph of the Environment**
+    - Genes specify proteins but do not autonomously decide when proteins are made.
+    - Gene transcription is regulated by promoters and transcription factors influenced by the environment.
+    - Environmental inputs from intracellular conditions to external stimuli control gene expression.
+    - Gene regulation involves complex networks of transcription factors that regulate one another.
+    - For more: [Nature: What is gene regulation?](https://www.nature.com/scitable/topicpage/gene-regulation-a-eukaryotic-perspective-1070/)
+  - **Epigenetics**
+    - Epigenetic changes chemically modify promoters or DNA-associated proteins, freezing gene expression states.
+    - Such changes can be multigenerational, influencing gene expression beyond immediate offspring.
+    - Neo-Lamarckian inheritance reflects environment-driven epigenetic inheritance mechanisms.
+    - Epigenetic effects last from days to entire lifespans.
+    - For more: [NIH Epigenomics](https://www.nih.gov/research-training/epigenomics)
+  - **The Modular Construction of Genes: Exons and Introns**
+    - Most genes are discontinuous, with exons separated by introns excised during RNA splicing.
+    - Alternative splicing generates multiple protein variants from a single gene.
+    - Splicing is regulated by enzymes coded by other genes, adding regulatory complexity.
+    - Approximately 90% of human genes undergo alternative splicing.
+    - For more: [NCBI: Alternative Splicing](https://www.ncbi.nlm.nih.gov/books/NBK26829/)
+  - **Transposable Genetic Elements, the Stability of the Genome, and Neurogenesis**
+    - Transposons are DNA sequences that copy and insert themselves randomly into the genome.
+    - Initially controversial, transposons are now accepted as genomic elements influencing variability.
+    - Transposons occur in brain stem cells forming neurons, creating mosaic genomic diversity.
+    - Transposition may contribute to adaptability, as seen in plant response to drought and immune system variability.
+    - For more: [Nature Reviews: Transposons and neural diversity](https://www.nature.com/articles/nrn3938)
+  - **Chance**
+    - Random molecular motion influences gene regulation at molecular levels, including TF binding.
+    - This stochasticity adds variability even with identical genetic material.
+  - **Some Key Points, Completing This Part of the Chapter**
+    - Genes are not autonomous biological controllers, but environment-regulated elements.
+    - Noncoding DNA plays a major role in regulating gene expression.
+    - Evolution primarily acts on regulatory sequences rather than gene coding regions.
+    - Epigenetic modifications provide lifelong or multigenerational environmental effects.
+    - Transposons induce genomic mosaicism especially in the brain.
+
+- **Genes from the Top Down—Behavior Genetics**
+  - **First Attempts**
+    - Initial genetic attributions to behavior confused genetic and environmental familial effects.
+    - Comparing relatives with differing genetic relatedness helped infer genetic contributions.
+    - Shared environment confounds remain a significant challenge.
+  - **Twins, Adoptees, and Adopted Twins**
+    - Twin studies compare identical and fraternal twins to estimate genetic influence on behavior.
+    - Adoption studies separate genes and environment by comparing biological and adoptive relatives.
+    - Identical twins separated at birth provide powerful evidence for genetic influences amidst environmental variance.
+    - Genetic influence found in traits including IQ, psychiatric disorders, personality, social attitudes, and behaviors.
+    - Gene effects are often mediated through indirect psychological or social traits.
+    - For more: [Twin Research and Human Genetics Journal](https://www.cambridge.org/core/journals/twin-research-and-human-genetics)
+  - **The Debates About Twin and Adoption Studies**
+    - Twin studies assume equal environment for monozygotic and dizygotic twins, which is often violated.
+    - Chorionic status differences in twin pregnancies can inflate genetic influence estimates.
+    - Adoption studies face confounds from prenatal environment and selective placement.
+    - Criticisms commonly argue that these confounds inflate heritability estimates.
+    - Some leading researchers maintain confounds minimally affect conclusions; others disagree.
+  - **The Fragile Nature of Heritability Estimates**
+    - Heritability measures the genetic contribution to variation within a population, not inheritance of trait average.
+    - Traits can be strongly inherited yet have low heritability and vice versa.
+    - Heritability estimates apply only to studied environments, often inflating gene importance under controlled conditions.
+    - Environment complexity reduces heritability estimates when broadly sampled.
+  - **Gene/Environment Interactions**
+    - Gene effects vary qualitatively and quantitatively by environment, generating interaction effects.
+    - Examples include phenylketonuria's dietary dependence and serotonin transporter variants combined with childhood trauma affecting depression risk.
+    - Laboratory studies show extreme environmental modulation of gene effects even under standardized conditions.
+    - Interactions imply that genes affect behavior only within specific environmental contexts.
+    - For more: [Science article on gene-environment interaction](https://science.sciencemag.org/content/301/5631/386)
+  - **Key Points on Behavior Genetics**
+    - Genetic influence on trait averages differs from influence on individual differences.
+    - Genetic effects require proper environmental context for expression.
+    - Expanding environmental diversity generally decreases heritability measures.
+    - Gene/environment interactions are widespread and significant.
+
+- **So What Do Genes Actually Have to Do With Behaviors We’re Interested In?**
+  - **The Marriage of Behavior Genetics and Molecular Genetics**
+    - Molecular genetics identifies candidate genes contributing to behavioral traits.
+    - Effect sizes of single genes are generally small, often context-dependent via gene/environment interactions.
+  - **Studying Candidate Genes**
+    - Serotonin system genes relate to impulsive aggression but produce inconsistent and sometimes contradictory findings.
+    - MAO-A low-activity variants correlate with increased aggression only in abused individuals, disproving deterministic "warrior gene" notions.
+    - Dopamine receptor gene DRD4 7-repeat variant associates with sensation seeking and impulsivity, but effects vary by attachment security and socioeconomic context.
+    - Oxytocin and vasopressin gene variants influence prosocial behaviors, but effects vary and sometimes associate with antisocial outcomes under adversity or stress.
+    - Steroid hormone-related genes (e.g., testosterone receptor) show small effect sizes in aggression and brain structure, often with gene/environment interactions.
+    - For more: [NIH Genetics Home Reference: Behavior genetics](https://medlineplus.gov/genetics/understanding/traits/behavior/)
+  - **Fishing Expeditions, Instead of Looking Where the Light Is**
+    - Genomewide association studies (GWAS) scan millions of SNPs to identify genetic variants associated with traits, often implicating numerous small-effect genes.
+    - GWAS reveal behavioral traits such as height, BMI, or educational attainment are highly polygenic, with single variants explaining negligible variance.
+    - Candidate gene studies face limits due to examining only known gene functions ("looking where the light is").
+    - Gene expression studies via microarrays provide additional candidate gene insights based on tissue activity.
+    - For more: [Nature Education: GWAS](https://www.nature.com/scitable/topicpage/genome-wide-association-studies-gwas-293)
+  - **Key Points on Gene Influence**
+    - Thousands of publications report candidate gene associations; effect sizes per gene are typically tiny.
+    - Behaviors are polygenic, influenced by large networks of overlapping gene sets.
+    - Genetic effects occur with extensive gene-gene and gene-environment interactions, challenging deterministic interpretation.
+    - Considering gene variants alone poorly predicts individual behavior.
+
+- **Conclusions**
+  - Genes influence behavior extensively but in highly context-dependent ways.
+  - Genetic effects represent tendencies and vulnerabilities, not inevitabilities.
+  - Gene effects must be understood within interactions with environment and other genes.
+  - Overenthusiastic genetic determinism ignores the complexity of gene regulation and environmental modulation.
+  - For more: [The Endless Gene: A complex view of genes and behavior](https://www.nature.com/articles/d41586-018-03672-7)

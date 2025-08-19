@@ -1,0 +1,400 @@
+![24-index](24-index.best.png)
+
+- **Adolescence**
+  - **Criminal justice system and adolescence**
+    - Adolescents interact uniquely with the criminal justice system, as seen in specific legal and behavioral considerations.
+    - Brain maturation and impulse control are still developing during adolescence, influencing legal responsibility.
+    - See [Roper v. Simmons](https://en.wikipedia.org/wiki/Roper_v._Simmons) for court decisions affecting juveniles.
+  - **Culture and adolescence**
+    - Cultural factors shape adolescent development and behavior.
+    - Social acceptance and peer influence are central during adolescence.
+    - Cross-cultural studies provide insight into adolescent behavior differences.
+  - **Dopamine reward system and adolescence**
+    - Dopamine pathways are highly active in adolescence, affecting novelty seeking and risk-taking.
+    - Changes in reward sensitivity contribute to adolescent behavior.
+    - For neurobiological context, see [Dopamine's Role in Reward Circuits](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2990214/).
+  - **Empathy, sympathy, and moral reasoning in adolescence**
+    - Adolescents develop higher capacities for empathy and moral reasoning.
+    - Social and emotional maturation influence prosocial behavior.
+    - Kohlberg’s stages of moral development are relevant frameworks.
+  - **Frontal cortical maturation in adolescence**
+    - The frontal cortex undergoes significant structural and functional changes.
+    - Maturation relates to executive functions and inhibition control.
+    - See [Brain Development in Adolescence](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4153696/).
+  - **Novelty craving in adolescence**
+    - Adolescents exhibit increased craving for novelty and stimulation.
+    - This behavior links to dopamine activity and social influences.
+  - **Peers, social acceptance, and social exclusion in adolescence**
+    - Peer relationships heavily impact adolescent self-concept and behavior.
+    - Exclusion can lead to emotional and social difficulties.
+  - **Puberty in adolescence**
+    - Pubertal hormonal changes influence brain development and behavior.
+    - Hormonal effects intersect with social and emotional growth.
+  - **Risk taking in adolescence**
+    - Increased risk-taking behavior correlates with brain and hormonal changes.
+    - Social context and reward sensitivity are contributing factors.
+  - **Violence in adolescence**
+    - Adolescents display elevated rates of violent behavior relative to other ages.
+    - This is influenced by developmental, social, and cultural factors.
+
+- **Aggression**
+  - **Alcohol and aggression**
+    - Alcohol consumption elevates aggressive behaviors.
+    - Neurochemical changes involving serotonin and dopamine contribute.
+  - **Amygdala and aggression**
+    - The amygdala regulates emotional responses linked to aggression.
+    - Dysregulation or lesions in the amygdala affect aggressive behavior.
+    - See LeDoux’s work on amygdala function for further details.
+  - **Context of aggression**
+    - Aggression arises in varying contexts including ecological stress and social triggers.
+  - **Displacement aggression**
+    - Aggression can be redirected from original targets to others in displacement.
+  - **Fear and aggression**
+    - Fear responses mediated by the amygdala modulate aggression.
+  - **Female aggression**
+    - Hormonal influences, such as estrogen and progesterone, affect aggression in females.
+  - **Maternal aggression**
+    - Maternal behaviors include protective aggression modulated by hormones.
+  - **Pain and aggression**
+    - Pain can provoke aggressive responses.
+  - **Religion and aggression**
+    - Religion interacts complexly with aggression, sometimes mitigating or exacerbating it.
+  - **Ritualistic aggression**
+    - Aggression can take ritualized, socially sanctioned forms.
+  - **Serotonin and aggression**
+    - Low serotonin levels associate with increased aggression.
+    - Genetic and environmental factors influence serotonin regulation.
+  - **Stress and aggression**
+    - Stress hormones amplify aggressive tendencies.
+  - **Testosterone and aggression**
+    - Testosterone correlates positively with aggression intensity and frequency.
+    - Context and social factors modulate testosterone's effects.
+  - **Types of aggression**
+    - Differentiated as reactive, proactive, instrumental, etc.
+    - Understanding subtypes aids in behavioral assessment.
+
+- **Amygdala**
+  - **Aggression and the amygdala**
+    - The amygdala mediates emotional processes underlying aggressive behavior.
+  - **Basolateral amygdala (BLA)**
+    - The BLA integrates sensory information and modulates emotional responses.
+  - **Childhood adversity and the amygdala**
+    - Early-life stress impacts amygdala development and reactivity.
+  - **Facial processing and the amygdala**
+    - The amygdala responds to facial expressions linked to social cues.
+  - **Fear and the amygdala**
+    - The amygdala specializes in processing fear stimuli.
+  - **Amygdala as part of neural networks**
+    - Interacts with prefrontal cortex and other limbic regions for emotion regulation.
+  - **Removal of the amygdala**
+    - Removal or damage leads to deficits in emotional processing and aggression regulation.
+  - **Amygdala and stress**
+    - The amygdala mediates responses to acute and chronic stress.
+  - **Testosterone and the amygdala**
+    - Testosterone influences amygdala activity, affecting aggression and dominance.
+
+- **Animals**
+  - **Compassion in animals**
+    - Evidence shows animals display compassion and prosocial behaviors.
+  - **Conformity in animals**
+    - Animals demonstrate social learning and conformity within groups.
+  - **Emotional contagion in animals**
+    - Emotional states can be transmitted among animals.
+  - **Morality in animals**
+    - Studies suggest rudimentary moral behaviors in social animal species.
+  - **Sensory triggers of behavior in animals**
+    - Sensory stimuli uniquely elicit behavioral responses in animals.
+
+- **Brain**
+  - **Amygdala in the brain**
+    - Central to processing emotions including fear and aggression.
+  - **Anterior cingulate cortex (ACC) in the brain**
+    - Involved in conflict monitoring, emotional regulation, and social pain.
+  - **Autonomic nervous system and brain**
+    - Controls involuntary physiological responses linked to emotion.
+  - **Damage to the brain**
+    - Specific brain damages affect behavior, emotion, and moral reasoning.
+  - **Frontal cortex in the brain**
+    - Governs executive functions, decision-making, and impulse control.
+  - **Fusiform face area**
+    - Specialized for facial recognition.
+  - **Hemispheres and lateralization**
+    - Brain hemispheres show functional specialization.
+  - **Hippocampus in the brain**
+    - Key to memory and spatial navigation.
+  - **Limbic system of the brain**
+    - Regulates emotions and motivations.
+  - **Locus coeruleus in brain**
+    - Regulates arousal via norepinephrine.
+  - **Mesolimbic/mesocortical dopamine system**
+    - Mediates reward and motivation.
+  - **Neocortex in brain**
+    - Responsible for higher cognitive functions.
+  - **Neuronal circuits and neuromodulation**
+    - Neural plasticity and chemical communication shape behavior.
+  - **Nucleus accumbens**
+    - Plays role in reward processing.
+  - **Obedience and brain**
+    - Neural substrates influence conformity and social behavior.
+  - **Periaqueductal gray (PAG)**
+    - Integrates pain, defensive behavior, and social signals.
+  - **Plasticity in brain**
+    - Brain changes structurally and functionally in response to experience.
+  - **Prefrontal cortex**
+    - Oversees complex cognition and social behavior.
+  - **Premotor cortex (PMC)**
+    - Involved in planning and execution of movements.
+  - **Brain size and social group size**
+    - Correlates exist between neocortex size and social network complexity.
+  - **Social rank and brain**
+    - Brain regions track status and hierarchy.
+
+- **Childhood, Children**
+  - **Class differences and childhood**
+    - Socioeconomic factors affect cognitive and emotional development.
+  - **Compassion in childhood**
+    - Children show emerging capacities for empathy and prosocial behavior.
+  - **Culture and childhood**
+    - Cultural contexts influence child-rearing and socialization.
+  - **Developmental stages in childhood**
+    - Cognitive and moral development progress through defined stages.
+  - **Empathy in childhood**
+    - Empathy develops from infancy through adolescence.
+  - **Hospitalization in childhood**
+    - Health conditions can shape psychological outcomes.
+  - **Marshmallow test and childhood impulse control**
+    - Delayed gratification predicts later self-regulation.
+  - **Media violence and childhood**
+    - Exposure influences aggression and fear.
+  - **Neighborhood influences**
+    - Environment shapes risk and protective factors.
+  - **Parenting and childhood**
+    - Parenting styles impact social and emotional development.
+  - **Peers and childhood**
+    - Peer relationships contribute to social learning and identity.
+  - **Play in childhood**
+    - Play supports cognitive and social skills.
+  - **Us/Them categorization in childhood**
+    - Early development of social categories shapes bias formation.
+
+- **Culture(s)**
+  - **Definitions and differences in culture**
+    - Culture is defined by shared behaviors, beliefs, and norms.
+    - Variations exist across geographic and social groups.
+  - **Adolescence and culture**
+    - Cultural norms impact adolescent transitions and social roles.
+  - **Childhood and culture**
+    - Child development is shaped by cultural context.
+  - **Collectivist vs. individualist cultures**
+    - These categories affect social behavior, cognition, and moral reasoning.
+  - **Cultural crises**
+    - Major societal disruptions alter cultural practices.
+  - **Egalitarian and stratified cultures**
+    - Societies differ in hierarchies and resource distribution.
+  - **Honor cultures**
+    - Emphasize reputation, respect, and sometimes violence.
+  - **Hunter-gatherer cultures**
+    - Provide models for early human social organization.
+  - **Learning and culture**
+    - Social learning propagates cultural traits.
+  - **Long-lasting cultural effects**
+    - Historical forces shape persistent cultural patterns.
+  - **Math skills and culture**
+    - Cultural factors influence cognitive skills including numeracy.
+  - **Pastoral and agricultural cultures**
+    - Economic practices interact with social and religious systems.
+  - **Prehistoric and contemporary indigenous cultures**
+    - Archaeology reveals continuity and change over time.
+  - **Religion and culture**
+    - Religious beliefs are intertwined with cultural patterns.
+  - **Sensory processing and culture**
+    - Perceptual differences occur across cultures.
+  - **Similarities and human universals**
+    - Certain traits and behaviors are broadly shared among humans.
+  - **Stress responses and culture**
+    - Culture moderates physiological and psychological stress.
+  - **Violence and culture**
+    - Cultural norms influence violence prevalence and acceptance.
+
+- **Empathy**
+  - **Affective and cognitive sides of empathy**
+    - Both emotional sharing and perspective taking comprise empathy.
+  - **Compassionate acts linked to empathy**
+    - Empathy motivates helping and prosocial behavior.
+  - **Emotional contagion**
+    - Automatic sharing of emotions is a foundation of empathy.
+  - **Group loyalty and empathy**
+    - Empathy often favors in-group members.
+  - **Mimicry and empathy**
+    - Imitation facilitates emotional connection.
+  - **Mirror neurons in empathy**
+    - Neural substrates partially explain empathic processes.
+  - **Pain and empathy**
+    - Observing pain activates neural circuits related to self-pain.
+  - **Self-interest and empathy**
+    - Empathy sometimes serves or conflicts with self-serving goals.
+  - **Stress and empathy**
+    - Stress influences empathic capacity.
+  - **Us/Them effects on empathy**
+    - Empathy biases favor kin or social groups.
+  - **Wealth and empathy**
+    - Socioeconomic status correlates with empathic behavior.
+  - **Empathy in young children**
+    - Empathy emerges early and develops through socialization.
+
+- **Evolution**
+  - **Basics of evolution**
+    - Evolution operates via natural selection, mutation, and genetic drift.
+  - **Adaptation and exaptation**
+    - Traits evolve through adaptation and repurposing (exaptation).
+  - **Behavioral evolution**
+    - Behaviors have genetic and environmental influences.
+  - **Fossil record and real-time evolution**
+    - Evidence for evolution comes from fossils and observed changes.
+  - **Group, individual, and kin selection**
+    - Different levels of selection shape traits and social behaviors.
+  - **Human evolution**
+    - Humans show unique social and cognitive adaptations.
+  - **Multilevel and neo-group selection**
+    - Selection acts at multiple levels including groups.
+  - **Pair-bonding vs. tournament species**
+    - Mating systems influence social structures.
+  - **Parent-offspring conflict**
+    - Evolutionary tensions exist between parental and offspring interests.
+  - **Punctuated equilibrium**
+    - Evolution can proceed in rapid bursts.
+  - **Reciprocal altruism**
+    - Cooperation relies on mutual exchange over time.
+  - **Sociobiology and evolutionary psychology**
+    - Disciplines integrate biology and social behavior.
+  - **Misconceptions about evolution**
+    - Clarifications address misunderstandings such as "survival of the fittest."
+  - For further reading, see [Evolutionary Biology](https://evolution.berkeley.edu/evolibrary/article/evo_01).
+
+- **Free Will**
+  - **Brain damage and free will**
+    - Neurological impairments affect volition and responsibility.
+  - **Causation vs. compulsion**
+    - Distinction between voluntary actions and compelled behavior is important in law.
+  - **Libet experiment**
+    - Studies reveal pre-conscious brain activity before voluntary action.
+  - **Mitigated free will**
+    - Degrees of responsibility consider neurological and psychological factors.
+  - **Starting vs. halting behavior**
+    - Different neural mechanisms govern initiating and stopping actions.
+  - **Homunculus concept**
+    - Theories of internal agents controlling behavior are philosophically contentious.
+  - See [Who’s in Charge? Free Will and the Science of the Brain](https://www.hup.harvard.edu/catalog.php?isbn=9780674041807) for deeper study.
+
+- **Hormones**
+  - **ACTH and CRH**
+    - Key stress-related hormones regulating cortisol release.
+  - **Aggression and female hormones**
+    - Estrogen, progesterone, and testosterone influence female aggression.
+  - **Endocrinology basics**
+    - Hormones act as chemical messengers influencing behavior.
+  - **Prenatal hormones**
+    - Hormonal environment in utero impacts development.
+  - **Neurotransmitters and hormones**
+    - Interaction between hormones and neurotransmitters affects brain function.
+  - **Oxytocin and vasopressin**
+    - These neuropeptides regulate social bonding and behaviors.
+  - **Stress and hormones**
+    - Stress responses engage hormonal systems affecting mood and behavior.
+  - **Testosterone**
+    - Influences aggression, dominance, and social status.
+  - **Hormone receptors**
+    - Cellular targets mediate hormonal effects.
+  - See [Endocrinology Overview](https://www.ncbi.nlm.nih.gov/books/NBK27904/) for detailed explanation.
+
+- **Morality and Moral Decisions**
+  - **In animals**
+    - Studies reveal elements of moral behavior in non-human species.
+  - **Applying science of morality**
+    - Integration of neuroscience and psychology illuminates moral processes.
+  - **Automaticity and morality**
+    - Some moral judgments occur rapidly and unconsciously.
+  - **In children and infants**
+    - Moral reasoning develops with age and cognitive growth.
+  - **Competition and cooperation in morality**
+    - Moral judgments often reflect social strategies.
+  - **Consequentialism and deontology**
+    - Moral frameworks weighing outcomes vs. duties affect decisions.
+  - **Context and framing effects**
+    - Cultural and situational factors influence moral judgments.
+  - **Disgust and moral judgment**
+    - Disgust responses shape perceptions of purity and morality.
+  - **Doing the harder thing when correct**
+    - Executive function supports moral behavior despite personal cost.
+  - **Honesty and duplicity**
+    - Moral valuation includes truth-telling and deception.
+  - **Infants’ moral reasoning**
+    - Early sensitivity to fairness and harm is observed.
+  - **Intuition and reasoning**
+    - The interplay of emotive and rational processes drives moral judgments.
+  - **“Me vs. us” and “Us vs. Them”**
+    - Social identity affects moral scope and inclusiveness.
+  - **Obedience and morality**
+    - Authority influences compliance with moral norms.
+  - **Political orientation and morality**
+    - Moral values correlate with political beliefs.
+  - **Punishment in morality**
+    - Enforcement supports social cooperation.
+  - See [Moral Tribes by Joshua Greene](https://www.amazon.com/Moral-Tribes-Emotion-Between-Us/dp/0143109983) for comprehensive treatment.
+
+- **Obedience and Conformity**
+  - **In animals**
+    - Social animals display conformity for group cohesion.
+  - **Brain mechanisms**
+    - Specific neural circuits modulate obedience and conformity behaviors.
+  - **Modulators of obedience**
+    - Factors include authority nature, victim identity, stress levels, and social pressure.
+  - **Roots of obedience**
+    - Evolutionary and social psychology explain conformity as adaptive.
+  - **Classic studies**
+    - Experiments by Asch, Milgram, Hofling, Stanford Prison, and BBC Prison illustrate obedience dynamics.
+  - See [Milgram’s Obedience Study](https://www.simplypsychology.org/milgram.html) for foundational research.
+
+- **Punishment**
+  - **Antisocial and free-riding punishment**
+    - Punishment deters behaviors harmful to social groups.
+  - **Third-party punishment**
+    - Individuals enforce norms even when not personally affected.
+  - **Punishment role in cooperation**
+    - Punishment supports stable cooperation.
+  - Further research available at [Punishment and Cooperation](https://royalsocietypublishing.org/doi/full/10.1098/rspb.2011.1237).
+
+- **Stress**
+  - **Acute and chronic stress**
+    - Short-term and sustained stress engage different physiological pathways.
+  - **Aggression and stress**
+    - Stress potentiates aggressive behaviors.
+  - **Amygdala, hippocampus, and frontal cortex roles**
+    - Brain regions mediate stress responses and cognitive effects.
+  - **Cultural differences in stress**
+    - Culture modulates stress perception and coping.
+  - **Stress and social rank**
+    - Lower rank associates with higher chronic stress.
+  - See [Stress Physiology Primer](https://www.ncbi.nlm.nih.gov/books/NBK279161/).
+
+- **Trust**
+  - **In humans and chimpanzees**
+    - Trust facilitates social interactions and cooperation.
+  - **Biological influences**
+    - Oxytocin and vasopressin regulate trust-related behaviors.
+  - **Social and economic contexts**
+    - Trust impacts economic decisions and governance.
+  - Key readings: [Trust and Reciprocity in Humans](https://www.science.org/doi/10.1126/science.1072806).
+
+- **Violence**
+  - **Development and adolescence**
+    - Violence peaks in adolescent years due to developmental factors.
+  - **Cultural and social influences**
+    - Culture and socioeconomic inequality affect violence rates.
+  - **Decline in violence**
+    - Historical trends show decreasing violence over centuries.
+  - **Genes and neurobiology**
+    - Genetic and neurochemical factors contribute to violent traits.
+  - **Religion and violence**
+    - Religious contexts influence the occurrence and interpretation of violence.
+  - For comprehensive overview, see [The Better Angels of Our Nature](https://en.wikipedia.org/wiki/The_Better_Angels_of_Our_Nature).
