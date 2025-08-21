@@ -1,2 +1,2 @@
 # raindrop_and_book_notes
-- [behaviors](/behaviors)
+- [behaviors](/behaviors.html)
