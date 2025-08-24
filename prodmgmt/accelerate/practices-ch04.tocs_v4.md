@@ -1,0 +1,49 @@
+![practices-ch04](practices-ch04.best.png)
+
+- **Technical Practices**
+  - **What Is Continuous Delivery?**
+    - Continuous delivery enables safe, quick, and sustainable deployment of all types of changes, including features and bug fixes.
+    - The five key principles are building quality in, working in small batches, automating repetitive tasks, pursuing continuous improvement, and shared responsibility.
+    - Foundations include comprehensive configuration management, continuous integration, and continuous testing.
+    - [Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation](https://continuousdelivery.com/implementing/patterns/)
+  - **The Impact of Continuous Delivery**
+    - Continuous delivery capabilities strongly improve software delivery performance and reduce deployment pain and team burnout.
+    - It fosters a generative, performance-oriented culture and increases employees' identification with their organization.
+    - High-performing teams practicing CD deploy on demand and prioritize fast feedback on system quality.
+    - [Accelerate: The Science of Lean Software and DevOps](https://itrevolution.com/book/accelerate/)
+  - **The Impact of Continuous Delivery on Quality**
+    - Continuous delivery is correlated with lower change fail rates and improved quality metrics such as reduced rework and unplanned work.
+    - High performers spend more time on new work and less on urgent, failure-driven tasks.
+    - Unplanned work is a proxy for quality failures and continuous delivery helps reduce failure demand.
+    - [The Visible Ops Handbook](https://itrevolution.com/book/visible-ops-handbook/)
+  - **Continuous Delivery Practices: What Works and What Doesn’t**
+    - Comprehensive use of version control, especially for configuration, correlates strongly with performance.
+    - Reliable automated test suites primarily created and maintained by developers improve IT performance.
+    - Trunk-based development with short-lived branches leads to better performance than long-lived branches.
+    - Integration of information security throughout the delivery lifecycle without slowing progress enhances performance.
+    - [Martin Fowler on Non-Deterministic Tests](https://martinfowler.com/articles/nonDeterminism.html)
+  - **Version Control**
+    - Storing application code, system and application configurations, and build scripts in version control predicts IT performance.
+    - Configuration version control is more strongly correlated with software delivery performance than code version control.
+    - Comprehensive configuration management is essential for continuous delivery.
+  - **Test Automation**
+    - Automated tests must be reliable to instill confidence in software quality and release readiness.
+    - Developer ownership of acceptance tests increases testability and maintenance.
+    - Manual testing remains important for exploratory and usability testing alongside automated tests.
+  - **Test Data Management**
+    - Successful teams maintain adequate test data to run automated suites on demand without limitations.
+    - Effective management of test data is critical for sustaining reliable test automation.
+  - **Trunk-Based Development**
+    - Teams with fewer than three active branches, merging within a day, achieve higher delivery performance.
+    - Short-lived branches encourage refactoring and team communication compared to long-lived branches.
+    - GitHub Flow suits part-time or open source contributors, but full-time teams benefit from trunk-based practices.
+    - [GitHub Flow Workflow](https://guides.github.com/introduction/flow/)
+  - **Information Security**
+    - High-performing teams integrate infosec feedback at every stage of the delivery process.
+    - Security practices are incorporated without slowing development, improving delivery performance.
+    - Security teams collaborate closely with developers to automate and embed security testing.
+  - **Adopting Continuous Delivery**
+    - Implementing continuous delivery demands rethinking team collaboration, tools, processes, and substantial automation investment.
+    - Enterprise and application architecture is a critical obstacle to adoption.
+    - Ongoing simplification of systems architecture ensures maintainable automation.
+    - Further discussion on architecture constraints is provided in Chapter 5.

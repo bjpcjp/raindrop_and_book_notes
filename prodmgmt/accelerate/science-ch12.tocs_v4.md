@@ -1,0 +1,39 @@
+![science-ch12](science-ch12.best.png)
+
+- **Primary and Secondary Research**  
+  - Secondary research uses data collected by others and is faster and cheaper but may not fit specific research needs.  
+  - Primary research involves collecting new data by the research team, offering more control and novel insights but requires more time and cost.  
+  - Examples include the U.S. Census as primary research and case studies as secondary research.  
+  - This book and the State of DevOps Reports are based on primary research.  
+- **Qualitative and Quantitative Research**  
+  - Qualitative data is descriptive and non-numerical, such as interviews and blog posts, and is harder to analyze.  
+  - Quantitative data contains numerical values from system data or numerically scaled surveys.  
+  - The research in this book is quantitative, using Likert-type scale survey responses.  
+  - See the [Likert Scale](https://en.wikipedia.org/wiki/Likert_scale) for survey measurement details.  
+- **Types of Analysis**  
+  - **Descriptive Analysis**  
+    - Summarizes data to describe the sample or population and is the simplest form of analysis.  
+    - Commonly used in government census reports and vendor/analyst industry reports.  
+    - Requires careful sampling to ensure representativeness.  
+  - **Exploratory Analysis**  
+    - Identifies relationships and patterns in data through visualizations and correlation but does not prove causation.  
+    - Helps generate new hypotheses and research directions but risks spurious correlations.  
+    - The book uses Pearson correlation coefficients for correlations.  
+    - For examples of spurious correlations see [Spurious Correlations](http://www.tylervigen.com/spurious-correlations).  
+  - **Inferential Predictive Analysis**  
+    - Tests theory-driven hypotheses to understand the impact of variables where experimental design is impractical.  
+    - Employs statistical methods like multiple linear regression and partial least squares regression.  
+    - Used in this book to evaluate factors driving software delivery and organizational performance.  
+  - **Predictive, Causal, and Mechanistic Analysis**  
+    - Predictive analysis forecasts future events using historical data but is complex and not included here.  
+    - Causal analysis requires randomized experiments to establish cause-effect, commonly used in A/B testing.  
+    - Mechanistic analysis calculates precise variable changes for outcomes but is rare in business research.  
+- **Classification Analysis**  
+  - Identifies distinct clusters or groups within data based on specific variables, such as software delivery performance levels.  
+  - Uses hierarchical clustering for interpretability without pre-specifying cluster number; suitable for small datasets.  
+  - Applied here to categorize software delivery teams into high, medium, and low performers based on four performance metrics.  
+  - See [Hierarchical Clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering) for clustering methodology.  
+- **The Research in This Book**  
+  - The research spans four years and is primary, quantitative survey-based data designed to identify drivers of software delivery and organizational performance.  
+  - Statistical analyses test hypotheses about continuous delivery, architecture, culture, and their impact on performance.  
+  - Later chapters address survey data quality and utility in research and practical measurement.

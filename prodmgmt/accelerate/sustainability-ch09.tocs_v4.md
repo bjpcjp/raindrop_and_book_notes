@@ -1,0 +1,44 @@
+![sustainability-ch09](sustainability-ch09.best.png)
+
+- **Deployment Pain**
+  - **Overview and Importance**
+    - Deployment pain refers to the fear and anxiety technical staff experience when pushing code to production.  
+    - Deployment pain indicates friction between development and IT operations processes and environments.  
+    - High deployment pain correlates with poor software delivery performance, organizational outcomes, and culture.  
+  - **Benefits of Continuous Delivery at Microsoft**
+    - Continuous delivery practices at Microsoft’s Bing team improved work/life balance satisfaction from 38% to 75%.  
+    - Automated deployment processes helped reduce manual work and work-related stress among engineers.  
+    - Internal benefits of continuous delivery extend beyond customers to improve employee wellbeing.  
+  - **Causes and Solutions for Deployment Pain**
+    - Common causes include software not designed for deployability, manual changes causing errors, and siloed teams causing deployment handoffs.  
+    - Reducing deployment pain requires designing systems for easy deployment, using version control to reproduce production states, and automating deployments.  
+    - Applications on platform-as-a-service providers often support single-command, automated deployments.  
+    - Continuous delivery technical practices significantly reduce deployment pain.  
+    - See [The 12-Factor App](https://12factor.net/) for architectural patterns supporting deployability.  
+  - **Measuring and Addressing Deployment Pain**
+    - Teams should be surveyed about deployment pain and specific pain points.  
+    - Deployments outside business hours often indicate architectural problems needing resolution.  
+    - Visibility into deployment processes is crucial; lack of awareness can signal low delivery performance and hidden barriers.  
+
+- **Burnout**
+  - **Definition and Impact**
+    - Burnout is physical, mental, or emotional exhaustion caused by stress and overwork, distinct from simple fatigue.  
+    - Symptoms include exhaustion, cynicism, ineffectiveness, and negative impacts on life outside work.  
+    - Burnout leads to serious health issues, clinical depression, and contributes to high economic costs due to sick time and turnover.  
+  - **Causes and Organizational Risk Factors**
+    - Six organizational risk factors from Maslach’s research cause burnout: work overload, lack of control, insufficient rewards, breakdown of community, absence of fairness, and value conflicts.  
+    - Most organizations focus on fixing individuals rather than the work environment, which is less effective.  
+    - Aligning organizational values with individual values reduces burnout.  
+  - **Measuring Burnout**
+    - Burnout is measured by assessing feelings of exhaustion, cynicism or indifference, and negative work-life impact.  
+    - Technical and Lean management practices correlate with reduced burnout.  
+  - **How to Reduce or Fight Burnout**
+    - Five key organizational factors reduce burnout: supportive culture, reducing deployment pain, effective leadership, investments in DevOps skills, and strong organizational performance.  
+    - Managers should foster respectful, blame-free environments focused on learning and purpose.  
+    - Giving employees decision-making authority and time for experimentation improves wellbeing and reduces burnout.  
+    - Ensuring work aligns with employees’ values enhances satisfaction and retention.  
+    - Examples include Google’s 20% time and IBM’s “THINK Friday” initiatives to encourage innovation time.  
+    - Leadership’s role is critical and further explored in Chapter 11.  
+  - **Further Reading**
+    - Maslach, C., & Leiter, M. P. (2008). The six organizational risk factors for burnout.  
+    - [Maslach Burnout Inventory](https://www.mindgarden.com/117-maslach-burnout-inventory-mbi) for tools measuring burnout.

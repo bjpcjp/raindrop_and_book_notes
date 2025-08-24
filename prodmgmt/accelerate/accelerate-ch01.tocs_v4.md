@@ -1,0 +1,32 @@
+![accelerate-ch01](accelerate-ch01.best.png)
+
+- **ACCELERATE**
+  - **Need for Acceleration in Organizations**
+    - Organizations in various industries must accelerate delivery, market engagement, compliance anticipation, and risk response to remain competitive.  
+    - Software underpins acceleration across sectors such as banking, retail, and government.  
+    - Studies by Bessen (2017), McAfee, and Brynjolfsson (2008) link technology use to revenue, productivity, and profitability gains.  
+    - More information available in [Bessen et al. 2017 Study](https://doi.org/10.2139/ssrn.2621629).
+  - **DevOps Movement and Industry Impact**
+    - DevOps arose to address challenges in building secure, resilient, scalable distributed systems.  
+    - Both tech giants and traditional enterprises benefit from DevOps capabilities.  
+    - Industry reports show many organizations lack essential DevOps practices like CI/CD and Lean methodologies.  
+    - Reports by Forrester and Gartner reveal gaps in digital transformation progress and executive-practitioner perception differences.  
+    - See industry insights in [Forrester 2017 DevOps Report](https://go.forrester.com/research/).
+  - **Focus on Capabilities, Not Maturity**
+    - Maturity models encourage a fixed destination, while capability models promote continuous improvement.  
+    - Capability models allow customization based on team context and goals, unlike linear maturity stages.  
+    - Capability models tie improvements directly to outcomes, avoiding vanity metrics associated with maturity models.  
+    - They account for the dynamic, evolving technology and business context.  
+    - The capability approach aligns with successful, ongoing transformation seen in high performers.
+  - **Evidence-Based Transformations Focus on Key Capabilities**
+    - Organizations often choose improvement areas based on vendor, consultant bias, or internal alignment rather than evidence.  
+    - Research identifies 24 key capabilities that drive software delivery and organizational performance.  
+    - These capabilities are measurable, actionable, and linked to profit, productivity, and market share.  
+    - Factors such as application age, deployment ownership, and use of change approval boards do not predict performance.  
+    - Appendix A in the book lists and discusses these capabilities.
+  - **The Value of Adopting DevOps**
+    - High performers achieve dramatically better software delivery metrics than low performers, including deployment frequency and recovery time.  
+    - The gap in deployment speed is narrowing, but the stability gap is widening between high and low performers.  
+    - High performers combine speed and stability by integrating quality into their processes.  
+    - DevOps capabilities are effective across organization sizes, industries, and technology types.  
+    - Refer to the book’s next chapter and related research for detailed performance measurement methodologies.

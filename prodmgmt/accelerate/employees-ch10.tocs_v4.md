@@ -1,0 +1,43 @@
+![employees-ch10](employees-ch10.best.png)
+
+- **Employee Loyalty**
+  - **Measuring NPS**
+    - Net Promoter Score (NPS) is based on a 0-10 scale rating of likelihood to recommend the company/team as a place to work.
+    - Employees scoring 9-10 are promoters, 7-8 are passives, and 0-6 are detractors, influencing organizational value and retention.
+    - High-performing organizations have employees 2.2 times more likely to recommend their organization and 1.8 times their team.
+    - Employee NPS correlates with better organizational outcomes such as profitability, productivity, and market share.
+    - See Reichheld's original research on [Net Promoter Score](https://hbr.org/2003/12/the-one-number-you-need-to-grow).
+- **Changing Organizational Culture and Identity**
+  - Investing in people and management practices boosts employee identification with the organization.
+  - Identity is measured with agreement on statements about organization choice, values alignment, effort willingness, and organizational care.
+  - Continuous delivery practices and experimental approaches increase identity, thereby reducing burnout through value alignment.
+  - High identity predicts a generative culture and correlates with higher productivity, market share, and profitability.
+  - A culture of experimentation and learning improves hiring, retention, and innovation.
+- **How Does Job Satisfaction Impact Organizational Performance?**
+  - Job satisfaction arises from feeling supported and having resources to do good work.
+  - Higher job satisfaction leads to better software delivery and organizational performance.
+  - Continuous improvement cycles in practices prepare teams to innovate and outperform competitors.
+- **How Does DevOps Contribute to Job Satisfaction?**
+  - Job satisfaction depends on appropriate tools, resources, and meaningful use of skills.
+  - DevOps tools and automation reduce menial tasks, allowing employees to focus on decision-making.
+  - Good DevOps technical practices predict higher job satisfaction through feedback loops.
+- **Diversity in Tech - What Our Research Found**
+  - Teams with diversity on gender and minority status have better intelligence, performance, and business outcomes.
+  - Most teams have low female representation: 33% have no women, 56% under 10%, 81% under 25%.
+  - Survey 2017 gender demographics: 91% male, 6% female, 3% non-binary or other.
+  - Inclusion is essential in addition to diversity to ensure belonging and value.
+- **Women in DevOps**
+  - Female respondents increased slightly from 5% in 2015 to 6.5% in 2017, still below expected representation.
+  - Historical data show women declining in systems administration and computer management fields.
+  - Low representation affects retention; workplace environment factors include harassment and unequal pay.
+- **Underrepresented Minorities in DevOps**
+  - 12% of respondents self-identified as underrepresented minorities; 77% did not.
+  - Definitions of minority status vary globally, limiting granular demographic analysis.
+  - Research has not yet included people with disabilities but plans exist for future extension.
+- **What Other Research Tells Us About Diversity**
+  - Women in leadership correlate with higher financial and stock market performance and collective team intelligence.
+  - No aptitude differences exist between genders in STEM fields; cultural beliefs on innate brilliance affect entry and retention.
+  - Negative experiences such as harassment and microaggressions contribute to higher attrition rates among women and minorities.
+- **What We Can Do**
+  - Prioritizing diversity and inclusion improves teams and business outcomes.
+  - Recommended resources include the Anita Borg Institute ([https://anitab.org/](https://anitab.org/)), Geek Feminism ([http://geekfeminism.wikia.com/wiki/Geek_Feminism_Wiki](http://geekfeminism.wikia.com/wiki/Geek_Feminism_Wiki)), and Project Include ([http://projectinclude.org/](http://projectinclude.org/)).

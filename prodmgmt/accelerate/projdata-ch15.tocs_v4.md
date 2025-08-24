@@ -1,0 +1,29 @@
+![projdata-ch15](projdata-ch15.best.png)
+
+- **THE DATA FOR THE PROJECT**
+  - **Project Purpose and Focus**
+    - The project investigates how technology improves organizations through Agile and Lean software development processes, focusing on DevOps practices as known in 2014.  
+    - The emphasis is on cultural aspects like trust and information flow, with small cross-functional teams.  
+    - [The DevOps Handbook](https://itrevolution.com/book/the-devops-handbook/) provides extensive background on these practices.
+  - **Research Design and Target Population**
+    - The research uses cross-sectional data collection over four years targeting professionals familiar with DevOps concepts.  
+    - Limiting the population to DevOps-aware respondents enhances explanatory power but excludes less-modern practices.  
+    - The survey avoided asking directly about high-level concepts like continuous integration to reduce bias by asking about concrete practices instead.  
+    - [Cross-Sectional Study Design](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4711268/) explains cross-sectional methodology benefits and limitations.
+  - **Sampling Methodology**
+    - The study uses nonprobability sampling methods due to the lack of an exhaustive list of DevOps professionals.  
+    - Invitations were sent via multiple channels including emails to diverse mailing lists and social media outreach, focusing also on underrepresented groups.  
+    - Snowball sampling (referral sampling) was applied to expand participants through peer referrals within the community.  
+    - [Snowball Sampling Explained](https://research-methodology.net/sampling-in-primary-data-collection/snowball-sampling/) describes the technique and use cases.
+  - **Snowball Sampling Rationale and Limitations**
+    - Snowball sampling suits populations difficult to enumerate or reluctant to participate due to fears of workforce reductions.  
+    - Limitations include potential bias from initial sampled groups, addressed by using large and diverse initial invitations.  
+    - The findings are triangulated with industry engagement and expert reviews to validate representativeness and reduce blind spots.  
+    - Continuous feedback and literature review support the validity and currency of the research conclusions.  
+    - [Dealing with Sampling Bias](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4851903/) provides methods to mitigate bias in nonprobability sampling.
+  - **Notes on Study Design and Analysis Considerations**
+    - Cross-sectional data collection precludes longitudinal analysis due to unlinked responses over years.  
+    - Repeated studies provide industry patterns but do not track individual changes over time.  
+    - Privacy concerns and participant turnover prevent longitudinal tracking, but future research aims to address this.  
+    - Probability sampling is generally preferred but infeasible here due to unknown population size and distribution.  
+    - [Probability vs. Nonprobability Sampling](https://methods.sagepub.com/reference/encyclopedia-of-survey-research-methods/n367.xml) clarifies distinctions and applicability.

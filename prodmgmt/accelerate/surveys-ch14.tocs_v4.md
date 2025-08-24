@@ -1,0 +1,33 @@
+![surveys-ch14](surveys-ch14.best.png)
+
+- **Why Use a Survey**
+  - **Surveys allow you to collect and analyze data quickly**
+    - Surveys enable rapid data collection, especially for new or one-time efforts spanning multiple organizations.  
+    - Collecting system data from thousands of teams worldwide within a short window is practically impossible.  
+    - Well-crafted surveys use consistent language and definitions, avoiding measurement ambiguity across teams.  
+    - Data cleaning and analysis for survey responses is more straightforward and less time-consuming than for raw system data.  
+    - For further reading, see [Survey Research Methods](https://journals.sagepub.com/home/srm).  
+  - **Measuring the full stack with system data is difficult**
+    - System data rarely captures 100% of behaviors or performance factors in complex systems.  
+    - An example from enterprise disk storage showed system logs missing key performance degradations caused by user interfaces.  
+    - Surveying operators and customers provides critical insight into performance issues that system data alone misses.  
+    - Periodic survey assessments supplement system instrumentation by revealing perception-based bottlenecks.  
+    - Additional insights available at [Systems Performance](https://www.oreilly.com/library/view/systems-performance/9780133390091/).  
+  - **Measuring completely with system data is difficult**
+    - Systems only monitor activities within their boundaries and cannot detect all relevant work or context.  
+    - Example: Version control systems track checked-in files but cannot measure files not under version control without user input.  
+    - People have a broader perspective of the system and can report on usage and behaviors beyond what logs capture.  
+    - Ignoring human perceptions results in loss of valuable system understanding.  
+    - Explore more in [The DevOps Handbook](https://itrevolution.com/book/the-devops-handbook/).  
+  - **You can trust survey data**
+    - Skepticism about survey data contrasts with overconfidence in system data, which is also prone to errors and manipulation.  
+    - Humans create systems, and system data can contain errors from bugs, configuration issues, or malicious actors.  
+    - Survey data gathered from large samples (e.g., 23,000+ respondents) is resilient to manipulation by a few bad actors.  
+    - Anonymity and rigorous psychometric design ensure responses are honest and valid.  
+    - For psychometric standards, see [Standards for Educational and Psychological Testing](https://www.apa.org/science/standards).  
+  - **Some things can only be measured through surveys**
+    - Perceptions, feelings, and opinions, such as organizational culture, cannot be directly measured by objective system data.  
+    - Common proxies like turnover or retention often fail to accurately represent culture due to many confounding factors.  
+    - System proxies (e.g., communication frequency or sentiment analysis) provide indirect signals but not subjective experiences.  
+    - Surveys provide systematic and reliable measurement of subjective constructs that influence technology and organizational performance.  
+    - Refer to [Google's Project Aristotle](https://rework.withgoogle.com/print/guides/5721312655835136/) for team psychological safety research.

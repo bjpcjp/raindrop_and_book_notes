@@ -1,0 +1,31 @@
+![architecture-ch05](architecture-ch05.best.png)
+
+- **Architecture**
+  - **Types of Systems and Delivery Performance**
+    - Delivery performance correlates negatively with reliance on custom software developed by another company and mainframe systems.
+    - Integration against mainframe systems does not significantly affect performance.
+    - No significant performance difference among greenfield, systems of engagement, systems of record, packaged software, or embedded software.
+    - Architectural characteristics matter more than system type.
+    - Bringing software development in-house improves delivery performance.
+  - **Focus on Deployability and Testability**
+    - High performance aligns with ability to test without integrated environments and deploy independently of other services.
+    - Loosely coupled, well-encapsulated architecture enables independent changes and validations.
+    - Major contributor to performance includes making changes without outside permission or dependencies.
+    - Low communication required between teams when architecture and teams are loosely coupled.
+    - Use of bounded contexts, APIs, test doubles, and virtualization supports desired architectural outcomes.
+    - See [Conway's Law](https://en.wikipedia.org/wiki/Conway%27s_law) for foundational concepts.
+  - **A Loosely Coupled Architecture Enables Scaling**
+    - Loose coupling and matching organizational structures improve deployment frequency and stability.
+    - Deployment frequency per developer increases or remains stable as team size grows for high and medium performers, respectively; it decreases for low performers.
+    - Scaling engineering teams can increase productivity linearly or better.
+  - **Allow Teams to Choose Their Own Tools**
+    - Restricting tool choice aims to reduce complexity, ensure skills, increase purchasing power, and ensure licensing compliance.
+    - Flexibility in tool choice improves software delivery performance and supports experimentation.
+    - Standardization benefits exist mainly around infrastructure architecture and configuration.
+    - Security teams providing preapproved tools and libraries support continuous delivery success.
+    - Usability and customer satisfaction are crucial when offering tools to internal users.
+    - See [Amazon SOA platform rationale](http://bit.ly/yegge-platform-rant) for practical insights.
+  - **Architects Should Focus on Engineers and Outcomes, Not Tools or Technologies**
+    - Emphasis on outcomes and enabling team autonomy matters more than specific tool or technology choices.
+    - Architects must collaborate with engineers to provide tools and technologies that enable desired outcomes.
+    - Tool and technology choices are irrelevant if they hinder user satisfaction or outcome achievement.

@@ -1,0 +1,55 @@
+![leaders-ch11](leaders-ch11.best.png)
+
+- **Transformational Leadership**
+  - **What Is Transformational Leadership?**
+    - Transformational leadership inspires and motivates followers to achieve higher performance by appealing to their values and sense of purpose.  
+    - It facilitates wide-scale organizational change by encouraging teams to work toward common goals through vision, values, communication, and care.  
+    - Servant leadership differs by focusing on followers’ development, while transformational leaders focus on organizational objectives.  
+    - Transformational leadership is predictive of performance outcomes and suitable for improving technology performance.  
+    - See [Rafferty and Griffin (2004)](https://doi.org/10.1016/S1048-9843(03)00049-3) for the foundational study on transformational leadership.  
+  - **Measuring Transformational Leadership**
+    - The model includes five dimensions: vision, inspirational communication, intellectual stimulation, supportive leadership, and personal recognition.  
+    - Survey questions adapted from Rafferty and Griffin (2004) assess leaders’ clarity of vision, motivation ability, challenge to new thinking, supportiveness, and personal praise.  
+    - Leadership characteristics strongly correlate with software delivery performance and employee Net Promoter Score.  
+    - Teams with transformational leaders in the bottom one-third are half as likely to be high performers.  
+    - Refer to Chapter 13 and Appendix C for statistical methods used in measurement validation.  
+  - **Impact of Transformational Leadership**
+    - Leadership influences technology transformation indirectly through enabling technical and Lean practices.  
+    - The presence of strong transformational leadership alone does not guarantee high team performance; effective teams are also required.  
+    - Transformational leadership supports effective communication, collaboration, continuous experimentation, and learning culture.  
+    - Figure 11.1 illustrates how transformational leadership impacts technical and Lean capabilities leading to software delivery outcomes.  
+    - For further research, see [Bass and Riggio (2006)](https://books.google.com/books?id=6G36AgAAQBAJ) on transformational leadership theory.  
+
+- **The Role of Managers**
+  - **Managerial Responsibilities in Technology Transformation**
+    - Managers connect strategic business objectives to their teams’ day-to-day work.  
+    - Effective managers create safe work environments, develop team capabilities, and remove work obstacles.  
+    - Investment in DevOps practices by managers correlates highly with improved software delivery performance.  
+    - Managers can reduce deployment pain, align performance metrics with organizational goals, and delegate authority.  
+    - See [Drucker (2007)](https://hbr.org/2007/01/the-effective-executive) for foundational management principles.  
+  - **How Managers Can Invest in DevOps and Teams**
+    - Ensure resources are available and accessible organization-wide and create opportunities for learning.  
+    - Allocate training budgets, allow staff to select training, and sanction technical conference attendance.  
+    - Organize internal hack days, technical debt “yak days,” and DevOps mini-conferences to foster innovation.  
+    - Provide dedicated time and budget for experimentation with new technologies.  
+    - Consult [The DevOps Handbook](https://itrevolution.com/book/the-devops-handbook/) for detailed DevOps investment strategies.  
+
+- **Tips to Improve Culture and Support Your Teams**
+  - **Enable Cross-Functional Collaboration**
+    - Build trust between teams through kept promises, open communication, and predictable behavior under stress.  
+    - Encourage practitioner movement between departments to share knowledge and improve collaboration.  
+    - Actively reward work that facilitates collaboration and ensure success is reproducible.  
+    - Use disaster recovery testing (“game days”) as exercises for cross-team collaboration and relationship building.  
+    - See [ACM Queue (2012)](https://queue.acm.org/detail.cfm?id=2386919) for insights on disaster recovery exercises.  
+  - **Help Create a Climate of Learning**
+    - Establish and advocate for training budgets that emphasize organizational commitment to learning.  
+    - Provide resources and space for informal learning and exploration of ideas.  
+    - Make failure safe by treating it as a learning opportunity and conducting blameless postmortems.  
+    - Facilitate regular opportunities to share knowledge, such as lightning talks, lunch-and-learns, demo days, and forums.  
+    - Companies like 3M and Google allocate 15–20% time for free exploration to foster innovation.  
+  - **Make Effective Use of Tools**
+    - Empower teams to choose their own tools unless standardization is necessary for organizational interests.  
+    - Provide procurement and finance support that serves teams’ needs rather than imposing constraints.  
+    - Prioritize monitoring by refining systems to collect relevant data and increase visibility and transparency.  
+    - Proactive monitoring strongly relates to performance and job satisfaction as part of a strong technical foundation.  
+    - For tool strategy, see [Accelerate: The Science of Lean Software and DevOps](https://itrevolution.com/book/accelerate/).
