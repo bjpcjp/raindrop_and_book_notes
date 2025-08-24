@@ -1,0 +1,98 @@
+![TAC-How-To-Measure-Anything](TAC-How-To-Measure-Anything.best.png)
+
+- **Introduction**
+  - **How to Measure Anything**
+    - Doug Hubbard completed 55 major risk/return analysis projects including difficult measurements.  
+    - The need for measuring difficult things motivated the writing of this book.  
+    - The book was scheduled for release in July 2007 by John Wiley & Sons.  
+    - A sneak preview presents many methods discussed in the book.  
+    - For more information, see [Hubbard Decision Research](http://www.TACadvisory.com).  
+
+- **Examples of Measurements**
+  - **Case Studies**
+    - The EPA assessed the Safe Drinking Water Information System, identifying unnoticed risks leading to a $15 million NPV improvement.  
+    - The US Marine Corps forecasted battlefield fuel use, realizing $50 million savings annually by reducing unnecessary inventory.  
+    - American Express analyzed ROI of a dedicated test network, improving net benefit by $2 million via prioritized replacements.  
+    - These cases show tangible benefits from measuring previously intangible elements.  
+  - **Additional Examples**
+    - Measurements covered risks such as IT risk, obsolescence, and security value.  
+    - They included valuation of life, endangered species preservation, public health, IQ loss, and information availability.  
+    - Also discussed are future phenomena like space tourism demand and productivity impacts.  
+    - The examples demonstrate a broad applicability of measurement concepts across domains.  
+
+- **Measurement Concepts**
+  - **Measurement Muses**
+    - Eratosthenes measured the Earth’s circumference with 1% accuracy.  
+    - Enrico Fermi used "Fermi Questions" to estimate uncertain quantities and nuclear bomb yield.  
+    - Emily Rosa published a scientific experiment at age 11 disproving "therapeutic touch."  
+    - These individuals exemplify creative and effective measurement of intangible quantities.  
+  - **Illusions of Intangibles**
+    - The perceived impossibility of measurement arises from misunderstandings of measurement’s concept, object, and methods.  
+    - This illusion is common in the “.com” mindset confronting intangibles.  
+    - Reference article: [Everything Is Measurable](https://www.cio.com/article/2446714/measurement-in-the-enterprise.html) by Hubbard.  
+  - **Pre-Measurement Questions**
+    - Essential questions before measurement include: Why measure, how much is currently known, and what is the value of additional information.  
+    - These guide decision-making and measurement design.  
+  - **Why Measure?**
+    - Use case: EPA needed to calculate ROI of Safe Drinking Water Information System to prioritize upgrades.  
+    - Linked system effects to relevant impacts via spreadsheet modeling.  
+    - Demonstrates that measurement is problem-driven and purposeful.  
+  - **Uncertainty, Risk & Measurement**
+    - Measurement reduces uncertainty about a quantity through observation.  
+    - Uncertainty and risk are modeled statistically, including ROI risk with probability ranges.  
+    - Measurement theory defines measurement as observation causing information gain.  
+  - **Assessing Current Knowledge**
+    - People can learn to subjectively assess their uncertainty with training as short as three hours.  
+    - Improved calibration reduces estimation errors significantly.  
+    - Calibrated subjective estimates correlate well with observed measurements.  
+  - **Measurement Value**
+    - Value of information equals cost of being wrong times chance of being wrong.  
+    - Thresholds within measurement ranges often determine information value.  
+    - The concept of "worst" and "best" bounds in confidence intervals influences decision impact.  
+  - **IT Measurement Inversion**
+    - Typical measurements focus on costs (development and maintenance) more than benefits.  
+    - Benefits and chance of cancellation are often least measured but most relevant to economic decisions.  
+    - Hubbard critiques this inversion in articles such as [The IT Measurement Inversion](https://www.cio.com/article/2438281/the-it-measurement-inversion.html).  
+
+- **Measurement Methods**
+  - **Observation and Action**
+    - After defining what to measure and its worth, observations should be made to reduce uncertainty.  
+    - The "Nike Method" suggests starting observations immediately rather than being hindered by perceived difficulties.  
+  - **Sampling Power**
+    - Sampling methods can measure effectively with fewer data points than expected.  
+    - Examples include population estimation of fish and counting wartime German tanks.  
+    - Sampling reduces data collection costs and improves efficiency.  
+  - **Math-less Statistics Table**
+    - Most measurements derive from samples and generating confidence intervals.  
+    - A simplified table enables easy computation of 90% confidence intervals without complex calculations.  
+  - **Measuring to Threshold**
+    - Measurement value often lies in assessing if a quantity meets a critical threshold rather than exact magnitude.  
+    - Asking "Is X enough?" is usually more practical than "How much is X?"  
+  - **Bayesian Methods**
+    - Bayesian statistics update prior knowledge with new information.  
+    - Calibrated human judgment is naturally "subjectively Bayesian."  
+    - Bayesian approaches can improve measurement accuracy and decision-making.  
+  - **Improving Human Judgment**
+    - The Lens Model enhances expert intuition by structuring observations to reduce error.  
+    - It consistently matches or surpasses expert accuracy across various application domains including finance, psychology, education, and medicine.  
+    - Demonstrates that systematic approaches improve judgment reliability.  
+  - **Prediction Markets**
+    - Simulated trading markets generate probabilities for uncertain events.  
+    - Studies confirm effectiveness even without monetary incentives.  
+    - Markets aggregate diverse opinions into useful probabilistic predictions.  
+    - See research by Servan-Schreiber et al., Electronic Markets, 2004.  
+  - **Applied Information Economics (AIE)**
+    - AIE provides a structured model implemented in diverse scenarios where intangibles dominate decisions.  
+    - The process involves defining decisions, selecting/calibrating estimators, collecting/analyzing new data, and evaluating expected value of perfect information (EVPI).  
+    - This iterative approach supports ongoing evaluation and course corrections.  
+
+- **Conclusions and Further Resources**
+  - **Final Tips**
+    - Understand uncertainty, risk, and information value quantitatively.  
+    - Assume prior measurements exist and you have more data than perceived.  
+    - Fewer data points can suffice to reduce uncertainty economically.  
+    - Avoid "exception anxiety" that stops data collection; act promptly instead.  
+  - **Additional Information**
+    - Numerous articles in CIO magazine and InformationWeek cover measurement and IT risk/value.  
+    - Book website www.howtomeasureanything.com includes examples, spreadsheets, and forums.  
+    - Readers are encouraged to contribute examples to “The Measurement Challenge.”
