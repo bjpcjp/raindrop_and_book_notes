@@ -1,0 +1,4905 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# rubyonrails
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[70 Companies You Didn't Know Were Using Rails in
+2025](https://thoughtbot.com/blog/70-companies-you-didn-t-know-were-using-rails-in-2025)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/aEccJrh8WN-LV5_m_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9TnpBZ1EyOXRjR0Z1YVdWeklGbHZkU0JFYVdSdUozUWdTMjV2ZHlCWFpYSmxJRlZ6YVc1bklGSmhhV3h6SUdsdUlESXdNalUlM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT03NiZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Ran+Craycraft)](https://thoughtbot.com/blog/70-companies-you-didn-t-know-were-using-rails-in-2025)
+
+</div>
+
+For twenty-two years, thoughtbot has helped companies and organizations
+of...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Build Custom ActiveStorage Analyzers for Ruby on
+Rails](https://blog.appsignal.com/2025/07/30/build-custom-activestorage-analyzers-for-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkJ1aWxkIEN1c3RvbSBBY3RpdmVTdG9yYWdlIEFuYWx5emVycyBmb3IgUnVieSBvbiBSYWlscyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctNnFuN2dlaWs5LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjUtMDcvcDEtYWN0aXZlc3RvcmFnZS5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctNnFuN2dlaWs5LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=ba23769cb8f4591a883898390fb4445ca079ceb983422e2d0a5471b8d219574c)](https://blog.appsignal.com/2025/07/30/build-custom-activestorage-analyzers-for-ruby-on-rails.html)
+
+</div>
+
+We'll dive into how ActiveStorage treats uploaded data, and how to
+extend this process, in part one of this two-part series.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[🔧 Ruby on Rails 8 — Modern Architecture Overview
+(2025)](https://medium.com/@ronakabhattrz/ruby-on-rails-8-modern-architecture-overview-2025-592a1f4d146c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/da:true/resize:fit:1200/0*74skrT17voLmLZC5)](https://medium.com/@ronakabhattrz/ruby-on-rails-8-modern-architecture-overview-2025-592a1f4d146c)
+
+</div>
+
+Ruby on Rails (Rails) has long been the go-to framework for rapid,
+convention-driven web development. As of Rails 8 (expected in 2025), the
+architecture has matured while embracing new paradigms like…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Loving my personal Heroku using Kamal :
+r/rails](https://www.reddit.com/r/rails/s/z3mF8lbgij)
+
+</div>
+
+<div class="card-image">
+
+[![](https://share.redd.it/preview/post/1lm0snv)](https://www.reddit.com/r/rails/s/z3mF8lbgij)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Notes for people wanting to move away from Heroku :
+r/rails](https://www.reddit.com/r/rails/s/X4xKDpMzxF)
+
+</div>
+
+<div class="card-image">
+
+[![](https://share.redd.it/preview/post/1l8n6an)](https://www.reddit.com/r/rails/s/X4xKDpMzxF)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Prevent logging sensitive information in Rails, and
+beyond](https://feed.thoughtbot.com/link/24077/17048177/parameter-filtering)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVVISmxkbVZ1ZENCc2IyZG5hVzVuSUhObGJuTnBkR2wyWlNCcGJtWnZjbTFoZEdsdmJpQnBiaUJTWVdsc2N5d2dZVzVrSUdKbGVXOXVaQSUzRCUzRCZ0eHRjbHI9ZjVmNWY1JnR4dGZvbnQ9SUJNUGxleFNhbnNKUC1TZW1pQm9sZCZ0eHRwYWQ9MCZ0eHRzaXplPTY0Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Steve+Polito)](https://feed.thoughtbot.com/link/24077/17048177/parameter-filtering)
+
+</div>
+
+The Rails defaults are a good foundation, but it’s still your
+responsibility to filter sensitive information from logs when using
+external APIs, services, and tools.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Let Rails Help
+You](https://feed.thoughtbot.com/link/24077/17038618/let-rails-help-you)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMzAmdHh0LXRyYWNrPTAmdHh0NjQ9VEdWMElGSmhhV3h6SUVobGJIQWdXVzkxJnR4dGNscj1mNWY1ZjUmdHh0Zm9udD1JQk1QbGV4U2Fuc0pQLVNlbWlCb2xkJnR4dHBhZD0wJnR4dHNpemU9MTI4Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Matheus+Richard)](https://feed.thoughtbot.com/link/24077/17038618/let-rails-help-you)
+
+</div>
+
+Rails gives you the tools to build custom features that still feel
+native.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Markdown Image Uploads with EasyMDE and Active Storage -
+Avo](https://avohq.io/blog/markdown-image-uploads-easy-mde-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d2g0xdrrde9ln1.cloudfront.net/flnaeju4jvbuys5cvsurizdotvb0)](https://avohq.io/blog/markdown-image-uploads-easy-mde-rails)
+
+</div>
+
+Learn how to add image uploads to a markdown field using the EasyMDE
+editor, Rails and Active Storage.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sorting elegantly in Rails with
+in_order_of](https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9VTI5eWRHbHVaeUJsYkdWbllXNTBiSGtnYVc0Z1VtRnBiSE1nZDJsMGFDQnBibDl2Y21SbGNsOXZaZyUzRCUzRCZ0eHRjbHI9ZjVmNWY1JnR4dGZvbnQ9SUJNUGxleFNhbnNKUC1TZW1pQm9sZCZ0eHRwYWQ9MCZ0eHRzaXplPTc2Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Tr%C3%A9sor+Bireke)](https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of)
+
+</div>
+
+Sorting columns in custom order in Rails elegantly using inemorder/emof.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Guide to Rails
+Flashes](https://feed.thoughtbot.com/link/24077/17014294/rails-flashes-guide)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q3ZbWFbowe7qb_development-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFpbqstJ98cGT_development.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9Ukc5dUozUWdVM1JsWVd3Z1lTQlFaVzVuZFdsdUlDMHRJRUVnUjNWcFpHVWdkRzhnVW1GcGJITWdSbXhoYzJobGN3JTNEJTNEJnR4dGNscj1mNWY1ZjUmdHh0Zm9udD1JQk1QbGV4U2Fuc0pQLVNlbWlCb2xkJnR4dHBhZD0wJnR4dHNpemU9NzYmdz04MDA%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Louis+Antonopoulos)](https://feed.thoughtbot.com/link/24077/17014294/rails-flashes-guide)
+
+</div>
+
+If someone tries to steal a penguin, how should you warn them?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 8’s Propshaft, A Sprockets’ quiet
+replacement?](https://thoughtbot.com/blog/rails-8-s-propshaft-a-sprockets-quiet-replacement)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q3ZbWFbowe7qb_development-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFpbqstJ98cGT_development.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9VW1GcGJITWdPT0tBbVhNZ1VISnZjSE5vWVdaMExDQkJJRk53Y205amEyVjBjLUtBbVNCeGRXbGxkQ0J5WlhCc1lXTmxiV1Z1ZEQ4JTNEJnR4dGNscj1mNWY1ZjUmdHh0Zm9udD1JQk1QbGV4U2Fuc0pQLVNlbWlCb2xkJnR4dHBhZD0wJnR4dHNpemU9NzYmdz04MDA%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Tr%C3%A9sor+Bireke)](https://thoughtbot.com/blog/rails-8-s-propshaft-a-sprockets-quiet-replacement)
+
+</div>
+
+With the release of Rails 8, asset management in Rails got faster and
+simpler with the new asset pipeline, Propshaft, which is not only
+simpler but also more aligned with modern Rails development needs
+compared to its predecessor, Sprockets.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Deploy a Rails app close to your users ·
+Fly](https://fly.io/rails?rdt_cid=5454170284179535253&utm_source=reddit)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fly.io/phx/ui/images/fly-swiss-knife-412e8b8a530616ae108f2b4bafce9373.png?vsn=d)](https://fly.io/rails?rdt_cid=5454170284179535253&utm_source=reddit)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to respect OpenAI's rate limits in
+Rails](https://feed.thoughtbot.com/link/24077/17002600/openai-rate-limits)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9U0c5M0lIUnZJSEpsYzNCbFkzUWdUM0JsYmtGSkozTWdjbUYwWlNCc2FXMXBkSE1nYVc0Z1VtRnBiSE0lM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT03NiZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Steve+Polito)](https://feed.thoughtbot.com/link/24077/17002600/openai-rate-limits)
+
+</div>
+
+As it turns out, OpenAI’s rate limits are a little more complicated than
+other APIs.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Avoiding N+1 queries the Railsy way with strict
+loading](https://feed.thoughtbot.com/link/24077/17000238/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q3ZbWFbowe7qb_development-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFpbqstJ98cGT_development.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9UVhadmFXUnBibWNnVGlzeElIRjFaWEpwWlhNZ2RHaGxJRkpoYVd4emVTQjNZWGtnZDJsMGFDQnpkSEpwWTNRZ2JHOWhaR2x1WnclM0QlM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT03NiZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Tr%C3%A9sor+Bireke)](https://feed.thoughtbot.com/link/24077/17000238/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries)
+
+</div>
+
+Need to catch N+1 queries without adding any extra dependencies to your
+project? Strict Loading makes it effortless, but your configurations
+need to be set up correctly to avoid unexpected behaviors.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[content_for -- What is it
+good_for?](https://feed.thoughtbot.com/link/24077/16990127/content-for-what-is-it-good-for)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q3ZbWFbowe7qb_development-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFpbqstJ98cGT_development.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMjAmdHh0LXRyYWNrPTAmdHh0NjQ9WTI5dWRHVnVkRjltYjNJZ0xTMGdWMmhoZENCcGN5QnBkQ0JuYjI5a1gyWnZjajglM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT05NiZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Louis+Antonopoulos)](https://feed.thoughtbot.com/link/24077/16990127/content-for-what-is-it-good-for)
+
+</div>
+
+The Marie Kondo for bits of HTML that spark joy but have no home.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Advanced Queries in ActiveRecord for Ruby on
+Rails](https://blog.appsignal.com/2025/02/26/advanced-queries-in-activerecord-for-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFkdmFuY2VkIFF1ZXJpZXMgaW4gQWN0aXZlUmVjb3JkIGZvciBSdWJ5IG9uIFJhaWxzIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy03cjh2bWp0cGYtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNS0wMi9hZHZhbmNlZC1hci5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctN3I4dm1qdHBmLWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=9fa08f3c579505227809b2662b1bb3951518eeaf65046fdc541c6e05e6b41d10)](https://blog.appsignal.com/2025/02/26/advanced-queries-in-activerecord-for-ruby-on-rails.html)
+
+</div>
+
+Let's delve into advanced ActiveRecord queries, shining a spotlight on
+more complex joins, custom SQL, and strategic employment of
+database-specific features.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby on Rails on WebAssembly](https://rubyweekly.com/issues/737)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Practical Steps to Reduce Heroku
+Costs](https://judoscale.com/blog/heroku-cost-savings)
+
+</div>
+
+<div class="card-image">
+
+[![](https://og.judoscale.com/api/og?title=Practical+Steps+to+Reduce+Heroku+Costs&author=Jeff+Morhous)](https://judoscale.com/blog/heroku-cost-savings)
+
+</div>
+
+Heroku can quickly get expensive. Dig into this article to learn some
+concrete strategies to reduce your Heroku bill!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Inbox \|
+Substack](https://open.substack.com/pub/andrewships/p/prompt-driven-development?r=oc5d&utm_medium=ios)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Deploy a Rails app close to your users ·
+Fly](https://fly.io/rails?rdt_cid=4716173275158787643&utm_source=reddit)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fly.io/phx/ui/images/fly-swiss-knife-412e8b8a530616ae108f2b4bafce9373.png?vsn=d)](https://fly.io/rails?rdt_cid=4716173275158787643&utm_source=reddit)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Parklife - Parklife: turn a Rack app into a static
+build](https://parklife.dev/)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails for everything \| Literally the
+Void](https://literallythevoid.com/blog/rails_for_everything.html)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Zero-downtime with Rails credentials part
+II](https://thoughtbot.com/blog/from-environment-variables-to-rails-credentials-part-two)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&blend-mode=normal&blend-x=0&blend-y=0&blend=https%3A%2F%2Fimages.prismic.io%2Fthoughtbot-website%2FZ1tQFJbqstJ98cGP_default.png&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0tMTUmdHh0LXRyYWNrPTAmdHh0NjQ9V21WeWJ5MWtiM2R1ZEdsdFpTQjNhWFJvSUZKaGFXeHpJR055WldSbGJuUnBZV3h6SUhCaGNuUWdTVWslM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT03NiZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Sami+Birnbaum%2C+et+al)](https://thoughtbot.com/blog/from-environment-variables-to-rails-credentials-part-two)
+
+</div>
+
+Transitioning the codebase from using environment variables to Rails
+Credentials for Zero-Downtime Deploys.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 8.0: Goodbye Rails::ConsoleMethods - A Developer's Guide to
+Console
+Customization](https://blog.railsforgedev.com/rails-8-console-methods-deprecation-modernizing-extensions)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hashnode.com/utility/r?url=https%3A%2F%2Fcdn.hashnode.com%2Fres%2Fhashnode%2Fimage%2Fupload%2Fv1734081377647%2F41ec0ee6-8eb4-4af8-8dd8-6d9417ed6730.jpeg%3Fw%3D1200%26h%3D630%26fit%3Dcrop%26crop%3Dentropy%26auto%3Dcompress%2Cformat%26format%3Dwebp%26fm%3Dpng)](https://blog.railsforgedev.com/rails-8-console-methods-deprecation-modernizing-extensions)
+
+</div>
+
+Discover why Rails 8.0 removed Rails::ConsoleMethods, learn the impact
+on your Rails console, and explore modern alternatives.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Deploy web apps anywhere with Kamal](https://kamal-deploy.org/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://kamal-deploy.org/assets/images/opengraph.png)](https://kamal-deploy.org/)
+
+</div>
+
+From bare metal to cloud VMs using Docker, deploy web apps anywhere with
+zero downtime.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Zero-downtime with Rails
+credentials](https://thoughtbot.com/blog/from-environment-variables-to-rails-credentials)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVdtVnlieTFrYjNkdWRHbHRaU0IzYVhSb0lGSmhhV3h6SUdOeVpXUmxiblJwWVd4eiZ0eHRjbHI9ZjVmNWY1JnR4dGZvbnQ9SUJNUGxleFNhbnNKUC1TZW1pQm9sZCZ0eHRwYWQ9MCZ0eHRzaXplPTY0Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Sami+Birnbaum%2C+et+al)](https://thoughtbot.com/blog/from-environment-variables-to-rails-credentials)
+
+</div>
+
+Transitioning the codebase from using environment variables to Rails
+Credentials for Zero-Downtime Deploys.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Agile Web Development with Rails
+8](https://pragprog.com/titles/rails8/agile-web-development-with-rails-8/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pragprog.com/titles/rails8/rails8-large.jpg)](https://pragprog.com/titles/rails8/agile-web-development-with-rails-8/)
+
+</div>
+
+Get the comprehensive, insider information you need for Rails 8 with the
+new edition of this award-winning classic.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Deploying a Jekyll site with
+Kamal](https://greg.molnar.io/blog/deploying-a-jekyll-site-with-kamal/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://greg.molnar.io/images/og/posts/deploying-a-jekyll-site-with-kamal.png)](https://greg.molnar.io/blog/deploying-a-jekyll-site-with-kamal/)
+
+</div>
+
+Since Kamal 2 can host multiple sites on the same server, I am
+consolidating my apps into larger hosts so I have less servers to worry
+about. Most of my apps are Rails apps, but I have a few static jekyll
+sites like this blog and I decided to look into how could I move this
+site to a server I host other Rails apps on.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[4 tips when getting started with
+Hotwire](https://thoughtbot.com/blog/4-tips-when-getting-started-with-hotwire)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PU5DQjBhWEJ6SUhkb1pXNGdaMlYwZEdsdVp5QnpkR0Z5ZEdWa0lIZHBkR2dnU0c5MGQybHlaUSUzRCUzRCZ0eHRjbHI9ZjVmNWY1JnR4dGZvbnQ9SUJNUGxleFNhbnNKUC1TZW1pQm9sZCZ0eHRwYWQ9MCZ0eHRzaXplPTY0Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Jo%C3%ABl+Quenneville)](https://thoughtbot.com/blog/4-tips-when-getting-started-with-hotwire)
+
+</div>
+
+A few best practices to keep in mind when getting started with Hotwire
+and Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What's New in Ruby on Rails 8 \| Hacker
+News](https://news.ycombinator.com/item?id=41766515)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ankane/neighbor](https://github.com/ankane/neighbor)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/b145c6e389e22aab2444e1e8949491b0ecfceb450206a4fbfbec69563db43712/ankane/neighbor)](https://github.com/ankane/neighbor)
+
+</div>
+
+Nearest neighbor search for Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What's New in Ruby on Rails
+8](https://blog.appsignal.com/2024/10/07/whats-new-in-ruby-on-rails-8.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IldoYXQncyBOZXcgaW4gUnVieSBvbiBSYWlscyA4In0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy02bzg4a3I5bmctYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNC0xMC9yYWlscy04LmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy02bzg4a3I5bmctYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=64db325edac26313fa974f1e781aa0b388def9a0200fdbba953ea74b03b740ef)](https://blog.appsignal.com/2024/10/07/whats-new-in-ruby-on-rails-8.html)
+
+</div>
+
+Let's explore everything that Rails 8 has to offer.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[High Performance PostgreSQL for Rails: Reliable Scalable Maintainable
+Dat](https://pragprog.com/titles/aapsql/high-performance-postgresql-for-rails?ref=stepchange-blog.ghost.io)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pragprog.com/titles/aapsql/aapsql-large.jpg)](https://pragprog.com/titles/aapsql/high-performance-postgresql-for-rails?ref=stepchange-blog.ghost.io)
+
+</div>
+
+Build fast, scalable PostgreSQL and Rails apps. Solve data growth,
+quality, and reliability challenges, for workloads from consumer
+Internet to enterprise SaaS.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Even Better Specs](https://evenbetterspecs.github.io)
+
+</div>
+
+<div class="card-image">
+
+[![](https://evenbetterspecs.github.io/icon_og.png)](https://evenbetterspecs.github.io)
+
+</div>
+
+Guidelines for Maintainable Tests
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why CTOs are choosing Hotwire and Ruby on
+Rails](https://thoughtbot.com/blog/the-strategy-behind-hotwire-and-ruby-on-rails-from-the-cto-of-clara)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVYyaDVJRU5VVDNNZ1lYSmxJR05vYjI5emFXNW5JRWh2ZEhkcGNtVWdZVzVrSUZKMVlua2diMjRnVW1GcGJITSUzRCZ0eHRjbHI9ZjVmNWY1JnR4dGZvbnQ9SUJNUGxleFNhbnNKUC1TZW1pQm9sZCZ0eHRwYWQ9MCZ0eHRzaXplPTY0Jnc9ODAw&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Kelly+Gebo)](https://thoughtbot.com/blog/the-strategy-behind-hotwire-and-ruby-on-rails-from-the-cto-of-clara)
+
+</div>
+
+A conversation with the CTO and Co-founder of Clara, a recent thoughtbot
+client, about the strategy behind their decision to build their startup
+product with Rails and Hotwire.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Return to the Rails Way: Installing Ruby on Rails in
+2024](https://thenewstack.io/return-to-the-rails-way-installing-ruby-on-rails-in-2024)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.thenewstack.io/media/2024/06/105d9ed6-getty-images-kvwvfscntsc-unsplash.jpg)](https://thenewstack.io/return-to-the-rails-way-installing-ruby-on-rails-in-2024)
+
+</div>
+
+Do a 'full fat install' of Ruby on Rails and see what's changed since
+its heyday of Web 2.0 — and how it has inspired modern frameworks.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Monitor the Performance of Your Ruby on Rails Application Using
+AppSignal](https://blog.appsignal.com/2024/06/12/monitor-the-performance-of-your-ruby-on-rails-application-using-appsignal.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6Ik1vbml0b3IgdGhlIFBlcmZvcm1hbmNlIG9mIFlvdXIgUnVieSBvbiBSYWlscyBBcHBsaWNhdGlvbiBVc2luZyBBcHBTaWduYWwifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDI0LTA2L2RpZ2l0YWxvY2Vhbi1wMi5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=4152e2f6234be9e8bf4f9d2ec741b085ab5aaf12664e79d8bd97606d0d9ef7d7)](https://blog.appsignal.com/2024/06/12/monitor-the-performance-of-your-ruby-on-rails-application-using-appsignal.html)
+
+</div>
+
+In the second part of this two-part series, we'll use AppSignal to
+monitor the performance of our Ruby on Rails application.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Use Tailwind CSS for Your Ruby On Rails
+Project](https://blog.appsignal.com/2024/06/05/how-to-use-tailwind-css-for-your-ruby-on-rails-project.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdyB0byBVc2UgVGFpbHdpbmQgQ1NTIGZvciBZb3VyIFJ1YnkgT24gUmFpbHMgUHJvamVjdCJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctb25xcXE4bnVuLWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjQtMDYvdGFpbHdpbmQtcmFpbHMuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW9ucXFxOG51bi1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=e79d0b4307391bcfd8dea48bf7d152533f628e2600495c565ece842431f68625)](https://blog.appsignal.com/2024/06/05/how-to-use-tailwind-css-for-your-ruby-on-rails-project.html)
+
+</div>
+
+Let's see how we can use Tailwind CSS in a Rails application and explore
+its utility-first approach.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[HTML Over The Wire](https://hotwired.dev)
+
+</div>
+
+Hotwire is an alternative approach to building modern web applications
+without using much JavaScript by sending HTML instead of JSON over the
+wire.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Gemfile of dreams: the libraries we use to build Rails
+apps](https://evilmartians.com/chronicles/gemfile-of-dreams-libraries-we-use-to-build-rails-apps)
+
+</div>
+
+<div class="card-image">
+
+[![](https://evilmartians.com/social-cards/chronicles/gemfile-of-dreams-libraries-we-use-to-build-rails-apps.jpg)](https://evilmartians.com/chronicles/gemfile-of-dreams-libraries-we-use-to-build-rails-apps)
+
+</div>
+
+We unveil the toolbox of the Martian Rails engineer; we begin
+constructing a Gemfile from the universe of Martian gems that
+encapsulate our philosophy and soul.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Getting Started: Your Ruby On Rails App Hosted On DigitalOcean With
+AppSign](https://blog.appsignal.com/2024/05/29/getting-started-your-ruby-on-rails-app-hosted-on-digitalocean-with-appsignal.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkdldHRpbmcgU3RhcnRlZDogWW91ciBSdWJ5IE9uIFJhaWxzIEFwcCBIb3N0ZWQgT24gRGlnaXRhbE9jZWFuIFdpdGggQXBwU2lnbmFsIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNC0wNS9kaWdpdGFsb2NlYW4tcDEuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=de7eb5a71347c965bc0762d2eb26165e1d24747c2e976b6d90036fcffe938e59)](https://blog.appsignal.com/2024/05/29/getting-started-your-ruby-on-rails-app-hosted-on-digitalocean-with-appsignal.html)
+
+</div>
+
+In the first part of a two-part series, we'll introduce how to set up
+DigitalOcean and AppSignal for a Ruby on Rails application.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Install Ruby On Rails on Ubuntu 24.04 Noble Numbat \|
+GoRails](https://gorails.com/setup/ubuntu/24.04)
+
+</div>
+
+A guide to setting up a Ruby on Rails development environment on Ubuntu
+24.04 Noble Numbat with Git, MySQL, and PostgreSQL
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to integrate React with Rails
+7](https://thoughtbot.com/blog/how-to-integrate-react-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVNHOTNJSFJ2SUdsdWRHVm5jbUYwWlNCU1pXRmpkQ0IzYVhSb0lGSmhhV3h6SURjJTNEJnR4dGNscj1mNWY1ZjUmdHh0Zm9udD1JQk1QbGV4U2Fuc0pQLVNlbWlCb2xkJnR4dHBhZD0wJnR4dHNpemU9NjQmdz04MDA%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Dave+Iverson)](https://thoughtbot.com/blog/how-to-integrate-react-rails)
+
+</div>
+
+Want to setup React on your Rails 7 app but don’t know how do it? Read
+this post to explore options to consider when using React with Ruby on
+Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Using Active Storage To Handle Image Uploads In Ruby On
+Rails](https://dev.to/awaiszafar14/using-active-storage-to-handle-image-uploads-in-ruby-on-rails-450c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbsjamsc116t6zq7htept.jpg)](https://dev.to/awaiszafar14/using-active-storage-to-handle-image-uploads-in-ruby-on-rails-450c)
+
+</div>
+
+Active Storage is a framework that handles file uploads, allowing you to
+store them as attachments...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Autotuner: How to Speed Up Your Rails
+App](https://railsatscale.com/2024-04-24-autotuner-how-to-speed-up-your-rails-app)
+
+</div>
+
+<div class="card-image">
+
+[![](https://railsatscale.com/2024-04-24-autotuner-how-to-speed-up-your-rails-app/f97fcae7b93bea0e3ce982cb49db85def0d18104.png)](https://railsatscale.com/2024-04-24-autotuner-how-to-speed-up-your-rails-app)
+
+</div>
+
+Ruby’s garbage collector is designed to be adaptable, scaling from short
+Ruby scripts to running apps that serve millions of requests per second.
+While it’s designed to be adaptable, it may not work optimally for every
+use case. For this reason, Ruby’s garbage collector supports many
+parameters that can be used to tune it. However, the use of these
+parameters requires knowledge into how the garbage collector works on
+the inside. Learn how the Autotuner gem can analyze your app’s traffic
+and provide suggestions for tuning the garbage collector.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[SQLite on Rails: The how and why of optimal
+performance](https://fractaledmind.github.io/2024/04/15/sqlite-on-rails-the-how-and-why-of-optimal-performance)
+
+</div>
+
+This is my personal site, where I write about Ruby, programming, and any
+of my varied fascinations.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Pricing \| Heroku](https://www.heroku.com/pricing)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.herokucdn.com/images/og.png)](https://www.heroku.com/pricing)
+
+</div>
+
+Heroku offers simple, flexible pricing to meet the needs of every app
+and every organization. Add data stores, cloud services, support, and
+more.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How (and why) to run SQLite in production: RubyConf Taiwan
+2023](https://fractaledmind.github.io/2023/12/23/rubyconftw)
+
+</div>
+
+This is my personal site, where I write about Ruby, programming, and any
+of my varied fascinations.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails: How Rails Find
+Generators](https://medium.com/@kingsobino/rails-how-rails-find-generators-19694db148da)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1000/0*bc8Z6Rp4cUifjx75.jpg)](https://medium.com/@kingsobino/rails-how-rails-find-generators-19694db148da)
+
+</div>
+
+All of us rails developers have used generators before. Either it is
+when we run rails new or rails generate scaffold. These commands…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How the Rails params hash
+works](https://dev.to/honeybadger/how-the-rails-params-hash-works-3on2)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8uf5bfsc1952ykqcgr2h.png)](https://dev.to/honeybadger/how-the-rails-params-hash-works-3on2)
+
+</div>
+
+This article was originally written by Jeffery Morhous on the
+Honeybadger Developer Blog. In Ruby on...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Good Database Migration Practices for Your Ruby on Rails App using
+Strong
+M](https://blog.appsignal.com/2024/03/20/good-database-migration-practices-for-your-ruby-on-rails-app-using-strong-migrations.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6Ikdvb2QgRGF0YWJhc2UgTWlncmF0aW9uIFByYWN0aWNlcyBmb3IgWW91ciBSdWJ5IG9uIFJhaWxzIEFwcCB1c2luZyBTdHJvbmcgTWlncmF0aW9ucyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjQtMDMvc3Ryb25nLW1pZ3JhdGlvbnMuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=64ba1ff47bc1cb3b368132f283fce836d81f6d9a1bc00e0b082dfb1b7b4c1a6f)](https://blog.appsignal.com/2024/03/20/good-database-migration-practices-for-your-ruby-on-rails-app-using-strong-migrations.html)
+
+</div>
+
+Let's explore Strong Migrations, a gem that can help you maintain good
+practices with your database migrations in Ruby on Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Active Record or Sequel: Which Best Fits The Needs of Your Ruby
+App?](https://blog.appsignal.com/2024/03/06/active-record-or-sequel-which-best-fits-the-needs-of-your-ruby-app.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFjdGl2ZSBSZWNvcmQgb3IgU2VxdWVsOiBXaGljaCBCZXN0IEZpdHMgVGhlIE5lZWRzIG9mIFlvdXIgUnVieSBBcHA_In0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNC0wMy9zZXF1ZWwtYWN0aXZlcmVjb3JkLmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=086d54be22f2347e61a268c263a8d42e9e761b8025f421fd34fbf01e0b746afd)](https://blog.appsignal.com/2024/03/06/active-record-or-sequel-which-best-fits-the-needs-of-your-ruby-app.html)
+
+</div>
+
+Let's compare some Active Record features to its lesser-known but
+powerful cousin, Sequel.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Rails is a Great Choice for Startups in
+2024](https://www.gregnavis.com/articles/why-rails-is-a-great-choice-for-startups-in-2024.html)
+
+</div>
+
+JavaScript is in the vogue now, but Ruby on Rails can become your
+startup’s secret competitive advantage.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Active Record and PostgreSQL — Ruby on Rails
+Guides](https://guides.rubyonrails.org/active_record_postgresql.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://avatars.githubusercontent.com/u/4223)](https://guides.rubyonrails.org/active_record_postgresql.html)
+
+</div>
+
+Active Record and PostgreSQLThis guide covers PostgreSQL specific usage
+of Active Record.After reading this guide, you will know: How to use
+PostgreSQL's datatypes. How to use UUID primary keys. How to include
+non-key columns in indexes. How to use deferrable foreign keys. How to
+use unique constraints. How to implement exclusion constraints. How to
+implement full text search with PostgreSQL. How to back your Active
+Record models with database views.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Hotwire Modals in Ruby on Rails with Stimulus and Turbo
+Frames](https://blog.appsignal.com/2024/02/21/hotwire-modals-in-ruby-on-rails-with-stimulus-and-turbo-frames.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdHdpcmUgTW9kYWxzIGluIFJ1Ynkgb24gUmFpbHMgd2l0aCBTdGltdWx1cyBhbmQgVHVyYm8gRnJhbWVzIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNC0wMi9ob3R3aXJlLXAxLmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=ce18d1f1edeba06dbbe83d2b58298b437d29a7ce2a13f007ae44dd30fab56545)](https://blog.appsignal.com/2024/02/21/hotwire-modals-in-ruby-on-rails-with-stimulus-and-turbo-frames.html)
+
+</div>
+
+In the first part of our series, we'll explore two Hotwire methods to
+make modals accessible in your Rails application.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Effective Queries with Rails and PostgreSQL - Honeybadger Developer
+Blog](https://www.honeybadger.io/blog/rails-postgresql-queries)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkVmZmVjdGl2ZSBRdWVyaWVzIHdpdGggUmFpbHMgYW5kIFBvc3RncmVTUUwiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiaGVhZHNob3QiLCJpbWFnZV91cmwiOiJodHRwczovL3d3dy1maWxlcy5ob25leWJhZGdlci5pby9hdXRob3JzL3BhdmVsdGthY2hlbmtvLnBuZyJ9LHsibmFtZSI6InN1bW1hcnkiLCJ0ZXh0IjoiR2V0dGluZyBkYXRhICppbnRvKiB5b3VyIGRhdGFiYXNlIGlzIGVhc3ksIGJ1dCBxdWVyeWluZyBsYXJnZSBkYXRhc2V0cyBpcyBjaGFsbGVuZ2luZ-KAlGVzcGVjaWFsbHkgd2l0aG91dCB0aGUgcmlnaHQgaW5kZXhlcy4gUGF2ZWwgVGthY2hlbmtvIHRlYWNoZXMgaG93IHRvIHdyaXRlIHBlcmZvcm1hbnQgU1FMIHF1ZXJpZXMgd2l0aCBFWFBMQUlOIGFuZCBBTkFMWVpFLiIsImNvbG9yIjpudWxsLCJiYWNrZ3JvdW5kIjpudWxsfSx7Im5hbWUiOiJhdXRob3IiLCJ0ZXh0IjoiQnkgKlBhdmVsIFRrYWNoZW5rbyoiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoidGFncyIsInRleHQiOiIjcnVieSAjcmFpbHMgI3Bvc3RncmVzcWwiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH1d&s=6d6f8d799a5c98d194c052e1fc88a8901df9ff1f8171b5bce0c969dedec2ce55)](https://www.honeybadger.io/blog/rails-postgresql-queries)
+
+</div>
+
+Getting data \*into\* your database is easy, but querying large datasets
+is challenging—especially without the right indexes. Pavel Tkachenko
+teaches how to write performant SQL queries with EXPLAIN and ANALYZE.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Full-Text Search for Ruby on Rails with
+Litesearch](https://blog.appsignal.com/2024/02/14/full-text-search-for-ruby-on-rails-with-litesearch.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkZ1bGwtVGV4dCBTZWFyY2ggZm9yIFJ1Ynkgb24gUmFpbHMgd2l0aCBMaXRlc2VhcmNoIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyNC0wMi9saXRlc3RhY2stcDYuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=498ad989fa9ba50ca8c2dc62617d4009ca0dead0678964fd20043990ba1f0ef8)](https://blog.appsignal.com/2024/02/14/full-text-search-for-ruby-on-rails-with-litesearch.html)
+
+</div>
+
+In part six of our series, we'll use Litesearch, the last piece of the
+puzzle in LiteStack.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails advanced routing
+constraints](https://thoughtbot.com/blog/rails-advanced-routing-constraints)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVVtRnBiSE1nWVdSMllXNWpaV1FnY205MWRHbHVaeUJqYjI1emRISmhhVzUwY3clM0QlM0QmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT02NCZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Steve+Polito)](https://thoughtbot.com/blog/rails-advanced-routing-constraints)
+
+</div>
+
+Learn how to authorize requests at the routing layer to improve security
+and ergonomics.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Rails Config
+File](https://www.writesoftwarewell.com/railsrc-rails-configuration-file)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/2024/01/railsrc.png)](https://www.writesoftwarewell.com/railsrc-rails-configuration-file)
+
+</div>
+
+The ~/.railsrc file configures your Rails applications and lets you
+pre-configure the gems you want in all your Rails apps.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Here's what's coming in Rails
+8](https://railsnotes.xyz/blog/rails-8-whats-coming)
+
+</div>
+
+<div class="card-image">
+
+[![](https://railsnotes.xyz/static/images/rails-8-whats-coming/cover.png)](https://railsnotes.xyz/blog/rails-8-whats-coming)
+
+</div>
+
+Work on Rails 8 is starting, so I dug through the official GitHub
+milestone to break down all the upcoming goodies for you. There's plenty
+coming, including Solid Queue, Solid Cache and Kamal becoming defaults,
+better support for PWAs, an official LSP, and more!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Performance Guide to create 100k records in less than 3s using Ruby on
+Rail](https://dev.to/justthev/performance-guide-to-create-100k-records-in-less-than-3s-using-ruby-on-rails-3k07)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fyp3kwe3b3viq279glxw7.png)](https://dev.to/justthev/performance-guide-to-create-100k-records-in-less-than-3s-using-ruby-on-rails-3k07)
+
+</div>
+
+When working on large-scale projects, quickly creating test data or
+dummy data can be crucial. In...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Using Action Policy for a Ruby on Rails App: The
+Basics](https://blog.appsignal.com/2023/10/04/using-action-policy-for-a-ruby-on-rails-app-the-basics.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlVzaW5nIEFjdGlvbiBQb2xpY3kgZm9yIGEgUnVieSBvbiBSYWlscyBBcHA6IFRoZSBCYXNpY3MifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDIzLTEwL2FjdGlvbi1wb2xpY3ktcDEuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=05b91cc162eacbb553c11e9138676764b2bc65318af81e8fa1efe64eabb9d43a)](https://blog.appsignal.com/2023/10/04/using-action-policy-for-a-ruby-on-rails-app-the-basics.html)
+
+</div>
+
+In the first part of a two-part series, we'll introduce how to use the
+Action Policy gem for a Ruby on Rails blog application.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Introduction to LiteStack for Ruby on
+Rails](https://blog.appsignal.com/2023/09/27/an-introduction-to-litestack-for-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFuIEludHJvZHVjdGlvbiB0byBMaXRlU3RhY2sgZm9yIFJ1Ynkgb24gUmFpbHMifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDIzLTA5L3AxLWxpdGVzdGFjay5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=6e322153a5b90bddc33924ee2b573808471fad7af5d1dab57b494c7f47405421)](https://blog.appsignal.com/2023/09/27/an-introduction-to-litestack-for-ruby-on-rails.html)
+
+</div>
+
+In the first part of this series, we'll set up an example Rails
+application and introduce the basics of LiteStack.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby on Rails extends Docker
+support](https://www.infoworld.com/article/3706871/ruby-on-rails-extends-docker-support.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.infoworld.com/wp-content/uploads/2024/06/shutterstock_402767335-100927753-orig.jpg?quality=50&strip=all&w=1024)](https://www.infoworld.com/article/3706871/ruby-on-rails-extends-docker-support.html)
+
+</div>
+
+Now available in a beta, Rails 7.1 will generate all Dockerfiles needed
+for deployment, tuned for production use.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Introduction to RuboCop for Ruby on
+Rails](https://blog.appsignal.com/2023/09/06/an-introduction-to-rubocop-for-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFuIEludHJvZHVjdGlvbiB0byBSdWJvQ29wIGZvciBSdWJ5IG9uIFJhaWxzIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1lenRmYnhvNXQtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMy0wOC9ydWJvY29wLmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1lenRmYnhvNXQtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=9259e3cba5256f8051a92756fb071a5247988ed6d44482941ed6a36224b994f7)](https://blog.appsignal.com/2023/09/06/an-introduction-to-rubocop-for-ruby-on-rails.html)
+
+</div>
+
+Let's dive into what RuboCop is, how it helps developers, how to use it,
+and some key practical use cases.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Building Value Objects in Rails with
+composed_of](https://thoughtbot.com/blog/rails-value-objects)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVFuVnBiR1JwYm1jZ1ZtRnNkV1VnVDJKcVpXTjBjeUJwYmlCU1lXbHNjeUIzYVhSb0lHTnZiWEJ2YzJWa1gyOW0mdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT02NCZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Steve+Polito)](https://thoughtbot.com/blog/rails-value-objects)
+
+</div>
+
+Learn how to improve the interface of your existing Active Record Models
+with this underutilized API.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Tokenized Tokens](https://fly.io/blog/tokenized-tokens)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fly.io/blog/tokenized-tokens/assets/ghosts.png)](https://fly.io/blog/tokenized-tokens)
+
+</div>
+
+Documentation and guides from the team at Fly.io.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 7.0: Fulfilling a
+vision](https://rubyonrails.org/2021/12/15/Rails-7-fulfilling-a-vision)
+
+</div>
+
+<div class="card-image">
+
+[![](https://rubyonrails.org/assets/images/opengraph.png)](https://rubyonrails.org/2021/12/15/Rails-7-fulfilling-a-vision)
+
+</div>
+
+This version of Rails has been years in the conceptual making. It’s the
+fulfillment of a vision to present a truly full-stack approach to web
+development that tackles both the front- and back-end challenges with
+equal vigor. An omakase menu that includes everything from the aperitif
+to the dessert.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Top 5 Gems for Implementing a Search Engine in a Rails
+App](https://devcamp.com/site_blogs/implementing-a-search-engine-in-a-rails-application)
+
+</div>
+
+Thanks to gems, it is easy to implement a search engine into Rails
+applications. Of course, you have to choose which gem to use. While
+there are countless options, four stand out as the best. You will be
+happy with any of these options.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Introduction to Devise for Ruby on
+Rails](https://blog.appsignal.com/2023/07/12/an-introduction-to-devise-for-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFuIEludHJvZHVjdGlvbiB0byBEZXZpc2UgZm9yIFJ1Ynkgb24gUmFpbHMifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDIzLTA3L2RldmlzZS1wMS5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=b9e64a107b058f81519a4c6cb04adec593255bd9db0ce4f10527f248118500dd)](https://blog.appsignal.com/2023/07/12/an-introduction-to-devise-for-ruby-on-rails.html)
+
+</div>
+
+In part one of this series on Devise, we'll cover the basics of the
+Devise gem.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Google Login in Rails 7 with
+devise](https://dev.to/ahmadraza/google-login-in-rails-7-with-devise-2gpo)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fkozhpw91ujb736goesve.png)](https://dev.to/ahmadraza/google-login-in-rails-7-with-devise-2gpo)
+
+</div>
+
+Google login can provide a convenient and seamless authentication option
+for your users. In this...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Creating Custom Rails
+Generators](https://garrettdimon.com/journal/posts/creating-custom-rails-generators)
+
+</div>
+
+<div class="card-image">
+
+[![](https://res.cloudinary.com/garrettdimon/image/asset/co_rgb:2d4f6c,c_fit,w_1100,h_50,l_text:Source%20Code%20Pro_32_antialias_subpixel_italic_normal_left_letter_spacing_-1_line_spacing_0:2023-04-09/fl_layer_apply,g_south_east,x_50,y_60/co_rgb:0F0F0F,c_fit,w_1100,h_250,l_text:Helvetica_64_antialias_subpixel_bold_normal_left_letter_spacing_-2_line_spacing_0:Creating%20Custom%20Rails%20Generators/fl_layer_apply,g_north_west,x_50,y_75.0/co_rgb:757575,c_fit,w_1100,h_250,l_text:Georgia_36_antialias_subpixel_italic_normal_left_letter_spacing_0_line_spacing_14:A%20complete%20and%20concise%20overview%20to%20help%20you%20create%20custom%20Rails%20Generators%20and%20avoid%20the%20speed%20bumps%20that%20might%20otherwise%20slow%20you%20down./fl_layer_apply,g_south_west,x_50,y_200/opengraph-large-90f3b5b96ff667c89dd7bf0906c0f78e.png)](https://garrettdimon.com/journal/posts/creating-custom-rails-generators)
+
+</div>
+
+A complete and concise overview to help you create custom Rails
+Generators and avoid the speed bumps that might otherwise slow you down.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Top Rails Gems for Cybersecurity Applications You Should Know
+About](https://dev.to/rachgrey/the-top-rails-gems-for-cybersecurity-applications-you-should-know-about-131g)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/rachgrey/the-top-rails-gems-for-cybersecurity-applications-you-should-know-about-131g)
+
+</div>
+
+Security should be one of the main areas of concern while developing a
+website application. To...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Welcome to Rails Cheat
+Sheet](https://fly.io/ruby-dispatch/welcome-to-rails-cheat-sheet)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fly.io/ruby-dispatch/welcome-to-rails-cheat-sheet/assets/beginning-rails.png)](https://fly.io/ruby-dispatch/welcome-to-rails-cheat-sheet)
+
+</div>
+
+A helpful list of resources for people who are just getting started out
+with Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Exception Handling and Validations in Rails, and how to display errors
+to
+u](https://dev.to/jaguilar89/exception-handling-and-validations-in-rails-and-how-to-display-errors-to-users-505l)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdx4v908yh7xjrecc9a32.png)](https://dev.to/jaguilar89/exception-handling-and-validations-in-rails-and-how-to-display-errors-to-users-505l)
+
+</div>
+
+Introduction In this article we will go over exception handling and
+validation in Rails....
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to use Sidekiq in Rails 7: Background
+Jobs](https://dev.to/ahmadraza/how-to-use-sidekiq-in-rails-7-background-jobs-1dmb)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F2f5jsy6gle1i56qvnvcr.png)](https://dev.to/ahmadraza/how-to-use-sidekiq-in-rails-7-background-jobs-1dmb)
+
+</div>
+
+In this blog, we'll explore how to use background jobs with Sidekiq in
+Rails 7 to handle long-running...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Load Code in Ruby \| AppSignal
+Blog](https://blog.appsignal.com/2023/04/19/how-to-load-code-in-ruby.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdyB0byBMb2FkIENvZGUgaW4gUnVieSJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjMtMDQvY29kZS1sb2FkaW5nLmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=ba5ca9d4aa12d253e090b4dc46c852c158e02c4ee75ab0b95bfe250dcb460752)](https://blog.appsignal.com/2023/04/19/how-to-load-code-in-ruby.html)
+
+</div>
+
+Let's look into three options for code loading in Ruby: using load,
+require, and autoload.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Stripe Connect onboarding with Ruby on
+Rails](https://dev.to/stripe/stripe-connect-onboarding-with-ruby-on-rails-32i4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media2.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fj5lub080xzhzl10r833o.png)](https://dev.to/stripe/stripe-connect-onboarding-with-ruby-on-rails-32i4)
+
+</div>
+
+Stripe Connect provides a suite of tools and APIs that allow you to
+create, manage, and scale your...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Upgrading to Rails 7: Moving away from
+Webpacker](https://thoughtbot.com/blog/upgrading-to-rails7-moving-away-from-webpacker)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVZYQm5jbUZrYVc1bklIUnZJRkpoYVd4eklEYzZJRTF2ZG1sdVp5QmhkMkY1SUdaeWIyMGdWMlZpY0dGamEyVnkmdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT02NCZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Marina+Joranhezon)](https://thoughtbot.com/blog/upgrading-to-rails7-moving-away-from-webpacker)
+
+</div>
+
+Webpacker was retired for Rails 7. Let’s explore some options for
+replacing it when making an upgrade.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Definitive Guide to Rack for Rails
+Developers](https://www.akshaykhot.com/definitive-guide-to-rack)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/2022/12/Rack-2.png)](https://www.akshaykhot.com/definitive-guide-to-rack)
+
+</div>
+
+This article explains Rack, including both the protocol and the gem, as
+well as the concept of middleware.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sharing Rails views with Jekyll \[Brighter Planet's Safety in
+Numbers\]](https://numbers.brighterplanet.com/2010/08/09/sharing-rails-views-with-jekyll)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sessions in Rails: Everything You Need to
+Know](https://www.akshaykhot.com/rails-sessions)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/2023/03/christmas-tree-with-old-clock.jpeg)](https://www.akshaykhot.com/rails-sessions)
+
+</div>
+
+In this post, we’ll learn about Rails sessions, including what is a
+session, why we need them, and why they're so important. I’ll also take
+you behind the scenes and show you how Rails implements sessions and
+where the \`session\` method actually comes from. Hint: it’s not in the
+Rails codebase.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[44 Top Ruby Gems: Must-have for Web
+Development](https://www.codica.com/blog/top-ruby-gems-we-cant-live-without)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.codica.com/static/c72102e5c2bea21df2b9ec317d19ae8c/1f05b/OG_banner_bd5a796f55.jpg)](https://www.codica.com/blog/top-ruby-gems-we-cant-live-without)
+
+</div>
+
+Discover the Best Ruby gems to enhance your project and make development
+easier. From testing to deployment, these gems will streamline your
+workflow.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Tracking TODO and FIXME Comments with Rails Notes
+Command](https://www.akshaykhot.com/rails-notes-command)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/2024/02/code-3.png)](https://www.akshaykhot.com/rails-notes-command)
+
+</div>
+
+This post shows how you can use the notes command in Rails to search
+through your codebase for comments starting with a specific keyword. By
+default, it searches the codebase for FIXME, OPTIMIZE, and TODO
+comments, but you can also configure it to use custom keywords.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Setup Devise for User Authentication on Rails
+7](https://dev.to/ackshaey/how-to-setup-devise-for-user-authentication-on-rails-7-ojg)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media2.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F6iv0w14vh6mb9enf95pv.png)](https://dev.to/ackshaey/how-to-setup-devise-for-user-authentication-on-rails-7-ojg)
+
+</div>
+
+If you are a frequent user of Ruby on Rails, you know that building
+authentication and user...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Mastering PostgreSQL Views and CTEs for Rails Developers: A
+Comprehensive
+G](https://dev.to/yet_anotherdev/mastering-postgresql-views-and-ctes-for-rails-developers-a-comprehensive-guide-3fl4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/yet_anotherdev/mastering-postgresql-views-and-ctes-for-rails-developers-a-comprehensive-guide-3fl4)
+
+</div>
+
+Introduction Views and Common Table Expression or CTE are two important
+concept in...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Episode 391 - Deploying with MRSK \| Drifting
+Ruby](https://www.driftingruby.com/episodes/deploying-with-mrsk)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d1rz1wpk7ms5d5.cloudfront.net/1yfb594qm4mpbd2icxh77aqi6r0r)](https://www.driftingruby.com/episodes/deploying-with-mrsk)
+
+</div>
+
+Kamal (MRSK) deploys web apps anywhere from bare metal to cloud VMs
+using Docker with zero downtime. In this episode, we will set up a
+Digital Ocean infrastructure with a Load Balancer, Virtual Machines, and
+a PostgreSQL database. We'll use Kamal (MRSK) to provision and deploy
+our Rails application to the Virtual Machines.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Configuring Rails
+Environments](https://www.akshaykhot.com/configuring-rails-environments)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/size/w1200/2023/03/environments-1.jpeg)](https://www.akshaykhot.com/configuring-rails-environments)
+
+</div>
+
+Despite its strong opinions and powerful conventions, Rails is a highly
+flexible and configurable framework. If you don’t like something,
+there’s almost certainly a way to change it. This article provides a
+brief overview of configuring Rails applications and environments.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Making the Most of Your Logs in
+Rails](https://blog.appsignal.com/2023/03/01/making-the-most-of-your-logs-in-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6Ik1ha2luZyB0aGUgTW9zdCBvZiBZb3VyIExvZ3MgaW4gUmFpbHMifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDIzLTAzL3JhaWxzLWxvZ3MucG5nIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=d53b6b250e155fbddd6cd2855a070f4ff162804dbe1a949ac68b976b054b5208)](https://blog.appsignal.com/2023/03/01/making-the-most-of-your-logs-in-rails.html)
+
+</div>
+
+It's easy to get going with logging with Rails, but not so easy to
+master it. Discover how you can get the most from your logs.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to add bootstrap in Rails
+7](https://dev.to/rutikkpatel/how-to-add-bootstrap-in-rails-7-5pd)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/rutikkpatel/how-to-add-bootstrap-in-rails-7-5pd)
+
+</div>
+
+How to add bootstrap in rails 7 Bootstrap is a popular CSS framework
+that can help you...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[You Don't Need Rails to Start Using
+Hotwire](https://www.akshaykhot.com/using-hotwire-without-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/size/w1200/2023/02/gallery-2.png)](https://www.akshaykhot.com/using-hotwire-without-rails)
+
+</div>
+
+Although Hotwire is closely tied to Ruby on Rails, you don't really need
+Rails to learn, play, and experiment with Hotwire.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Introduction of Rails Engine with basic
+example.](https://dev.to/harsh_u115/introduction-of-rails-engine-with-basic-example-2egm)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ft7e24eo438vz1oipslwn.png)](https://dev.to/harsh_u115/introduction-of-rails-engine-with-basic-example-2egm)
+
+</div>
+
+What is RailsEngine? A Rails engine is a self-contained piece of
+functionality that can be...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Polymorphic associations in Active
+Record](https://dev.to/mattishida/polymorphic-associations-in-active-record-2pjk)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/mattishida/polymorphic-associations-in-active-record-2pjk)
+
+</div>
+
+As a software developer, one of the best feelings has to be thinking up
+a great feature for your...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to use Docker with Ruby on Rails
+applications.](https://dev.to/harsh_u115/how-to-use-docker-with-ruby-on-rails-applications-4p13)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F63gbxtpmsrge0issa8dh.png)](https://dev.to/harsh_u115/how-to-use-docker-with-ruby-on-rails-applications-4p13)
+
+</div>
+
+What is docker? and how to use it with ruby on rails applications? and
+benefits of using...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What's New in Rails
+7.1](https://blog.appsignal.com/2023/02/15/whats-new-in-rails-7-1.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IldoYXQncyBOZXcgaW4gUmFpbHMgNy4xIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMy0wMi9yYWlscy03LTEucG5nIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=69bfe0d4baf4b29cbd0344ef220561ad6af9c0860aac43afee8cd7b87d5fa75a)](https://blog.appsignal.com/2023/02/15/whats-new-in-rails-7-1.html)
+
+</div>
+
+Let's take a look at what we can expect from the upcoming Rails 7.1
+release.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Overview Of Ruby on Rails 7.1 Features. Part
+III.](https://manny.codes/this-week-in-rails-wrapped-an-overview-of-rails-7-1-features-part-iii)
+
+</div>
+
+Leaked OnlyFans photos and video of manny.codes
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Starting Rails 7 for Front-End
+Development](https://reinteractive.com/articles/starting-rails-7-for-front-end-development)
+
+</div>
+
+<div class="card-image">
+
+[![](https://res.cloudinary.com/hynqxvid6/image/upload/c_fit,f_auto,h_1024,w_1024/v1/media/richard-gonsales-e469e5c2a603861f5789939fb765e87895ce64b206e6d1657047b7255fc101d9.jpg)](https://reinteractive.com/articles/starting-rails-7-for-front-end-development)
+
+</div>
+
+Rails 7 is now more flexible in terms of the front-end technologies we
+want to use for our projects. Webpacker has been retired and right now
+is not really recommended to use for new projects.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Getting Started with Ruby on Rails on Render \|
+Render](https://render.com/docs/deploy-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://docs.render.com/og/deploy-rails-f3c0772.png)](https://render.com/docs/deploy-rails)
+
+</div>
+
+This guide demonstrates how to set up a local Ruby on Rails environment,
+create a simple view, and deploy it to Render.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Create a Business Language for a Rails
+Application](https://blog.appsignal.com/2023/01/11/create-a-business-language-for-a-rails-application.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkNyZWF0ZSBhIEJ1c2luZXNzIExhbmd1YWdlIGZvciBhIFJhaWxzIEFwcGxpY2F0aW9uIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMy0wMS9idXNpbmVzcy1sYW5ndWFnZS1yYWlscy5wbmcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=14a2985c7a6e917099fc3cef3cf9fe2293310f9e1d46bc5d2bbe84b705812ebf)](https://blog.appsignal.com/2023/01/11/create-a-business-language-for-a-rails-application.html)
+
+</div>
+
+Build and parse a programming language to extend your Rails
+application's functionality.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Understanding the Instrumentation API in
+Rails](https://www.akshaykhot.com/rails-instrumentation-api)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/size/w1200/2023/10/rails_instrumentation-2.png)](https://www.akshaykhot.com/rails-instrumentation-api)
+
+</div>
+
+The Rails Instrumentation API provides a simple observer pattern and
+also allows you to benchmark a piece of code.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How To Use PostgreSQL with Your Ruby on Rails Application on Ubuntu
+18.04
+\|](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.digitalocean.com/_next/static/media/intro-to-cloud.d49bc5f7.jpeg)](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04)
+
+</div>
+
+A PostgreSQL database is a robust and flexible choice for your Ruby on
+Rails application. In this tutorial, you will set up a Ruby on Rails
+development envir…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What if writing tests was a joyful
+experience?](https://blog.janestreet.com/the-joy-of-expect-tests)
+
+</div>
+
+<div class="card-image">
+
+[![](https://blog.janestreet.com/the-joy-of-expect-tests/expect.gif)](https://blog.janestreet.com/the-joy-of-expect-tests)
+
+</div>
+
+At Jane Street we use a pattern/library called “expect tests” thatmakes
+test-writing feel like a REPL session, or like exploratoryprogramming in
+a Jupyter no...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[To Thread or Not to Thread: An In-Depth Look at Ruby’s Execution
+Models - Shopify](https://shopify.engineering/ruby-execution-models)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.shopify.com/s/files/1/0779/4361/articles/ShopifyEng_BlogIllustrations_220411_216ppi_02_RubyExecutionModels.jpg?v=1653485716)](https://shopify.engineering/ruby-execution-models)
+
+</div>
+
+An in-depth look at threads vs processes in Ruby web applications, and
+when you should use each.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Let's Learn Ruby on Rails Hotwire by Building a To-Do
+List](https://www.akshaykhot.com/building-to-do-list-using-hotwire-and-stimulus)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/size/w1200/2022/12/finished_app.png)](https://www.akshaykhot.com/building-to-do-list-using-hotwire-and-stimulus)
+
+</div>
+
+In this article, we'll learn Ruby on Rails and Hotwire by building a
+to-do list from scratch. It shows how to build single-page web
+applications using traditional web architecture (server-rendered HTML),
+without the complexity of modern JavaScript frameworks like React.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails Authentication From
+Scratch](https://stevepolito.design/blog/rails-authentication-from-scratch)
+
+</div>
+
+<div class="card-image">
+
+[![](https://stevepolito.design/assets/images/open-graph/blog/rails-authentication-from-scratch.png)](https://stevepolito.design/blog/rails-authentication-from-scratch)
+
+</div>
+
+If you’re like me then you probably take Devise for granted because
+you’re too intimidated to roll your own authentication system. As
+powerful as Devise is, it’s not perfect. There are plenty of cases where
+I’ve reached for it only to end up constrained by its features and
+design, and wished I could customize it exactly to my liking.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Deploy API only Rails App with
+Capistrano](https://dev.to/coolprobn/deploy-api-only-rails-app-with-capistrano-2d0g)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Flvno5gexvv6evbvj9djy.jpeg)](https://dev.to/coolprobn/deploy-api-only-rails-app-with-capistrano-2d0g)
+
+</div>
+
+Capistrano is a deployment automation tool built on Ruby, Rake, and SSH.
+It allows you to deploy your...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[rails/docked: Running Rails from Docker for easy start to
+development](https://rubyweekly.com/link/133475/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/9c90e7ea5a621d6709afca198798c87844915a93ea9fd980cc8d1e8c6add04dd/rails/docked)](https://rubyweekly.com/link/133475/ad5e785e3b)
+
+</div>
+
+Running Rails from Docker for easy start to development - rails/docked
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Build Your Own Rails
+Generator](https://rubyweekly.com/link/133410/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdyB0byBCdWlsZCBZb3VyIE93biBSYWlscyBHZW5lcmF0b3IiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiaGVhZHNob3QiLCJpbWFnZV91cmwiOiJodHRwczovL3d3dy1maWxlcy5ob25leWJhZGdlci5pby9hdXRob3JzL3dpbGxpYW1rZW5uZWR5LnBuZyJ9LHsibmFtZSI6InN1bW1hcnkiLCJ0ZXh0IjoiR2VuZXJhdG9ycyBhcmUgYSBwb3dlcmZ1bCBmZWF0dXJlIHlvdSBjYW4gdXNlIHRvIGF1dG9tYXRlIHJvdXRpbmUgdGFza3MgaW4gUmFpbHPigJRidXQgZG8geW91IGtub3cgaG93IHRvIG1ha2UgeW91ciBvd24_IFRoaXMgYXJ0aWNsZSBleHBsb3JlcyBSYWlscyBnZW5lcmF0b3JzIGluIGRlcHRoLCBpbmNsdWRpbmcgaG93IHRvIGJ1aWxkIGEgZ2VuZXJhdG9yIGZyb20gc2NyYXRjaC4iLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiYXV0aG9yIiwidGV4dCI6IkJ5ICpXaWxsaWFtIEtlbm5lZHkqIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9LHsibmFtZSI6InRhZ3MiLCJ0ZXh0IjoiI3J1YnkgI3JhaWxzIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9XQ&s=db1fb4a9a7fea68abc922223e543e6cfee39a29eaef242792ae9c42d5450d777)](https://rubyweekly.com/link/133410/ad5e785e3b)
+
+</div>
+
+Generators are a powerful feature you can use to automate routine tasks
+in Rails—but do you know how to make your own? This article explores
+Rails generators in depth, including how to build a generator from
+scratch.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to validate the presence of a boolean field in a Rails
+model](https://thoughtbot.com/blog/how-to-validate-the-presence-of-a-boolean-field-in-a-rails-model)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVNHOTNJSFJ2SUhaaGJHbGtZWFJsSUhSb1pTQndjbVZ6Wlc1alpTQnZaaUJoSUdKdmIyeGxZVzRnWm1sbGJHUWdhVzRnWVNCU1lXbHNjeUJ0YjJSbGJBJTNEJTNEJnR4dGNscj1mNWY1ZjUmdHh0Zm9udD1JQk1QbGV4U2Fuc0pQLVNlbWlCb2xkJnR4dHBhZD0wJnR4dHNpemU9NjQmdz04MDA%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Stefanni+Brasil)](https://thoughtbot.com/blog/how-to-validate-the-presence-of-a-boolean-field-in-a-rails-model)
+
+</div>
+
+A subtle bug happens when validating the presence of boolean fields in
+Rails. Here’s how to find it before it hits production.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 7.1 features](https://dev.to/daviducolo/rails-71-features-p1c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fch3uv1ndgy9guex1y2t4.png)](https://dev.to/daviducolo/rails-71-features-p1c)
+
+</div>
+
+There are many new features and improvements in Rails 7.1 that can be
+useful for developers. Here are...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sign Up \|
+LinkedIn](https://www.linkedin.com/feed/update/urn:li:activity:7001178652008697856)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.licdn.com/scds/common/u/images/logos/favicons/v1/favicon.ico)](https://www.linkedin.com/feed/update/urn:li:activity:7001178652008697856)
+
+</div>
+
+500 million+ members \| Manage your professional identity. Build and
+engage with your professional network. Access knowledge, insights and
+opportunities.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Brief Introduction to Rails Initializers: Why, What, and
+How](https://www.akshaykhot.com/introduction-to-rails-initializers)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.writesoftwarewell.com/content/images/2023/07/code-10.png)](https://www.akshaykhot.com/introduction-to-rails-initializers)
+
+</div>
+
+You can use Rails initializers to configure your application or external
+gems. In this post, we'll learn how they work.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Basics of Rails Password
+Protection](https://dev.to/emilyfernschild/basics-of-rails-password-protection-2fd1)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/emilyfernschild/basics-of-rails-password-protection-2fd1)
+
+</div>
+
+In this blog, we will be using bcrypt for authentication in our rails
+backend. Password protection...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Scale Ruby on Rails
+Applications](https://blog.appsignal.com/2022/11/09/how-to-scale-ruby-on-rails-applications.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdyB0byBTY2FsZSBSdWJ5IG9uIFJhaWxzIEFwcGxpY2F0aW9ucyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjItMTEvc2NhbGluZy1yb3IucG5nIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=c88e972d1715085cfc34a0ea8ff8d61d3dbaceeafc164d0cd76fc93de3bea7d6)](https://blog.appsignal.com/2022/11/09/how-to-scale-ruby-on-rails-applications.html)
+
+</div>
+
+Check out some ways to scale your Ruby on Rails applications, including
+with caching and background workers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Build Your Own Rails
+Generator](https://www.honeybadger.io/blog/build-a-rails-generator)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkhvdyB0byBCdWlsZCBZb3VyIE93biBSYWlscyBHZW5lcmF0b3IiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiaGVhZHNob3QiLCJpbWFnZV91cmwiOiJodHRwczovL3d3dy1maWxlcy5ob25leWJhZGdlci5pby9hdXRob3JzL3dpbGxpYW1rZW5uZWR5LnBuZyJ9LHsibmFtZSI6InN1bW1hcnkiLCJ0ZXh0IjoiR2VuZXJhdG9ycyBhcmUgYSBwb3dlcmZ1bCBmZWF0dXJlIHlvdSBjYW4gdXNlIHRvIGF1dG9tYXRlIHJvdXRpbmUgdGFza3MgaW4gUmFpbHPigJRidXQgZG8geW91IGtub3cgaG93IHRvIG1ha2UgeW91ciBvd24_IFRoaXMgYXJ0aWNsZSBleHBsb3JlcyBSYWlscyBnZW5lcmF0b3JzIGluIGRlcHRoLCBpbmNsdWRpbmcgaG93IHRvIGJ1aWxkIGEgZ2VuZXJhdG9yIGZyb20gc2NyYXRjaC4iLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiYXV0aG9yIiwidGV4dCI6IkJ5ICpXaWxsaWFtIEtlbm5lZHkqIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9LHsibmFtZSI6InRhZ3MiLCJ0ZXh0IjoiI3J1YnkgI3JhaWxzIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9XQ&s=db1fb4a9a7fea68abc922223e543e6cfee39a29eaef242792ae9c42d5450d777)](https://www.honeybadger.io/blog/build-a-rails-generator)
+
+</div>
+
+Generators are a powerful feature you can use to automate routine tasks
+in Rails—but do you know how to make your own? This article explores
+Rails generators in depth, including how to build a generator from
+scratch.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Lesson 8 - Devise Gem with Rails 7 &
+Hotwire](https://m.youtube.com/watch?t=490s&v=k9g2sPXarwg)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/k9g2sPXarwg/maxresdefault.jpg)](https://m.youtube.com/watch?t=490s&v=k9g2sPXarwg)
+
+</div>
+
+In this video I will show you how to create a simple authentication
+system using Rails 7 and Devise Gem. Learn how to create a global navbar
+that has conditional logic for user authentication. Reference the code
+here ! https://github.com/swiftruby/devisefromscratch
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Heroku alternatives for Rails projects: Deploying my shit to
+fly.io](https://richstone.io/heroku-alternatives-for-rails-projects-deploying-my-shit-on-fly-io)
+
+</div>
+
+<div class="card-image">
+
+[![](https://digitalpress.fra1.cdn.digitaloceanspaces.com/xhtzjbw/2022/10/goo-code-makes-its-way-to-the-Cloud.PNG)](https://richstone.io/heroku-alternatives-for-rails-projects-deploying-my-shit-on-fly-io)
+
+</div>
+
+I like to develop production projects and side projects as
+deployment-driven as possible. Over the years I had tons of projects on
+Heroku and I'm grateful for the experience 🙏 But if tons of projects
+are to come again, I don't see a point in paying 7\$ bucks per
+side-project. Luckily
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Many-to-Many Associations in Active Record
+Example](https://dev.to/williamluck/many-to-many-associations-in-active-record-example-285h)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/williamluck/many-to-many-associations-in-active-record-example-285h)
+
+</div>
+
+Background Using Ruby, Active Record, Sinatra, and a React frontend, I
+created a traveler...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[GitHub - davidteren/simple_tails: Sensible semantic HTML styling out
+the bo](https://github.com/davidteren/simple_tails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/0ad3d383a9a60644fc9bbb3f6a8357d878200c2739e9e983bc090bcf82550e8b/davidteren/simple_tails)](https://github.com/davidteren/simple_tails)
+
+</div>
+
+Sensible semantic HTML styling out the box for Ruby on Rails
+applications - davidteren/simple_tails
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Security Best Practices for Your Rails
+Application](https://blog.appsignal.com/2022/10/05/security-best-practices-for-your-rails-application.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlNlY3VyaXR5IEJlc3QgUHJhY3RpY2VzIGZvciBZb3VyIFJhaWxzIEFwcGxpY2F0aW9uIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMi0xMC9zZWN1cml0eS1yYWlscy5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=6ffceaf6b165054b61f9a7868de01c5263ed928258189528d3cfc43f402c39d2)](https://blog.appsignal.com/2022/10/05/security-best-practices-for-your-rails-application.html)
+
+</div>
+
+Ensure your Rails application stays secure by following some best
+practices and habits.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[JIT Compilers for Ruby and Rails: An
+Overview](https://blog.appsignal.com/2022/09/07/jit-compilers-for-ruby-and-rails-an-overview.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkpJVCBDb21waWxlcnMgZm9yIFJ1YnkgYW5kIFJhaWxzOiBBbiBPdmVydmlldyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjItMDkvaml0LXJ1YnkuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=e70b756b3e8b38ef79990b8853b376dd5b620ea9ffcbd3296dc9bcea50ffe516)](https://blog.appsignal.com/2022/09/07/jit-compilers-for-ruby-and-rails-an-overview.html)
+
+</div>
+
+Find out about the different JIT compilers for Ruby — YJIT, MJIT, and
+TenderJIT — and their benefits.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Introducing Trilogy: a new database adapter for Ruby on
+Rails](https://github.blog/2022-08-25-introducing-trilogy-a-new-database-adapter-for-ruby-on-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://github.blog/wp-content/uploads/2022/08/Group-1.png?fit=1200%2C630)](https://github.blog/2022-08-25-introducing-trilogy-a-new-database-adapter-for-ruby-on-rails)
+
+</div>
+
+We've open sourced Trilogy, the database adapter we use to connect Ruby
+on Rails to MySQL-compatible database servers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Episode 365 - Automate Rake Tasks \| Drifting
+Ruby](https://www.driftingruby.com/episodes/automate-rake-tasks)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d1rz1wpk7ms5d5.cloudfront.net/f7uhkzmvzd3pnwsvx54i7t90i0dj)](https://www.driftingruby.com/episodes/automate-rake-tasks)
+
+</div>
+
+When rake tasks need to be part of a deployment, you could find yourself
+in a situation where the rake task was forgotten about or have to go
+through the process of shelling into the environment to execute the
+tasks. In this episode, we look at addressing these issues by creating a
+way to have rake tasks execute automatically.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Advanced Database Programming with Rails and
+Postgres](https://rubyweekly.com/link/127468/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pganalyze.com/og/ebook-advanced-database-programming-rails-postgres.jpg)](https://rubyweekly.com/link/127468/ad5e785e3b)
+
+</div>
+
+Learn about Active Record and subqueries, views and materialized views,
+and domain types and composite types in Postgres and Ruby on Rails.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Split Your Rails Seeds File into Separate Files in Different Folders \|
+by
+E](https://medium.com/@ethanryan/split-your-rails-seeds-file-into-separate-files-in-different-folders-3c57be765818)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:560/1*Yysg706lHjuzcGECkWM0xg.png)](https://medium.com/@ethanryan/split-your-rails-seeds-file-into-separate-files-in-different-folders-3c57be765818)
+
+</div>
+
+I’m working on a Rails backend app to serve as the API for my database.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Connect a Ruby on Rails App with React in a
+Monolith](https://blog.appsignal.com/2022/08/03/connect-a-ruby-on-rails-app-with-react-in-a-monolith.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/vYR1M6Lyq22EAnXbgZ/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkNvbm5lY3QgYSBSdWJ5IG9uIFJhaWxzIEFwcCB3aXRoIFJlYWN0IGluIGEgTW9ub2xpdGgifSx7Im5hbWUiOiJpbWFnZSIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvYmxvZy8yMDIyLTA4L3JhaWxzLXJlYWN0LW1vbm9saXRoLmpwZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=d3977cd2634663f9e273806f4396efed1b0c54aa226661f77f2deb9e89f9a4c6)](https://blog.appsignal.com/2022/08/03/connect-a-ruby-on-rails-app-with-react-in-a-monolith.html)
+
+</div>
+
+Learn about the three main types of app architecture, then connect React
+with your monolith Ruby on Rails app.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Best photos on
+manny.codes](https://manny.codes/4-books-for-intermediate-ruby-and-rails-developers)
+
+</div>
+
+Leaked OnlyFans photos and video of manny.codes
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Get Started with Hotwire in Your Ruby on Rails
+App](https://blog.appsignal.com/2022/07/06/get-started-with-hotwire-in-your-ruby-on-rails-app.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkdldCBTdGFydGVkIHdpdGggSG90d2lyZSBpbiBZb3VyIFJ1Ynkgb24gUmFpbHMgQXBwIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMi0wNy9ob3R3aXJlLnBuZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=6e4896e0685a5a0c91727d341268d2b4174dfad3e5c29b11706e0d8dc1c6079e)](https://blog.appsignal.com/2022/07/06/get-started-with-hotwire-in-your-ruby-on-rails-app.html)
+
+</div>
+
+Learn the basics of Hotwire and how to use it in your Rails app.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[We need to talk about
+fixtures](https://thoughtbot.com/blog/we-need-to-talk-about-fixtures)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.prismic.io/thoughtbot-website/Zn0Q2JbWFbowe7qY_default-article-background.png?auto=format%2Ccompress&mark-x=356&mark-y=100&mark64=aHR0cHM6Ly9hc3NldHMuaW1naXgubmV0L350ZXh0Lz90eHQtbGVhZD0wJnR4dC10cmFjaz0wJnR4dDY0PVYyVWdibVZsWkNCMGJ5QjBZV3hySUdGaWIzVjBJR1pwZUhSMWNtVnomdHh0Y2xyPWY1ZjVmNSZ0eHRmb250PUlCTVBsZXhTYW5zSlAtU2VtaUJvbGQmdHh0cGFkPTAmdHh0c2l6ZT02NCZ3PTgwMA%3D%3D&txt-align=center%2Cmiddle&txt-color=f5f5f5&txt-fit=max&txt-font=IBMPlexSansJP-SemiBold&txt-size=24&txt-x=391&txt-y=526&txt=Matheus+Sales)](https://thoughtbot.com/blog/we-need-to-talk-about-fixtures)
+
+</div>
+
+How the principle of connascence will help us to move away from
+fixtures.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[iseq.c: Use ntz_intptr for faster bitmap scan by casperisfine · Pull
+Request \#6059 ·
+ruby/ruby](https://rubyweekly.com/link/125611/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/5b85c40f0525e625c014a1a354d27ee0caa10702607e78967c0396a224bdf3cd/ruby/ruby/pull/6059)](https://rubyweekly.com/link/125611/ad5e785e3b)
+
+</div>
+
+Ref: \#6053
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Full-text Search with Elasticsearch in
+Rails](https://rubyweekly.com/link/125624/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkZ1bGwtdGV4dCBTZWFyY2ggd2l0aCBFbGFzdGljc2VhcmNoIGluIFJhaWxzIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9LHsibmFtZSI6ImhlYWRzaG90IiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly93d3cuaG9uZXliYWRnZXIuaW8vaW1hZ2VzL2hlYWRzaG90cy9pYW5pc3RyaWFuZGFmaWxvdi5wbmcifSx7Im5hbWUiOiJzdW1tYXJ5IiwidGV4dCI6IklmIHlvdSdyZSBmaW5kaW5nIHBlcmZvcm1hbmNlIGJvdHRsZW5lY2tzIHdpdGggZnVsbC10ZXh0IHNlYXJjaCBpbiB5b3VyIGRhdGFiYXNlLCBpdCBtYXkgYmUgdGltZSB0byBzd2l0Y2ggdG8gRWxhc3RpY3NlYXJjaC4gSW4gdGhpcyB0dXRvcmlhbCwgSWFuaXMgaW50cm9kdWNlcyBFbGFzdGljc2VhcmNoIGFuZCBzaG93cyB1cyBob3cgdG8gaW1wbGVtZW50IGFuIGVmZmljaWVudCBzZWFyY2ggZmVhdHVyZSBpbiBSYWlscy4iLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiYXV0aG9yIiwidGV4dCI6IkJ5ICpJYW5pcyBUcmlhbmRhZmlsb3YqIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9LHsibmFtZSI6InRhZ3MiLCJ0ZXh0IjoiI3J1YnkgI3JhaWxzICNlbGFzdGljc2VhcmNoIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9XQ&s=60dd8a28c7bc131a51fed039e5f176120c5594517720894194e161438f58ddbc)](https://rubyweekly.com/link/125624/ad5e785e3b)
+
+</div>
+
+If you're finding performance bottlenecks with full-text search in your
+database, it may be time to switch to Elasticsearch. In this tutorial,
+Ianis introduces Elasticsearch and shows us how to implement an
+efficient ...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[“Don’t Mock What You Don’t Own” in 5
+Minutes](https://hynek.me/articles/what-to-mock-in-5-mins)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.hynek.me/cards/what-to-mock-in-5-mins.png?171688d)](https://hynek.me/articles/what-to-mock-in-5-mins)
+
+</div>
+
+A common issue when writing tests for real-world software is how to deal
+with third-party dependencies. Let’s examine an old, but
+counter-intuitive principle.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Rails Configuration File
+(~/.railsrc)](https://dev.to/software_writer/the-rails-configuration-file-railsrc-4f4c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/software_writer/the-rails-configuration-file-railsrc-4f4c)
+
+</div>
+
+Did you know that Rails has a ~/.railsrc file? Similar to your ~/.bashrc
+or ~/.zshrc file, you can...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails Geocoder: A Guide to Managing Locations in Your
+Apps](https://stackify.com/rails-geocoder-a-guide-to-managing-locations-in-your-apps)
+
+</div>
+
+<div class="card-image">
+
+[![](https://stackify.com/wp-content/uploads/2019/06/locate-apps-rails-881x441-1.jpg)](https://stackify.com/rails-geocoder-a-guide-to-managing-locations-in-your-apps)
+
+</div>
+
+In 2019 there are a myriad of options for mapping and geolocation
+services. Rails geocoder gem makes it easy to find your way around those
+services.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Build your app 10x faster! Stop building the · Avo Admin for
+Rails](https://avohq.io)
+
+</div>
+
+<div class="card-image">
+
+[![](https://avohq.io/cover-code-optim.jpeg)](https://avohq.io)
+
+</div>
+
+Ruby on Rails Admin Panel Framework
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How we improved our Rails app’s performance with Conditional Get
+Requests](https://sourcediving.com/how-we-improved-our-rails-apps-performance-with-conditional-get-requests-35a7a472a0b9)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1200/1*ZqmemPKq8b1PJByRfMnaGg.jpeg)](https://sourcediving.com/how-we-improved-our-rails-apps-performance-with-conditional-get-requests-35a7a472a0b9)
+
+</div>
+
+HTTP provides a method of client-side caching known as Conditional Get
+Requests. This style of caching allows a client to cache the content…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Episode \#352 - Roles from Scratch](https://youtu.be/htoAZlv-SBM)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/htoAZlv-SBM/sddefault.jpg)](https://youtu.be/htoAZlv-SBM)
+
+</div>
+
+In this episode, we look at different authorization approaches from the
+most simple to more complex scenarios.
+https://www.driftingruby.com/episodes/roles-from-scratch This episode is
+sponsored by Honeybadger https://www.honeybadger.io/ ► Visit the
+Merchandise Store - https://www.railsstore.com/ ► Ruby on Rails
+Templates - https://www.rubidium.io ► Subscribe to Drifting Ruby at
+https://www.driftingruby.com/subscription/new
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Add Feature Flags in Ruby on Rails with Flipper \| AppSignal
+Blog](https://blog.appsignal.com/2022/06/08/add-feature-flags-in-ruby-on-rails-with-flipper.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFkZCBGZWF0dXJlIEZsYWdzIGluIFJ1Ynkgb24gUmFpbHMgd2l0aCBGbGlwcGVyIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMi0wNi9mZWF0dXJlLWZsYWdzLWluLXJ1YnkucG5nIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=6a1b2b3ce8987d6fdf3dd7858640b6f6fd7f21b8dfe7732f2ddd2c0acb09a85c)](https://blog.appsignal.com/2022/06/08/add-feature-flags-in-ruby-on-rails-with-flipper.html)
+
+</div>
+
+Find out how feature flags function in principle and get started with
+feature flags using the Flipper gem.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[thoughtbot/hotwire-example-template: A collection of branches that
+transmit HTML over the
+wire.](https://github.com/thoughtbot/hotwire-example-template)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/e94432e383adcbaae92b1fb96af9d7976b7cc0fd098976fbf00d7974b412c927/thoughtbot/hotwire-example-template)](https://github.com/thoughtbot/hotwire-example-template)
+
+</div>
+
+A collection of branches that transmit HTML over the wire. -
+thoughtbot/hotwire-example-template
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Introduction to Polymorphism in Ruby on Rails \| AppSignal
+Blog](https://blog.appsignal.com/2022/05/25/an-introduction-to-polymorphism-in-ruby-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkFuIEludHJvZHVjdGlvbiB0byBQb2x5bW9ycGhpc20gaW4gUnVieSBvbiBSYWlscyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjItMDUvcG9seW1vcnBoaXNtLnBuZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=32610da24f05d8cc56692eadbe18ae0a4bf5d6d758f7b7743bd6f5a992352933)](https://blog.appsignal.com/2022/05/25/an-introduction-to-polymorphism-in-ruby-on-rails.html)
+
+</div>
+
+Learn how you can implement polymorphism in your Rails application for
+cleaner code.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Using Rails Action
+Mailer](https://dev.to/tccodez/using-rails-action-mailer-j5c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/tccodez/using-rails-action-mailer-j5c)
+
+</div>
+
+In this quick tutorial I will go over how I use Action Mailer in my
+Rails apps. A bonus if you have...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[2022 Ruby on Rails Community Survey
+Results](https://rails-hosting.com/2022)
+
+</div>
+
+<div class="card-image">
+
+[![](https://railsdeveloper.com/survey/2022/static/2022-ruby-on-rails-survey-results-b7bbb0d7c1f97f1dbd6a459aa9167def.png)](https://rails-hosting.com/2022)
+
+</div>
+
+Over 2,600 members of the Rails community from 92 countries kindly
+contributed their thoughts on tools, frameworks, and workflows in their
+day to day development lives. From these responses we hope to get an
+understanding of where Rails stands as a framework in 2022.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[File: README — Puma master](https://msp-greg.github.io/puma)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Bundler: The best way to manage a Ruby application's
+gems](https://bundler.io)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Markdown Tutorial Using Rails
+app](https://www.bacancytechnology.com/blog/add-markdown-to-rails-app)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/h-fnfuXdBIY/hqdefault.jpg)](https://www.bacancytechnology.com/blog/add-markdown-to-rails-app)
+
+</div>
+
+In this markdown tutorial using rails app learn a step-by-step process
+to add Markdown support to the Rails app using Redcarpet and Coderay
+gems.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[SQLite on Heroku \| Heroku Dev
+Center](https://devcenter.heroku.com/articles/sqlite3)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.herokucdn.com/images/og.png)](https://devcenter.heroku.com/articles/sqlite3)
+
+</div>
+
+A guide to SQLite on Heroku - explaining why using SQLite on Heroku's
+ephemeral file system is a bad fit, and looking at alternatives.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How To Install Ruby on Rails with rbenv on Ubuntu 20.04 \|
+DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-20-04)
+
+</div>
+
+<div class="card-image">
+
+[![](https://community-cdn-digitalocean-com.global.ssl.fastly.net/4EXnYDCyje6NVaQ1PYDtVGJc)](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-20-04)
+
+</div>
+
+Ruby on Rails is one of the most popular application stacks for
+developers looking to create sites and web apps. Using rbenv will
+provide you with a solid en…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Bootstrapping with Ruby on Rails Generators and Templates \| AppSignal
+Blog](https://blog.appsignal.com/2022/05/04/bootstrapping-with-ruby-on-rails-generators-and-templates.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/Mn62mqoVbWvyB5wgQ1/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IkJvb3RzdHJhcHBpbmcgd2l0aCBSdWJ5IG9uIFJhaWxzIEdlbmVyYXRvcnMgYW5kIFRlbXBsYXRlcyJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjItMDUvcmFpbHMtZ2VuZXJhdG9ycy5wbmcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=e73e344d888097cb3c156d95a3ba6fff92d492c455445343cedf85fd31385056)](https://blog.appsignal.com/2022/05/04/bootstrapping-with-ruby-on-rails-generators-and-templates.html)
+
+</div>
+
+Let's explore the basics of Rails generators and templates, then examine
+how to customize your Rails app with templates.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Active Record Tricks \| Drifting
+Ruby](https://www.driftingruby.com/episodes/active-record-tricks)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d1rz1wpk7ms5d5.cloudfront.net/d0l8eisgjw4f62ag530sqnompzm0)](https://www.driftingruby.com/episodes/active-record-tricks)
+
+</div>
+
+In this episode, we look at tips and tricks from read only attributes,
+inserting and upserting (update or insert) records, toggling booleans,
+and single table inheritance.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://www.rubyjobboard.com/blog/2022/04/13/this-one-rails-validation-trick-that-makes-your-code-more-awesome>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Different Ways to Set Attributes in ActiveRecord (Rails
+7)](https://scottbartell.com/2022/04/12/set-attributes-in-active-record-rails-7)
+
+</div>
+
+Comparing the different ways to set attributes in ActiveRecord (Rails 7)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[5 Tips to Design Ruby on Rails Transactions the Right Way \| AppSignal
+Blog](https://blog.appsignal.com/2022/03/30/5-tips-to-design-ruby-on-rails-transactions-the-right-way.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/vYR1M6Lyq22EAnXbgZ/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IjUgVGlwcyB0byBEZXNpZ24gUnVieSBvbiBSYWlscyBUcmFuc2FjdGlvbnMgdGhlIFJpZ2h0IFdheSJ9LHsibmFtZSI6ImltYWdlIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctbnlxcjZxY3I4LWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9ibG9nLzIwMjItMDMvcmFpbHMtdHJhbnNhY3Rpb25zLnBuZyJ9LHsibmFtZSI6ImNhdGVnb3J5X2xvZ28iLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2xvZ29zL3J1YnktbG9nby5wbmcifV0&s=fe77b4a82d596ef7ae6e2eb0ff0831ba40d58bc532b61c61d7ab249af0c34a71)](https://blog.appsignal.com/2022/03/30/5-tips-to-design-ruby-on-rails-transactions-the-right-way.html)
+
+</div>
+
+Check out these 5 tips to ensure your transactions are readable and
+well-designed in your Ruby on Rails app.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[GoRails Job Board](https://jobs.gorails.com)
+
+</div>
+
+<div class="card-image">
+
+[![](https://job-boardly-production.s3.amazonaws.com/dosklbmxcd7g10yfprxolp1anoeu)](https://jobs.gorails.com)
+
+</div>
+
+Looking for a Ruby on Rails job or hiring Rails developers? We can help
+you!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ask HN: Cheaper Heroku alternatives for Rails apps? \| Hacker
+News](https://news.ycombinator.com/item?id=30755202)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Optimizing Rails
+connections](https://dev.to/hopsoft/optimizing-rails-connections-4gkd)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fti8ainzir3qvydb7nw57.jpeg)](https://dev.to/hopsoft/optimizing-rails-connections-4gkd)
+
+</div>
+
+How to configure database connections in your Rails app
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://www.railsgigs.com/blog/2022/03/09/rails-email-setup-for-development-staging-and-production>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Changing a polymorphic_type in Rails — Development
+(2022)](https://shopify.engineering/changing-polymorphic-type-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.shopify.com/s/files/1/0779/4361/articles/ShopifyEng_BlogIllustrations_211209_72ppi_04_ChangingAPolymorphicTypeInRails.jpg?v=1645144071)](https://shopify.engineering/changing-polymorphic-type-rails)
+
+</div>
+
+How my team redefined the way we store one of the polymorphic
+associations in the Shopify codebase. This post is the solution we wish
+we found when we were looking.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Color Picker with Ruby on Rails 6, Stimulus and
+Webpacker](https://chrislabarge.com/posts/color-picker)
+
+</div>
+
+<div class="card-image">
+
+[![](https://chrislabarge.com/img/color-picker.jpg)](https://chrislabarge.com/posts/color-picker)
+
+</div>
+
+A tutorial to integrate a Javascript color picker library Pickr, with
+Ruby on Rails 6.0, StimulusJS, and Webpacker.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Security Risks On Rails: Misconfiguration and Unsafe
+Integrations](https://dev.to/honeybadger/security-risks-on-rails-misconfiguration-and-unsafe-integrations-3m71)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fpj1byopwzvu16ou84jzf.png)](https://dev.to/honeybadger/security-risks-on-rails-misconfiguration-and-unsafe-integrations-3m71)
+
+</div>
+
+This article was originally written by Diogo Souza on the Honeybadger
+Developer Blog. In the third...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Run Ordinary Rails Apps Globally ·
+Fly](https://fly.io/blog/run-ordinary-rails-apps-globally)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fly.io/ruby-dispatch/run-ordinary-rails-apps-globally/assets/run-rails-globally.webp)](https://fly.io/blog/run-ordinary-rails-apps-globally)
+
+</div>
+
+Documentation and guides from the team at Fly.io.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[amerine/acts_as_tree: ActsAsTree -- Extends ActiveRecord to add simple
+support for organizing items into parent–children
+relationships.](https://github.com/amerine/acts_as_tree)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/afe8eb8f37f22477782f283931cd276d232385c45680d3b4fc44f971e70ca322/amerine/acts_as_tree)](https://github.com/amerine/acts_as_tree)
+
+</div>
+
+ActsAsTree -- Extends ActiveRecord to add simple support for organizing
+items into parent–children relationships. - amerine/acts_as_tree
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-action-mailer-configuration/](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-action-mailer-configuration)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby on Rails Screencasts - RailsCasts](http://railscasts.com)
+
+</div>
+
+Short Ruby on Rails screencasts containing tips, tricks and tutorials.
+Great for both novice and experienced web developers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Speeding Up Rendering Rails Pages with render_async -
+Semaphore](https://semaphoreci.com/blog/2017/06/08/speeding-up-rails-pages-with-render-async.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://semaphoreci.com/wp-content/uploads/2018/12/speed-up-rendering-rails-pages-with-render-async.jpg)](https://semaphoreci.com/blog/2017/06/08/speeding-up-rails-pages-with-render-async.html)
+
+</div>
+
+Adding new code to Rails controllers can slow your pages down. Here's
+how to make rendering your Rails pages faster.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Installation and Usage of Rails
+MongoDB](https://www.botreetechnologies.com/blog/how-to-install-and-use-mongodb-with-rails6)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.botreetechnologies.com/blog/wp-content/uploads/2020/04/how-to-install-and-use-mongodb-with-rails-6-1.jpg)](https://www.botreetechnologies.com/blog/how-to-install-and-use-mongodb-with-rails6)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[42 performance tips for Ruby on
+Rails](https://dev.to/mskog/42-performance-tips-for-ruby-on-rails-4aik)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fwww.mskog.com%2Fimages%2Fspeedlines.jpg)](https://dev.to/mskog/42-performance-tips-for-ruby-on-rails-4aik)
+
+</div>
+
+This was originally posted on my blog Since Ruby on Rails is not the
+fastest web framework out th...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[💎Rails
+tip💎](https://twitter.com/websebdev/status/1360647965765951497?s=12)
+
+</div>
+
+Are you dealing with an external API and not sure where to put that
+code? Using ActiveModel::Model module can be a clean way of doing so in
+a OO way. It's a model, but not connected to ActiveRecord/your DB. —
+Sebastien Auriault (@websebdev)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring/](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-set-up-on-github-with-circleci/](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-set-up-on-github-with-circleci)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Getting Started with Svelte and Rails
+6](https://medium.com/@nikolalsvk/getting-started-with-svelte-and-rails-6-d8384c80ad6c)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1200/1*uYw3b9iiXEpEcKTOp9wUFw.jpeg)](https://medium.com/@nikolalsvk/getting-started-with-svelte-and-rails-6-d8384c80ad6c)
+
+</div>
+
+Svelte is slowly rising to fame these days and it’s getting more and
+more traction with new version 3 being released in April.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Creating and Customizing Rails Generators & Templates — Ruby on Rails
+Guides](https://guides.rubyonrails.org/generators.html#generators-lookup)
+
+</div>
+
+<div class="card-image">
+
+[![](https://avatars.githubusercontent.com/u/4223)](https://guides.rubyonrails.org/generators.html#generators-lookup)
+
+</div>
+
+Creating and Customizing Rails Generators & TemplatesRails generators
+are an essential tool for improving your workflow. With this guide you
+will learn how to create generators and customize existing ones.After
+reading this guide, you will know: How to see which generators are
+available in your application. How to create a generator using
+templates. How Rails searches for generators before invoking them. How
+to customize your scaffold by overriding generator templates. How to
+customize your scaffold by overriding generators. How to use fallbacks
+to avoid overwriting a huge set of generators. How to create an
+application template.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Understanding Webpacker in Rails 6 \| Road to Rails
+6](https://prathamesh.tech/2019/08/26/understanding-webpacker-in-rails-6)
+
+</div>
+
+Starting with Rails 6, Webpacker is the default JavaScript compiler. It
+means that all the JavaScript code will be handled by Webpacker instead
+of the old assets pipeline aka Sprockets. Webpacker is different from
+asset pipeline in terms of philosophy as well as implementation. In this
+blog post, we will
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-security-best-practices/](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-security-best-practices)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Full Text Search in Milliseconds with Rails and
+PostgreSQL](https://pganalyze.com/blog/full-text-search-ruby-rails-postgres)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pganalyze.com/static/be06f82c4bee648c1ea8fe0d77d92c52/fcb2f/full_text_search_ruby_rails_postgres.jpg)](https://pganalyze.com/blog/full-text-search-ruby-rails-postgres)
+
+</div>
+
+This article shows how to optimize a Full Text Search implementation
+with Rails and PostgreSQL, taking a single query from 130ms to 7ms.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Adding a custom seed
+file](https://stackoverflow.com/questions/19872271/adding-a-custom-seed-file#19872375)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png?v=c78bd457575a)](https://stackoverflow.com/questions/19872271/adding-a-custom-seed-file#19872375)
+
+</div>
+
+I want to populate a new feature with dummy data, but don't want to use
+the db/seeds.rb file as it already has seeds other data irrelevant for
+this feature. To run the default seeds.rb file, you r...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 6: the missing developer setup
+guide](https://dev.to/vvo/a-rails-6-setup-guide-for-2019-and-2020-hf5)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2Fm329bzrdklhi1ys99fq0.jpg)](https://dev.to/vvo/a-rails-6-setup-guide-for-2019-and-2020-hf5)
+
+</div>
+
+Learnings and notes from a JavaScript developer trying out Ruby and Ruby
+on Rails 6 for the first time.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 6: B-Sides and Rarities—Martian Chronicles, Evil Martians’ team
+blog](https://evilmartians.com/chronicles/rails-6-b-sides-and-rarities)
+
+</div>
+
+<div class="card-image">
+
+[![](https://evilmartians.com/social-cards/chronicles/rails-6-b-sides-and-rarities.jpg)](https://evilmartians.com/chronicles/rails-6-b-sides-and-rarities)
+
+</div>
+
+Discover lesser-known Rails 6 features that stay out of the spotlight
+but can bring a lot to your current applications.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://rubyweekly.com/link/102532/ad5e785e3b>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails Concerns: To Concern Or Not To Concern \| AppSignal
+Blog](https://blog.appsignal.com/2020/09/16/rails-concers-to-concern-or-not-to-concern.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/vYR1M6Lyq22EAnXbgZ/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlJhaWxzIENvbmNlcm5zOiBUbyBDb25jZXJuIE9yIE5vdCBUbyBDb25jZXJuIn0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy04Y3NrbnhianItYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMC0wOS9yYWlscy1jb25jZXJucy5qcGcifSx7Im5hbWUiOiJjYXRlZ29yeV9sb2dvIiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly9hcHBzaWduYWwtbmV4dGpzLWJsb2ctOGNza254YmpyLWFwcHNpZ25hbC52ZXJjZWwuYXBwL2ltYWdlcy9sb2dvcy9ydWJ5LWxvZ28ucG5nIn1d&s=daaf771f8056a9681f8bdd1032b30327e6f43047cc26647fbb1811ad1b1f84c9)](https://blog.appsignal.com/2020/09/16/rails-concers-to-concern-or-not-to-concern.html)
+
+</div>
+
+Should you be concerned about Rails concerns?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-testing-rspec-configuration/](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-testing-rspec-configuration)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ActiveRecord’s queries
+tricks](https://medium.com/@apneadiving/active-records-queries-tricks-2546181a98dd)
+
+</div>
+
+My favourite part of Rails is clearly ActiveRecord’s scopes. Their
+expressiveness and their reusability is simply great.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Understanding Rails secrets/credentials - Code with
+Jason](https://rubyweekly.com/link/83853/ad5e785e3b)
+
+</div>
+
+What this feature is for The credentials feature is a way of storing
+secrets that you don’t want to keep in plaintext, like AWS credentials
+for example. (In fact, the one and only thing I keep in my main Rails
+project’s credentials are my Active Storage AWS credentials.) Why the
+credentials feature is difficult to \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Devise Authentication in Depth —
+SitePoint](https://www.sitepoint.com/devise-authentication-in-depth)
+
+</div>
+
+Ilya Bodrov continues the Authentication in Rails series by looking at
+the most popular authentication gem: Devise. Basic setup to using
+extensions.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Show relevant chunks of text with Rails excerpt
+helper](https://boringrails.com/tips/rails-excerpt-helper)
+
+</div>
+
+<div class="card-image">
+
+[![](https://boringrails.com/images/tip-sticker.png)](https://boringrails.com/tips/rails-excerpt-helper)
+
+</div>
+
+The Rails helper excerpt can extract a chunk of text that matches a
+certain phrase, no matter where in the string it is.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Eager Loading and the N+1 Query Problem \| Learn Enough News &
+Blog](https://news.learnenough.com/eager-loading)
+
+</div>
+
+<div class="card-image">
+
+[![](http://softcover.github.io/learnenough-news/images/le.png)](https://news.learnenough.com/eager-loading)
+
+</div>
+
+News & blog about Learn Enough (including the Ruby on Rails Tutorial)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Customizing Rails rake
+tasks](https://dev.to/vinistock/customizing-rails-rake-tasks-3bg5)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fcl.ly%2F2860d742140c%2Fdownload%2FImage%25202018-11-29%2520at%25207.07.24%2520PM.png)](https://dev.to/vinistock/customizing-rails-rake-tasks-3bg5)
+
+</div>
+
+Motivation Rails rake tasks are commands that automate specific acti...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Introduction to Ruby on Rails Patterns and
+Anti-patterns](https://dev.to/appsignal/introduction-to-ruby-on-rails-patterns-and-anti-patterns-2mhc)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fi%2Fe5d53rf69hxz738n8vyw.jpg)](https://dev.to/appsignal/introduction-to-ruby-on-rails-patterns-and-anti-patterns-2mhc)
+
+</div>
+
+Welcome to the first post in our series about Ruby on Rails Patterns and
+Anti-patterns. In each of th...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Creating Your Own Scaffold Generator in Rails -
+Nopio](https://www.nopio.com/blog/creating-scaffold-generator-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.nopio.com/wp-content/uploads/2017/03/28095241/building_rails_scafford_generator.jpg)](https://www.nopio.com/blog/creating-scaffold-generator-rails)
+
+</div>
+
+Thanks to built-in scaffolding feature starting the project in Ruby on
+Rails is easy, but when you create your own scaffold generator, it's
+even easier!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Exploring Metaprogramming in Ruby :: the halcyon
+blog](https://www.halcyon.hr/posts/exploring-metaprogramming-in-ruby)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.halcyon.hr/posts/exploring-metaprogramming-in-ruby/images/ruby_hu0319058d9e6e9bac6a5a9313f3a1ec62_212499_1200x630_fit_q75_box.jpg)](https://www.halcyon.hr/posts/exploring-metaprogramming-in-ruby)
+
+</div>
+
+Metaprogramming is an integral part of Ruby, more so than in any other
+language. This article explains the hows and whys.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Create Fake Data with
+Faker](https://towardsdatascience.com/how-to-create-fake-data-with-faker-a835e5b7a9d9?source=rss----7f60cf5620c9---4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/da:true/resize:fit:1200/0*FRDnXejNj_-d52yM)](https://towardsdatascience.com/how-to-create-fake-data-with-faker-a835e5b7a9d9?source=rss----7f60cf5620c9---4)
+
+</div>
+
+You can either Collect Data or Create your Own Data
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://www.airpair.com/reactjs/posts/reactjs-a-guide-for-rails-developers>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How a routine gem update ended up creating \$73k worth of
+subscriptions](https://serpapi.com/blog/how-a-routine-gem-update-ended-up-charging)
+
+</div>
+
+<div class="card-image">
+
+[![](https://serpapi.com/blog/content/images/size/w1200/2022/01/image-5.png)](https://serpapi.com/blog/how-a-routine-gem-update-ended-up-charging)
+
+</div>
+
+On November 5, 2021 (a Friday of course), we've deployed
+innocent-looking gem updates. Minor versions of Ruby on Rails, Ruby
+Sentry client, Ruby Slack client, http libraries, Puma, Devise, OmniAuth
+Ruby client, Mongoid, and a few test gems. However, something went very
+wrong. We saw odd Stripe errors on Airbrake.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://rubyweekly.com/link/117341/ad5e785e3b>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Converting PDF preview in Rails 6 using Active Storage and
+MiniMagic](https://m.youtube.com/watch?v=PZglYDXCRIk)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/PZglYDXCRIk/sddefault.jpg)](https://m.youtube.com/watch?v=PZglYDXCRIk)
+
+</div>
+
+In this demo application we will demonstrate that how you can upload
+documents using active records and convert preview of PDF pages as
+images. We have also used action cable to display progress of PDF pages
+to image conversion inside bootstrap modal. Though this is a simple and
+basic example but you can learn different concepts here from the code
+base. Here you can find the repository for this demo application:
+https://github.com/RaviSys/pdf-preview-demo Hope you enjoy learning
+this.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to build a search engine with Ruby on
+Rails](https://blog.testdouble.com/posts/2021-09-09-how-to-build-a-search-engine-with-ruby-on-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.prod.website-files.com/6647a84a9616b0776fb903e9/66667ea42cee85721676cd1b_social-how-to-build-a-search-engine-with-ruby-on-rails.png)](https://blog.testdouble.com/posts/2021-09-09-how-to-build-a-search-engine-with-ruby-on-rails)
+
+</div>
+
+Implementing search in your Rails app can be vexing. Here's a great
+pattern to use that combines the best parts of ActiveRecord and
+Postgres.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Modern web apps without JavaScript bundling or
+transpiling](https://world.hey.com/dhh/modern-web-apps-without-javascript-bundling-or-transpiling-a20f2755)
+
+</div>
+
+<div class="card-image">
+
+[![](https://world.hey.com/dhh/avatar-fb368b1ee9b185dc2a09b03eabdb61678dd55244)](https://world.hey.com/dhh/modern-web-apps-without-javascript-bundling-or-transpiling-a20f2755)
+
+</div>
+
+I didn't much care for vanilla JavaScript prior to ES6. Through all of
+the 2000s, I chased different approaches to avoid writing too much of
+it. First there was RJS (Ruby-to-JavaScript). Then there was
+CoffeeScript. Both transpiling approaches that turned more
+enjoyable-to-write source code into the kind of JavaScript that browsers
+wou...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby's Hidden Gems: Bullet \| AppSignal
+Blog](https://blog.appsignal.com/2021/08/11/ruby-hidden-gems-bullet-and-how-it-integrates-with-appsignal.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/vYR1M6Lyq22EAnXbgZ/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlJ1YnkncyBIaWRkZW4gR2VtczogQnVsbGV0In0seyJuYW1lIjoiaW1hZ2UiLCJpbWFnZV91cmwiOiJodHRwczovL2FwcHNpZ25hbC1uZXh0anMtYmxvZy1ueXFyNnFjcjgtYXBwc2lnbmFsLnZlcmNlbC5hcHAvaW1hZ2VzL2Jsb2cvMjAyMS0wOC9idWxsZXQuanBnIn0seyJuYW1lIjoiY2F0ZWdvcnlfbG9nbyIsImltYWdlX3VybCI6Imh0dHBzOi8vYXBwc2lnbmFsLW5leHRqcy1ibG9nLW55cXI2cWNyOC1hcHBzaWduYWwudmVyY2VsLmFwcC9pbWFnZXMvbG9nb3MvcnVieS1sb2dvLnBuZyJ9XQ&s=c2c64085d25d101ed2f53e8a20bb6c4d1818d0223fd6d6fe41c1848798616b23)](https://blog.appsignal.com/2021/08/11/ruby-hidden-gems-bullet-and-how-it-integrates-with-appsignal.html)
+
+</div>
+
+Let's dive into Bullet and find out how it can help you identify some
+database-related problems.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ruby - Rbenv and Rails mismatches - Stack
+Overflow](https://stackoverflow.com/questions/68521184/rbenv-and-rails-mismatches)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png?v=c78bd457575a)](https://stackoverflow.com/questions/68521184/rbenv-and-rails-mismatches)
+
+</div>
+
+Good morning everyone, I've installed Ruby 3.0.2 via rbenv in order to
+test-drive a Rails 6.0 app. It seems like rbenv's Rails shiv is not
+working properly. \$ rbenv install 3.0.2 Downloading ruby-3...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Build a Booking Engine Similar to Booking.com with Ruby on Rails
+6
+a](https://dev.to/kiosan/how-to-build-a-booking-engine-similar-to-booking-com-with-ruby-on-rails-6-and-elasticsearch-7-40nk)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fugm9r90o6f82rs64pw8r.jpg)](https://dev.to/kiosan/how-to-build-a-booking-engine-similar-to-booking-com-with-ruby-on-rails-6-and-elasticsearch-7-40nk)
+
+</div>
+
+Think building a booking system is not your cup of tea? I bet, you will
+change your mind after...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Understanding How Rbenv, RubyGems And Bundler Work
+Together](https://www.honeybadger.io/blog/rbenv-rubygems-bundler-path)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlVuZGVyc3RhbmRpbmcgSG93IFJiZW52LCBSdWJ5R2VtcyBBbmQgQnVuZGxlciBXb3JrIFRvZ2V0aGVyIiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9LHsibmFtZSI6ImhlYWRzaG90IiwiaW1hZ2VfdXJsIjoiaHR0cHM6Ly93d3ctZmlsZXMuaG9uZXliYWRnZXIuaW8vYXV0aG9ycy9vbGFzdWJvbWlvbHV3YWxhbmEucG5nIn0seyJuYW1lIjoic3VtbWFyeSIsInRleHQiOiJSYmVudiwgUnVieUdlbXMsIGFuZCBCdW5kbGVyIHdvcmsgdG9nZXRoZXIgdG8gZ2l2ZSB1cyBhIGxvdCBvZiBjb250cm9sIG92ZXIgb3VyIGNvZGUncyBlbnZpcm9ubWVudC4gSWYgeW91IGtub3cgaG93IHRoZXkgd29yaywgeW91J2xsIGJlIGJldHRlciBwcmVwYXJlZCB0byB0cm91Ymxlc2hvb3QgYW55IHByb2JsZW1zIHlvdSBlbmNvdW50ZXIuICBJbiB0aGlzIGFydGljbGUsIE9sYXN1Ym9taSB3YWxrcyB1cyB0aHJvdWdoIHRoZSBiYXNpY3Mgb2YgaG93IHRoZXNlIHRocmVlIHRvb2xzIGRvIHdoYXQgdGhleSBkby4iLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiYXV0aG9yIiwidGV4dCI6IkJ5ICpTdWJvbWkgT2x1d2FsYW5hKiIsImNvbG9yIjpudWxsLCJiYWNrZ3JvdW5kIjpudWxsfSx7Im5hbWUiOiJ0YWdzIiwidGV4dCI6IiNydWJ5IiwiY29sb3IiOm51bGwsImJhY2tncm91bmQiOm51bGx9XQ&s=65ee71ecc6331ecd0f2a4671cb9864f2c4076060307549679982a95fa21e837c)](https://www.honeybadger.io/blog/rbenv-rubygems-bundler-path)
+
+</div>
+
+Rbenv, RubyGems, and Bundler work together to give us a lot of control
+over our code's environment. If you know how they work, you'll be better
+prepared to troubleshoot any problems you encounter. In this article,
+Ol...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Webpacker in Rails
+6](https://dev.to/shahershamroukh/webpacker-in-rails-6-4j5k)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fmwzhpu5jvl6gobw1ip2j.png)](https://dev.to/shahershamroukh/webpacker-in-rails-6-4j5k)
+
+</div>
+
+Webpacker is the default JavaScript compiler for Rails 6 applications.
+Which means that all the...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How I organize my Rails apps - Code with
+Jason](https://www.codewithjason.com/organize-rails-apps)
+
+</div>
+
+Overview Influenced by the experiences I’ve had last over many years of
+building and maintaining Rails applications, combined with my
+experiences using other technologies, I’ve developed some ways of
+structuring Rails applications that have worked out pretty well for me.
+Some of my organizational tactics follow conventional wisdom, like
+keeping controllers thin. Other of my \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 6 — Custom Seed Files. While building applications in Rails… \|
+by
+Zac](https://developingzack.medium.com/rails-6-custom-seed-files-1cda97a67985)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1200/1*JN4iXXjtT9nlzjCXFCrJaw.png)](https://developingzack.medium.com/rails-6-custom-seed-files-1cda97a67985)
+
+</div>
+
+While building applications in Rails it’s very common to have to add a
+new model after you’ve already set up a DB and added some seed data…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ruby - libffi.so.7: cannot open shared object file: No such file or
+directo](https://askubuntu.com/questions/1286772/libffi-so-7-cannot-open-shared-object-file-no-such-file-or-directory)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/askubuntu/Img/apple-touch-icon.png?v=e16e1315edd6)](https://askubuntu.com/questions/1286772/libffi-so-7-cannot-open-shared-object-file-no-such-file-or-directory)
+
+</div>
+
+I just upgraded to ubuntu 20.10 and when I tried to work with rails app
+that was working perfectly fine earlier started to show this error.
+LoadError: libffi.so.7: cannot open shared object file: N...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails with Webpacker : a full
+setup](https://dev.to/bdavidxyz/rails-with-webpacker-a-full-setup-3h49)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fyibamky1ohcwypyfumnd.png)](https://dev.to/bdavidxyz/rails-with-webpacker-a-full-setup-3h49)
+
+</div>
+
+Article was originally published here :
+https://bootrails.com/blog/rails-webpacker-full-setup Webpac...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Polymorphic associations in
+Rails](https://dev.to/codeandclay/polymorphic-associations-in-rails-25bo)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fi22st1sm44xxrmzd3n70.jpg)](https://dev.to/codeandclay/polymorphic-associations-in-rails-25bo)
+
+</div>
+
+A quick overview of how to use polymorphic associations in rails
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Build a Web App with and without Rails Libraries — Development
+(2021](https://shopify.engineering/building-web-app-ruby-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.shopify.com/s/files/1/0779/4361/articles/ShopifyEng_BlogIllustrations_210525_72ppi_03_HowtoBuildaWebAppwithandwithoutRailsLibraries.jpg?v=1623688086)](https://shopify.engineering/building-web-app-ruby-rails)
+
+</div>
+
+Ruby on Rails is a web framework that contains many libraries you’d need
+to create and deploy a successful web application. We often take for
+granted the ability to run rails new to create a fully functional web
+application with tons of built-in features.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to submit an array using a Rails
+form](https://dev.to/ayushn21/how-to-submit-an-array-using-a-rails-form-5cgl)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5as7o5jclkg0rnsvg69z.png)](https://dev.to/ayushn21/how-to-submit-an-array-using-a-rails-form-5cgl)
+
+</div>
+
+This article was originally posted on my blog. Sometimes an array of
+data needs to be submitted in a...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 7 adds ActiveRecord methods \`#sole\` and
+\`#find_sole_by\`](https://blog.saeloun.com/2021/03/16/rails-adds-sole-and-find-sole-by.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://blog.saeloun.com/images/opengraph/7d6ba1a2f0424a4d7aacbe5fa5636961d533c1a1.png)](https://blog.saeloun.com/2021/03/16/rails-adds-sole-and-find-sole-by.html)
+
+</div>
+
+Rails 7 adds ActiveRecord methods \`#sole\` and \`#find_sole_by\` to
+uniquely match only one record in a database.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Using Active Storage in Rails
+6](https://pragmaticstudio.com/tutorials/using-active-storage-in-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pragmaticstudio.com/open-graph-image.jpg)](https://pragmaticstudio.com/tutorials/using-active-storage-in-rails)
+
+</div>
+
+Premium video courses for software developers. Real apps. Real code.
+Really good stuff!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Real Artists Ship \| Learn Enough News &
+Blog](https://news.learnenough.com/shipping-real-artists-ship)
+
+</div>
+
+<div class="card-image">
+
+[![](http://softcover.github.io/learnenough-news/images/le.png)](https://news.learnenough.com/shipping-real-artists-ship)
+
+</div>
+
+News & blog about Learn Enough (including the Ruby on Rails Tutorial)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Foundation and Rails ·
+RailsApps](https://railsapps.github.io/rails-foundation.html)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Kointoto: Situs Judi Togel Online & Slot Gacor
+Maxwin](https://longliveruby.com/articles/bundle-install-deep-dive)
+
+</div>
+
+<div class="card-image">
+
+[![](https://object-d001-cloud.cloudstoragesharingservice.com/banner/image/promotion/KOINTOTO_Welcome%20Bonus%20+%20Bonus%20Deposit%20harian_sldier.webp)](https://longliveruby.com/articles/bundle-install-deep-dive)
+
+</div>
+
+Kointoto situs judi togel online, slot gacor, dan live casino idnlive
+terbaik di Indonesia. 1 ID untuk semua permainan dengan deposit minimal
+Rp 10rb.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Hacker
+News](https://www.fastruby.io/blog/ruby/performance/why-wasnt-ruby-3-faster.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fastruby.io/blog/assets/images/header/why-wasnt-ruby-3-faster.jpg)](https://www.fastruby.io/blog/ruby/performance/why-wasnt-ruby-3-faster.html)
+
+</div>
+
+Ruby 3.0 is a lot faster than Ruby 2.0, with both incremental tuning and
+interesting new disruptive changes. 'Three times faster' is hard to
+define...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Paweł U. \| Ruby on Rails Web Development Consultant Full Stack
+Blog](https://pawelurbanek.com/cloudflare-free-plan)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pawelurbanek.com/assets/pawel-tag-b713e6ba7bae7b8dc77c8c7492af210671b16f470698eeffa009e7bc8f914591.jpg)](https://pawelurbanek.com/cloudflare-free-plan)
+
+</div>
+
+Performance Action Pack consists of tools and techniques to efficiently
+audit and optimize your Ruby on Rails application.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Use the Rails helper highlight when showing search results \| Boring
+Rails:](https://boringrails.com/tips/rails-highlight-search-results)
+
+</div>
+
+<div class="card-image">
+
+[![](https://boringrails.com/images/tip-sticker.png)](https://boringrails.com/tips/rails-highlight-search-results)
+
+</div>
+
+Use the Rails highlight helper to wrap search result matches in tags.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Real-Time Apps With WebSockets and Action Cable \| Learn Enough News &
+Blog](https://news.learnenough.com/real-time-apps-with-websockets-and-action-cable)
+
+</div>
+
+<div class="card-image">
+
+[![](http://softcover.github.io/learnenough-news/images/le.png)](https://news.learnenough.com/real-time-apps-with-websockets-and-action-cable)
+
+</div>
+
+News & blog about Learn Enough (including the Ruby on Rails Tutorial)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[rgl \| RubyGems.org \| your community gem
+host](https://rubygems.org/gems/rgl/versions/0.3.1)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sending Email with Rails \| Learn Enough News &
+Blog](https://news.learnenough.com/sending-email-with-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](http://softcover.github.io/learnenough-news/images/le.png)](https://news.learnenough.com/sending-email-with-rails)
+
+</div>
+
+News & blog about Learn Enough (including the Ruby on Rails Tutorial)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Best alternatives to hosting on
+Heroku?](https://www.reddit.com/r/rails/comments/l59eti/best_alternatives_to_hosting_on_heroku)
+
+</div>
+
+<div class="card-image">
+
+[![](https://share.redd.it/preview/post/l59eti)](https://www.reddit.com/r/rails/comments/l59eti/best_alternatives_to_hosting_on_heroku)
+
+</div>
+
+33 votes, 56 comments. Heroku is easy to use and has a good marketplace.
+They make it really easy to deploy and to purchase additional resources.
+I…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Setup Ruby on Rails 6 App with MongoDB under 5 Minutes — Aarvy \| by
+Aarvy
+\|](https://aarvy.medium.com/setup-ruby-on-rails-6-app-with-mongodb-under-5-minutes-aarvy-56a6a535139d)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/da:true/resize:fit:1200/0*0K2WV1VnHGzH3k7v)](https://aarvy.medium.com/setup-ruby-on-rails-6-app-with-mongodb-under-5-minutes-aarvy-56a6a535139d)
+
+</div>
+
+In this article, I will be discussing how to quickly setup a NoSQL
+database MongoDB with your brand new Rails 6 app. I am using Ubuntu…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Fast Is Ruby 3 on Rails? - FastRuby.io \| Rails Upgrade
+Service](https://fastruby.io/blog/rails/ruby/performance/how-fast-is-ruby-3-on-rails.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://fastruby.io/blog/assets/images/header/how-fast-is-ruby-3-on-rails.jpg)](https://fastruby.io/blog/rails/ruby/performance/how-fast-is-ruby-3-on-rails.html)
+
+</div>
+
+An article by Noah Gibbs about Ruby 3's performance for a Rails
+application. Ruby 3.0.0-preview1 was a tiny bit slower than 2.7. The
+release 3.0 is...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[reddit: the front page of the
+internet](https://blog.saeloun.com/2021/01/08/rails-6-1-pre-database-connection-switching)
+
+</div>
+
+<div class="card-image">
+
+[![](https://blog.saeloun.com/images/opengraph/9e4ce3c4fe143d0e8bdc98351e08a6576ea26660.png)](https://blog.saeloun.com/2021/01/08/rails-6-1-pre-database-connection-switching)
+
+</div>
+
+Rails 6.1 has added support for switching connections for one database
+instead of all databases
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Kointoto: Situs Judi Togel Online & Slot Gacor
+Maxwin](https://longliveruby.com/articles/rails-request-cycle)
+
+</div>
+
+<div class="card-image">
+
+[![](https://object-d001-cloud.cloudstoragesharingservice.com/banner/image/promotion/KOINTOTO_Welcome%20Bonus%20+%20Bonus%20Deposit%20harian_sldier.webp)](https://longliveruby.com/articles/rails-request-cycle)
+
+</div>
+
+Kointoto situs judi togel online, slot gacor, dan live casino idnlive
+terbaik di Indonesia. 1 ID untuk semua permainan dengan deposit minimal
+Rp 10rb.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[6 Things to Do When Inheriting Legacy Rails Apps \| NextLink
+Labs](https://nextlinklabs.com/insights/six-tips-for-inheriting-a-legacy-rails-app)
+
+</div>
+
+<div class="card-image">
+
+[![](https://nextlinklabs.com/hubfs/6%20steps%20inheriting%20legacy%20rails%20apps.png)](https://nextlinklabs.com/insights/six-tips-for-inheriting-a-legacy-rails-app)
+
+</div>
+
+Becoming the owner of a legacy Rails app can mean inheriting a project
+bogged down with tech debt, bugs, and sketchy documentation. Here's how
+to survive.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[1 Backend, 5 Frontends - Todo List with Rails, React, Angular, Vue,
+Svelte,](https://dev.to/alexmercedcoder/1-backend-5-frontends-todo-list-with-rails-react-angular-vue-svelte-and-jquery-18kp)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fi%2Fss84pr5y01axvobc64qh.jpg)](https://dev.to/alexmercedcoder/1-backend-5-frontends-todo-list-with-rails-react-angular-vue-svelte-and-jquery-18kp)
+
+</div>
+
+Why are we doing this? One of my favorite way to sharpen my skills with
+different framewor...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Beginners guide to rails
+testing](http://www.codewithjason.com/wp-content/uploads/2020/11/beginners_guide_to_rails_testing.pdf)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to delete Ruby and Rails (and other gems) from Ubuntu 18.04 – Larry
+San](https://larrysanger.org/2019/01/how-to-delete-ruby-and-rails-and-other-gems-from-ubuntu-18-04)
+
+</div>
+
+In order to install Ruby and Rails on Ubuntu 18.04, first I had to
+completely wipe my first, abortive attempt. That proved to be harder
+than expected. So, in order to save others the effort I had to
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ruby on rails - Webpacker can't find application - Stack
+Overflow](https://stackoverflow.com/questions/58270161/webpacker-cant-find-application)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png?v=c78bd457575a)](https://stackoverflow.com/questions/58270161/webpacker-cant-find-application)
+
+</div>
+
+I'm creating a new rails application according to "Getting Started with
+Rails". The application starts normally in step 4.1. But when i create
+my first controller, i have a webpack error. I'm new in
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Building an Advanced Search Form in Rails
+6](https://dev.to/branmar97/building-an-advanced-search-form-in-rails-6-2fkm)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fi%2F6tfp24uipjpi7fnfogbo.png)](https://dev.to/branmar97/building-an-advanced-search-form-in-rails-6-2fkm)
+
+</div>
+
+Introduction A simple search form is great, but one with advanced search
+options can have...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Speeding up Rails with Memoization - Honeybadger Developer
+Blog](https://www.honeybadger.io/blog/ruby-rails-memoization)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ondemand.bannerbear.com/signedurl/nZ52rq9EkQ6V3bp1Lj/image.jpg?modifications=W3sibmFtZSI6InRpdGxlIiwidGV4dCI6IlNwZWVkaW5nIHVwIFJhaWxzIHdpdGggTWVtb2l6YXRpb24iLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiaGVhZHNob3QiLCJpbWFnZV91cmwiOiJodHRwczovL3d3dy1maWxlcy5ob25leWJhZGdlci5pby9hdXRob3JzL2pvbmF0aGFubWlsZXMucG5nIn0seyJuYW1lIjoic3VtbWFyeSIsInRleHQiOiJXaG9ldmVyIGZpcnN0IHNhaWQgdGhhdCBcInRoZSBmYXN0ZXN0IGNvZGUgaXMgbm8gY29kZVwiIG11c3QgaGF2ZSByZWFsbHkgbGlrZWQgbWVtb2l6YXRpb24uIEFmdGVyIGFsbCwgbWVtb2l6YXRpb24gc3BlZWRzIHVwIHlvdXIgYXBwbGljYXRpb24gYnkgcnVubmluZyBsZXNzIGNvZGUuIEluIHRoaXMgYXJ0aWNsZSwgSm9uYXRoYW4gTWlsZXMgaW50cm9kdWNlcyB1cyB0byBtZW1vaXphdGlvbi4gV2UnbGwgbGVhcm4gd2hlbiB0byB1c2UgaXQsIGhvdyB0byBpbXBsZW1lbnQgaXQgaW4gUnVieSwgYW5kIGhvdyB0byBhdm9pZCBjb21tb24gcGl0ZmFsbHMuIEJ1Y2tsZSB1cCEiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoiYXV0aG9yIiwidGV4dCI6IkJ5ICpKb25hdGhhbiBNaWxlcyoiLCJjb2xvciI6bnVsbCwiYmFja2dyb3VuZCI6bnVsbH0seyJuYW1lIjoidGFncyIsInRleHQiOiIjcnVieSIsImNvbG9yIjpudWxsLCJiYWNrZ3JvdW5kIjpudWxsfV0&s=7605ba3343bd79f083721bfdb2226a71c70bf18a180e25bc069ced91820bf431)](https://www.honeybadger.io/blog/ruby-rails-memoization)
+
+</div>
+
+Whoever first said that "the fastest code is no code" must have really
+liked memoization. After all, memoization speeds up your application by
+running less code. In this article, Jonathan Miles introduces us to
+memoiz...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 6.1 adds --minimal option support \| BigBinary
+Blog](https://blog.bigbinary.com/2020/09/08/rails-6-1-adds-minimal-option-support.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://res.cloudinary.com/dpc4i4bdx/image/upload/bigbinary_blogs/default_blog_image.png)](https://blog.bigbinary.com/2020/09/08/rails-6-1-adds-minimal-option-support.html)
+
+</div>
+
+Rails 6.1 series \| Rails 6.1 adds --minimal support to create bare
+minimum app
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[heartcombo/devise: Flexible authentication solution for Rails with
+Warden.](https://github.com/heartcombo/devise)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/450c1f5a15e12187ca7323370a046fa2b5011295f192af57be408059743f65b1/heartcombo/devise)](https://github.com/heartcombo/devise)
+
+</div>
+
+Flexible authentication solution for Rails with Warden. -
+heartcombo/devise
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[When Should You Not Use
+Rails?](http://codefol.io/posts/when-should-you-not-use-rails)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails Application Templates — Ruby on Rails
+Guides](https://edgeguides.rubyonrails.org/rails_application_templates.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://avatars.githubusercontent.com/u/4223)](https://edgeguides.rubyonrails.org/rails_application_templates.html)
+
+</div>
+
+Rails Application TemplatesApplication templates are simple Ruby files
+containing DSL for adding gems, initializers, etc. to your freshly
+created Rails project or an existing Rails project.After reading this
+guide, you will know: How to use templates to generate/customize Rails
+applications. How to write your own reusable application templates using
+the Rails template API.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[EmailThis/ansible-rails: Ruby on Rails deployment using Ansible - with
+Lets](https://github.com/EmailThis/ansible-rails)
+
+</div>
+
+<div class="card-image">
+
+[![](https://repository-images.githubusercontent.com/259653207/39b80b00-a59e-11ea-9881-3c99f3a79372)](https://github.com/EmailThis/ansible-rails)
+
+</div>
+
+Ruby on Rails deployment using Ansible - with Lets Encrypt, Sidekiq,
+PostgreSQL, nginx & puma - EmailThis/ansible-rails
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why does Rails 6 include both Webpacker and
+Sprockets?](https://rossta.net/blog/why-does-rails-install-both-webpacker-and-sprockets.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://rossta.net/assets/images/blog/stock/julian-ebert-farmland-unsplash.jpg)](https://rossta.net/blog/why-does-rails-install-both-webpacker-and-sprockets.html)
+
+</div>
+
+A new Rails 6 application will install both Webpacker and Sprockets by
+default. Don't they solve the same problem? This article dives into why
+Sprockets lives on even though webpack has surpassed most of its
+features ...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Improving performance with Presenter and Eager Load of a big Rails
+app](https://medium.com/@wlss.lucas/improving-performance-of-a-rails-app-12beb830319a)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/da:true/resize:fit:1200/0*j8Q4u1tPNwrR_Y9l)](https://medium.com/@wlss.lucas/improving-performance-of-a-rails-app-12beb830319a)
+
+</div>
+
+When I landed on this new job position at EBANX one of my very first
+tasks was to get the top 10 issues of a Ruby on Rails app used all…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ruby on rails - Postgres permission denied to create database on rake
+db:cr](https://stackoverflow.com/questions/28116927/postgres-permission-denied-to-create-database-on-rake-dbcreateall)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png?v=c78bd457575a)](https://stackoverflow.com/questions/28116927/postgres-permission-denied-to-create-database-on-rake-dbcreateall)
+
+</div>
+
+I am trying to create postgres databases for development and tests. I'm
+using: OSX Yosemite Rails version: 4.2.0 git version: 2.2.2 psql
+version: 9.4.0 ruby version: 2.1.0p0 HomeBrew version: 0.9.5
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Active Storage on Heroku \| Heroku Dev
+Center](https://devcenter.heroku.com/articles/active-storage-on-heroku)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.herokucdn.com/images/og.png)](https://devcenter.heroku.com/articles/active-storage-on-heroku)
+
+</div>
+
+Rails \[5.2 introduced Active
+Storage\](https://guides.rubyonrails.org/active_storage_overview.html)
+as a way of managing attaching and saving files to Active Record models.
+This guide will cover how to use Active Storage on Heroku.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Complete Guide to Rails Performance](https://www.railsspeed.com)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.railsspeed.com/assets/img/cover-md.jpg)](https://www.railsspeed.com)
+
+</div>
+
+The only guide that you'll ever need to make your Ruby on Rails
+application faster and more scalable.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Introducing jQuery in Rails 6 Using
+Webpacker](https://www.botreetechnologies.com/blog/introducing-jquery-in-rails-6-using-webpacker)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.botreetechnologies.com/blog/wp-content/uploads/2019/04/rails-6-jquery-webpacker.jpg)](https://www.botreetechnologies.com/blog/introducing-jquery-in-rails-6-using-webpacker)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby on Rails project RuboCop setup with RSpec - Hix on
+Rails](https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-project-rubocop-setup-with-rspec)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ruby - Improve slow Rails startup time (rails console, rails server) -
+Stac](https://stackoverflow.com/questions/17437509/improve-slow-rails-startup-time-rails-console-rails-server)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png?v=c78bd457575a)](https://stackoverflow.com/questions/17437509/improve-slow-rails-startup-time-rails-console-rails-server)
+
+</div>
+
+I work with several Rails apps, some on Rails 3.2/Ruby 2.0, and some one
+Rails 2.3/Ruby 1.8.7. What they have in common is that, as they've grown
+and added more dependencies/gems, they take longer...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[UUID Primary Key in Rails 6 with PostgreSQL and
+ActiveRecord](https://rubyweekly.com/link/80556/ad5e785e3b)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pawelurbanek.com/assets/postgres-uuid-activerecord-1509c86791aa970be93f92de9b40e3d5be59651d2cc1672cc1e47b5608951e49.jpg)](https://rubyweekly.com/link/80556/ad5e785e3b)
+
+</div>
+
+UUID also known as GUID is an alternative primary key type for SQL
+databases. It offers some non-obvious advantages compared to standard
+integer-based keys. Rails 6 release fresh out of beta introduces a new
+feature in ActiveRecord that makes working with UUID primary keys more
+straightforward. In this tutorial, we will dive deep into UUIDs with all
+their cons and pros.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails Tutorials ·
+RailsApps](https://tutorials.railsapps.org/portal/tutorials)
+
+</div>
+
+The RailsApps open source project offers starter applications and
+tutorials for Rails developers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Active Admin \| The administration framework for Ruby on
+Rails](https://activeadmin.info/0-installation.html)
+
+</div>
+
+The administration framework for business critical Ruby on Rails
+applications.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Efficient Rails DevOps](https://efficientrailsdevops.com)
+
+</div>
+
+<div class="card-image">
+
+[![](https://efficientrailsdevops.com/assets/efficientrailsdevops/twitter_card-8b7b1a474a6a246801afdd876569bf5e850215f8b3913b56e6ea45dc79c96c19.jpg)](https://efficientrailsdevops.com)
+
+</div>
+
+Learn the secrets of Rails deployment and everything it takes to
+successfully run your application in the wild.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[More than "Hello World" in Docker: Build Rails Sidekiq web apps in
+Docker](https://dev.to/jamby1100/more-than-hello-world-in-docker-run-rails-sidekiq-web-apps-in-docker-1b37)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2Flievo4eovnlbmmzpyiqc.jpg)](https://dev.to/jamby1100/more-than-hello-world-in-docker-run-rails-sidekiq-web-apps-in-docker-1b37)
+
+</div>
+
+The first post on a series to get you ready to develop and deploy
+production-grade workloads in AWS.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Rails 6 Features: What's New and Why It
+Matters](https://www.toptal.com/ruby-on-rails/rails-6-features)
+
+</div>
+
+<div class="card-image">
+
+[![](https://bs-uploads.toptal.io/blackfish-uploads/components/open_graph_image/8958567/og_image/optimized/0710-Rail_6_Features_Dan_Social-a81d5e11c83ce6dde72e42832c10d2bc.png)](https://www.toptal.com/ruby-on-rails/rails-6-features)
+
+</div>
+
+Rails 6 is finally here, featuring major improvements and clever new
+features that should make development easier and faster than ever. Check
+out what these new features mean for you!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Realtime with React and Rails - via @codeship \| via
+@codeship](https://blog.codeship.com/realtime-with-react-and-rails)
+
+</div>
+
+To showcase using ActionCable in a Rails app with React
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[RailsApps/rails-composer: Rails Composer. The Rails generator on
+steroids f](https://github.com/RailsApps/rails-composer)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/bfa2010b660b26ad8fd252c60ad97bb988dd165733aee4990791814cd3997d61/RailsApps/rails-composer)](https://github.com/RailsApps/rails-composer)
+
+</div>
+
+Rails Composer. The Rails generator on steroids for starter apps. -
+RailsApps/rails-composer
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[My journey from Rspec feature tests to Rails system
+tests](https://dev.to/dstull/my-journey-from-rspec-feature-tests-to-rails-system-tests)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/dstull/my-journey-from-rspec-feature-tests-to-rails-system-tests)
+
+</div>
+
+A story of failure getting consistent headless feature tests, to trying
+again with many different ways to make rspec work, then converting to
+Rails system tests in Rails 5.1.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Understanding the secret_key_base in Ruby on
+Rails](https://medium.com/@mikeycgto/understanding-the-secret-key-base-in-ruby-on-rails-ce2f6f9968a1)
+
+</div>
+
+Have you ever wondered what the secret_key_base value is and how it’s
+used in a Rails application? This configuration value was introduced…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Top 10 errors from 1000 Ruby on Rails projects (and how to avoid
+them)](https://rollbar.com/blog/top-10-ruby-on-rails-errors)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.rollbar.com/wp-content/uploads/2021/07/top_10_rails_errors.jpg)](https://rollbar.com/blog/top-10-ruby-on-rails-errors)
+
+</div>
+
+To give back to our community of developers, we looked at our database
+of thousands of projects and found the top 10 errors in Ruby on Rails
+projects. We’re going to show you what causes them and how to prevent
+them from happening. If you avoid these "gotchas," it'll make you a
+better developer. Because \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[swanandp/acts_as_list: An ActiveRecord plugin for managing
+lists.](https://github.com/swanandp/acts_as_list)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/0ee88d5681a8a36ee41134571f8bda18d6badfc4029d68d44507c678ad7d5324/brendon/acts_as_list)](https://github.com/swanandp/acts_as_list)
+
+</div>
+
+An ActiveRecord plugin for managing lists.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[brunofacca/zen-rails-base-app: Base application for Ruby on Rails 5
+project](https://github.com/brunofacca/zen-rails-base-app)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/0fec221d1bdcd5c03b9c5240d2d6348a3a2c35293f6bbcda42717808532b29ee/brunofacca/zen-rails-base-app)](https://github.com/brunofacca/zen-rails-base-app)
+
+</div>
+
+Base application for Ruby on Rails 6 projects. Built to minimize the
+time spent writing boilerplate code and performing repetitive setup
+tasks. - GitHub - brunofacca/zen-rails-base-app: Base app...
+
+</div>
+
+</div>

@@ -1,0 +1,624 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# web-scraping
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Combat AI Bot Traffic on Your
+Website](https://speckyboy.com/combat-ai-bot-traffic/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://speckyboy.com/wp-content/uploads/2025/05/block-ai-bots-from-your-website-thumb.jpg)](https://speckyboy.com/combat-ai-bot-traffic/)
+
+</div>
+
+AI bots are straining our websites by ignoring robots.txt and scraping
+our content. Learn how you can fight back with tools, plugins, and CDN
+services to block unwanted AI crawlers and protect resources.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Step by Step Guide to Build a Trend Finder Tool with Python: Web
+Scraping, NLP (Sentiment Analysis & Topic Modeling), and Word Cloud
+Visualization](https://www.marktechpost.com/2025/03/09/a-step-by-step-guide-to-build-a-trend-finder-tool-with-python-web-scraping-nlp-sentiment-analysis-topic-modeling-and-word-cloud-visualization/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.marktechpost.com/wp-content/uploads/2025/03/Screenshot-2025-03-09-at-1.29.12%E2%80%AFPM.png)](https://www.marktechpost.com/2025/03/09/a-step-by-step-guide-to-build-a-trend-finder-tool-with-python-web-scraping-nlp-sentiment-analysis-topic-modeling-and-word-cloud-visualization/)
+
+</div>
+
+A Step by Step Guide to Build a Trend Finder Tool with Python: Web
+Scraping, NLP (Sentiment Analysis & Topic Modeling), and Word Cloud
+Visualization
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Cutting-edge web scraping techniques at
+NICAR](https://simonwillison.net/2025/Mar/8/cutting-edge-web-scraping/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.simonwillison.net/static/2025/encrypt-decrypt.jpg)](https://simonwillison.net/2025/Mar/8/cutting-edge-web-scraping/)
+
+</div>
+
+Here's the handout for a workshop I presented this morning at \[NICAR
+2025\](https://www.ire.org/training/conferences/nicar-2025/) on web
+scraping, focusing on lesser know tips and tricks that became possible
+only with recent developments …
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Top 15 Web Scraping Tools for Data
+Collection](https://www.marktechpost.com/2024/11/16/top-15-web-scraping-tools-for-data-collection/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.marktechpost.com/wp-content/uploads/2024/11/Screenshot-2024-11-16-at-12.35.57%E2%80%AFAM.png)](https://www.marktechpost.com/2024/11/16/top-15-web-scraping-tools-for-data-collection/)
+
+</div>
+
+Web scraping has emerged as a crucial method for gathering data,
+allowing companies and researchers to extract insightful information
+from the abundance of publicly accessible online content. Selecting the
+best online scraping tool might be difficult because there are so many
+of them accessible, each with its own special features and capabilities.
+The best 15 web scraping tools in the market have been examined in this
+article, along with their salient features, advantages, and
+applications. These tools offer a variety of choices to effectively
+extract, process, and analyze data from various web sources. Scrapy  A
+powerful, open-source Python framework called
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Firecrawl: A Powerful Web Scraping Tool for Turning Websites into Large
+Lan](https://www.marktechpost.com/2024/06/20/firecrawl-a-powerful-web-scraping-tool-for-turning-websites-into-large-language-model-llm-ready-markdown-or-structured-data)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.marktechpost.com/wp-content/uploads/2024/06/Screenshot-2024-06-20-at-9.54.36-AM.png)](https://www.marktechpost.com/2024/06/20/firecrawl-a-powerful-web-scraping-tool-for-turning-websites-into-large-language-model-llm-ready-markdown-or-structured-data)
+
+</div>
+
+In the rapidly advancing field of Artificial Intelligence (AI),
+effective use of web data can lead to unique applications and insights.
+A recent tweet has brought attention to Firecrawl, a potent tool in this
+field created by the Mendable AI team. Firecrawl is a state-of-the-art
+web scraping program made to tackle the complex problems involved in
+getting data off the internet. Web scraping is useful, but it frequently
+requires overcoming various challenges like proxies, caching, rate
+limitations, and material generated with JavaScript. Firecrawl is a
+vital tool for data scientists because it addresses these issues
+head-on. Even without a sitemap,
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping in Ruby: Complete Guide 2023 -
+ZenRows](https://www.zenrows.com/blog/web-scraping-ruby#web-crawling-in-ruby)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.zenrows.com/content/web_scraping_ruby_979b184a10.jpg)](https://www.zenrows.com/blog/web-scraping-ruby#web-crawling-in-ruby)
+
+</div>
+
+Get started with web scraping in Ruby using this step-by-step tutorial!
+Learn how to scrape a site with Nokogiri and RSelenium libraries.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping Blog - ZenRows](https://www.zenrows.com/blog)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.zenrows.com/images/logo.png)](https://www.zenrows.com/blog)
+
+</div>
+
+Master your web scraping skills. Learn all the tips and insights we know
+about data collection at scale. Everything from guides to easy-to-follow
+tutorials.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping With Puppeteer for Total
+Noobs](https://dev.to/juniordevforlife/web-scraping-with-puppeteer-for-total-noobs-38j4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3otvb2z646ytpt1hl2rv.jpg)](https://dev.to/juniordevforlife/web-scraping-with-puppeteer-for-total-noobs-38j4)
+
+</div>
+
+Web scraping is something I never thought I'd do. I'm primarily a UI
+developer, although my career...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[vifreefly/kimuraframework: Kimurai is a modern web scraping framework
+writt](https://github.com/vifreefly/kimuraframework)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/8b2cdc0fa56cbf714da3d059bf5b3f288cd04d947ab3754f7b12341233343375/vifreefly/kimuraframework)](https://github.com/vifreefly/kimuraframework)
+
+</div>
+
+Kimurai is a modern web scraping framework written in Ruby which works
+out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP
+requests and allows to scrape and interact with JavaScrip...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping with Ruby \|
+ScrapingBee](https://www.scrapingbee.com/blog/web-scraping-ruby)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.scrapingbee.com/blog/web-scraping-ruby/cover.png)](https://www.scrapingbee.com/blog/web-scraping-ruby)
+
+</div>
+
+Learn web scraping with Ruby with this step-by-step tutorial. We will
+see the different ways to scrape the web in Ruby through lots of example
+with gems like Nokogiri, Kimurai and HTTParty.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping - A Complete
+Guide](https://dev.to/serpdogapi/web-scraping-a-complete-guide-1lk2)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fjkauywnklpa9t9usey9n.png)](https://dev.to/serpdogapi/web-scraping-a-complete-guide-1lk2)
+
+</div>
+
+Introduction Web Scraping, also known as data extraction or data
+scraping, is the process...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[ericchiang/pup: Parsing HTML at the command
+line](https://github.com/ericchiang/pup)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/e5b44c82ea5fac0f3cd893f7cd7577430f9b485a31eba6d4d921287376a76c98/ericchiang/pup)](https://github.com/ericchiang/pup)
+
+</div>
+
+Parsing HTML at the command line.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Hacker News](https://github.com/sibprogrammer/xq)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/a5ceba6ec37b9ab92902f76dd540faeb708de5457866e75c82ae9b7959e603d8/sibprogrammer/xq)](https://github.com/sibprogrammer/xq)
+
+</div>
+
+Command-line XML and HTML beautifier and content extractor -
+sibprogrammer/xq
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Scraping JSON, HTML, and ZIP Files with Pure
+SQLite](https://observablehq.com/@asg017/scrape-json-html-zip-with-sqlite)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.observableusercontent.com/thumbnail/c2de010b717366cf7cefe0d56aabb89fbfec2fba680a0e695c7ce21625f9f706.jpg)](https://observablehq.com/@asg017/scrape-json-html-zip-with-sqlite)
+
+</div>
+
+a.k.a. leave BeautifulSoup in the past and embrace SQL I used DALL·E to
+generate thumbnails for this post: “cute cartoon\|claymation abominable
+snowman scraping ice off his frozen car windshield” is nightmare fuel
+Some of the most common web-scraping tasks can be done in pure SQLite -
+meaning no Python, Node, Ruby, or other programming languages necessary,
+only the SQLite CLI and some extensions. The main extension that enables
+this: sqlite-http, which allows you to make HTTP requests and sa
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Finding an Image on a Web Page \| TestComplete
+Documentation](https://support.smartbear.com/testcomplete/docs/app-testing/web/general/examples/finding-an-image.html)
+
+</div>
+
+Create and run automated tests for desktop, web and mobile (Android and
+iOS) applications (.NET, C#, Visual Basic .NET, C++, Java, Delphi,
+C++Builder, Intel C++ and many others).
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Download ParseHub \| Our Quickstart
+Guide](https://www.parsehub.com/quickstart)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[13 Tips on How to Crawl a Website Without Getting
+Blocked](https://dev.to/oxylabs-io/13-tips-on-how-to-crawl-a-website-without-getting-blocked-35l9)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.dev.to/dynamic/image/width=1000,height=500,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdi4tbko1nl72iw5gsmdy.jpg)](https://dev.to/oxylabs-io/13-tips-on-how-to-crawl-a-website-without-getting-blocked-35l9)
+
+</div>
+
+It’s not a secret that businesses and individuals use web scrapers to
+collect public data from...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ruby Web
+Scraping](https://www.reddit.com/r/ruby/comments/uom86y/ruby_web_scraping)
+
+</div>
+
+<div class="card-image">
+
+[![](https://share.redd.it/preview/post/uom86y)](https://www.reddit.com/r/ruby/comments/uom86y/ruby_web_scraping)
+
+</div>
+
+86K subscribers in the ruby community. Celebrate the weird and wonderful
+Ruby programming language with us!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Scrape and Extract Data from PDFs Using Python and
+tabula-py](https://towardsdatascience.com/scrape-data-from-pdf-files-using-python-fe2dc96b1e68)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1200/0*Bwgt-3VHlshuv0G8.png)](https://towardsdatascience.com/scrape-data-from-pdf-files-using-python-fe2dc96b1e68)
+
+</div>
+
+You want to make friends with tabula-py and Pandas
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Scrape Data from PDF Files Using Python and
+PDFQuery](https://towardsdatascience.com/scrape-data-from-pdf-files-using-python-and-pdfquery-d033721c3b28)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:1200/1*SLwrjTpeOD4MpwrYqJUBmg.png)](https://towardsdatascience.com/scrape-data-from-pdf-files-using-python-and-pdfquery-d033721c3b28)
+
+</div>
+
+Extract Data from PDF Files Effectively
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Crawling - The Most Underrated Hack by
+@ttunguz](http://tomtunguz.com/crawling-the-most-under-rated-hack)
+
+</div>
+
+It’s been a little while since I traded code with anyone. But a few
+weeks ago, one of our entrepreneurs-in-residence, Javier, who joined
+Redpoint from VMWare, told me about a Ruby gem called Mechanize that
+makes it really easy to crawl websites, particularly those with
+username/password logins. In about 30 minutes I had a working LinkedIn
+crawler built, pulling the names of new followers, new LinkedIn
+connections and LinkedIn status updates.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[When is a Scrape a
+Breach?](https://www.troyhunt.com/when-is-a-scrape-a-breach)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.troyhunt.com/content/images/2021/12/image-3-1.png)](https://www.troyhunt.com/when-is-a-scrape-a-breach)
+
+</div>
+
+A decade and a bit ago during my tenure at Pfizer, a colleague's laptop
+containing information about customers, healthcare providers and other
+vendors was stolen from their car
+\[https://www.doj.nh.gov/consumer/security-breaches/documents/pfizer-20110610.pdf\]
+. The machine had full disk encryption and it's not known whether the
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Crawl the Web with
+Scrapy](https://www.babbling.fish/scraping-for-a-job)
+
+</div>
+
+How to use the python web scraping framework Scrapy to crawl indeed.com.
+Learn data engineering strategies for getting actionable insights from
+public information.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Beautiful Soup Documentation — Beautiful Soup 4.9.0
+documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Top 4 Data Extraction
+Tools](https://www.kdnuggets.com/2021/05/top-4-data-extraction-tools.html)
+
+</div>
+
+Data extraction tools give you the boost you need for gathering
+information from a multitude of data sources. These four data extraction
+tools will help liberate you from manual data entry, understand complex
+documents, and simplify the data extraction process.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Web Scraping to Create a Dataset using
+Python](https://thecleverprogrammer.com/2021/05/14/web-scraping-to-create-a-dataset-using-python)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2021/05/Web-Scraping-to-Create-a-Dataset-using-python.png?fit=1920%2C1080&ssl=1)](https://thecleverprogrammer.com/2021/05/14/web-scraping-to-create-a-dataset-using-python)
+
+</div>
+
+In this article, I'm going to walk you through a tutorial on web
+scraping to create a dataset using Python and BeautifulSoup.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[6 Web Scraping Tools That Make Collecting Data A Breeze \| by Sara A.
+Metwal](https://towardsdatascience.com/6-web-scraping-tools-that-make-collecting-data-a-breeze-457c44e4411d)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/da:true/resize:fit:1200/0*EEr11JdomL2XlYnb)](https://towardsdatascience.com/6-web-scraping-tools-that-make-collecting-data-a-breeze-457c44e4411d)
+
+</div>
+
+The first step of any data science project is data collection.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Scrape the Web at Scale With the scrapestack
+API](https://code.tutsplus.com/articles/scrape-the-web-at-scale-with-the-scrapestack-api--cms-36366)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cms-assets.tutsplus.com/uploads/users/769/posts/36366/preview_image/scrapestack.jpg)](https://code.tutsplus.com/articles/scrape-the-web-at-scale-with-the-scrapestack-api--cms-36366)
+
+</div>
+
+Introduction to Web Scraping Businesses need better information to
+target and reach wider audiences. They get this information by scraping
+the web for content from social media platforms,...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Holy sheet: Here’s how to grab a web page’s data with Google
+Sheets](https://thenextweb.com/basics/2020/03/31/holy-sheet-heres-how-to-grab-a-web-pages-data-with-google-sheets)
+
+</div>
+
+<div class="card-image">
+
+[![](https://img-cdn.tnwcdn.com/image/tnw-blurple?filter_last=1&fit=1280%2C640&url=https%3A%2F%2Fcdn0.tnwcdn.com%2Fwp-content%2Fblogs.dir%2F1%2Ffiles%2F2020%2F03%2Fexcel.png&signature=0f5a9683ff91254baf664d11533f47a2)](https://thenextweb.com/basics/2020/03/31/holy-sheet-heres-how-to-grab-a-web-pages-data-with-google-sheets)
+
+</div>
+
+You don’t need any coding skills to scrape data from websites.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[HTML Parser: How to scrap HTML content \| Python
+Central](https://www.pythoncentral.io/html-parser)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.pythoncentral.io/wp-content/uploads/2017/07/wordpress-hints-html-pexel.jpeg)](https://www.pythoncentral.io/html-parser)
+
+</div>
+
+A tutorial about a HTML parser for Python 3. Learn about the basic of a
+library for easily parsing web pages and extracting useful information.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Turn the web into a database: An alternative to web crawling/scraping -
+Mixnode News
+Blog](https://www.mixnode.com/blog/posts/turn-the-web-into-a-database-an-alternative-to-web-crawling-scraping)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.mixnode.com/img/og_image.png)](https://www.mixnode.com/blog/posts/turn-the-web-into-a-database-an-alternative-to-web-crawling-scraping)
+
+</div>
+
+Mixnode allows you to execute SQL against the web.
+
+</div>
+
+</div>

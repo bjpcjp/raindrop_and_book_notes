@@ -1,0 +1,635 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# feedback
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[When Expressing Gratitude to Employees, Timing
+Matters](https://hbr.org/2024/11/when-expressing-gratitude-to-employees-timing-matters?utm_medium=email&utm_source=newsletter_daily&utm_campaign=mtod_notactsubs)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2024/11/Nov24_21_439311968.jpg)](https://hbr.org/2024/11/when-expressing-gratitude-to-employees-timing-matters?utm_medium=email&utm_source=newsletter_daily&utm_campaign=mtod_notactsubs)
+
+</div>
+
+Extensive research has indicated the benefits of showing gratitude to
+those around you, including your colleagues or employees. However, a new
+study suggests that the timing of these expressions can make a big
+difference. Through two experiments and an analysis of a top hospital’s
+intensive care units, researchers found that when you express gratitude
+to others before they engage in a distressing task it helps counteract
+some of the negative emotions associated with the task. Expressing
+gratitude early also makes employees more likely to persist through
+difficulty and bounce back and be resilient following failure. The
+authors suggests ways to show gratitude meaningfully and create a
+culture where your employees feel their work is seen, supported, and
+valued.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to give a senior leader feedback (without getting
+fired)](https://newsletter.weskao.com/p/how-to-give-a-senior-leader-feedback-without-getting-fired?utm_campaign=post&utm_medium=web)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbd4fe8a-4415-44ef-8b3a-0c635a9286c9_500x282.jpeg)](https://newsletter.weskao.com/p/how-to-give-a-senior-leader-feedback-without-getting-fired?utm_campaign=post&utm_medium=web)
+
+</div>
+
+There’s a right and wrong way to proceed. Here’s how to increase the
+chances your leader listens and takes action--while reducing the chance
+they feel threatened.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Ask for the Feedback You Really
+Need](https://hbr.org/2024/05/how-to-ask-for-the-feedback-you-really-need)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2024/05/May24_16_1471474900.jpg)](https://hbr.org/2024/05/how-to-ask-for-the-feedback-you-really-need)
+
+</div>
+
+When we ask for feedback on our work, we often get poor-quality feedback
+that’s not useful or that makes us feel attacked or defensive. Part of
+the reason is in how we’re asking for feedback. Most requests are too
+generic, too open, and too late. The result is that you’re more likely
+to get a heap of opinion rather than a helping of insight. Instead of
+saying, “I’d love it if you could provide some feedback,” try setting
+the other person up to add more value by being more prescriptive about
+what you’re looking for. This article discusses a three step process for
+getting more constructive feedback that supports your growth,
+strengthens your relationships, and accelerates your career.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[When your coworker does great work, tell their
+manager](https://jvns.ca/blog/2020/07/14/when-your-coworker-does-great-work-tell-their-manager)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Stand Out by Giving Feedback the Right
+Way](https://betterhumans.pub/stand-out-by-giving-feedback-the-right-way-df683e91cc41)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fit:800/0*ae3F6d0s3xfLhaR3.png)](https://betterhumans.pub/stand-out-by-giving-feedback-the-right-way-df683e91cc41)
+
+</div>
+
+Most managers suck at giving feedback — it’s too infrequent and not
+actionable enough.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Talk with Your Team About the Elephant in the
+Room](https://hbr.org/2023/01/how-to-talk-with-your-team-about-the-elephant-in-the-room)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2023/01/Jan23_24_200136229-002.jpg)](https://hbr.org/2023/01/how-to-talk-with-your-team-about-the-elephant-in-the-room)
+
+</div>
+
+If your team feels “stuck,” the problem might involve issues that are
+difficult to discuss — conflict between two team members, for example,
+or an underperforming employee. To address these issues head-on, leaders
+must learn the art of framing a conversation so people can organize
+their thoughts, feelings, and experiences to come to a solution. This
+article offers a five-step process around framing, and two examples of
+how it can help bring “undiscussables” into the light.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Be Resilient in the Face of Harsh
+Criticism](https://hbr.org/2019/06/how-to-be-resilient-in-the-face-of-harsh-criticism)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2019/06/Jun19_12_1127861483.jpg)](https://hbr.org/2019/06/how-to-be-resilient-in-the-face-of-harsh-criticism)
+
+</div>
+
+Most of us have been “feedsmacked” at some point in our life. In the
+midst of a meeting, an innocent walk down the hallway, or a performance
+review, someone delivers a verbal wallop that rocks us to our
+psychological footings. These situations are so tough to handle because
+we all have two fundamental psychological needs: safety (perceived
+physical, social, or material security) and worth (a sense of
+self-respect, self-regard or self-confidence). Critical feedback feels
+traumatic because it’s often interpreted as a threat to these needs.
+Fortunately, there are four skills that will help you reduce the
+perceived threat in the moment. First, collect yourself. You might
+breathe deeply and slowly or notice your feelings. Then, seek to
+understand the feedback. Ask questions. Ask for examples. Get curious.
+Next, take the time you need to recover before you evaluate the
+feedback. Lastly, examine what you were told, scouring for the kernels
+of truth. That’s where the learning and development comes from. Being
+caught off-guard with feedback isn’t fun, but it doesn’t have to be
+traumatic if you use these four skills.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An Old Diagnosis: The Common
+Scold](https://www.psychologytoday.com/us/blog/fighting-fear/201405/old-diagnosis-the-common-scold)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn2.psychologytoday.com/assets/styles/min_1200px_wide/public/Fredric-Neuman_0.jpg?itok=RRJt7Z8R)](https://www.psychologytoday.com/us/blog/fighting-fear/201405/old-diagnosis-the-common-scold)
+
+</div>
+
+The "common scold," recognized in England for centuries is still with
+us. Although such a person is not described in the psychiatric
+literature, I describe his/her principal elements here.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Great Leaders Respond to Negative Criticism in the Digital
+Age](https://readwrite.com/2019/03/26/how-great-leaders-respond-to-negative-criticism-in-the-digital-age)
+
+</div>
+
+<div class="card-image">
+
+[![](https://readwrite.com/wp-content/uploads/2019/02/How-Great-Leaders-Respond-to-Negative-Criticism-in-the-Digital-Age.jpg)](https://readwrite.com/2019/03/26/how-great-leaders-respond-to-negative-criticism-in-the-digital-age)
+
+</div>
+
+Corporate leadership today is more public than ever before thanks to
+digital communication and the web. The status quo has been upended by
+the ease with
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Have the Courage to Be
+Direct](https://hbr.org/2012/11/have-the-courage-to-be-direct)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/hbr_opengraph_940x490.png)](https://hbr.org/2012/11/have-the-courage-to-be-direct)
+
+</div>
+
+It’s time to get past the human tendency to avoid conflict-causing
+topics.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Book Review: Turn the Ship Around! How to Create Leadership at Every
+Level](https://tubarksblog.com/2012/12/18/book-review-turn-the-ship-around-how-to-create-leadership-at-every-level)
+
+</div>
+
+<div class="card-image">
+
+[![](https://tubarksblog.com/wp-content/uploads/2012/12/Book-Review_-Turn-the-Ship-Around-How-to-Create-Leadership-at-Every-Level.jpg)](https://tubarksblog.com/2012/12/18/book-review-turn-the-ship-around-how-to-create-leadership-at-every-level)
+
+</div>
+
+I just had the pleasure of reading David Marquet's book, Turn the Ship
+Around!: A True Story of Turning Followers into Leaders\*, and I have
+been encouraging everyone I see
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Deliver Constructive Feedback in Difficult
+Situations](https://medium.com/s/please-advise/the-essential-guide-to-difficult-conversations-41f736e63ccf)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fill:1200:632/g:fp:0.58:0.49/1*VMR5Snwd1FPQmak2AFWeTw.jpeg)](https://medium.com/s/please-advise/the-essential-guide-to-difficult-conversations-41f736e63ccf)
+
+</div>
+
+Thoughtful, empathetic language can make or break your business
+relationships
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Identify Leaders By Giving People Assignments - Brad
+Feld](https://www.feld.com/archives/2014/12/identify-leaders-giving-people-assignments.html)
+
+</div>
+
+As the Boulder Startup Community evolved, I started to become inundated
+with people who wanted to get involved. Some of these were locals while
+others where people looking to move to Boulder, or who had recently
+moved here. Some where people known to me while others were new
+relationships. As the momentum, size, impact, and reach \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Appeal to the Stone Fallacy: When People Are Dismissive During
+Discussions](https://effectiviology.com/appeal-to-the-stone-fallacy)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Be a Minimally Invasive
+Manager](https://hbr.org/2013/10/be-a-minimally-invasive-manager)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/hbr_opengraph_940x490.png)](https://hbr.org/2013/10/be-a-minimally-invasive-manager)
+
+</div>
+
+It’s not your job to carry the ball, but to run interference for those
+who do.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Anna
+Shipman](https://www.annashipman.co.uk/jfdi/delegating-to-a-team.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.annashipman.co.uk/img/mediacard.jpeg)](https://www.annashipman.co.uk/jfdi/delegating-to-a-team.html)
+
+</div>
+
+Strategic technology leader
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Double Crux — A Strategy for Resolving
+Disagreement](https://www.rationality.org/resources/updates/2016/double-crux)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.rationality.org/assets/img/cfar-brain.jpg)](https://www.rationality.org/resources/updates/2016/double-crux)
+
+</div>
+
+(Cross posted to LessWrong)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Key to Giving and Receiving Negative
+Feedback](https://hbr.org/2015/08/the-key-to-giving-and-receiving-negative-feedback)
+
+</div>
+
+It doesn’t have to be painful.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Beginner's Guide to Arguing
+Constructively](http://liamrosen.com/arguments.html)
+
+</div>
+
+<div class="card-image">
+
+[![](http://www.liamrosen.com/argument_pyramid.png)](http://liamrosen.com/arguments.html)
+
+</div>
+
+How to turn arguments from vicious battles into productive dialogues.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why criticism lasts longer than
+praise](https://www.bbc.com/future/article/20220624-why-criticism-lasts-longer-than-praise?at_campaign=64&at_custom1=%5Bpost+type%5D&at_custom2=facebook_page&at_custom3=BBC+News&at_custom4=167670E8-F923-11EC-A351-CC7D96E8478F&at_medium=custom7)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ychef.files.bbci.co.uk/624x351/p0cgz08c.jpg)](https://www.bbc.com/future/article/20220624-why-criticism-lasts-longer-than-praise?at_campaign=64&at_custom1=%5Bpost+type%5D&at_custom2=facebook_page&at_custom3=BBC+News&at_custom4=167670E8-F923-11EC-A351-CC7D96E8478F&at_medium=custom7)
+
+</div>
+
+Most of us are subjected to insults, sarcastic comments or bad feedback
+in our everyday lives. But we weren't built to deal with torrents of
+criticism.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What’s Your Listening
+Style?](https://hbr.org/2022/05/whats-your-listening-style)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2022/05/May22_31_165776274.jpg)](https://hbr.org/2022/05/whats-your-listening-style)
+
+</div>
+
+We may have learned that we need to let people speak without
+interrupting but taking turns talking does not truly denote listening.
+And unintentionally hijacking conversations to advise, inject humor,
+empathize, prioritize efficiency, or insert ourselves into the speaker’s
+narrative is often done with good intentions, but may instead disrupt
+the human connection we think we’re forging. Recognizing when to shift
+out of our habitual styles and consciously apply alternative styles of
+listening and responding may allow for more effective and meaningful
+interactions.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What You’re Saying When You Give Someone the Silent Treatment -
+ostracism](https://www.theatlantic.com/family/archive/2021/03/psychology-of-silent-treatment-abuse/618411)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.theatlantic.com/thumbor/Dbi9kw9ek1VElf9YD1MhSkojOoI=/0x70:2000x1112/1200x625/media/img/mt/2021/03/silent_treatment_abuse1/original.jpg)](https://www.theatlantic.com/family/archive/2021/03/psychology-of-silent-treatment-abuse/618411)
+
+</div>
+
+Social ostracism has been a common punishment for millennia. But
+freezing someone out harms both the victim and the perpetrator.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Turn the Ship
+Around](https://docs.google.com/document/d/1BVrpO9qV7HnuFCc42wUTIbTRFCBN25mn3pKtimD2QXw/edit)
+
+</div>
+
+<div class="card-image">
+
+[![](https://lh7-us.googleusercontent.com/docs/AHkbwyKV_nZun-NE7opgSgjsKaHRMcbMfmYX_Qlg-OM4voOG1e3cq45WJut0tqQAuIeGzLmVIAkWi8lXDW1gxRjMpeyTPJz0m8pn2MONtPvHCEt0JXHBvLDo=w1200-h630-p)](https://docs.google.com/document/d/1BVrpO9qV7HnuFCc42wUTIbTRFCBN25mn3pKtimD2QXw/edit)
+
+</div>
+
+Adapted from:
+https://tubarks.wordpress.com/2012/12/18/book-review-turn-the-ship-around-how-to-create-leadership-at-every-level/
+Part I, Starting Over In Part I, Starting Over, Marquet talks about the
+lessons learned prior to taking over command of the USS Santa Fe. The
+USS Santa Fe was not his ...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Constructive criticism: how to give and receive
+feedback](https://nesslabs.com/constructive-criticism-give-receive-feedback)
+
+</div>
+
+<div class="card-image">
+
+[![](https://nesslabs.com/wp-content/uploads/2020/08/constructive-criticism-banner-1.jpg)](https://nesslabs.com/constructive-criticism-give-receive-feedback)
+
+</div>
+
+Whether in our personal or professional lives, we are constantly giving
+and receiving feedback. Some of the feedback is subtle, often
+unconscious, and some of it is proactive. Being able to receive and to
+offer constructive feedback is an essential skill in building meaningful
+social relationships.  In addition, research suggests that meaningful
+feedback is crucial ... Read More
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Giving Feedback to Someone Who Hasn’t Had It in
+Years](https://hbr.org/2020/01/giving-feedback-to-someone-who-hasnt-had-it-in-years)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2020/01/Jan20_22_1000501530.jpg)](https://hbr.org/2020/01/giving-feedback-to-someone-who-hasnt-had-it-in-years)
+
+</div>
+
+If you work with someone who’s gone too long without feedback and want
+to help them grow, you’ll need to take an empathetic approach to the
+conversation. Start by asking questions to clarify their motives. If a
+leader is constantly forcing their ideas on others, for example, you
+might start with a question like, “How were you hoping the team would
+respond to your idea?” Once you are aware of your colleague’s
+intentions, you need to separate them from their actions in order to
+have a productive discussion. Acknowledge their original intent, but
+follow up by stating the negative impact their action actually had on
+you. Pointing out the gap between what they meant to do and what
+happened, will help them recognize patterns of unwanted behaviors.
+Remember that the feedback will be hard to hear — so give them space to
+feel upset, remind them you are telling them to help them grow, and
+encourage them to focus on the future.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Our 6 Must Reads for Cutting Through Conflict and Tough
+Conversations](http://firstround.com/review/our-6-must-reads-for-cutting-through-conflict-and-tough-conversations)
+
+</div>
+
+<div class="card-image">
+
+[![](https://review.firstround.com/content/images/2056/firstround-2fh4o3rpgcsv2kz9wxrr5k_conflict.jpg)](http://firstround.com/review/our-6-must-reads-for-cutting-through-conflict-and-tough-conversations)
+
+</div>
+
+Big ideas, strong-willed characters, impossible deadlines and close
+quarters — if you wrote out a recipe for conflict, it might bear an
+uncanny resemblance to the high-stakes, pressure-cooker environment of a
+startup. We spoke with top engineers, seasoned managers and experts in
+human behavior to share their experience-tested wisdom on conflict
+mediation and management in rapidly scaling companies.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Deliver Constructive Feedback in Difficult
+Situations](https://medium.dave-bailey.com/the-essential-guide-to-difficult-conversations-41f736e63ccf)
+
+</div>
+
+<div class="card-image">
+
+[![](https://miro.medium.com/v2/resize:fill:1200:632/g:fp:0.58:0.49/1*VMR5Snwd1FPQmak2AFWeTw.jpeg)](https://medium.dave-bailey.com/the-essential-guide-to-difficult-conversations-41f736e63ccf)
+
+</div>
+
+Thoughtful, empathetic language can make or break your business
+relationships
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[4-Part Nonviolent Communication (NVC) - PuddleDancer
+Press](https://www.nonviolentcommunication.com/aboutnvc/4partprocess.htm)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.nonviolentcommunication.com/wp-content/uploads/2019/07/pdf_icon.gif)](https://www.nonviolentcommunication.com/aboutnvc/4partprocess.htm)
+
+</div>
+
+Express and receive communication empathically using the four-part
+Nonviolent Communication process developed by Marshall B. Rosenberg,
+Ph.D.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[5 mistakes we all make with product
+feedback](http://blog.intercom.io/5-mistakes-we-all-make-with-product-feedback)
+
+</div>
+
+<div class="card-image">
+
+[![](https://blog.intercomassets.com/blog/wp-content/uploads/2014/11/Feedback-984.jpg.optimal.jpg)](http://blog.intercom.io/5-mistakes-we-all-make-with-product-feedback)
+
+</div>
+
+It rarely makes sense to take product feedback from all users and it
+never makes sense to get it all at once. Five fixes feedback for your
+product.
+
+</div>
+
+</div>

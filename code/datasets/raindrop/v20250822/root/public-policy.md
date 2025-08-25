@@ -1,0 +1,1819 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# public-policy
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[The Virtue of
+Integrity](https://www.theatlantic.com/ideas/archive/2025/08/integrity-politics-trump-corruption/683837/?utm_source=feed)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.theatlantic.com/thumbor/R--e-YpIs4NpvdH2IP7_UN7ri64=/0x43:2000x1085/1200x625/media/img/mt/2025/08/2025_08_11_Wehner_Virtue_of_Integrity_final/original.png)](https://www.theatlantic.com/ideas/archive/2025/08/integrity-politics-trump-corruption/683837/?utm_source=feed)
+
+</div>
+
+The only way out of our wreckage is to rewrite the cultural script, to
+make excellence in character admired again.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How price increases are adding up at
+Shein](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/cdn/images/reuters-graphics.jpg)](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/)
+
+</div>
+
+Evidence for the impact of Trump’s trade war has shown up at the popular
+China-founded online retailer.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Much Freedom of Speech is Too Much? (From a Philosophy of Language
+Point of
+View)](https://blog.apaonline.org/2025/04/28/how-much-freedom-of-speech-is-too-much-from-a-philosophy-of-language-point-of-view/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/blog.apaonline.org/wp-content/uploads/2025/04/board-3700375_1280.jpg?fit=1280%2C853&ssl=1)](https://blog.apaonline.org/2025/04/28/how-much-freedom-of-speech-is-too-much-from-a-philosophy-of-language-point-of-view/)
+
+</div>
+
+On February 14, 2025, the Vice President of the United States, J.D.
+Vance, accused European countries of being too restrictive in their
+approach to freedom of speech at the Security Conference in Munich. The
+message: the United States should be taken as an example, especially
+under the Trump administration. In fact, the United States has
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Disneyland of the
+Dead](https://longreads.com/2025/07/22/problem-of-burying-dead-bodies/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/longreads.com/wp-content/uploads/2025/07/Highgate-5.png?fit=1472%2C832&ssl=1)](https://longreads.com/2025/07/22/problem-of-burying-dead-bodies/)
+
+</div>
+
+London’s Highgate Cemetery shows us just how hard it is to keep the dead
+buried.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Are Homes in Western States So
+Expensive?](https://open.substack.com/pub/constructionphysics/p/why-are-homes-in-western-states-so?r=oc5d&utm_medium=ios)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/$s_!rzOo!,w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6cf02d58-376e-43cb-b38c-70b9b75be017_1600x1130.png)](https://open.substack.com/pub/constructionphysics/p/why-are-homes-in-western-states-so?r=oc5d&utm_medium=ios)
+
+</div>
+
+Earlier this month I came across the following graphic, originally
+posted on Reddit in 2022, showing the state of housing affordability in
+the US.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to redraw a
+city](https://worksinprogress.co/issue/how-to-redraw-a-city)
+
+</div>
+
+<div class="card-image">
+
+[![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXeyL3rK9korFgyxTePlX9o7sLuHtyRyxlc2RLYhBzkGLx68U_LS1DvmJ5T3e0G31p6okySv5FMWkULm9vP74BlEqUc0279Hq6N2iPUYjNmm2NXSofIevCmwW5k7zGQOnRR5en2eFA?key=08h8Jndk-Tm2I-jLMzW21wcf)](https://worksinprogress.co/issue/how-to-redraw-a-city)
+
+</div>
+
+Japan faced some of the world’s toughest planning problems. It solved
+them by letting homeowners redesign neighborhoods together.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A grassroots effort brought public transit to Monroe
+County](https://mountainstatespotlight.org/2025/06/01/monroe-public-transportation-mta/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/mountainstatespotlight.org/wp-content/uploads/2025/05/IMG_1744-scaled.jpeg?fit=2560%2C1920&ssl=1)](https://mountainstatespotlight.org/2025/06/01/monroe-public-transportation-mta/)
+
+</div>
+
+Monroe County has three new bus routes operated by the Mountain Transit
+Authority as a result of grassroots organizing efforts.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Spring in Every Kitchen — The New
+Atlantis](https://www.thenewatlantis.com/publications/how-water-system-works)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.thenewatlantis.com/wp-content/uploads/2025/03/Mann-Water-banner.jpg)](https://www.thenewatlantis.com/publications/how-water-system-works)
+
+</div>
+
+We know how to produce clean water. Why don't we have enough of it?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Closing A Back Door In Illinois FOIAI Went To SQL Injection Court —
+Quarrelsome](https://sockpuppet.org/blog/2025/02/09/fixing-illinois-foia/)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Will the Trump Tariffs Affect
+Construction?](https://open.substack.com/pub/constructionphysics/p/how-will-the-trump-tariffs-affect?r=oc5d&utm_medium=ios)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4acd6842-5a3d-4abe-b6f4-1092d46df9cb_800x1100.png)](https://open.substack.com/pub/constructionphysics/p/how-will-the-trump-tariffs-affect?r=oc5d&utm_medium=ios)
+
+</div>
+
+Earlier this month the Trump administration announced hefty 25% tariffs
+on Canadian and Mexican imports, along with an additional 10% tariffs on
+Chinese imports.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[America Doesn’t Just Have a Housing Crisis. It Has a Moving
+Crisis.](https://www.theatlantic.com/magazine/archive/2025/03/american-geographic-social-mobility/681439/?utm_source=feed)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.theatlantic.com/thumbor/ZtsMRaxaiAWlm6j_6ON9gyZkiJQ=/71x260:9359x5098/1200x625/media/img/2025/02/2025_03_March_Cover_notext/original.jpg)](https://www.theatlantic.com/magazine/archive/2025/03/american-geographic-social-mobility/681439/?utm_source=feed)
+
+</div>
+
+The U.S. was once the world’s most geographically mobile society. Now
+we’re stuck in place—and that’s a very big problem.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Six ways to send a message to your
+representatives](https://www.theverge.com/how-to/606200/government-senate-congress-contact-apps)
+
+</div>
+
+<div class="card-image">
+
+[![](https://platform.theverge.com/wp-content/uploads/sites/2/2025/02/STK481_STK432_CONGRESS_GOVERNMENT_CIVRGINIA_D.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200)](https://www.theverge.com/how-to/606200/government-senate-congress-contact-apps)
+
+</div>
+
+Let politicians know what you want.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[I tried living without a car in rural America—I lasted only 2
+weeks](https://www.fastcompany.com/91261993/i-tried-living-without-a-car-in-rural-america-i-only-made-it-2-weeks)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_webp,q_auto,c_fit,w_1024,h_1024/wp-cms-2/2025/01/p-1-91261993-living-without-a-car-in-rural-america.jpg)](https://www.fastcompany.com/91261993/i-tried-living-without-a-car-in-rural-america-i-only-made-it-2-weeks)
+
+</div>
+
+I’m already looking to buy an EV.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[I saw the Hurricane Helene response up close. This is how disaster
+relief actually
+works.](https://www.vox.com/future-perfect/384734/hurricane-helene-asheville-response-fema-volunteers-climate-change)
+
+</div>
+
+<div class="card-image">
+
+[![](https://platform.vox.com/wp-content/uploads/sites/2/2024/11/volunteers-clearing-mud-in-a-home-copy_1123a5.png?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200)](https://www.vox.com/future-perfect/384734/hurricane-helene-asheville-response-fema-volunteers-climate-change)
+
+</div>
+
+Volunteers, not FEMA, are the bedrock of disaster response. How do we
+best support them?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Can Car-free Living Make You
+Happier?](https://www.outsideonline.com/culture/essays-culture/culdesac-arizona)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.outsideonline.com/wp-content/uploads/2024/09/culdesac-car-free-living_h-1024x576.jpg?width=1200)](https://www.outsideonline.com/culture/essays-culture/culdesac-arizona)
+
+</div>
+
+The community of Culdesac, Arizona, was designed for pedestrians and
+cyclists. And residents love it.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Locking A
+Loophole](https://tedium.co/2024/09/17/temu-de-minimis-loophole-explained)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.tedium.co/uploads/shipping.gif)](https://tedium.co/2024/09/17/temu-de-minimis-loophole-explained)
+
+</div>
+
+The Biden administration’s push to close an obscure loophole on imports
+highlights just how disruptive the Temu model really is.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Dario Amodei — Machines of Loving
+Grace](https://darioamodei.com/machines-of-loving-grace?ref=thediff.co)
+
+</div>
+
+<div class="card-image">
+
+[![](https://darioamodei.com/images/mlg-card.png)](https://darioamodei.com/machines-of-loving-grace?ref=thediff.co)
+
+</div>
+
+How AI Could Transform the World for the Better
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What Is “Fusion Voting”? Just a Way to Save the Country, That’s
+All](https://newrepublic.com/article/182739/fusion-voting-just-way-save-country-thats)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.newrepublic.com/413b551cbdebb70615bb6713711ae90e3b78919a.jpeg?w=1200&h=630&crop=faces&fit=crop&fm=jpg)](https://newrepublic.com/article/182739/fusion-voting-just-way-save-country-thats)
+
+</div>
+
+Minor-party candidates are a waste of time. But minor parties that can
+cross-endorse major-party candidates have real juice—and can make a huge
+difference.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Five Section 230 Cases That Made Online Communities
+Better](https://www.techdirt.com/2024/05/21/five-section-230-cases-that-made-online-communities-better)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.techdirt.com/wp-content/themes/techdirt/assets/images/td-rect-logo-white.png)](https://www.techdirt.com/2024/05/21/five-section-230-cases-that-made-online-communities-better)
+
+</div>
+
+The House Energy and Commerce Committee is holding a hearing tomorrow on
+“sunsetting” Section 230. Despite facing criticism, Section 230 has
+undeniably been a cornerstone in the architect…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Biden has brought the ban hammer down on US export of AI chips to
+China](https://www.theregister.com/2023/10/19/china_biden_ai)
+
+</div>
+
+<div class="card-image">
+
+[![](https://regmedia.co.uk/2023/10/19/hammerdown.jpg)](https://www.theregister.com/2023/10/19/china_biden_ai)
+
+</div>
+
+Datacenter GPUs and some consumer cards now exceed performance limits
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Intel preps export-friendly lower-power Gaudi 3 AI chips made for
+China](https://www.theregister.com/2024/04/12/intel_paudi_3_china)
+
+</div>
+
+<div class="card-image">
+
+[![](https://regmedia.co.uk/2024/04/12/intel_shutterstock.jpg)](https://www.theregister.com/2024/04/12/intel_paudi_3_china)
+
+</div>
+
+Beijing will be thrilled by this nerfed silicon
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The US doesn’t have universal health care — but these states (almost)
+do](https://www.vox.com/policy/23972827/us-aca-enrollment-universal-health-insurance)
+
+</div>
+
+<div class="card-image">
+
+[![](https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25105983/GettyImages_942799586.jpg?quality=90&strip=all&crop=2.25%2C0%2C95.5%2C100&w=1200)](https://www.vox.com/policy/23972827/us-aca-enrollment-universal-health-insurance)
+
+</div>
+
+Ten states have uninsured rates below 5 percent. What are they doing
+right?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Change would exempt West Virginia private schools from state
+vaccination
+re](https://wvmetronews.com/2024/02/20/change-would-exempt-west-virginia-private-schools-from-state-vaccination-requirements)
+
+</div>
+
+<div class="card-image">
+
+[![](https://wvmetronews.com/wp-content/uploads/2024/02/A9_2A3_8048735_3653378740_4.jpg)](https://wvmetronews.com/2024/02/20/change-would-exempt-west-virginia-private-schools-from-state-vaccination-requirements)
+
+</div>
+
+As of now, the West Virginia Department of Education boasts that the
+state has one of the most effective school-entry vaccine preventable
+laws in the nation.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The quest to depave the world's
+cities](https://www.bbc.com/future/article/20240222-depaving-the-cities-replacing-concrete-with-earth-and-plants)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ychef.files.bbci.co.uk/624x351/p0hdjncz.jpg)](https://www.bbc.com/future/article/20240222-depaving-the-cities-replacing-concrete-with-earth-and-plants)
+
+</div>
+
+From Australia to Ontario, cities are taking up unnecessary stretches of
+concrete and asphalt, allowing nature to take hold in their place.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Safety
+Net](https://longreads.com/2024/02/27/safety-net-public-libraries)
+
+</div>
+
+<div class="card-image">
+
+[![](https://longreads.com/wp-content/uploads/2024/02/safetynet2.jpg)](https://longreads.com/2024/02/27/safety-net-public-libraries)
+
+</div>
+
+These days, when you work as a librarian in America, there is no lack of
+emergencies.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+<https://www.cbpp.org/research/state-budget-and-tax/state-taxes-have-a-minimal-impact-on-peoples-interstate-moves>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Liberals Love Ranked-Choice Voting. Will
+Conservatives?](https://www.nytimes.com/2024/02/08/us/ranked-choice-voting-elections.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2024/02/08/multimedia/08nat-ranked-choice-01-lgvk/08nat-ranked-choice-01-lgvk-largeHorizontalJumbo.jpg)](https://www.nytimes.com/2024/02/08/us/ranked-choice-voting-elections.html)
+
+</div>
+
+Ranked-choice voting could be on the November ballot in four states, a
+sign of the system’s rising popularity. Most conservatives have opposed
+it. But some say that could be changing.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The One Climate Policy All 2024 Candidates Support Is Actually
+Terrible](https://newrepublic.com/article/178242/ethanol-inefficient-climate-policy)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.newrepublic.com/aa5fb00fac5fec3b167c25b9d0a09d478bd0ec22.jpeg?w=1200&h=630&crop=faces&fit=crop&fm=jpg)](https://newrepublic.com/article/178242/ethanol-inefficient-climate-policy)
+
+</div>
+
+Ethanol is a comically inefficient form of solar energy—and a toxic one.
+Putting regular solar panels on some of that land would be better.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[THE 9 DOMAINS OF GNH – GNH Centre
+Bhutan](https://www.gnhcentrebhutan.org/the-9-domains-of-gnh)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Holdouts in the Quest for a Better Power
+Grid](https://www.newyorker.com/news/dept-of-energy/the-holdouts-in-the-quest-for-a-better-power-grid)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.newyorker.com/photos/657cba37d414088fca02723c/16:9/w_1280,c_limit/202308-Holtz-Grain%20Belt%20Express-final.jpg)](https://www.newyorker.com/news/dept-of-energy/the-holdouts-in-the-quest-for-a-better-power-grid)
+
+</div>
+
+Farmers in Missouri are opposing the Grain Belt Express, a transmission
+line that will connect wind farms in Kansas with cities in the East.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Out of
+Gas](https://slate.com/business/2023/09/ev-charging-stations-gas-electric-cars.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://compote.slate.com/images/ff8a9df7-50c1-48bb-b253-69a106e7bbf1.jpeg?crop=2000%2C1333%2Cx0%2Cy1&width=1560)](https://slate.com/business/2023/09/ev-charging-stations-gas-electric-cars.html)
+
+</div>
+
+A seismic change is coming to American transportation.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Building an economy simulator from
+scratch](https://thomassimon.dev/ps/4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://thomassimon.dev/og/ps/4)](https://thomassimon.dev/ps/4)
+
+</div>
+
+by Thomas SIMON
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Make Russia Really Pay for Invading
+Ukraine](https://www.nytimes.com/2023/09/19/opinion/ukraine-russia-united-states-funding.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/09/19/multimedia/19stephens1-mlwt/19stephens1-mlwt-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=e5c02ec72132ce71df874a201e53082db272589a38135a30e76ae9bc2f707245&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/09/19/opinion/ukraine-russia-united-states-funding.html)
+
+</div>
+
+The United States and our allies have every legal right to transfer
+frozen Russian assets to Kyiv.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Rutters of Athens
+County](https://nymag.com/intelligencer/article/ohio-athens-city-school-district-campus-integration.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pyxis.nymag.com/v1/imgs/eee/bb1/b52c1ae0bb426b856f06f63e5e51218113-nymag-athens-07.1x.rsocial.w1200.jpg)](https://nymag.com/intelligencer/article/ohio-athens-city-school-district-campus-integration.html)
+
+</div>
+
+An Appalachian school district’s daring experiment in economic
+integration.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Parisians Are Pledging Allegiance to the ‘Republic of Super Neighbors.’
+The](https://www.nytimes.com/2023/08/30/realestate/paris-cities-neighbors.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/09/03/multimedia/05evolving-city-paris-print1/30Evolving-City-Paris-3-Minute-Village-01-06-gkfq-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=529c883c731e0cef2553b21ee0cfc91d9512f6bc632af01c92a075fc4d2038fb&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/08/30/realestate/paris-cities-neighbors.html)
+
+</div>
+
+A grass-roots movement aims to recast urban living in Paris and other
+cities around the world through a hyperlocal prism of neighborliness.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Appalachia’s North–South
+Divide](https://www.city-journal.org/article/appalachias-north-south-divide)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media4.manhattan-institute.org/wp-content/uploads/sites/5/Appalachias-North-South-Divide.jpg)](https://www.city-journal.org/article/appalachias-north-south-divide)
+
+</div>
+
+Economic dynamism is vaulting the southern portion of the vast region
+ahead of its northern cousin.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[‘We’re going to get messy’: Inside the ‘Depave’ movement that’s
+swapping
+as](https://www.fastcompany.com/90946563/were-going-to-get-messy-inside-the-depave-movement-thats-swapping-asphalt-for-green-space?partner=rss)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_auto,q_auto,c_fit/wp-cms/uploads/2023/08/p-1-90946563-depaving.jpg)](https://www.fastcompany.com/90946563/were-going-to-get-messy-inside-the-depave-movement-thats-swapping-asphalt-for-green-space?partner=rss)
+
+</div>
+
+“We've had a love affair with paving things for several generations."
+The Depave movement is trying to change that.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[In Opposing Gun Program, Lawmaker Omitted His Store Was Subject to
+It](https://www.nytimes.com/2023/08/25/us/politics/gun-control-atf-clyde-congress.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/08/25/multimedia/25dc-guns-01-plwq/25dc-guns-01-plwq-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=da228193d7b2a83df4980e5c5836c59ddcb7824186c11d97dd20a2c90b0b829d&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/08/25/us/politics/gun-control-atf-clyde-congress.html)
+
+</div>
+
+One of two gun stores owned by Representative Andrew Clyde in Georgia,
+Clyde Armory in Athens, was placed in a monitoring program in 2020 and
+2021.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The hidden force that shapes everything around us:
+Parking](https://www.vox.com/23712664/parking-lots-urban-planning-cities-housing)
+
+</div>
+
+<div class="card-image">
+
+[![](https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24641249/GettyImages_1354859135__1_.jpg?quality=90&strip=all&crop=0%2C10.70421724872%2C100%2C78.59156550256&w=1200)](https://www.vox.com/23712664/parking-lots-urban-planning-cities-housing)
+
+</div>
+
+It’s fueling the affordable housing crisis, worsening flooding, and
+driving us nuts.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How a mobile-home park saved its community from a corporate buyout —
+High
+C](https://www.hcn.org/articles/south-housing-how-a-mobile-home-park-saved-its-community-from-a-corporate-buyout)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/www.hcn.org/wp-content/uploads/2023/08/westside-durango-23-9-1.jpg?fit=1500%2C1000&ssl=1)](https://www.hcn.org/articles/south-housing-how-a-mobile-home-park-saved-its-community-from-a-corporate-buyout)
+
+</div>
+
+In southwest Colorado, a cooperative and a land trust partnered to
+preserve affordable housing.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[From Portugal to
+Portland](https://www.nytimes.com/2023/08/04/briefing/from-portugal-to-portland.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/08/01/multimedia/04-THE-MORNING-NL-pdx/04-THE-MORNING-NL-pdx-largeHorizontalJumbo-v2.jpg?year=2023&h=682&w=1024&s=602f4db7f58b515795ecedae05f9b86210c08ebc482051454573658f2596bbab&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/08/04/briefing/from-portugal-to-portland.html)
+
+</div>
+
+Oregon decriminalized all drugs, and overdoses have surged.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[‘An Act of War’: Inside America’s Silicon Blockade Against
+China](https://www.nytimes.com/2023/07/12/magazine/semiconductor-chips-us-china.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/07/16/magazine/16mag-chips/16mag-chips-largeHorizontalJumbo-v2.jpg?year=2023&h=820&w=1024&s=874923825491bafce4e3090e452e5b65c353619b900cfb0be277429353c61e14&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/07/12/magazine/semiconductor-chips-us-china.html)
+
+</div>
+
+The Biden administration thinks it can preserve America’s technological
+primacy by cutting China off from advanced computer chips. Could the
+plan backfire?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[This Is One Republican Strategy That Isn’t Paying
+Off](https://www.nytimes.com/2023/07/12/opinion/republicans-democrats-voters-elections.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/07/12/multimedia/12edsall-hvmt/12edsall-hvmt-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=0bd7013fa88cc6a2693bcfdc83412f06c54f181e572a3fbd607d65fbec53328c&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/07/12/opinion/republicans-democrats-voters-elections.html)
+
+</div>
+
+Voter suppression isn’t what it’s cracked up to be.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[I’m in Wyoming to celebrate the next nuclear
+breakthrough](https://www.gatesnotes.com/Wyoming-TerraPower)
+
+</div>
+
+<div class="card-image">
+
+[![](https://assets.gatesnotes.com/8a5ac0b3-6095-00af-c50a-89056fbe4642/117a1f8c-8153-451c-a955-7247c255e28b/terrapower_2023_module_1200x580_01.jpg)](https://www.gatesnotes.com/Wyoming-TerraPower)
+
+</div>
+
+Bill Gates writes about visiting Kemmerer, Wyoming, the future site of
+the fourth-generation Natrium nuclear power plant being designed by
+TerraPower.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Investigate an
+Algorithm](https://getpocket.com/collections/how-to-investigate-an-algorithm)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/1200x/filters:format(jpg):extract_focal()/https%3A%2F%2Fs3.amazonaws.com%2Fpocket-collectionapi-prod-images%2Fdccb57b4-90f8-4e58-8b0c-2d816220cd7f.png)](https://getpocket.com/collections/how-to-investigate-an-algorithm)
+
+</div>
+
+It’s not easy to see inside a black-box. Here’s how WIRED journalists
+report on the technologies that quietly shape our lives.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Biden Expected to Move Ahead on a Major Oil Project in
+Alaska](https://www.nytimes.com/2023/03/10/climate/biden-willow-oil-alaska.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/03/09/multimedia/00cli-WILLOW1-wgkt/00cli-WILLOW1-wgkt-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=413387adf4e71269676050b5bcd05c6c7bfa1cfd4d332bd3d546a926e6beb7d0&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/03/10/climate/biden-willow-oil-alaska.html)
+
+</div>
+
+The decision would allow an enormous \$8 billion drilling project in the
+largest expanse of pristine wilderness in the United States.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Surprising Reason Europe Came Together Against
+Putin](https://www.politico.com/news/magazine/2023/02/03/europe-putin-ukraine-google-translate-00079301)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.politico.com/59/8d/b0476c8f40ef877c2c50ab6c29fb/goog-translate-final-override.png)](https://www.politico.com/news/magazine/2023/02/03/europe-putin-ukraine-google-translate-00079301)
+
+</div>
+
+A major advance in translation technology means that Ukrainians can
+inform and debunk in real time. The world hasn’t seen a weapon quite
+like it before.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Medicare and Social Security Are
+Sustainable](https://www.nytimes.com/2023/02/21/opinion/medicare-social-security.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/02/21/opinion/21krugman-newsletter-image/21krugman-newsletter-image-largeHorizontalJumbo.jpg?year=2023&h=682&w=1024&s=af462bf21c0262e1a8e22af0fbf07e620296a1568477ce6e6f7ad079bc1b5c40&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/02/21/opinion/medicare-social-security.html)
+
+</div>
+
+Reports of their inevitable collapse are greatly exaggerated.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Facebook’s Bridge to Nowhere (Published
+2023)](https://www.nytimes.com/2023/01/08/business/facebook-dumbarton-rail-bridge.html?fbclid=IwAR2l8w6sRaZPkmxPSPgT7bdmgopSyqOtCXAruc2fKTfnrk9sFKgfgDMA5iE&smid=fb-nytimes&smtyp=cur)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2023/01/08/multimedia/07Facebook-train-02-1-4e2c/07Facebook-train-02-1-4e2c-largeHorizontalJumbo.jpg?year=2023&h=683&w=1024&s=2787a6a7025f3c8812f7a3a05eb7c821a53060c0bef629071c9ddd6efcf652dd&k=ZQJBKqZ0VN)](https://www.nytimes.com/2023/01/08/business/facebook-dumbarton-rail-bridge.html?fbclid=IwAR2l8w6sRaZPkmxPSPgT7bdmgopSyqOtCXAruc2fKTfnrk9sFKgfgDMA5iE&smid=fb-nytimes&smtyp=cur)
+
+</div>
+
+The tech giant had already remade the virtual world. For a brief period,
+it also tried to make it easier for people in the Bay Area to get to
+work. Then it gave up.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Biden Just Clobbered China’s Chip
+Industry](https://www.nytimes.com/2022/10/20/opinion/biden-china-semiconductor-chip.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2022/10/22/opinion/21manjoo-image1/merlin_215169381_2188c86a-9171-47fe-a6d7-700a56fa24fe-largeHorizontalJumbo.jpg?year=2022&h=683&w=1024&s=25b0fcb3148224018e864bceaac30c77f72b28e0aafdde6e06e48c65c4b405e0&k=ZQJBKqZ0VN)](https://www.nytimes.com/2022/10/20/opinion/biden-china-semiconductor-chip.html)
+
+</div>
+
+The latest American trade restrictions could significantly set back
+China’s semiconductor ambitions.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Victor Shi: We don’t need a third party. We need ranked choice
+voting.](https://www.chicagotribune.com/opinion/commentary/ct-opinion-ranked-choice-voting-engagement-democracy-20220929-qvfxhwql2rb3pgc74pnjc6paye-story.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.chicagotribune.com/wp-content/uploads/migration/2022/09/29/YQOHAWVNCNDPBMJ2BPZ57D6AGQ.jpg?w=1024&h=670)](https://www.chicagotribune.com/opinion/commentary/ct-opinion-ranked-choice-voting-engagement-democracy-20220929-qvfxhwql2rb3pgc74pnjc6paye-story.html)
+
+</div>
+
+Earlier this summer, a group of anti-Trump and moderate Republicans and
+Democrats launched a new political party called the Forward Party. On
+the surface, this movement echoes recent polls indicati…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Pocket](https://getpocket.com/my-list/tags/public-policy)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Study: More Than 335,000 Lives Could Have Been Saved During Pandemic if
+U.S. Had Universal Health
+Care](https://ysph.yale.edu/news-article/yale-study-more-than-335000-lives-could-have-been-saved-during-pandemic-if-us-had-universal-health-care)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ysm-res.cloudinary.com/image/upload/c_limit,f_auto,h_630,q_auto,w_1200/v1/yms/prod/7fa3f246-77be-4b3e-9dcb-3897536d3d12)](https://ysph.yale.edu/news-article/yale-study-more-than-335000-lives-could-have-been-saved-during-pandemic-if-us-had-universal-health-care)
+
+</div>
+
+If the U.S. had had a single-payer universal health care system in 2020,
+nearly 212,000 American lives would have been saved that year, according
+to a new study
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Insurers force change on police departments long resistant to
+it](https://www.washingtonpost.com/investigations/interactive/2022/police-misconduct-insurance-settlements-reform)
+
+</div>
+
+<div class="card-image">
+
+[![](https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/45PTKJO5ARC7LO3O22TWJ3KDBM.jpg)](https://www.washingtonpost.com/investigations/interactive/2022/police-misconduct-insurance-settlements-reform)
+
+</div>
+
+Insurance companies are successfully dictating reforms in police
+departments, a movement driven by the large settlements out of
+use-of-force cases.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Blocked persons and letters of
+marque](https://dynomight.net/blocked-persons)
+
+</div>
+
+<div class="card-image">
+
+[![](https://dynomight.net/img/blocked-persons/flag1.jpg)](https://dynomight.net/blocked-persons)
+
+</div>
+
+What are letters of marque and reprisal, and who is on the US’s list of
+Block Persons?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[24 charts that show we’re (mostly) living better than our
+parents](https://fullstackeconomics.com/24-charts-that-show-were-mostly-living-better-than-our-parents)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ff01428c4-1cf5-437b-af64-8cc6413df0ad_1920x1080.jpeg)](https://fullstackeconomics.com/24-charts-that-show-were-mostly-living-better-than-our-parents)
+
+</div>
+
+Ignore the haters: living standards have improved a lot since the 1980s.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ten Ways Billionaires Avoid Taxes on an Epic
+Scale](https://www.propublica.org/article/billionaires-tax-avoidance-techniques-irs-files)
+
+</div>
+
+<div class="card-image">
+
+[![](https://img.assets-c3.propublica.org/images/articles/greatest-hits_1200x630px.jpeg?crop=focalpoint&fit=crop&fp-x=0.5&fp-y=0.5&h=630&imgixProfile=propublicaAssets&q=90&w=1200&s=6a81102f4d3328fb55e135ab4185deaa)](https://www.propublica.org/article/billionaires-tax-avoidance-techniques-irs-files)
+
+</div>
+
+After a year of reporting on the tax machinations of the ultrawealthy,
+ProPublica spotlights the top tax-avoidance techniques that provide
+massive benefits to billionaires.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Dollar-Store Economy (Published
+2011)](http://www.nytimes.com/2011/08/21/magazine/the-dollar-store-economy.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/misc/nyt_logo_t_oembed_880x586.png)](http://www.nytimes.com/2011/08/21/magazine/the-dollar-store-economy.html)
+
+</div>
+
+The ubiquitous dollar store is the American dream writ small.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[We are not in a recession, nor is one
+inevitable.](https://stayathomemacro.substack.com/p/we-are-not-in-a-recession-nor-is)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F6ee7bf49-f6a9-4289-a9ed-a4e636c2d454_2121x1414.jpeg)](https://stayathomemacro.substack.com/p/we-are-not-in-a-recession-nor-is)
+
+</div>
+
+Americans are rightly angry about inflation. A strong labor market is
+not enough reason to celebrate. But, we are coming out of, not going
+into the hurricane.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Inside the experimental world of animal
+infrastructure](https://www.technologyreview.com/2022/06/16/1053631/inside-animal-infrastructure)
+
+</div>
+
+<div class="card-image">
+
+[![](https://wp.technologyreview.com/wp-content/uploads/2022/06/JA22_animal-infra-01b.jpeg?resize=1200,600)](https://www.technologyreview.com/2022/06/16/1053631/inside-animal-infrastructure)
+
+</div>
+
+Wildlife crossings cut down on roadkill. But are they really a boon for
+conservation?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Timing a Recession vs. Timing the Stock
+Market](https://awealthofcommonsense.com/2022/06/timing-a-recession-vs-timing-the-stock-market)
+
+</div>
+
+<div class="card-image">
+
+[![](https://awealthofcommonsense.com/wp-content/uploads/2022/06/Screenshot-2022-06-09-201702.png)](https://awealthofcommonsense.com/2022/06/timing-a-recession-vs-timing-the-stock-market)
+
+</div>
+
+It's not always easy to predict the timing of a recession and what that
+means for the stock market.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[U.S. Inflation in May: More Mixed
+News](https://theovershoot.co/p/us-inflation-in-may-more-mixed-news?token=eyJ1c2VyX2lkIjoxMTM1NDg5LCJpYXQiOjE2NTQ4ODA3MTcsImlzcyI6InB1Yi0zODQ2NDAiLCJzdWIiOiJwb3N0LXJlYWN0aW9uIn0.rLnrfVUu29UZhjalxgv_j6uEDF8f8S8C_fA7KytCdsE)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F6bb52a86-42bc-4ec6-b870-65c29d6287cc_3200x2268.png)](https://theovershoot.co/p/us-inflation-in-may-more-mixed-news?token=eyJ1c2VyX2lkIjoxMTM1NDg5LCJpYXQiOjE2NTQ4ODA3MTcsImlzcyI6InB1Yi0zODQ2NDAiLCJzdWIiOiJwb3N0LXJlYWN0aW9uIn0.rLnrfVUu29UZhjalxgv_j6uEDF8f8S8C_fA7KytCdsE)
+
+</div>
+
+Some charts on what's good and what's bad.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Police Have No Reason to Help
+You](https://newrepublic.com/article/166655/police-uvalde-shooting-qualified-immunity)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.newrepublic.com/bbb0d2c6e9c781bc7ddb4576ead7262c1dc1beb7.jpeg?w=1200&h=630&crop=faces&fit=crop&fm=jpg)](https://newrepublic.com/article/166655/police-uvalde-shooting-qualified-immunity)
+
+</div>
+
+Cops have been given an incredible set of legal powers immunizing them
+from the fatal errors of their own decisions—including their decision to
+do nothing in Uvalde, Texas.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Movement That’s Quietly Reshaping Democracy For The Better \|
+NOEMA](https://www.noemamag.com/a-movement-thats-quietly-reshaping-democracy-for-the-better)
+
+</div>
+
+<div class="card-image">
+
+[![](https://noemamag.imgix.net/2022/12/citizens-assembly.jpg?fit=crop&fm=pjpg&h=628&ixlib=php-3.3.1&w=1200&wpsize=noema-social-facebook&s=dbf442050077a9ecdaa5db75723e5788)](https://www.noemamag.com/a-movement-thats-quietly-reshaping-democracy-for-the-better)
+
+</div>
+
+Citizens’ assemblies can help us better address societal challenges,
+overcome polarization and strengthen trust.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Quadratic
+Voting](https://www.radicalxchange.org/concepts/quadratic-voting)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.radicalxchange.org/images/logos/open-graph-logo.png)](https://www.radicalxchange.org/concepts/quadratic-voting)
+
+</div>
+
+We are a community of activists, artists, entrepreneurs, and scholars
+committed to using mechanism design to inspire radical social change.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Games We Play: Understanding Strategic Culture Through Games -
+Modern War
+Institute](https://mwi.usma.edu/the-games-we-play-understanding-strategic-culture-through-games)
+
+</div>
+
+<div class="card-image">
+
+[![](https://mwi.westpoint.edu/wp-content/uploads/2022/03/4058411331_36259deecc_k-1.jpg)](https://mwi.usma.edu/the-games-we-play-understanding-strategic-culture-through-games)
+
+</div>
+
+This article is part of the contribution made by the US Army War College
+to the series “Compete and Win: Envisioning a Competitive Strategy for
+the Twenty-First Century.” The series \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Russia’s Aggression Against Ukraine Is
+Backfiring](https://www.theatlantic.com/international/archive/2021/12/russia-putin-ukraine-invasion/621140)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.theatlantic.com/thumbor/tKNAqM1lDOoA1-SK3wZw09QvgSM=/7x0:5291x2752/1200x625/media/img/mt/2021/12/image_6/original.png)](https://www.theatlantic.com/international/archive/2021/12/russia-putin-ukraine-invasion/621140)
+
+</div>
+
+Putin’s military moves are rallying Ukrainians and unifying NATO.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Qassem Suleimani and How Nations Decide to
+Kill](http://newyorker.com/magazine/2020/02/10/qassem-suleimani-and-how-nations-decide-to-kill)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.newyorker.com/photos/5e34ad2af9974000081a1dd3/16:9/w_1280,c_limit/200210_r35816.jpg)](http://newyorker.com/magazine/2020/02/10/qassem-suleimani-and-how-nations-decide-to-kill)
+
+</div>
+
+The political, moral, and visceral considerations behind assassination.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Looming Threat of a Nuclear Crisis with
+Iran](https://nextdraft.us2.list-manage.com/track/click?e=17ff8a69ce&id=16d27443ae&u=ed102783e87fee61c1a534a9d)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.newyorker.com/photos/61c52f9cc04331a627249cff/16:9/w_1280,c_limit/220103_r39667web.jpg)](https://nextdraft.us2.list-manage.com/track/click?e=17ff8a69ce&id=16d27443ae&u=ed102783e87fee61c1a534a9d)
+
+</div>
+
+The Biden Administration faces a potential confrontation with a longtime
+rival that is better armed and more hard-line than at any time in its
+modern history.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Can we actually "brain-drain" China? - by Noah
+Smith](https://noahpinion.substack.com/p/can-we-actually-brain-drain-china)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F6c571730-5927-4880-a096-7f5246eedb57_1376x1972.jpeg)](https://noahpinion.substack.com/p/can-we-actually-brain-drain-china)
+
+</div>
+
+No. But we can give America a big economic boost while boosting our
+moral image.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Triumph and Terror of Wang
+Huning](https://palladiummag.com/2021/10/11/the-triumph-and-terror-of-wang-huning)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pdmedia.b-cdn.net/2021/10/P062610PS-0524_4753651904-2-scaled.jpg)](https://palladiummag.com/2021/10/11/the-triumph-and-terror-of-wang-huning)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[In the Tales Told by Sewage, Public Health and Privacy
+Collide](https://undark.org/2021/04/21/covid-19-data-down-the-drain)
+
+</div>
+
+<div class="card-image">
+
+[![](https://undark.org/wp-content/uploads/2021/02/UndarkTRartsewage3-1-2021_FINAL-resize.jpg)](https://undark.org/2021/04/21/covid-19-data-down-the-drain)
+
+</div>
+
+Sewage epidemiology has been embraced in other countries for decades,
+but not in the U.S. Will Covid change that?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[West Virginia Has Everyone’s Attention. What Does It Really Need? - The
+New](https://www.nytimes.com/2021/02/08/upshot/west-virginia-manchin-stimulus.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2021/02/08/business/08up-westvirginia1/08up-westvirginia1-largeHorizontalJumbo.jpg?year=2021&h=683&w=1024&s=868da02a72020ae9eb650486bf476d6827074f3cc009ba9f87fdbe5cd7106f2b&k=ZQJBKqZ0VN)](https://www.nytimes.com/2021/02/08/upshot/west-virginia-manchin-stimulus.html)
+
+</div>
+
+With the right federal response, it could become a model of renewal for
+other places around the country that prosperity has left behind.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Denver STAR program that replaces police with mental and behavioral
+hea](https://denverite.com/2021/02/02/in-the-first-six-months-of-health-care-professionals-replacing-police-officers-no-one-they-encountered-was-arrested)
+
+</div>
+
+<div class="card-image">
+
+[![](https://wp-denverite.s3.amazonaws.com/wp-content/uploads/sites/4/2020/06/200608-STAR-POLICE-911-DIVERSION-PROGRAM-MENTAL-HEALTH-CENTER-OF-DENVER-KEVINJBEATY-05-1024x683.jpg)](https://denverite.com/2021/02/02/in-the-first-six-months-of-health-care-professionals-replacing-police-officers-no-one-they-encountered-was-arrested)
+
+</div>
+
+DPD Chief Pazen, who is fond of the STAR program, says it frees up
+officers to do their jobs: fight crime.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Egghead Gap — The New
+Atlantis](https://www.thenewatlantis.com/publications/the-egghead-gap)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.thenewatlantis.com/wp-content/uploads/2020/12/TNA63-Watney-banner-cropped.jpg)](https://www.thenewatlantis.com/publications/the-egghead-gap)
+
+</div>
+
+If America wants to keep China from setting the global course of
+science, we need a crash program to recruit international talent.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Did America Give Up on Mass Transit? (Don't Blame
+Cars.)](https://getpocket.com/explore/item/why-did-america-give-up-on-mass-transit-don-t-blame-cars)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/1200x/filters:format(jpg):extract_focal()/https%3A%2F%2Fs3.amazonaws.com%2Fpocket-syndicated-images%2Farticles%2F1002%2F1567530311_direct.jpg)](https://getpocket.com/explore/item/why-did-america-give-up-on-mass-transit-don-t-blame-cars)
+
+</div>
+
+Streetcar, bus, and metro systems have been ignoring one lesson for 100
+years: Service drives demand.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[An AI can simulate an economy millions of times to create fairer tax
+policy](https://www.technologyreview.com/2020/05/05/1001142/ai-reinforcement-learning-simulate-economy-fairer-tax-policy-income-inequality-recession-pandemic)
+
+</div>
+
+<div class="card-image">
+
+[![](https://wp.technologyreview.com/wp-content/uploads/2020/05/tax.png?resize=1200,600)](https://www.technologyreview.com/2020/05/05/1001142/ai-reinforcement-learning-simulate-economy-fairer-tax-policy-income-inequality-recession-pandemic)
+
+</div>
+
+Deep reinforcement learning has trained AIs to beat humans at complex
+games like Go and StarCraft. Could it also do a better job at running
+the economy?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Some shirts hide you from cameras—but will anyone wear
+them?](https://arstechnica.com/features/2020/04/some-shirts-hide-you-from-cameras-but-will-anyone-wear-them)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.arstechnica.net/wp-content/uploads/2020/03/adversarial-fashion-shoot.jpg)](https://arstechnica.com/features/2020/04/some-shirts-hide-you-from-cameras-but-will-anyone-wear-them)
+
+</div>
+
+It’s theoretically possible to become invisible to cameras. But can it
+catch on?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[basics: walking distance to transit — Human
+Transit](https://humantransit.org/2011/04/basics-walking-distance-to-transit.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://humantransit.org/wp-content/uploads/walkdisttotrans1-700x382.png)](https://humantransit.org/2011/04/basics-walking-distance-to-transit.html)
+
+</div>
+
+The question of walking distance in transit is much bigger than it
+seems.  A huge range of consequential decisions — including stop
+spacing, network structure, travel time, reliability standards,
+frequency and even mode choice — depend on assumptions about how far
+customers will be willing to walk.  The same issue also governs the
+amount of \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What Happened When Oslo Decided to Make its Downtown Basically
+Car-Free?](https://getpocket.com/explore/item/what-happened-when-oslo-decided-to-make-its-downtown-basically-car-free)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/1200x/filters:format(jpg):extract_focal()/https%3A%2F%2Fpocket-syndicated-images.s3.amazonaws.com%2Farticles%2F1897%2F1620859672_GettyImages-588328557.jpg)](https://getpocket.com/explore/item/what-happened-when-oslo-decided-to-make-its-downtown-basically-car-free)
+
+</div>
+
+If you decide to drive in downtown Oslo, be forewarned: You won’t be
+able to park on the street.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Teaching Ethics in Appalachia Taught Me About Bridging America’s
+Partisan
+D](https://www.politico.com/magazine/story/2019/10/13/america-cultural-divide-red-state-blue-state-228111)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.politico.com/27/57/f8a237f74c268034270ef411aeba/mandery-update.jpg)](https://www.politico.com/magazine/story/2019/10/13/america-cultural-divide-red-state-blue-state-228111)
+
+</div>
+
+There’s a language for talking about hot-button issues. And we’re not
+learning it.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Spain's Happy Little Carless City - Reasons to be
+Cheerful](https://reasonstobecheerful.world/spains-happy-little-carless-city)
+
+</div>
+
+<div class="card-image">
+
+[![](https://reasonstobecheerful.world/wp-content/uploads/2019/10/11770686116_e1f2dd0b44_k.jpg)](https://reasonstobecheerful.world/spains-happy-little-carless-city)
+
+</div>
+
+Wherever you find advocates for saner transportation, their dream
+scenario usually hinges on the same outcome: making cities blissfully
+free of cars. To this end, the Spanish city of Pontevedra, population
+84,000, has done something remarkable: it has reduced car use in its
+historic core by 90 percent, and citywide...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Here Are the Urban Highways That Deserve to
+Die](https://getpocket.com/explore/item/here-are-the-urban-highways-that-deserve-to-die)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/1200x/filters:format(jpg):extract_focal()/https%3A%2F%2Fs3.amazonaws.com%2Fpocket-syndicated-images%2Farticles%2F1775%2F1570030128_940435.jpg)](https://getpocket.com/explore/item/here-are-the-urban-highways-that-deserve-to-die)
+
+</div>
+
+The Congress for New Urbanism ranks the most-loathed urban freeways in
+North America—and makes the case for tearing them down.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Something Special Is Happening in Rural
+America](https://www.nytimes.com/2019/09/17/opinion/rural-america.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2019/09/17/opinion/17smarsh2/17smarsh2-largeHorizontalJumbo.jpg?year=2019&h=683&w=1024&s=2821233c9e1b34d6fbb080fa56157d56556374261abc685a30281e51f84a6fb2&k=ZQJBKqZ0VN)](https://www.nytimes.com/2019/09/17/opinion/rural-america.html)
+
+</div>
+
+There is a “brain gain” afoot that suggests a national homecoming to
+less bustling spaces.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Palaces for the People - 99%
+Invisible](https://99percentinvisible.org/episode/palaces-for-the-people)
+
+</div>
+
+<div class="card-image">
+
+[![](https://99percentinvisible.org/app/uploads/2019/03/architecture-bookcase-books-757855-728x484.jpg)](https://99percentinvisible.org/episode/palaces-for-the-people)
+
+</div>
+
+Eric Klinenberg is the author of a book called Palaces for the People:
+How Social Infrastructure Can Help Fight Inequality, Polarization, and
+the Decline of Civic Life. The phrase “palaces for the people” actually
+comes from Andrew Carnegie who was known as a titan of the Gilded Age
+and one of the wealthiest people in
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[US Workers Are Highly Taxed If You Count Premiums – People's Policy
+Project](https://www.peoplespolicyproject.org/2019/04/08/us-workers-are-highly-taxed-when-you-count-health-premiums)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.peoplespolicyproject.org/wp-content/uploads/2017/09/33502815650_7393421e4c_k-e1505847872759.jpg)](https://www.peoplespolicyproject.org/2019/04/08/us-workers-are-highly-taxed-when-you-count-health-premiums)
+
+</div>
+
+Only the Netherlands has a higher average compulsory payment wedge than
+the US.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Opting Out of Vaccines Should Opt You Out of American
+Society](https://blogs.scientificamerican.com/observations/opting-out-of-vaccines-should-opt-you-out-of-american-society)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static.scientificamerican.com/blogs/cache/file/263CFBE2-C4CB-4F7F-A1281B6395C01E55_source.jpg?w=1200)](https://blogs.scientificamerican.com/observations/opting-out-of-vaccines-should-opt-you-out-of-american-society)
+
+</div>
+
+People who are able to take vaccines but refuse to do so are the moral
+equivalent of drunk drivers
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What a beautiful tiny house in rural Japan can teach us about the
+health
+of](https://qz.com/1516224/this-airbnb-in-japan-attracts-thousands-of-visitors-each-year)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.kinja-img.com/image/upload/c_fill,h_675,pg_1,q_80,w_1200/ddbddca1e97ac89331138f64bf5cbcf9.jpg)](https://qz.com/1516224/this-airbnb-in-japan-attracts-thousands-of-visitors-each-year)
+
+</div>
+
+Guests are transforming the sleepy town into a major destination for
+tourists seeking the "real Japan."
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why ‘micropolitan’ cities may be the key to rural
+resurgence](https://www.curbed.com/platform/amp/2018/10/30/18042760/job-business-rural-economic-micropolitan)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.vox-cdn.com/thumbor/thxUeQuK3kwU2X_YZ48o3IUipxs=/0x195:2400x1452/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/13358455/GettyImages_566032779.jpg)](https://www.curbed.com/platform/amp/2018/10/30/18042760/job-business-rural-economic-micropolitan)
+
+</div>
+
+A development expert says small cities and towns can be catalysts for
+lagging rural counties
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[What I learned from a Taipei alley — Remains of the
+Day](http://www.eugenewei.com/blog/2018/5/11/taipei-alley)
+
+</div>
+
+<div class="card-image">
+
+[![](http://static1.squarespace.com/static/4ff36e51e4b0d277e953e394/t/5af61980aa4a99c18c76820c/1526077895374/cram-school-district-alley-1006094.jpg?format=1500w)](http://www.eugenewei.com/blog/2018/5/11/taipei-alley)
+
+</div>
+
+I was in Taipei the past few weeks working on a documentary with
+friends. Because of a busy schedule, it wasn't like my usual travels
+abroad for fun, it felt more like a work trip. Still, even if I'd been
+there purely for vacation, I would've wanted to try a different mode of
+travel, one less focuse
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[But Rich People Live Here, So We Can't Be Going
+Broke!](https://www.strongtowns.org/journal/2018/9/5/but-rich-people-live-here-so-we-cant-be-going-broke)
+
+</div>
+
+<div class="card-image">
+
+[![](http://static1.squarespace.com/static/53dd6676e4b0fedfbc26ea91/54b6c509e4b062126976d942/5b8fd792f950b74287b70afa/1694017204649/Bulcolic_Mc_Mansions_Leesburg_%284949100182%29.jpg?format=1500w)](https://www.strongtowns.org/journal/2018/9/5/but-rich-people-live-here-so-we-cant-be-going-broke)
+
+</div>
+
+If your growth strategy only works as long as wealthy people live in
+your town, your growth strategy is deeply fragile.
+
+</div>
+
+</div>

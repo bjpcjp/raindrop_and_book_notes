@@ -1,0 +1,1061 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# football
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[College football program valuations: Ranking every Power 4 team by how
+much they’d sell
+for](https://www.nytimes.com/athletic/6500596/2025/07/21/college-football-program-valuations-rankings-2025/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2025/07/20155702/0721_CFB_ProgramValuation.png?width=1200&height=675&fit=cover)](https://www.nytimes.com/athletic/6500596/2025/07/21/college-football-program-valuations-rankings-2025/)
+
+</div>
+
+College football programs may not be for sale, but what if they were?
+Here's our best guess at how much the Power 4 would sell for.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Using Motion to Create Running
+Lanes](https://open.substack.com/pub/footballfilmroom/p/using-motion-to-create-running-lanes-118?r=oc5d&utm_medium=ios)
+
+</div>
+
+<div class="card-image">
+
+[![](https://substackcdn.com/image/fetch/$s_!GUZ2!,w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fca82edbd-6cf4-4c61-941f-40abf4ede97e_720x405.jpeg)](https://open.substack.com/pub/footballfilmroom/p/using-motion-to-create-running-lanes-118?r=oc5d&utm_medium=ios)
+
+</div>
+
+There are many elements to a running game that can make it successful.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Can UMass sell hope? Why college football’s losingest problem believes
+it can
+win](https://www.nytimes.com/athletic/6354324/2025/05/14/umass-football-mac-record-nil-coach/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2025/05/13200454/GettyImages-2185631820-scaled-e1747185411704.jpg?width=1200&height=675&fit=cover)](https://www.nytimes.com/athletic/6354324/2025/05/14/umass-football-mac-record-nil-coach/)
+
+</div>
+
+Best known for basketball success under John Calipari 30 years ago,
+UMass has won 26 football games in 13 years in the FBS. Can it change?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Charles Huff, Marshall and a glimpse inside the coaching carousel’s
+most puzzling
+split](https://www.nytimes.com/athletic/5987961/2024/12/12/charles-huff-southern-miss-marshall-coach/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/12/12010740/GettyImages-1870494300-scaled-e1733983735926.jpg?width=1200&height=630&fit=cover)](https://www.nytimes.com/athletic/5987961/2024/12/12/charles-huff-southern-miss-marshall-coach/)
+
+</div>
+
+Huff and Marshall had been heading for a divorce for months, but there
+were few hard feelings as both coach and program turned the page.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Inside Florida State’s historic fall from 13-0 to its worst showing in
+50
+years](https://www.nytimes.com/athletic/5956687/2024/12/05/florida-state-mike-norvell-season-recap-analysis/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/12/03181411/1203_FSU_Collapse.png?width=1200&height=630&fit=cover)](https://www.nytimes.com/athletic/5956687/2024/12/05/florida-state-mike-norvell-season-recap-analysis/)
+
+</div>
+
+Even a storied program like Florida State is susceptible to the volatile
+landscape of college football and the sport's new-age war chests.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Who is Dan Casey, and how did he become a favorite follow for football
+coac](https://www.nytimes.com/athletic/5507633/2024/05/22/dan-casey-football-coach)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/05/20162521/128101-e1716237248659.jpeg?width=1200&height=630&fit=cover)](https://www.nytimes.com/athletic/5507633/2024/05/22/dan-casey-football-coach)
+
+</div>
+
+Casey has used his internet prowess to become a good follow for football
+coaches and continue to grow the game.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How next-gen data analytics is changing American
+football](https://knowablemagazine.org/content/article/technology/2024/how-next-gen-data-analytics-changing-american-football)
+
+</div>
+
+<div class="card-image">
+
+[![](https://knowablemagazine.org/docserver/fulltext/player-tracking-sports-1600x600.jpg)](https://knowablemagazine.org/content/article/technology/2024/how-next-gen-data-analytics-changing-american-football)
+
+</div>
+
+At the NFL’s Big Data Bowl, scientists compete to develop new stats that
+better capture player performance
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Dallas high school football coaches on best recruiters, impact of OU,
+Texas](https://theathletic.com/5422366/2024/04/18/dallas-texas-high-school-recruiting-confidential)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/04/17080707/0404_Dallas_RecruitingConfidential.png?width=1200&height=630&fit=cover)](https://theathletic.com/5422366/2024/04/18/dallas-texas-high-school-recruiting-confidential)
+
+</div>
+
+How has Texas A&M's approach changed under Mike Elko? Will Texas' move
+to the SEC help the Longhorns with in-state prospects?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The five types of college football programs you meet in the transfer
+portal](https://theathletic.com/5412610/2024/04/15/college-football-transfer-portal-top-teams)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/04/13141410/0415_The-5-kinds-of-teams-you-meet-in-college-footballs-transfer-portal-copy.png?width=1200&height=630&fit=cover)](https://theathletic.com/5412610/2024/04/15/college-football-transfer-portal-top-teams)
+
+</div>
+
+In this evolving portal era, programs take different approaches to
+attacking the opportunity that arises during each transfer window.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[NCAA game revenue per
+fan](https://pbs.twimg.com/media/GKUj7JtWcAAUMzI?format=jpg&name=large)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A ‘high butt factor’ might be an NFL Draft prospect’s most prized
+asset](https://theathletic.com/5351145/2024/03/21/nfl-prospect-draft-butt-factor-evaluation)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2024/03/20130818/0320_Butts-scaled.jpg)](https://theathletic.com/5351145/2024/03/21/nfl-prospect-draft-butt-factor-evaluation)
+
+</div>
+
+For years, the humble human haunches have been key indicators as
+football scouts evaluate players.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Get Ready for the Biennial Texas High School Football Feeding
+Frenzy](https://www.texasmonthly.com/arts-entertainment/texas-high-school-football-district-realignment-feeding-frenzy)
+
+</div>
+
+<div class="card-image">
+
+[![](https://txmo-server.imgix.net/2024/01/uil-high-school-sports-reclassification.jpg?auto=compress&crop=faces&fit=fit&h=1500&ixlib=php-3.0.0&q=45&w=2400&s=4fb0ad7ce9c8f462fb955dc0b639a95c)](https://www.texasmonthly.com/arts-entertainment/texas-high-school-football-district-realignment-feeding-frenzy)
+
+</div>
+
+On Thursday, schools across Texas will learn what districts they’ll play
+in for the next two years. Then, the scheduling madness begins.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[When should a football team attempt a two point conversion instead of
+an
+ex](https://punkrockor.com/2019/11/15/when-should-a-football-team-attempt-a-two-point-conversion-instead-of-an-extra-point-a-dynamic-programming-approach)
+
+</div>
+
+<div class="card-image">
+
+[![](https://punkrockor.com/wp-content/uploads/2019/11/twopointconversion.png)](https://punkrockor.com/2019/11/15/when-should-a-football-team-attempt-a-two-point-conversion-instead-of-an-extra-point-a-dynamic-programming-approach)
+
+</div>
+
+NOTE: see the February 2024 update to this post and my two point
+conversion analysis here. On Sunday November 10, 2019, the Carolina
+Panthers were down 14 against the Packers early in the 4th quart…
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sports Data Stuff \| CFB PBP](https://sportsdatastuff.com/cfb_pbpdata)
+
+</div>
+
+<div class="card-image">
+
+[![](https://sportsdatastuff.com/bigdata.jpg)](https://sportsdatastuff.com/cfb_pbpdata)
+
+</div>
+
+College Football Play-By-Play Data
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[30 Best Animation Software for Beginners in 2024 \[Free &
+Paid\]](https://visme.co/blog/animation-software)
+
+</div>
+
+<div class="card-image">
+
+[![](https://visme.co/blog/wp-content/uploads/2020/03/animation-software-header.gif)](https://visme.co/blog/animation-software)
+
+</div>
+
+Some of the best animation software are Visme, Adobe Animate, Blender,
+Pencil2D, Animaker and Biteable. Find out how these and other tools
+compare.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The gore, guts and horror of an NFL fumble
+pile](https://getpocket.com/explore/item/the-gore-guts-and-horror-of-an-nfl-fumble-pile)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.vox-cdn.com/thumbor/pMiWUVD7Q3ZzZquYwBjMfFP0nfY=/0x97:2080x1186/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/19446389/coverfight.jpg)](https://getpocket.com/explore/item/the-gore-guts-and-horror-of-an-nfl-fumble-pile)
+
+</div>
+
+What it’s like at the bottom of the most lawless play in sports.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Herbert Hoover vs Fairmont
+1977](https://youtube.com/watch?feature=share&v=k8NojS2yQE0)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/k8NojS2yQE0/maxresdefault.jpg)](https://youtube.com/watch?feature=share&v=k8NojS2yQE0)
+
+</div>
+
+First round of the AAA WV State Playoffs 1977 (4 teams)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Justin Jefferson, his wide receiver ‘sensei’ and the art of running
+silky-smooth
+routes](https://theathletic.com/3591794/2022/09/15/justin-jefferson-jerry-sullivan-route-running)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2022/09/14222339/GettyImages-1423163040v-scaled-e1663209718612.jpg?width=1200&height=630&fit=cover)](https://theathletic.com/3591794/2022/09/15/justin-jefferson-jerry-sullivan-route-running)
+
+</div>
+
+EAGAN, Minn. — The perfect description of Justin Jefferson’s route
+running is tucked inside one specific video on the internet. The video,
+released by the NFL Network in August, begins with several Jefferson
+receptions then transitions to comments from opposing defenders. About
+50 seconds in,...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The game within a game: Secrets of a college football signal
+stealer](https://theathletic.com/408558/2018/07/02/the-game-within-a-game-secrets-of-a-college-football-signal-stealer)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2018/06/28025147/Oregon_ASU_SignStealing-e1530168951770.jpg?width=1200&height=630&fit=cover)](https://theathletic.com/408558/2018/07/02/the-game-within-a-game-secrets-of-a-college-football-signal-stealer)
+
+</div>
+
+Espionage on the sideline and in the coaches' booth is increasing in
+college football, but does all that effort make a difference on the
+field?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[West Virginia-Pitt’s renewed Backyard Brawl a reminder of toll
+realignment](https://theathletic.com/3422135/2022/07/14/conference-realignment-west-virginia-pitt)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2022/07/13211809/wvu-rivalry-scaled.jpg)](https://theathletic.com/3422135/2022/07/14/conference-realignment-west-virginia-pitt)
+
+</div>
+
+"For your fans, what’s important to them?” said West Virginia athletic
+director Shane Lyons of scheduling rivals after realignment.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Saudi-backed LIV Golf shows how ‘sportswashing’ can
+backfire](https://www.fastcompany.com/90765385/liv-golf-saudi-arabia-sportswashing-backlash)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_auto,q_auto,c_fit/wp-cms/uploads/2022/06/p-2-90765385-rob-walker-countries-are-engaging-in-and8220sportwashingand8221-and-itand8217s-backfiring-1.jpg)](https://www.fastcompany.com/90765385/liv-golf-saudi-arabia-sportswashing-backlash)
+
+</div>
+
+Saudi-backed LIV Golf shows how 'sportswashing' can backfire.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Hacker
+News](https://restofworld.org/2022/football-shirt-tech-sponsorship)
+
+</div>
+
+<div class="card-image">
+
+[![](https://149346090.v2.pressablecdn.com/wp-content/uploads/2022/06/bento-jerseys-lede-1600x900.jpg)](https://restofworld.org/2022/football-shirt-tech-sponsorship)
+
+</div>
+
+Sponsoring a football club is about more than just advertising, it's a
+status symbol.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Pro sport team sales are driven by the law of
+scarcity](https://www.axios.com/2022/06/25/pro-sport-team-values-go-up)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.axios.com/6td7Ic6lmxHHn-PFUTE4Har8XY8=/0x0:1920x1080/1366x768/2022/06/25/1656164407666.jpg)](https://www.axios.com/2022/06/25/pro-sport-team-values-go-up)
+
+</div>
+
+This is a luxury toy collection at a level above yachts or private
+islands.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to watch football like an expert from the comfort of your
+couch](https://theathletic.com/1145757/2019/10/29/how-to-watch-football-like-an-expert-from-the-comfort-of-your-couch)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2019/10/17132840/GettyImages-1054467688-scaled.jpg?width=1200&height=630&fit=cover)](https://theathletic.com/1145757/2019/10/29/how-to-watch-football-like-an-expert-from-the-comfort-of-your-couch)
+
+</div>
+
+There is always something to learn about the game and there are levels
+to watching it.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Vic Fangio, the most influential DC in modern NFL: A deep dive into his
+system](https://theathletic.com/3311028/2022/05/24/vic-fangio-defense-analysis?ad_id=23850495833310092&fbclid=IwAR1QYEaaVXhhn9tLKZlaCvnUoSGq-HHoZddroCGN5BK-WvMQiASLSqyQM3Q&source=fbpcadsbc)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2022/05/23203726/FANGIO_DEFENSE_2-scaled.jpg?width=1200&height=630&fit=cover)](https://theathletic.com/3311028/2022/05/24/vic-fangio-defense-analysis?ad_id=23850495833310092&fbclid=IwAR1QYEaaVXhhn9tLKZlaCvnUoSGq-HHoZddroCGN5BK-WvMQiASLSqyQM3Q&source=fbpcadsbc)
+
+</div>
+
+What makes Vic Fangio's defense the best response to modern offenses?
+Its two-high structure limits explosive plays and forces short throws.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ted's Nguyen's Film Room: A comprehensive breakdown of Belichick's
+defensive masterpiece in Super Bowl
+LIII](https://theathletic.com/801195/2019/02/05/super-bowl-liii-film-room-belichick-defensive-masterpiece)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/athletic/uploads/wp/2019/02/05145419/patriots-defense-vs-rams.jpg?width=1200&height=630&fit=cover)](https://theathletic.com/801195/2019/02/05/super-bowl-liii-film-room-belichick-defensive-masterpiece)
+
+</div>
+
+One of the keys to the Rams' offense is its simplicity. Bill Belichick
+countered with his own "simple" game plan: a 6-1 front that had answers
+for all of the Rams' bread-and-butter plays.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ron Cook: Pitt-West Virginia injecting some much-needed bad blood into
+this](https://www.post-gazette.com/sports/ron-cook/2022/05/28/pitt-west-virginia-backyard-brawl-football-basketball-penn-state/stories/202205280007)
+
+</div>
+
+<div class="card-image">
+
+[![](https://9b16f79ca967fd0708d1-2713572fef44aa49ec323e813b06d2d9.ssl.cf2.rackcdn.com/1140x_a10-7_cTC/AP19319187516000-1653751491.jpg)](https://www.post-gazette.com/sports/ron-cook/2022/05/28/pitt-west-virginia-backyard-brawl-football-basketball-penn-state/stories/202205280007)
+
+</div>
+
+Some people will tell you Pat Narduzzi did his finest work in 2021 when
+he led Pitt to the ACC championship. It was Pitt’s best season in 40
+years....
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The LA Rams are winners in football. They’re ‘loss leaders’ in
+economics](https://thehustle.co/02112022-rams)
+
+</div>
+
+<div class="card-image">
+
+[![](https://20627419.fs1.hubspotusercontent-na1.net/hubfs/20627419/The%20Hustle/Assets/Images/1722884134-News-Brief_2022-02-11T013244.205Z.webp)](https://thehustle.co/02112022-rams)
+
+</div>
+
+The Rams
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[College Football Stats - College FB Team Opponent Yards per Play \|
+TeamRank](https://www.teamrankings.com/college-football/stat/opponent-yards-per-play)
+
+</div>
+
+College Football opponent yards per play, by team.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Alabama Defense - Nick Saban -
+2008.pdf](https://www.footballxos.com/download/alabama-crimson-tide-defense-2008-nick-saban-kirby-smart?refresh=61f2a2e5013b71643291365&wpdmdl=4705)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[https://join.footballoutsiders.com/house-dvoa?sce=google&utm_source=google&utm_campaign=fo_football-outsiders&utm_medium=cpc&utm_medium=cpc&campaignid=10655240796&adgroupid=108087094791&adid=527824302478&keyword=football
+outsiders
++&adposition=&placement=&network=g&loc_interest_ms=&loc_physical_ms=9028292&target=&targetid=kwd-930674926045&matchtype=e&device=m&devicemodel=&sitelink=&gclid=Cj0KCQiA6NOPBhCPARIsAHAy2zAr8hEQl5wzMS8zO3MAqsUhSaWd0vC9ajtACKPKTmo1gYW6ECqBxXgaAlASEALw_wcB](https://join.footballoutsiders.com/house-dvoa?adgroupid=108087094791&adid=527824302478&adposition=&campaignid=10655240796&device=m&devicemodel=&gclid=Cj0KCQiA6NOPBhCPARIsAHAy2zAr8hEQl5wzMS8zO3MAqsUhSaWd0vC9ajtACKPKTmo1gYW6ECqBxXgaAlASEALw_wcB&keyword=football+outsiders++&loc_interest_ms=&loc_physical_ms=9028292&matchtype=e&network=g&placement=&sce=google&sitelink=&target=&targetid=kwd-930674926045)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The 2021 UCLA Chip Kelly playbook (823 snaps) sorted by play call
+volume. Blue bars are pass, yellow bares are run. The purple line is
+Yards Per Play for each concept. Y-Cross, Four Verts, and Interior Zone
+(from offset sidecar Inside Zone or pistol Midline Zone)
+dominate.](https://twitter.com/osgoodck/status/1485301200987701248?s=12)
+
+</div>
+
+— chris osgood (@osgoodck)
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Marshawn Lynch Became an N.F.L. Mentor (Published
+2022)](https://www.nytimes.com/2022/01/19/sports/football/marshawn-lynch-nfl.html?fbclid=IwAR0Z3AT1Nd037jzot_owOSsboaKFV0v_p_lVBJCFivw1oq41STXIb90DXuU&smid=fb-nytimes&smtyp=cur)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2022/01/19/sports/19marshawn-QA/19marshawn-QA-largeHorizontalJumbo.jpg?year=2022&h=682&w=1024&s=bd2e2b2b3a61ff5dfaaa4db2f7b9a505e2431c7e42fe06f90d28c94d051c0ef0&k=ZQJBKqZ0VN)](https://www.nytimes.com/2022/01/19/sports/football/marshawn-lynch-nfl.html?fbclid=IwAR0Z3AT1Nd037jzot_owOSsboaKFV0v_p_lVBJCFivw1oq41STXIb90DXuU&smid=fb-nytimes&smtyp=cur)
+
+</div>
+
+The former Super Bowl champion has always had a way with words. It has
+turned him into a trusted adviser to N.F.L. and college football players
+who want to use their “wittys to get up out that siti.”
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[3-3-5 Defense - FootballXOs.com - Free Football
+Playbooks](https://www.footballxos.com/free-football-playbooks/defense/3-3-stack-defense)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.footballxos.com/wp-content/uploads/FootballXOs-Logo.png)](https://www.footballxos.com/free-football-playbooks/defense/3-3-stack-defense)
+
+</div>
+
+Visit the post for more.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[3-4 Defense - FootballXOs.com - Free Football
+Playbooks](https://www.footballxos.com/free-football-playbooks/defense/3-4-defense)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.footballxos.com/wp-content/uploads/FootballXOs-Logo.png)](https://www.footballxos.com/free-football-playbooks/defense/3-4-defense)
+
+</div>
+
+The 3-4 Defense has become more popular in recent years with both NFL
+and College defenses. During the 1970's and 1980's the 3-4 defense was
+the most widely used defense in the NFL.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Air Raid Playbooks -
+FootballXOs.com](https://www.footballxos.com/free-football-playbooks/offense-playbooks/air-raid-offense)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.footballxos.com/wp-content/uploads/101-plays-from-the-oklahoma-offense-300x169.webp)](https://www.footballxos.com/free-football-playbooks/offense-playbooks/air-raid-offense)
+
+</div>
+
+View our detailed collection of air raid playbooks through the years
+from many different teams and coaches.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The 2018 advanced college football stats
+glossary](https://www.footballstudyhall.com/platform/amp/2018/2/2/16963820/college-football-advanced-stats-glossary)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.vox-cdn.com/thumbor/amQsgNV9rVH_6IaxXPEjU_gUi14=/0x182:4996x2798/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/10144587/usa_today_10296229.jpg)](https://www.footballstudyhall.com/platform/amp/2018/2/2/16963820/college-football-advanced-stats-glossary)
+
+</div>
+
+Here is a glossary for the terms used in the 2018 college football
+season previews at SB Nation.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[John Madden Was America’s Greatest Football
+Teacher](https://www.theringer.com/nfl/2021/12/29/22858278/john-madden-nfl-coach-broadcast-legend)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.vox-cdn.com/thumbor/ETbaurHkFxFMvM5o8ehzu_mHHIc=/0x47:1200x675/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/23131951/MaddenObit_Getty_AP_Ringer.jpeg)](https://www.theringer.com/nfl/2021/12/29/22858278/john-madden-nfl-coach-broadcast-legend)
+
+</div>
+
+Madden, who died Tuesday at the age of 85, made a generation of football
+fans smarter
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Products](https://makefullbacksgreatagain.com/collections/all)
+
+</div>
+
+<div class="card-image">
+
+[![](https://makefullbacksgreatagain.com/cdn/shop/files/LRG_DSC01159-wide-5_1200x1200.jpg?v=1614290617)](https://makefullbacksgreatagain.com/collections/all)
+
+</div>
+
+Make Fullbacks Great Again. The official site of Oakland Raiders
+fullback Keith Smith.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How Deion Sanders Turned Jackson State Into the Best Story in College
+Football](https://email.getpocket.com/ls/click?upn=ky17TgJ1REx4YaZOG279kYWhi9SJrpGaSG8ys-2FqNuKitgF3S4zIMRHyh0jDEZ-2F3htxjS_8XOtBOf0-2BgI-2BPwTgvOpOkjz0cTGvHU6qEjV-2B98KLYXhI5rK59fXfvPezcbJXxt4IFB2WkclMchoMOU67Wt6-2B3ATu7JD0Zf7DhGFZe-2BQSHlCyTQ1bboAVyYoCrkOVKwpuJzmMg1-2BvYQMWzNxCkPmiIJnvEid623b0bQqfYQU-2F-2FTNZXfUtGWNI9Dul2w-2B72T8Dtsso5KhzJEt93ziqubhkv16e3h6UnMIUEME-2Bd2V1EXDRgg-2FCaqsCxjhvcyeZGPlMLz8VJdpsjM6WFgZrxhUxSIJMSadsObOIeHeagghu0VRbZoxAcHpMGPCwQeo-2BZ68zfTHPR-2BPSWbsjbCxy0LUmpIeOu-2BJeP9WuDF-2BRjkFvaw2Ipg-2F01UXb0-2BGXV73NoG5J)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/unsafe/https%3A%2F%2Fcdn.vox-cdn.com%2Fthumbor%2F2e1qtbfTYyzSpKxoUEvBGS-Y_fQ%3D%2F0x0%3A1200x800%2F1400x1050%2Ffilters%3Afocal%28513x275%3A705x467%29%3Ano_upscale%28%29%2Fcdn.vox-cdn.com%2Fuploads%2Fchorus_image%2Fimage%2F70281021%2FDeionJacksonState_Getty_AP_Ringer.0.jpg)](https://email.getpocket.com/ls/click?upn=ky17TgJ1REx4YaZOG279kYWhi9SJrpGaSG8ys-2FqNuKitgF3S4zIMRHyh0jDEZ-2F3htxjS_8XOtBOf0-2BgI-2BPwTgvOpOkjz0cTGvHU6qEjV-2B98KLYXhI5rK59fXfvPezcbJXxt4IFB2WkclMchoMOU67Wt6-2B3ATu7JD0Zf7DhGFZe-2BQSHlCyTQ1bboAVyYoCrkOVKwpuJzmMg1-2BvYQMWzNxCkPmiIJnvEid623b0bQqfYQU-2F-2FTNZXfUtGWNI9Dul2w-2B72T8Dtsso5KhzJEt93ziqubhkv16e3h6UnMIUEME-2Bd2V1EXDRgg-2FCaqsCxjhvcyeZGPlMLz8VJdpsjM6WFgZrxhUxSIJMSadsObOIeHeagghu0VRbZoxAcHpMGPCwQeo-2BZ68zfTHPR-2BPSWbsjbCxy0LUmpIeOu-2BJeP9WuDF-2BRjkFvaw2Ipg-2F01UXb0-2BGXV73NoG5J)
+
+</div>
+
+On Wednesday, the top-ranked recruit in the country shocked the world by
+announcing he’ll play at Jackson State. The news has flipped college
+sports on its head—and sheds light on just what’s so remarkable about
+the Coach Prime experience.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why every team should install its offense in three days (and other
+politica](http://smartfootball.com/gameplanning/why-every-team-should-install-its-offense-in-three-days-and-other-political-thoughts-about-successful-offense#sthash.SBPF9Uzs.dpbs)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[» Football Strategy 101: Louisiana State vs. West
+Virginia](http://grantland.com/features/louisiana-state-vs-west-virginia)
+
+</div>
+
+<div class="card-image">
+
+[![](https://grantland.com/wp-content/uploads/2011/10/ncf_a_holgorsen_gb1_57611.jpg?w=600)](http://grantland.com/features/louisiana-state-vs-west-virginia)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Lawsuits, secret taping and the unraveling of a powerhouse high school
+football
+program](https://www.espn.com/college-football/story/_/id/31099968/lawsuits-secret-tapes-unraveling-powerhouse-high-school-football-program)
+
+</div>
+
+<div class="card-image">
+
+[![](https://a.espncdn.com/combiner/i?img=%2Fphoto%2F2021%2F0322%2Fr830398_1296x729_16%2D9.jpg)](https://www.espn.com/college-football/story/_/id/31099968/lawsuits-secret-tapes-unraveling-powerhouse-high-school-football-program)
+
+</div>
+
+Valdosta might be a 24-time state football champ, but lately its program
+has been rocked by a racial discrimination lawsuit filed by a former
+coach, the hiring of controversial coach Rush Propst and a secret
+recording that alleged cheating by SEC powers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Jet sweep read option \| Football
+Play](https://www.playartpro.com/football/play/86197/a4e7341/jet-sweep-read-option)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[BCF Toys - Index](https://www.bcftoys.com)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Play calling system](https://en.wikipedia.org/wiki/Play_calling_system)
+
+</div>
+
+A play calling system in American football is the specific language and
+methods used to call offensive plays.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Coach O & The Cajun
+People](https://www.theamericanconservative.com/dreher/coach-o-cajun-people)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.theamericanconservative.com/wp-content/uploads/2019/12/Screen-Shot-2019-12-10-at-9.38.09-AM.png)](https://www.theamericanconservative.com/dreher/coach-o-cajun-people)
+
+</div>
+
+An exile from French Louisiana realizes that Ed Orgeron is her very own
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[cfbstats.com - 2019 National Team
+Leaders](http://www.cfbstats.com/2019/leader/national/team/defense/split01/category21/sort01.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://coachesbythenumbers.com/wp-content/custom-php/images/socialLogo.png)](http://www.cfbstats.com/2019/leader/national/team/defense/split01/category21/sort01.html)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Free Football Playbooks - FootballXOs.com - NFL, College, High
+School](https://www.footballxos.com/free-football-playbooks)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.footballxos.com/wp-content/uploads/FootballXOs-Logo.png)](https://www.footballxos.com/free-football-playbooks)
+
+</div>
+
+We have a lot of free football playbooks for you to view, download and
+enjoy. Use these files to enjoy and understand the game of football
+better.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[nfl-football-ops/Big-Data-Bowl: Homepage for the National Football
+League's](https://github.com/nfl-football-ops/Big-Data-Bowl)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/3a3c6917ce60532373ca508a24a094a136d16fbdbaa6427bb9c21c87bedfb88e/nfl-football-ops/Big-Data-Bowl)](https://github.com/nfl-football-ops/Big-Data-Bowl)
+
+</div>
+
+Homepage for the National Football League's Big Data Bowl -
+nfl-football-ops/Big-Data-Bowl
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Football Route Tree, Explained \|
+STACK](https://www.stack.com/a/route-tree)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.stack.com/wp-content/uploads/2018/05/The-Route-Tree.jpg)](https://www.stack.com/a/route-tree)
+
+</div>
+
+A football route tree consists of a single straight line with other
+lines branching off it, depicting the various possible routes. Here is
+what a basic football route tree looks like.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The game of their lives was 25 years ago. They’re still replaying it in
+the](https://www.washingtonpost.com/sports/the-game-of-their-lives-was-25-years-ago-theyre-still-replaying-it-in-their-minds/2018/12/20/92a95044-ff22-11e8-83c0-b06139e540e5_story.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/WODXKAXVRMI6RGOCZ7FG7T3BBQ.jpg&w=1440)](https://www.washingtonpost.com/sports/the-game-of-their-lives-was-25-years-ago-theyre-still-replaying-it-in-their-minds/2018/12/20/92a95044-ff22-11e8-83c0-b06139e540e5_story.html)
+
+</div>
+
+The exploits of a high school football team can become small-town
+legend. For the Prestonsburg Blackcats of Eastern Kentucky, the 1993
+season “was like something out of a movie, if you’ve ever seen
+‘Hoosiers,’ ” one coach said. Reality, however, left more complicated
+memories.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Horns Down should become college football’s universal hand
+signal](https://www.sbnation.com/college-football/2018/11/24/18109550/horns-down-texas-oklahoma-west-virginia-everyone)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.vox-cdn.com/thumbor/o_e2Hr5CeKLYMT04yHzGA0aobnc=/0x216:3000x1787/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/13466087/154068005.jpg.jpg)](https://www.sbnation.com/college-football/2018/11/24/18109550/horns-down-texas-oklahoma-west-virginia-everyone)
+
+</div>
+
+It offends rich people who don’t like fun, and what’s more fun than
+that?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Expectations and Realities of Six-Man Football in Small-Town
+Texas](https://www.texasmonthly.com/the-culture/expectations-realities-six-man-football-small-town-texas)
+
+</div>
+
+<div class="card-image">
+
+[![](https://txmo-server.imgix.net/2018/11/Leakey-football-1.jpg?auto=compress&crop=faces&fit=fit&h=1250&ixlib=php-3.0.0&q=45&w=2000&s=e1a6db249938989cf26284ff6def106a)](https://www.texasmonthly.com/the-culture/expectations-realities-six-man-football-small-town-texas)
+
+</div>
+
+On the football field, one team went from six to eleven. Another went
+from eleven to six. And both faced challenges they didn’t expect.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Moonshine and the Mountaineers: West Virginia's tailgate
+tradition](http://kwese.espn.com/college-football/story/_/id/25196726/west-virginia-mountaineers-moonshine-college-football-tradition-tailgates)
+
+</div>
+
+<div class="card-image">
+
+[![](https://a.espncdn.com/combiner/i?img=%2Fphoto%2F2018%2F1105%2Fr459480_1296x729_16%2D9.jpg)](http://kwese.espn.com/college-football/story/_/id/25196726/west-virginia-mountaineers-moonshine-college-football-tradition-tailgates)
+
+</div>
+
+The potent homemade whiskey is a hand-me-down through generations and a
+favorite of visiting fans. It's also illegal -- not that anyone cares.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Despite devastating injuries, struggling towns still see football as a
+way](http://www.washingtonpost.com/sf/national/2017/11/14/eldon-football)
+
+</div>
+
+</div>
+
+</div>

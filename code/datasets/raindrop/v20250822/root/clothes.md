@@ -1,0 +1,1477 @@
+<div class="nav">
+
+⟵ [Up](index.html)  \|  [Index](index.html)
+
+</div>
+
+# clothes
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+
+[Vollebak’s Electromagnetic Shielding Jacket creates a NASA-grade
+Faraday cage around you and your
+gadgets](https://www.yankodesign.com/2025/07/30/vollebaks-electromagnetic-shielding-jacket-creates-a-nasa-grade-faraday-cage-around-you-and-your-gadgets/?utm_source=feedly&utm_medium=rss&utm_campaign=vollebaks-electromagnetic-shielding-jacket-creates-a-nasa-grade-faraday-cage-around-you-and-your-gadgets)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.yankodesign.com/images/design_news/2025/07/vollebaks-electromagnetic-shielding-jacket-creates-a-nasa-grade-faraday-cage-around-you-and-your-gadgets/vollebak_electromagnetic_shielding_bomber_jacket_1.jpeg)](https://www.yankodesign.com/2025/07/30/vollebaks-electromagnetic-shielding-jacket-creates-a-nasa-grade-faraday-cage-around-you-and-your-gadgets/?utm_source=feedly&utm_medium=rss&utm_campaign=vollebaks-electromagnetic-shielding-jacket-creates-a-nasa-grade-faraday-cage-around-you-and-your-gadgets)
+
+</div>
+
+"But why?!" is a question I often find myself asking Vollebak when they
+create some of their oddly fascinating garments. A glow-in-the-dark
+puffer, a jacket that can survive mars, another garment literally made
+from woven metal, Vollebak tends to push the limits of what materials
+can be incorporated meaningfully into fashion. Their latest apparel? A
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How price increases are adding up at
+Shein](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/cdn/images/reuters-graphics.jpg)](https://www.reuters.com/graphics/USA-TRUMP/TARIFF-SHEIN/lbpgzlrjzvq/)
+
+</div>
+
+Evidence for the impact of Trump’s trade war has shown up at the popular
+China-founded online retailer.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Walk In These](https://longreads.com/2025/07/01/shoes-history-society/)
+
+</div>
+
+"Shoes are deeply personal, literally moulded to our lives. But they
+create our social lives as much as express them."
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Shoes not only express our social roles, they also create them \| Aeon
+Essays](https://aeon.co/essays/shoes-not-only-express-our-social-roles-they-also-create-them?src=longreads)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.aeonmedia.co/images/2d14427b-791f-4d4d-a731-3382093dc3e7/essay-1700-2008bt6502.jpg?width=1200&quality=75&format=auto)](https://aeon.co/essays/shoes-not-only-express-our-social-roles-they-also-create-them?src=longreads)
+
+</div>
+
+Shoes are deeply personal, literally moulded to our lives. But they
+create our social lives as much as express them
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Has Clothing Declined in
+Quality?](https://marginalrevolution.com/marginalrevolution/2025/05/has-clothing-declined-in-quality.html?utm_source=feedly&utm_medium=rss&utm_campaign=has-clothing-declined-in-quality)
+
+</div>
+
+<div class="card-image">
+
+[![](https://marginalrevolution.com/wp-content/uploads/2025/05/Real-P-of-Clothing.png)](https://marginalrevolution.com/marginalrevolution/2025/05/has-clothing-declined-in-quality.html?utm_source=feedly&utm_medium=rss&utm_campaign=has-clothing-declined-in-quality)
+
+</div>
+
+The Office of the U.S. Trade Representative (USTR) recently tweeted that
+they wanted to bring back apparel manufacturing to the United States.
+Why would anyone want more jobs with long hours and low pay, whether
+historically in the US or currently in places like Bangladesh? Thanks in
+part to international trade, the real price of \[…\]
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Ecommerce and the Secondhand
+Boom](https://www.practicalecommerce.com/ecommerce-and-the-secondhand-boom)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.practicalecommerce.com/wp-content/uploads/2025/03/032025-featured-vintage-clothing.jpg)](https://www.practicalecommerce.com/ecommerce-and-the-secondhand-boom)
+
+</div>
+
+Culture, marketplaces, and economics contribute to consumer demand for
+used clothing. Merchants can benefit.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Body By Tacos I Hope They Serve Tacos In Hell
+T-Shirt](https://houseofchingasos.com/products/body-by-tacos-i-hope-they-serve-tacos-in-hell-t-shirt)
+
+</div>
+
+<div class="card-image">
+
+[![](http://houseofchingasos.com/cdn/shop/files/TBT.jpg?v=1716745815)](https://houseofchingasos.com/products/body-by-tacos-i-hope-they-serve-tacos-in-hell-t-shirt)
+
+</div>
+
+For Taco Freaks Only! Wear this one every Tuesday and for those long
+romantic walks to the taco truck. • 100% ring-spun cotton True To Size•
+Fast Shipping With Tracking• Customer Satisfaction Always Guaranteed
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Buy All This, Look
+Rich](https://www.thecut.com/article/quince-legit-good-brand-dupes-shopping.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pyxis.nymag.com/v1/imgs/b2d/844/fa96cb38fba35f264510aa1b8c5a86af58-Quince-gif.1x.rsocial.w1200.gif)](https://www.thecut.com/article/quince-legit-good-brand-dupes-shopping.html)
+
+</div>
+
+How Quince, the one-stop shop for everything from cashmere sweaters to
+caviar, seduced a generation of jaded shoppers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Seams Pretty Good: How to Know You’re Buying Quality
+Clothes](https://getpocket.com/explore/item/seams-pretty-good-how-to-know-you-re-buying-quality-clothes)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pocket-image-cache.com/1200x/filters:format(jpg):extract_focal()/https%3A%2F%2Fi.guim.co.uk%2Fimg%2Fmedia%2F4d01c8e642b6cace4de963859631b55e6bbd1b49%2F0_30_4368_2621%2Fmaster%2F4368.jpg%3Fwidth%3D465%26quality%3D45%26auto%3Dformat%26fit%3Dmax%26dpr%3D2%26s%3Dcb68bc9b2f8d5d6b7d65408bb0ba1604)](https://getpocket.com/explore/item/seams-pretty-good-how-to-know-you-re-buying-quality-clothes)
+
+</div>
+
+From rubbing fabric on your neck to checking stitch size, there are ways
+to test how well made clothes are before you try on.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[All Meat Church Merch – Page
+4](https://www.meatchurch.com/collections/all-meat-church-merch?page=4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.meatchurch.com/cdn/shop/files/38404726_870592916481802_7993928538749140992_o_1200x1200.jpg?v=1613193759)](https://www.meatchurch.com/collections/all-meat-church-merch?page=4)
+
+</div>
+
+This is where you can find the best BBQ merchandise online.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Cotton traced to Xinjiang, China, present in over 800 products:
+report](https://www.fashiondive.com/news/xinjiang-cotton-china-applied-dna-sciences/716654)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.fashiondive.com/imgproxy/IKyp4DhkZ22134ectKoyYKdLyuxUKi0f4Rti4gDzLrg/g:ce/rs:fit:770:435/bG9jYWw6Ly8vZGl2ZWltYWdlL0dldHR5SW1hZ2VzLTU1OTI4OTM5LmpwZw==.webp)](https://www.fashiondive.com/news/xinjiang-cotton-china-applied-dna-sciences/716654)
+
+</div>
+
+More than 800 items, including apparel and footwear, had fibers from the
+contested region, despite U.S. bans over forced labor concerns.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Prada is expanding production in Italy and its artisanal
+talent](https://www.fastcompany.com/91122223/prada-expands-production-italy-artisanal-talent)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_auto,q_auto,c_fit/wp-cms-2/2024/05/AP24128604914633.jpg)](https://www.fastcompany.com/91122223/prada-expands-production-italy-artisanal-talent)
+
+</div>
+
+'In the last six or seven years, with the extraordinary growth in
+knitwear, we decided to create an all-around industrial hub.'
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Is Dr. Martens a fashion
+victim?](https://www.fastcompany.com/91114968/dr-martens-slumping-stock-fashion-victim?amp;utm_campaign=rss+fastcompany&utm_content=rss&utm_medium=feed&utm_source=rss&partner=rss)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_auto,q_auto,c_fit,w_1024,h_1024/wp-cms-2/2024/05/p-91114968-Is-Dr-Martens-a-fashion-victim-Rob-Walker-Branded-Fast-Company.jpg)](https://www.fastcompany.com/91114968/dr-martens-slumping-stock-fashion-victim?amp;utm_campaign=rss+fastcompany&utm_content=rss&utm_medium=feed&utm_source=rss&partner=rss)
+
+</div>
+
+Just three years after Dr. Martens' \$5 billion IPO, the Docs boot brand
+is struggling and the CEO is stepping down. What went wrong?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[This clever new tool will help you buy fewer
+clothes](https://www.fastcompany.com/91090176/this-clever-new-tool-will-help-you-buy-fewer-clothes?amp;utm_campaign=rss+fastcompany&utm_content=rss&utm_medium=feed&utm_source=rss&partner=rss)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.fastcompany.com/image/upload/f_auto,q_auto,c_fit/wp-cms-2/2024/04/p-1-91090176-eileen-fisher.jpg)](https://www.fastcompany.com/91090176/this-clever-new-tool-will-help-you-buy-fewer-clothes?amp;utm_campaign=rss+fastcompany&utm_content=rss&utm_medium=feed&utm_source=rss&partner=rss)
+
+</div>
+
+Eileen Fisher has vowed to reduce overconsumption. Now, the brand is
+making good on its promise.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to choose clothes for longevity, not the
+landfill](https://www.ted.com/talks/diarra_bousso_how_to_choose_clothes_for_longevity_not_the_landfill/transcript)
+
+</div>
+
+<div class="card-image">
+
+[![](https://pi.tedcdn.com/r/talkstar-photos.s3.amazonaws.com/uploads/4616f280-7135-4453-b6d6-8ca66c37b228/DiarraBousso_2023S-embed.jpg?u%5Br%5D=2&u%5Bs%5D=0.5&u%5Ba%5D=0.8&u%5Bt%5D=0.03&quality=82c=1050%2C550&w=1050)](https://www.ted.com/talks/diarra_bousso_how_to_choose_clothes_for_longevity_not_the_landfill/transcript)
+
+</div>
+
+Buying cheap clothing online can be satisfying, but it comes with
+not-so-hidden environmental costs. When designer Diarra Bousso was
+growing up in Senegal, her family bought and created new outfits for
+longevity rather than on impulse — an intention she carries forth in her
+fashion tech brand. Outlining three sustainable principles, including
+crowdsourcing designs and limiting excess inventory, Bousso shows it's
+possible to decrease waste while increasing profit — and shares how to
+apply this wisdom across the fashion industry.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why I spent 3 years working on a coat
+hanger](https://www.youtube.com/watch?t=109s&v=vREokZa4dNU)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.ytimg.com/vi/vREokZa4dNU/maxresdefault.jpg)](https://www.youtube.com/watch?t=109s&v=vREokZa4dNU)
+
+</div>
+
+The Coat Hinger is available for 30 days on Kickstarter! Go go go!!
+https://kickstarter.com/projects/simonegiertz/coat-hingers-foldable-coat-hangers
+Thank you so much for supporting my creative whims throughout the years.
+Can you believe it's been almost a decade?!
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Maybe Today Satan Funny Men/Unisex
+T-Shirt](https://www.famousinreal.life/products/maybe-today-satan-menunisex-t-shirt?variant=39460285415447)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.famousinreal.life/cdn/shop/products/Heather_Indigo_fe13ee4f-204e-44d7-b84a-8798e23d207c_240x.jpg?v=1697570605)](https://www.famousinreal.life/products/maybe-today-satan-menunisex-t-shirt?variant=39460285415447)
+
+</div>
+
+Everybody has their day Say hello to your new favorite t-shirt. Our tees
+feature a classic set-in crew neck collar, a modern fit with tapered
+shoulders make it an ideal choice for a wide range of body types. Side
+seam stitched construction ensures it keeps its shape wash after wash.
+We use an incredibly soft cotton that’s combed and ringspun. With a
+fabric weight of 4.2 oz, they have just the right amount of comfort and
+breathability. Solid colors feature 100% cotton, heather colors feature
+a 52/48 cotton/poly blend with the exception of Athletic Heather which
+is a 90/10 blend. Fabric is not pre-shrunk so some shrinking should be
+expected.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Baseball cap history and
+timeline](https://www.mlb.com/news/featured/baseball-cap-history-and-timeline?src=longreads)
+
+</div>
+
+<div class="card-image">
+
+[![](https://img.mlbstatic.com/mlb-images/image/upload/t_2x1/t_w1536/mlb/dv93waepjh6thyngynmr.jpg)](https://www.mlb.com/news/featured/baseball-cap-history-and-timeline?src=longreads)
+
+</div>
+
+The Official Site of Major League Baseball
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Squirrelzilla
+T-Shirt](https://www.headlineshirts.net/squirrelzilla-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/HL2923MRE_shirt_b2e4118e-35ed-4cb1-8836-915879ba7774_600x.jpg?v=1710949777)](https://www.headlineshirts.net/squirrelzilla-t-shirt.html)
+
+</div>
+
+This funny t-shirt twist on the Godzilla movie shows off your sense of
+humor and strange affinity for squirrels in hilarious style. Printed
+with eco-friendly inks on ultra soft fabric, this designer squirrel
+graphic tee will help us all rally together to prevent radioactive
+acorns.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Shoppers say secondhand stores like Goodwill are getting too expensive
+as
+G](https://www.businessinsider.com/shoppers-say-goodwill-salvation-army-pricey-as-thrifting-becomes-cool-2023-3#post-headline)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.insider.com/5ffdce36c8408b0019bd414a?width=1200&format=jpeg)](https://www.businessinsider.com/shoppers-say-goodwill-salvation-army-pricey-as-thrifting-becomes-cool-2023-3#post-headline)
+
+</div>
+
+The US thrift market has grown substantially in recent years as
+thrifting has become a popular pursuit of Gen Z shoppers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why fabric fraud is so easy to
+hide](https://www.bbc.com/future/article/20230206-fabric-fraud-how-to-spot-fake-fabric-claims)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ychef.files.bbci.co.uk/624x351/p0f1ccgn.jpg)](https://www.bbc.com/future/article/20230206-fabric-fraud-how-to-spot-fake-fabric-claims)
+
+</div>
+
+How can we tell if the clothes in our wardrobes really are what they
+claim to be?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Shopping for Apparel in an Online World: UI/UX Design for Virtual
+Clothing](https://www.toptal.com/designers/ux/virtual-clothing-try-on)
+
+</div>
+
+<div class="card-image">
+
+[![](https://bs-uploads.toptal.io/blackfish-uploads/components/open_graph_image/9409265/og_image/optimized/UI-UX-Design-for-Virtual-Clothing-Try-On_Technology_Social__1_-bca6c6bfca76c09aeaca1d62696dbc61.png)](https://www.toptal.com/designers/ux/virtual-clothing-try-on)
+
+</div>
+
+How AR and VR are reshaping apparel e-commerce.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Denim Hunter Brit Eaton Is the Indiana Jones of Old
+Jeans](https://www.gq.com/story/brit-eaton-vintage-denim-salvager)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.gq.com/photos/634981606a99affbed46477e/16:9/w_1280,c_limit/01-noname%20(9).jpg)](https://www.gq.com/story/brit-eaton-vintage-denim-salvager)
+
+</div>
+
+The salvager of long-buried pants risks his life to give relics of the
+Old West a second shot.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Everyone—From Mechanics to Crust Punks—Wears
+Dickies](https://www.texasmonthly.com/style/everyone-wears-dickies)
+
+</div>
+
+<div class="card-image">
+
+[![](https://img.texasmonthly.com/2022/10/dickies-apparel.jpg?auto=compress&crop=faces&fit=fit&fm=pjpg&ixlib=php-3.3.1&q=45)](https://www.texasmonthly.com/style/everyone-wears-dickies)
+
+</div>
+
+The Fort Worth apparel company celebrates a century as a blank cultural
+canvas.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Do So Many Zippers Say
+YKK?](https://slate.com/business/2012/04/ykk-zippers-why-so-many-designers-use-them.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://compote.slate.com/images/1a7410dc-1b62-419a-a723-66e113f284e2.jpg?width=1560)](https://slate.com/business/2012/04/ykk-zippers-why-so-many-designers-use-them.html)
+
+</div>
+
+The zipper is one of those inventions—along with the bicycle—that seems
+as though it should have occurred much earlier in history. How
+complicated...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[This shirt was made from the same fabric used by Egyptians to wrap
+mummies…](https://www.yankodesign.com/2022/08/31/this-shirt-was-made-from-the-same-fabric-used-by-egyptians-to-wrap-mummies-and-itll-last-decades)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.yankodesign.com/images/design_news/2022/08/auto-draft/vollebak_off_grid_shirt_1.jpg)](https://www.yankodesign.com/2022/08/31/this-shirt-was-made-from-the-same-fabric-used-by-egyptians-to-wrap-mummies-and-itll-last-decades)
+
+</div>
+
+If you ever looked at a nettle (those plants that give you a nasty
+sting) and thought - hey, this could make a great fabric for clothing
+people, chances are you're either Egyptian, or you're someone at
+Vollebak. The London-based alternative clothing brand is known for
+working with kinds of materials that you'd never find
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Yarrow Goods - high quality unisex loungewear printed in the
+USA](https://www.yarrowgoods.com/?fbclid=IwAR2EaU-EkMVeY66X1QeUJWDguCCrulAsEyracZn35PGup2fA6dA6hSa8dbI)
+
+</div>
+
+Sweatshirts, joggers, unique tee shirts, blankets and beyond delivered
+to your door. We design and print unique apparel in the USA. Located in
+Northern California
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[H P Lovecraft Narragansett Innsmouth Olde Ale Tshirt Jason
+Eckhardt](https://www.weirdprovidence.org/store/p54/Innsmouth_Olde_Ale_Tshirt.html)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[LearnMYOG](https://learnmyog.com)
+
+</div>
+
+Learn to Make Your Own Gear (MYOG). DIY sewing patterns for ultralight
+backpacks, technical apparel, and outdoor adventurers.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Becaucome Provence Linen Cotton
+Shirt](https://www.becaucome.com/products/linen-shirt)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.wshopon.com/image/2022/06/feb4991a28e099bf8285a1ebeceaded73c3f8771a843e81102907685b5642bf1.jpeg)](https://www.becaucome.com/products/linen-shirt)
+
+</div>
+
+Notice：Due to the small size of the clothes, it is recommended to buy
+one size up Buy 2 Get Extra 5% OFF & FREE SHIPPING Buy 3 Get Extra 10%
+OFF & FREE SHIPPING Buy 4 Get Extra 15% OFF & FREE SHIPPING (No need to
+use promotional codes, the system will automatically reduce the price
+after adding to the shopping cart.) From beach walks to elegant seaside
+sunset dinner dates - this shirt is always the best choice. Exquisitely
+crafted from the highest quality linen cotton blend, it
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The magic of invisible
+mending.](https://www.reddit.com/r/BeAmazed/comments/wmi8nz/the_magic_of_invisible_mending)
+
+</div>
+
+<div class="card-image">
+
+[![](https://external-preview.redd.it/h8CJEdBxuN82u6pgY4gjsjxqMuysiogWSz_r-4cRPfE.png?overlay-align=center,middle&overlay-height=25p&overlay=%2Fwatermark%2Fplay_button.png&format=pjpg&auto=webp&s=92f302e4e59f8999b7f3da62a57e9ee169bd0109)](https://www.reddit.com/r/BeAmazed/comments/wmi8nz/the_magic_of_invisible_mending)
+
+</div>
+
+1.4K votes, 26 comments. 8.3M subscribers in the BeAmazed community. I
+bet you will /r/BeAmazed! A place to find and share amazing things
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Spotify For Clothes: How I Launched A Business Helping Guys Discover
+New Cl](https://www.starterstory.com/stories/on-brand)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d1coqmn8qm80r4.cloudfront.net/stories/social_shares/000/076/253/original/open-uri20240920-2-1b82qw5?1726838043)](https://www.starterstory.com/stories/on-brand)
+
+</div>
+
+Hello! Who are you and what business did you start?My name is Brian
+McEuen, and I'm the founder of On Brand. We help guys shop for clothes
+online by curating personalized selections as if they were walking into
+their very own store. We're like Spotify for clothes! Another way to put
+it:...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Glimpse Inside a Florentine Silk-Weaving
+Workshop](https://www.nytimes.com/2022/07/11/travel/antique-florentine-silk-mill.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2022/07/11/travel/11travel-italy-promo/11travel-italy1-largeHorizontalJumbo.jpg?year=2022&h=682&w=1024&s=f3925f1a1c80f429ead8a621fb18bc8c861bb54731f96e83ff0d644c3179f027&k=ZQJBKqZ0VN)](https://www.nytimes.com/2022/07/11/travel/antique-florentine-silk-mill.html)
+
+</div>
+
+The Antico Setificio Fiorentino, which relies on looms from the 18th and
+19th centuries, has been producing precious textiles since 1786.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Fast, Cheap, and Out of Control: Inside Shein’s Sudden
+Rise](https://www.wired.com/story/fast-cheap-out-of-control-inside-rise-of-shein)
+
+</div>
+
+<div class="card-image">
+
+[![](https://media.wired.com/photos/62714b994fd425eedd3780f1/191:100/w_1280,c_limit/Backchannel_TA_220419_wired8539-v2.jpg)](https://www.wired.com/story/fast-cheap-out-of-control-inside-rise-of-shein)
+
+</div>
+
+The Chinese company has become a fast-fashion juggernaut by appealing to
+budget-conscious Gen Zers. But its ultralow prices are hiding
+unacceptable costs.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How polyester bounced back - Works in
+Progress](https://www.worksinprogress.co/issue/how-polyester-bounced-back)
+
+</div>
+
+<div class="card-image">
+
+[![](https://wip.gatspress.com/wp-content/uploads/2022/08/K.Bringas_WIP-1-1.png)](https://www.worksinprogress.co/issue/how-polyester-bounced-back)
+
+</div>
+
+Polyester went from being the world’s most hated fabrics to one of its
+favorites. It's so successful that many people don’t even realize
+they’re wearing polyester today.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Seams pretty good: how to know you’re buying quality
+clothes](https://www.theguardian.com/lifeandstyle/2022/apr/26/seams-pretty-good-how-to-know-youre-buying-quality-clothes)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i.guim.co.uk/img/media/4d01c8e642b6cace4de963859631b55e6bbd1b49/0_30_4368_2621/master/4368.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctYWdlLTIwMjIucG5n&enable=upscale&s=bb1176cbc59735c5c6324425ba05a50e)](https://www.theguardian.com/lifeandstyle/2022/apr/26/seams-pretty-good-how-to-know-youre-buying-quality-clothes)
+
+</div>
+
+From rubbing fabric on your neck to checking stitch size, there are ways
+to test how well made clothes are before you try on
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[5 Surprising Findings About How People Actually Buy Clothes and
+Shoes](https://hbr.org/2018/06/5-surprising-findings-about-how-people-actually-buy-clothes-and-shoes)
+
+</div>
+
+<div class="card-image">
+
+[![](https://hbr.org/resources/images/article_assets/2018/05/Jun18_5_131667340.jpg)](https://hbr.org/2018/06/5-surprising-findings-about-how-people-actually-buy-clothes-and-shoes)
+
+</div>
+
+Retail has been constantly reinventing itself, and participants race to
+keep up with what feels like a series of epic shifts in consumer
+preferences. To get a clearer, more-complete picture, we studied the
+actual decisions made by 1,500 apparel and footwear shoppers in the
+United States. Our five most surprising findings: shopping is not yet
+truly omnichannel; when consumers buy online, they purchase more; online
+journeys take longer than in-store; brand stores and website generate
+higher spend than multibrand stores; and, very often, consumers just
+want to buy new versions of an item they already own.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Your Shopping Cart – 88strong](https://88strong.com/cart)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+['STAX' Men's T-Shirt \|
+Spreadshirt](https://www.spreadshirt.com/shop/design/stax+mens+t-shirt-D5e1093b9f9376451e01eb811?appearance=33&sellable=aZdAlOZga2T1Dlar2grQ-210-7&size=4)
+
+</div>
+
+<div class="card-image">
+
+[![](https://image.spreadshirtmedia.com/image-server/v1/products/T210A33PA4301PT17X41Y51D1027188642W25000H10100/views/1,width=1200,height=630,appearanceId=33,backgroundColor=F2F2F2,modelId=1543,crop=design/stax-mens-t-shirt.jpg)](https://www.spreadshirt.com/shop/design/stax+mens+t-shirt-D5e1093b9f9376451e01eb811?appearance=33&sellable=aZdAlOZga2T1Dlar2grQ-210-7&size=4)
+
+</div>
+
+Retro record label - STAX
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Products](https://makefullbacksgreatagain.com/collections/all)
+
+</div>
+
+<div class="card-image">
+
+[![](https://makefullbacksgreatagain.com/cdn/shop/files/LRG_DSC01159-wide-5_1200x1200.jpg?v=1614290617)](https://makefullbacksgreatagain.com/collections/all)
+
+</div>
+
+Make Fullbacks Great Again. The official site of Oakland Raiders
+fullback Keith Smith.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Nasty Logistics of Returning Your Too-Small
+Pants](https://www.theatlantic.com/magazine/archive/2021/11/free-returns-online-shopping/620169)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.theatlantic.com/thumbor/s3Wrdu-sxArJ2G0WWJlQUtHDz1c=/0x20:2000x1062/1200x625/media/img/2021/09/DIS_Mull_ReturnsHP/original.jpg)](https://www.theatlantic.com/magazine/archive/2021/11/free-returns-online-shopping/620169)
+
+</div>
+
+What happens to the stuff you order online after you send it back?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why Spanish colonial officials feared the power of clothing \| Psyche
+Ideas](https://psyche.co/ideas/why-spanish-colonial-officials-feared-the-power-of-clothing)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.aeonmedia.co/images/8599abc0-0e07-4fe4-8674-5acdd8b792df/original.jpg)](https://psyche.co/ideas/why-spanish-colonial-officials-feared-the-power-of-clothing)
+
+</div>
+
+Colonial society depends on a clear distinction between the rulers and
+the ruled. Clothing could create problems
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Well-Woven Tale: The fabric of the modern
+world](https://www.historytoday.com/archive/review/well-woven-tale)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.historytoday.com/sites/default/files/styles/large/public/2021-06/fabric.jpg?itok=tjvZa2iA)](https://www.historytoday.com/archive/review/well-woven-tale)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How clothing and climate change kickstarted agriculture \| Aeon
+Essays](https://aeon.co/essays/how-clothing-and-climate-change-kickstarted-agriculture)
+
+</div>
+
+<div class="card-image">
+
+[![](https://images.aeonmedia.co/images/0f515236-c924-4a4b-8a77-ce64dffdbffe/essay-tarkhan-dress-full.jpg?width=1200&quality=75&format=auto)](https://aeon.co/essays/how-clothing-and-climate-change-kickstarted-agriculture)
+
+</div>
+
+What if the need for fabric, not food, in the face of a changing climate
+is what first tipped humanity towards agriculture?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Algorithm-Assisted Inventory
+Curation](https://multithreaded.stitchfix.com/blog/2021/05/12/algorithm-assisted-inventory-curation)
+
+</div>
+
+<div class="card-image">
+
+[![](https://multithreaded.stitchfix.com/assets/images/logomark-linkedin.jpg)](https://multithreaded.stitchfix.com/blog/2021/05/12/algorithm-assisted-inventory-curation)
+
+</div>
+
+Building the raw materials for personalization at scale
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Clothing, How Did They Make It? Part IVa: Dyed in the
+Wool](https://acoup.blog/2021/04/02/collections-clothing-how-did-they-make-it-part-iva-dyed-in-the-wool)
+
+</div>
+
+<div class="card-image">
+
+[![](https://i0.wp.com/acoup.blog/wp-content/uploads/2021/04/800px-pompeii_-_fullonica_of_veranius_hypsaeus_2_-_man-1.jpg?fit=778%2C452&ssl=1)](https://acoup.blog/2021/04/02/collections-clothing-how-did-they-make-it-part-iva-dyed-in-the-wool)
+
+</div>
+
+This post is also available in audio form, thanks to the efforts of our
+volunteer narrator. This is the first half of the fourth part of our
+four part (I, II, III, IVa, IVb) look at the production …
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Pants – Kaku Streetwear](https://kakustreetwear.com/collections/pants)
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The fabric no one knows how to
+make](https://www.bbc.com/future/article/20210316-the-legendary-fabric-that-no-one-knows-how-to-make)
+
+</div>
+
+<div class="card-image">
+
+[![](https://ychef.files.bbci.co.uk/624x351/p099wj5v.jpg)](https://www.bbc.com/future/article/20210316-the-legendary-fabric-that-no-one-knows-how-to-make)
+
+</div>
+
+Nearly 200 years ago, Dhaka muslin was the most valuable fabric on the
+planet. Then it was lost altogether. How did this happen? And can we
+bring it back?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[I Never Said That Men's Funny Jesus T-Shirt \| Headline
+Shirts](https://www.headlineshirts.net/i-never-said-that-t-shirt.html#.X-YUt9ZMGo5)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/HL4028MSI_shirt_600x.jpg?v=1717780618)](https://www.headlineshirts.net/i-never-said-that-t-shirt.html#.X-YUt9ZMGo5)
+
+</div>
+
+You'll never be misquoted wearing this funny t-shirt of Jesus setting
+the record straight. You can quote him on that. This tee is made with
+ultra soft fabric and printed with eco-friendly inks.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Fermat's Library \|
+Teespring](https://teespring.com/stores/fermats-library)
+
+</div>
+
+<div class="card-image">
+
+[![](https://og-image.spri.ng/api/og?title=Fermat%27s+Library&foreground=%23000000&color=%23ffffff&logo=https%3A%2F%2Fdslv9ilpbe7p1.cloudfront.net%2FOCKjm1V1-a3M-v1AqgiTrQ_store_logo_image.png)](https://teespring.com/stores/fermats-library)
+
+</div>
+
+Spring Store
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Mens Beast Mode Apparel, BEAST MODE Mens Clothing, Mens Beast Mode
+Shirts \| BEAST
+MODE](https://www.beastmodeonline.com/men/t-21315021+ga-01+z-936836-2895440628)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.beastmodeonline.com/content/assets/__0-818740411703.4017.svg)](https://www.beastmodeonline.com/men/t-21315021+ga-01+z-936836-2895440628)
+
+</div>
+
+Buy the newest Mens Beast Mode Apparel, BEAST MODE Mens Clothing and
+more at BEAST MODE. Enjoy Quick Flat-Rate Shipping On Any Size Order of
+Mens Beast Mode Apparel.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Woke up Sexy as Hell -
+The Home T.](https://www.thehomet.com/products/woke-up-sexy-as-hell?variant=31828517847109)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.thehomet.com/cdn/shop/products/Sexy_AG.jpg?v=1719330116)](https://www.thehomet.com/products/woke-up-sexy-as-hell?variant=31828517847109)
+
+</div>
+
+You're both confident and not afraid to laugh at yourself a little. And
+because of that, you Woke up Sexy as Hell again today. Available in a
+super soft t-shirt or sweatshirt.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Sweatpants Forever: How the Fashion Industry Collapsed (Published
+2020)](https://www.nytimes.com/interactive/2020/08/06/magazine/fashion-sweatpants.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2020/08/09/magazine/09mag-Sweatpants/09mag-Sweatpants-facebookJumbo.jpg?year=2020&h=550&w=1050&s=5ccc92b922d9887b6fe75474538d2354d87d9497de11cdb23cea7dc870715a8f&k=ZQJBKqZ0VN)](https://www.nytimes.com/interactive/2020/08/06/magazine/fashion-sweatpants.html)
+
+</div>
+
+Even before the pandemic, it had started to unravel. What happens now
+that no one has a reason to dress up?
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[UNISEX](https://shop.factory43.com/collections/unisex)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.shopify.com/s/files/1/0008/3532/files/animaldermF43_Black-transparent_bg_98dd18a5-afa2-4f9d-bf90-9d848ddd3c7c.svg?height=628&pad_color=fff&v=1681523609&width=1200)](https://shop.factory43.com/collections/unisex)
+
+</div>
+
+Quality graphic goods including t-shirts, screen printed posters and
+pins.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[A Guide to the Most Common Fabric Patterns Used in Interior
+Design](https://www.apartmenttherapy.com/most-common-fabrics-interior-design-36685304)
+
+</div>
+
+<div class="card-image">
+
+[![](https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1500,ar_3:2/at%2Fhouse%20tours%20stock%20archive%2Fa29fe2e040662f4d369cbfc290299da8792d0c1d)](https://www.apartmenttherapy.com/most-common-fabrics-interior-design-36685304)
+
+</div>
+
+From chevron to polka dots and beyond.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[vumaasha/Atlas: Atlas: A Dataset and Benchmark for E-commerce Clothing
+Prod](https://github.com/vumaasha/Atlas)
+
+</div>
+
+<div class="card-image">
+
+[![](https://opengraph.githubassets.com/a97a4b040edeff95b0aaed3c51efeb72237e2b2658e66482aa923ba18fc4be9b/vumaasha/Atlas)](https://github.com/vumaasha/Atlas)
+
+</div>
+
+Atlas: A Dataset and Benchmark for E-commerce Clothing Product
+Categorization - vumaasha/Atlas
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[The Bitter Southerner General Store](https://bsgeneralstore.com)
+
+</div>
+
+<div class="card-image">
+
+[![](https://bsgeneralstore.com/cdn/shop/files/3d-logo-3_1200x.png?v=1614773495)](https://bsgeneralstore.com)
+
+</div>
+
+The Bitter Southerner tells real stories about the real South. We
+survive through your memberships and purchases in our store.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[‘OK Boomer’ Marks the End of Friendly Generational Relations (Published
+2019)](https://www.nytimes.com/2019/10/29/style/ok-boomer.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2019/12/29/fashion/29BETTERPERSON-boomer/oakImage-1572300722721-largeHorizontalJumbo.jpg?year=2019&h=600&w=900&s=05d54084ca3df026edf5720a28f92989e64dcce965fb8abacc317a3285bb6191&k=ZQJBKqZ0VN)](https://www.nytimes.com/2019/10/29/style/ok-boomer.html)
+
+</div>
+
+Now it’s war: Gen Z has finally snapped over climate change and
+financial inequality.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Buy Low-Tops, Sell High-Tops: A Sneaker Exchange Is Worth \$1
+Billion](https://www.nytimes.com/2019/06/26/technology/trading-sneakers-stockx.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://static01.nyt.com/images/2019/06/26/business/26stockx/26stockx-largeHorizontalJumbo.jpg?year=2019&h=682&w=1024&s=3e7a018c0b596126bff3a3e6fc2b3b9e8808040f78936cef775afb92d56ebe98&k=ZQJBKqZ0VN)](https://www.nytimes.com/2019/06/26/technology/trading-sneakers-stockx.html)
+
+</div>
+
+StockX is one of several online marketplaces that have turned resales of
+shoes into a big — and highly valued — business.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to assess the quality of garments: A Beginner's Guide {Part I} —
+Anusch](https://anuschkarees.com/blog/2014/05/01/how-to-assess-the-quality-of-garments-a-beginners-guide-part-i)
+
+</div>
+
+<div class="card-image">
+
+[![](http://static1.squarespace.com/static/543bfc2ce4b018d3e89a06e0/56a1198eb204d5878d6d6f8a/56b4b0cef04e93fd611cd751/1463605278675/?format=1500w)](https://anuschkarees.com/blog/2014/05/01/how-to-assess-the-quality-of-garments-a-beginners-guide-part-i)
+
+</div>
+
+What's the number one prerequisite to building a high-quality wardrobe?
+Exactly: You need to be able to recognize a quality garment when you see
+one. You need to be able to tell the difference between a durable,
+well-crafted piece and one that looks pretty on the rack but won't last
+more than half a
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[How to Sew on a
+Button](https://www.artofmanliness.com/articles/sewing-on-a-button)
+
+</div>
+
+<div class="card-image">
+
+[![](https://content.artofmanliness.com/uploads/2013/12/sailors.jpg)](https://www.artofmanliness.com/articles/sewing-on-a-button)
+
+</div>
+
+Learn how to sew a button quickly and correctly with this photo guide.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Untuckit is using Amazon to offload older
+styles](https://digiday.com/retail/untuckit-amazon-offload-older-styles)
+
+</div>
+
+<div class="card-image">
+
+[![](https://digiday.com/wp-content/uploads/sites/3/2019/01/Untuckit.jpg)](https://digiday.com/retail/untuckit-amazon-offload-older-styles)
+
+</div>
+
+Untuckit is using Amazon to offload older styles -- preferring the
+marketplace as an alternative over the traditional outlet store.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Henry the Hatter. DETROIT'S & AMERICAS HATTER SINCE
+1893!](https://www.henrythehatterdetroit.com)
+
+</div>
+
+Henry the Hatter. DETROIT'S EXCLUSIVE HATTER SINCE 1893! Mens Fedora
+Hats and Caps. Thank you for visiting Henry the Hatter's online store.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Op-Ed \| How Premium Mediocre Conquered
+Fashion](https://www.businessoffashion.com/articles/opinion/op-ed-how-premium-mediocre-conquered-fashion)
+
+</div>
+
+<div class="card-image">
+
+[![](https://img.businessoffashion.com/resizer/v2/UP5JSQR4AZCWHO45CQ7GPQIXUQ.jpg?smart=true&auth=f08cf9ca071583196a9fa5037606e1385ce8762b47d4686bf66910729c10134d&width=1200&height=630)](https://www.businessoffashion.com/articles/opinion/op-ed-how-premium-mediocre-conquered-fashion)
+
+</div>
+
+Brands are giving the masses the illusion that they are consuming
+luxury, when in reality they are doing nothing of the sort, argues
+Eugene Rabkin.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Why the Sharing Economy Has Come to
+Apparel](https://www.adweek.com/brand-marketing/why-the-sharing-economy-has-come-to-apparel)
+
+</div>
+
+<div class="card-image">
+
+[![](https://www.adweek.com/wp-content/uploads/2018/11/retail-subscription-CONTENT_2018.jpg?w=600&h=315&crop=1)](https://www.adweek.com/brand-marketing/why-the-sharing-economy-has-come-to-apparel)
+
+</div>
+
+Express and Ann Taylor are just two of several established retailers
+that have launched clothing rental subscriptions in recent months.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Project Repat: \$10MM Business Making Quilts From Old
+T-Shirts](https://starterstory.com/stories/project-repat)
+
+</div>
+
+<div class="card-image">
+
+[![](https://d1coqmn8qm80r4.cloudfront.net/stories/social_shares/000/000/126/original/open-uri20210513-4-jmy5et?1620871941)](https://starterstory.com/stories/project-repat)
+
+</div>
+
+Hello! Who are you and what are you working on?My name is Ross Lohr, and
+I’m a co-founder of Project Repat. We make it easy and affordable for
+customers to turn their memorable t-shirts into a one of a kind, custom
+t-shirt quilt backed with cozy fleece. People buy quilts from Project
+Re...
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/how-dya-like-them-apples-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/how-dya-like-them-apples-t-shirt.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/abide-socks.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/abide-socks.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/vodka-and-pilates-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/vodka-and-pilates-t-shirt.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/leisure-bear-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/leisure-bear-t-shirt.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/girl-with-pizza-slice-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/girl-with-pizza-slice-t-shirt.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Headline Brand Funny T-shirts & Designer Graphic
+Tees](https://www.headlineshirts.net/kale-is-highly-overrated-t-shirt.html)
+
+</div>
+
+<div class="card-image">
+
+[![](https://solidthreads.com/cdn/shop/files/solid_threads_cool_vintage_graphic_tees_and_retro_clothing_social_share_header_1200x.png?v=1651252666)](https://www.headlineshirts.net/kale-is-highly-overrated-t-shirt.html)
+
+</div>
+
+Headline has been a pioneering force of funny graphic t-shirts for men,
+women, and kids since the early 2000s. Their intelligently funny sense
+of humor and refined design aesthetic converge into vintage inspired
+tees delivered with artistic deftness and singular style that sets them
+apart from the novelty tee crowd.
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+
+[Cotton Bureau – A curated online community for design- and tech-focused
+t-s](https://cottonbureau.com)
+
+</div>
+
+Find your next favorite t-shirt, tank top, hoodie, fleece, or phone case
+at Cotton Bureau. Custom tees and phone cases from the world’s best
+graphic designers.
+
+</div>
+
+</div>
